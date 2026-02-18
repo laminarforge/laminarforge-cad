@@ -1,0 +1,139 @@
+[package]
+name = "laminarforge-cad"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vcad = "0.1"
+
+[lib]
+name = "laminarforge_cad"
+path = "src/lib.rs"
+
+[[bin]]
+name = "heating_block"
+path = "src/bin/heating_block.rs"
+
+[[bin]]
+name = "optical_mount"
+path = "src/bin/optical_mount.rs"
+
+[[bin]]
+name = "enclosure"
+path = "src/bin/enclosure.rs"
+
+[[bin]]
+name = "lid"
+path = "src/bin/lid.rs"
+
+[[bin]]
+name = "dispensing_frame"
+path = "src/bin/dispensing_frame.rs"
+
+[[bin]]
+name = "dispensing_carriage"
+path = "src/bin/dispensing_carriage.rs"
+
+[[bin]]
+name = "syringe_pump_cradle"
+path = "src/bin/syringe_pump_cradle.rs"
+
+[[bin]]
+name = "syringe_plunger_pusher"
+path = "src/bin/syringe_plunger_pusher.rs"
+
+[[bin]]
+name = "syringe_motor_mount"
+path = "src/bin/syringe_motor_mount.rs"
+
+[[bin]]
+name = "syringe_pump_standalone"
+path = "src/bin/syringe_pump_standalone.rs"
+
+[[bin]]
+name = "outlet_valve_mount"
+path = "src/bin/outlet_valve_mount.rs"
+
+[[bin]]
+name = "capping_arm"
+path = "src/bin/capping_arm.rs"
+
+[[bin]]
+name = "rail_mounts"
+path = "src/bin/rail_mounts.rs"
+
+[[bin]]
+name = "reservoir_tray"
+path = "src/bin/reservoir_tray.rs"
+
+[[bin]]
+name = "waste_tray"
+path = "src/bin/waste_tray.rs"
+
+[[bin]]
+name = "assembly"
+path = "src/bin/assembly.rs"
+
+[[bin]]
+name = "microlattice_swab"
+path = "src/bin/microlattice_swab.rs"
+
+[[bin]]
+name = "retractable_swab_collector"
+path = "src/bin/retractable_swab_collector.rs"
+
+[[bin]]
+name = "swab_docking_port"
+path = "src/bin/swab_docking_port.rs"
+
+[[bin]]
+name = "still_air_box_corner"
+path = "src/bin/still_air_box_corner.rs"
+
+[[bin]]
+name = "still_air_box_rail"
+path = "src/bin/still_air_box_rail.rs"
+
+[[bin]]
+name = "still_air_box_accessories"
+path = "src/bin/still_air_box_accessories.rs"
+
+[[bin]]
+name = "arm_hole_grommet"
+path = "src/bin/arm_hole_grommet.rs"
+
+[[bin]]
+name = "workstation_enclosure"
+path = "src/bin/workstation_enclosure.rs"
+
+[[bin]]
+name = "workbench"
+path = "src/bin/workbench.rs"
+
+[[bin]]
+name = "co2_incubator"
+path = "src/bin/co2_incubator.rs"
+
+[[bin]]
+name = "water_bath"
+path = "src/bin/water_bath.rs"
+
+[[bin]]
+name = "magnetic_stirrer"
+path = "src/bin/magnetic_stirrer.rs"
+
+[[bin]]
+name = "orbital_shaker"
+path = "src/bin/orbital_shaker.rs"
+
+[[bin]]
+name = "centrifuge_adapter"
+path = "src/bin/centrifuge_adapter.rs"
+
+[[bin]]
+name = "column_rack"
+path = "src/bin/column_rack.rs"
+
+[[bin]]
+name = "microfluidic_chip"
+path = "src/bin/microfluidic_chip.rs"

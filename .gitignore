@@ -87,3 +87,13 @@ terraform.rc
 # System files
 .DS_Store
 *.pem
+
+# Rust
+/target
+Cargo.lock
+
+# CAD output
+/output
+
+# Test artifacts
+/test_clone_check
