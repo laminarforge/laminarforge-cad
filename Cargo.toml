@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 vcad = "0.1"
+opencascade = "0.2"
+glam = "0.23"
 
 [lib]
 name = "laminarforge_cad"
@@ -150,6 +152,10 @@ path = "src/bin/pad_positions.rs"
 [[bin]]
 name = "microfluidic_chip_cnc"
 path = "src/bin/microfluidic_chip_cnc.rs"
+
+[[bin]]
+name = "microfluidic_chip_cnc_step"
+path = "src/bin/microfluidic_chip_cnc_step.rs"
 
 [[bin]]
 name = "fcb_board"
