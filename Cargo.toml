@@ -11,12 +11,9 @@ name = "laminarforge_cad"
 path = "src/lib.rs"
 
 [[bin]]
-name = "heating_block"
-path = "src/bin/heating_block.rs"
+name = "tube_holder"
+path = "src/bin/tube_holder.rs"
 
-[[bin]]
-name = "optical_mount"
-path = "src/bin/optical_mount.rs"
 
 [[bin]]
 name = "enclosure"
@@ -137,3 +134,23 @@ path = "src/bin/column_rack.rs"
 [[bin]]
 name = "microfluidic_chip"
 path = "src/bin/microfluidic_chip.rs"
+
+[[bin]]
+name = "tube_fit_test"
+path = "src/bin/tube_fit_test.rs"
+
+[[bin]]
+name = "pcb_layout"
+path = "src/bin/pcb_layout.rs"
+
+[[bin]]
+name = "pad_positions"
+path = "src/bin/pad_positions.rs"
+
+[[bin]]
+name = "microfluidic_chip_cnc"
+path = "src/bin/microfluidic_chip_cnc.rs"
+
+[[bin]]
+name = "fcb_board"
+path = "src/bin/fcb_board.rs"

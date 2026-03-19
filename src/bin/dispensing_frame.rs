@@ -4,7 +4,7 @@ use vcad::{centered_cube, centered_cylinder};
 // ─── Dispensing Frame ───
 //
 // 3D-printed (PETG) structural frame that mounts above the existing
-// v1 heating block enclosure. Holds all dispensing system components:
+// v1 device enclosure. Holds all dispensing system components:
 // - Syringe pump cradles (2×, on back wall)
 // - Outlet valve mounts (2×, on back wall)
 // - Linear rail mounts (left + right walls)

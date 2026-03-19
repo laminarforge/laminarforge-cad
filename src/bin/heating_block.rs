@@ -1,98 +1,154 @@
 use laminarforge_cad::*;
-use vcad::{centered_cube, centered_cylinder};
+use vcad::{centered_cube, centered_cylinder, Part};
 
 // ─── Aluminum Heating Block ───
 //
-// CNC-machined aluminum block that holds 8 PCR tubes at 65C for
-// LAMP isothermal amplification. The block provides uniform heat
-// distribution across all 8 slots.
+// CNC-machined 6061-T6 aluminum block that replaces both the copper
+// spreader plate and PETG tube holder. Provides thermal mass, uniform
+// heating via cartridge heater, and direct tube retention.
+//
+// Sits directly on the PCB. Heater connects via J4, thermistor via J3.
 //
 // Features:
-// - 8 blind holes for 0.2mL PCR tubes (6.5mm dia, 13mm deep)
-//   spaced 10mm center-to-center along the top face
-// - 1 heater cartridge bore (6.2mm dia, 70mm deep) from one end,
-//   offset below center for optimal heat transfer to tubes
-// - 1 thermistor bore (3.5mm dia, 50mm deep) from the same end,
-//   on the opposite side of center for accurate temp sensing
+//   - 8 blind tube wells (6.2mm dia, 15mm deep from top)
+//   - Cartridge heater bore (6.1mm dia, 78mm deep from left end)
+//   - Thermistor pocket (3mm dia, 7mm deep from front face)
+//   - 4× M3 mounting holes at corners
 //
-// Material: 6061 aluminum
-// Dimensions: 84mm x 16mm x 15mm
+// Cross-section (Y-Z plane through a tube well):
+//
+//      y=-11        y=0         y=+11
+//       |            |            |
+// z=+12.5  ════════════════════════  top
+//       |   [tube well 6.2mm]     |
+// z=-2.5   ─────[well floor]──────
+//       |                          |
+// z=-4.45  ···[heater bore top]···
+//       |                          |
+// z=-7.5   ···[heater center]···    6.1mm bore
+//       |                          |
+// z=-10.55 ···[heater bore bot]···
+//       |                          |
+// z=-12.5  ════════════════════════  bottom
+//
+// Material: 6061-T6 Aluminum
+// Dimensions: 84mm × 22mm × 25mm
+// Export: output/heating_block.stl
 
 fn main() {
-    // ── Block body ──
+    // ── Body ──
 
     let body = centered_cube("body", BLOCK_LENGTH, BLOCK_WIDTH, BLOCK_HEIGHT);
 
-    // ── Tube holes (8x blind holes from top face) ──
+    // ── 8 Tube Wells (blind holes from top) ──
+    //
+    // Wells are 15mm deep from the top face. We create cylinders taller
+    // than the well depth and position them so they only cut from the top,
+    // leaving a solid floor at the bottom.
 
     let first_x = first_slot_x();
-    let mut tube_holes = centered_cube("th_init", 0.01, 0.01, 0.01);
+    let well_z = (BLOCK_HEIGHT - BLOCK_WELL_DEPTH) / 2.0; // shift up so bottom of cylinder = well floor
 
+    let mut wells = Part::empty("wells");
     for i in 0..NUM_SLOTS {
         let x = first_x + (i as f64) * SLOT_SPACING;
-        let hole = centered_cylinder(
-            &format!("tube_hole_{i}"),
-            TUBE_HOLE_DIAMETER / 2.0,
-            TUBE_HOLE_DEPTH,
+        let well = centered_cylinder(
+            &format!("well_{i}"),
+            BLOCK_TUBE_DIAMETER / 2.0,
+            BLOCK_WELL_DEPTH + 1.0, // +1mm to cleanly cut through top face
             32,
         )
-        .translate(x, 0.0, BLOCK_HEIGHT / 2.0 - TUBE_HOLE_DEPTH / 2.0);
-        tube_holes = tube_holes + hole;
+        .translate(x, 0.0, well_z);
+        wells = wells + well;
     }
 
-    // ── Heater cartridge bore (horizontal, from -X end) ──
-    // Center is BORE_Z_OFFSET_FROM_BOTTOM above the block bottom,
-    // offset HEATER_Y_OFFSET from center in Y
+    // ── Cartridge Heater Bore (horizontal, from left end) ──
+    //
+    // 6.1mm diameter bore centered at z = 5mm from bottom face.
+    // Drilled from the left end (x = -BLOCK_LENGTH/2), 78mm deep.
 
-    let heater_z = -(BLOCK_HEIGHT / 2.0) + BORE_Z_OFFSET_FROM_BOTTOM;
-
+    let heater_z = -(BLOCK_HEIGHT / 2.0) + HEATER_BORE_Z_OFFSET; // -7.5mm
+    // Cylinder along X axis: rotate 90° around Y
+    // Position so the bore starts at the left face and extends rightward
+    let heater_center_x = -(BLOCK_LENGTH / 2.0) + HEATER_BORE_DEPTH / 2.0; // bore center in X
     let heater_bore = centered_cylinder(
         "heater_bore",
         HEATER_BORE_DIAMETER / 2.0,
-        HEATER_BORE_DEPTH,
-        32,
-    )
-    .rotate(0.0, 90.0, 0.0) // align along X axis
-    .translate(
-        -(BLOCK_LENGTH / 2.0) + HEATER_BORE_DEPTH / 2.0,
-        HEATER_Y_OFFSET,
-        heater_z,
-    );
-
-    // ── Thermistor bore (horizontal, from same -X end) ──
-    // Same Z offset, opposite Y offset
-
-    let thermistor_bore = centered_cylinder(
-        "thermistor_bore",
-        THERMISTOR_BORE_DIAMETER / 2.0,
-        THERMISTOR_BORE_DEPTH,
+        HEATER_BORE_DEPTH + 1.0, // +1mm to cut cleanly through left face
         32,
     )
     .rotate(0.0, 90.0, 0.0)
-    .translate(
-        -(BLOCK_LENGTH / 2.0) + THERMISTOR_BORE_DEPTH / 2.0,
-        THERMISTOR_Y_OFFSET,
-        heater_z,
-    );
+    .translate(heater_center_x, 0.0, heater_z);
 
-    // ── Assemble ──
+    // ── Thermistor Pocket (horizontal, from front face) ──
+    //
+    // 3mm diameter pocket centered at same Z as heater bore.
+    // Drilled from front face (y = -BLOCK_WIDTH/2), 7mm deep.
+    // At x=0 (block center), between wells 3 and 4.
 
-    let block = body - tube_holes - heater_bore - thermistor_bore;
+    let therm_center_y = -(BLOCK_WIDTH / 2.0) + THERMISTOR_BORE_DEPTH / 2.0;
+    let therm_pocket = centered_cylinder(
+        "therm_pocket",
+        THERMISTOR_BORE_DIAMETER / 2.0,
+        THERMISTOR_BORE_DEPTH + 1.0, // +1mm to cut through front face
+        24,
+    )
+    .rotate(90.0, 0.0, 0.0)
+    .translate(0.0, therm_center_y, heater_z);
+
+    // ── 4× M3 Mounting Holes (through-holes, top to bottom) ──
+    //
+    // Positioned at block corners, outside both tube wells and heater bore.
+
+    let mount_positions: [(f64, f64); 4] = [
+        (-BLOCK_MOUNT_HOLE_X, -BLOCK_MOUNT_HOLE_Y),
+        ( BLOCK_MOUNT_HOLE_X, -BLOCK_MOUNT_HOLE_Y),
+        (-BLOCK_MOUNT_HOLE_X,  BLOCK_MOUNT_HOLE_Y),
+        ( BLOCK_MOUNT_HOLE_X,  BLOCK_MOUNT_HOLE_Y),
+    ];
+
+    let mut mounts = Part::empty("mounts");
+    for (i, &(mx, my)) in mount_positions.iter().enumerate() {
+        let hole = centered_cylinder(
+            &format!("mount_{i}"),
+            BLOCK_MOUNT_HOLE_DIAMETER / 2.0,
+            BLOCK_HEIGHT + 2.0,
+            24,
+        )
+        .translate(mx, my, 0.0);
+        mounts = mounts + hole;
+    }
+
+    // ── Assemble (subtract all features from body) ──
+
+    let part = body - wells - heater_bore - therm_pocket - mounts;
 
     // ── Export ──
 
-    block
-        .write_stl("output/heating_block.stl")
-        .unwrap();
+    part.write_stl("output/heating_block.stl").unwrap();
+
+    // ── Print Specs ──
+
+    let well_floor_z = heater_z + HEATER_BORE_DIAMETER / 2.0; // top of heater bore
+    let well_bottom_z = -(BLOCK_HEIGHT / 2.0) + (BLOCK_HEIGHT - BLOCK_WELL_DEPTH); // well floor
+    let gap = well_bottom_z - well_floor_z;
 
     println!("Exported: output/heating_block.stl");
     println!();
-    println!("── Heating Block Specs ──");
-    println!("  Body:           {BLOCK_LENGTH:.1}mm x {BLOCK_WIDTH:.1}mm x {BLOCK_HEIGHT:.1}mm");
-    println!("  Tube holes:     {NUM_SLOTS}x {TUBE_HOLE_DIAMETER:.1}mm dia x {TUBE_HOLE_DEPTH:.1}mm deep");
-    println!("  Slot spacing:   {SLOT_SPACING:.1}mm center-to-center");
-    println!("  Heater bore:    {HEATER_BORE_DIAMETER:.1}mm dia x {HEATER_BORE_DEPTH:.1}mm deep (Y offset: {HEATER_Y_OFFSET:.1}mm)");
-    println!("  Thermistor:     {THERMISTOR_BORE_DIAMETER:.1}mm dia x {THERMISTOR_BORE_DEPTH:.1}mm deep (Y offset: {THERMISTOR_Y_OFFSET:.1}mm)");
-    println!("  Bore Z offset:  {BORE_Z_OFFSET_FROM_BOTTOM:.1}mm from bottom");
-    println!("  Material:       6061 aluminum");
+    println!("── Aluminum Heating Block Specs ──");
+    println!("  Body:              {BLOCK_LENGTH:.0}mm × {BLOCK_WIDTH:.0}mm × {BLOCK_HEIGHT:.0}mm");
+    println!("  Material:          6061-T6 Aluminum");
+    println!("  Tube wells:        {NUM_SLOTS}× {BLOCK_TUBE_DIAMETER:.1}mm dia, {BLOCK_WELL_DEPTH:.0}mm deep (blind)");
+    println!("  Slot spacing:      {SLOT_SPACING:.0}mm center-to-center");
+    println!("  Heater bore:       {HEATER_BORE_DIAMETER:.1}mm dia, {HEATER_BORE_DEPTH:.0}mm deep (from left end)");
+    println!("  Heater Z offset:   {HEATER_BORE_Z_OFFSET:.0}mm from bottom");
+    println!("  Thermistor pocket: {THERMISTOR_BORE_DIAMETER:.0}mm dia, {THERMISTOR_BORE_DEPTH:.0}mm deep (from front)");
+    println!("  Mounting holes:    4× M3 ({BLOCK_MOUNT_HOLE_DIAMETER:.1}mm) at corners");
+    println!("  Well-to-heater:    {gap:.2}mm aluminum between well floor and heater bore");
+    println!();
+    println!("── Fabrication Notes ──");
+    println!("  All features are simple drilled holes/bores.");
+    println!("  Can be CNC machined from bar stock or manually drilled with a drill press.");
+    println!("  Cartridge heater: 6mm × 12V 40W, inserted from left end.");
+    println!("  Thermistor: 10K NTC glass bead, inserted from front face.");
 }

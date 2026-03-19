@@ -5,7 +5,7 @@ use vcad::{centered_cube, centered_cylinder};
 //
 // 3D-printed (PETG) lid that snaps onto the enclosure top. Features
 // a lip that drops inside the enclosure walls for a secure fit, with
-// 8 tube access holes aligned with the heating block slots so tubes
+// 8 tube access holes aligned with the tube holder slots so tubes
 // can be inserted/removed without removing the lid.
 //
 // Features:
@@ -42,7 +42,7 @@ fn main() {
 
     let lip = lip_outer - lip_inner;
 
-    // ── Tube access holes (8x, aligned with heating block slots) ──
+    // ── Tube access holes (8x, aligned with tube holder slots) ──
 
     let first_x = first_slot_x();
     let tube_y = shelf_center_y(); // tubes are in the shelf area

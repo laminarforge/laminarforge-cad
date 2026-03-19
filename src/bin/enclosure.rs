@@ -3,21 +3,27 @@ use vcad::{centered_cube, centered_cylinder};
 
 // ─── PETG Enclosure Box ───
 //
-// 3D-printed (PETG) enclosure that houses the heating block + optical
-// mount assembly in the front shelf area, with an electronics bay in
-// the rear for the ESP32, driver board, and wiring.
+// 3D-printed (PETG) enclosure that houses the PCB trace heater +
+// copper spreader + tube holder + optical mount assembly in the front
+// shelf area, with an electronics bay in the rear for the ESP32-S3,
+// driver board, and wiring.
+//
+// The PCB sits on the enclosure floor. The serpentine copper trace on
+// the PCB bottom layer provides heating. A thin copper spreader plate
+// sits on the PCB over the heater zone, and the tube holder sits on
+// top of that.
 //
 // Features:
 // - Hollow box with ENCLOSURE_WALL walls and ENCLOSURE_FLOOR floor
-// - Front shelf/pocket sized for the heating block + optical mount
+// - Front shelf/pocket sized for spreader + tube holder + optical mount
 //   with POCKET_CLEARANCE on each side
-// - Rear electronics bay (42mm deep) for ESP32 and control board
-// - 4x M3 mounting holes in pocket floor for block attachment
+// - Rear electronics bay (42mm deep) for ESP32-S3 and control board
+// - 4x M3 mounting holes in floor for PCB attachment
 // - USB port cutout in rear wall (12mm x 8mm)
+// - Barrel jack cutout in rear wall (12mm dia)
 // - 2x LED indicator holes in front wall (3mm dia)
 // - Ventilation slot pattern on both side walls
 //
-// Outer dimensions: 100mm x 76mm x 35mm
 // Material: PETG
 
 fn main() {
@@ -31,13 +37,14 @@ fn main() {
 
     let shell = outer - inner;
 
-    // ── Block pocket (recessed shelf in front portion) ──
+    // ── Component pocket (recessed shelf in front portion) ──
     // The shelf sits in the front half of the enclosure.
-    // Pocket is sized for block + mount with clearance on each side.
+    // Pocket is sized for spreader + tube holder + mount with clearance.
+    // The PCB sits on the enclosure floor (not in the pocket).
 
-    let pocket_x = BLOCK_LENGTH + POCKET_CLEARANCE * 2.0;
-    let pocket_y = MOUNT_WIDTH + POCKET_CLEARANCE * 2.0;
-    let pocket_z = BLOCK_HEIGHT + MOUNT_HEIGHT + 1.0; // block + mount + slight clearance
+    let pocket_x = HOLDER_LENGTH + POCKET_CLEARANCE * 2.0;
+    let pocket_y = HOLDER_WIDTH + POCKET_CLEARANCE * 2.0;
+    let pocket_z = SPREADER_THICKNESS + HOLDER_HEIGHT + 1.0; // spreader + holder + clearance
 
     let shelf_y = shelf_center_y();
     let pocket_floor_z = floor_z();
@@ -45,11 +52,11 @@ fn main() {
     let pocket = centered_cube("pocket", pocket_x, pocket_y, pocket_z)
         .translate(0.0, shelf_y, pocket_floor_z + pocket_z / 2.0);
 
-    // ── M3 mounting holes in pocket floor (4x, rectangular pattern) ──
+    // ── M3 PCB mounting holes in floor (4x, rectangular pattern) ──
 
     let mount_hole_d = 3.2; // M3 clearance
-    let mount_spacing_x = BLOCK_LENGTH - 14.0; // near block ends
-    let mount_spacing_y = BLOCK_WIDTH - 6.0; // near block edges
+    let mount_spacing_x = PCB_LENGTH - 10.0; // near PCB edges
+    let mount_spacing_y = PCB_WIDTH - 10.0; // near PCB edges
     let mount_depth = ENCLOSURE_FLOOR + 2.0; // through floor
 
     let mut mount_holes = centered_cube("mh_init", 0.01, 0.01, 0.01);
@@ -62,7 +69,7 @@ fn main() {
                 mount_depth,
                 24,
             )
-            .translate(dx, shelf_y + dy, -(OUTER_Z / 2.0) + mount_depth / 2.0 - 1.0);
+            .translate(dx, dy, -(OUTER_Z / 2.0) + mount_depth / 2.0 - 1.0);
             mount_holes = mount_holes + hole;
         }
     }
@@ -75,6 +82,15 @@ fn main() {
 
     let usb_cutout = centered_cube("usb_cutout", usb_width, ENCLOSURE_WALL + 2.0, usb_height)
         .translate(0.0, OUTER_Y / 2.0, usb_z);
+
+    // ── Barrel jack cutout in rear wall (+Y face) ──
+
+    let barrel_d = 12.0;
+    let barrel_z = floor_z() + 10.0;
+
+    let barrel_cutout = centered_cylinder("barrel_jack", barrel_d / 2.0, ENCLOSURE_WALL + 2.0, 32)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(-(OUTER_X / 4.0), OUTER_Y / 2.0, barrel_z);
 
     // ── LED indicator holes in front wall (-Y face) ──
 
@@ -117,12 +133,26 @@ fn main() {
         }
     }
 
+    // ── Print brim (thin flange around base for bed adhesion) ──
+
+    let brim_width = 5.0; // extends 5mm beyond outer walls
+    let brim_thickness = 0.4; // ~2 layers at 0.2mm
+    let brim = centered_cube(
+        "brim",
+        OUTER_X + brim_width * 2.0,
+        OUTER_Y + brim_width * 2.0,
+        brim_thickness,
+    )
+    .translate(0.0, 0.0, -(OUTER_Z / 2.0) + brim_thickness / 2.0);
+
     // ── Assemble ──
 
     let enclosure = shell
+        + brim
         - pocket
         - mount_holes
         - usb_cutout
+        - barrel_cutout
         - led_hole_1
         - led_hole_2
         - vents;
@@ -139,12 +169,13 @@ fn main() {
     println!("  Outer:          {OUTER_X:.1}mm x {OUTER_Y:.1}mm x {OUTER_Z:.1}mm");
     println!("  Wall:           {ENCLOSURE_WALL:.1}mm (floor: {ENCLOSURE_FLOOR:.1}mm)");
     println!("  Inner cavity:   {INNER_X:.1}mm x {INNER_Y:.1}mm x {WALL_HEIGHT:.1}mm");
-    println!("  Block pocket:   {pocket_x:.1}mm x {pocket_y:.1}mm x {pocket_z:.1}mm");
+    println!("  Component pocket: {pocket_x:.1}mm x {pocket_y:.1}mm x {pocket_z:.1}mm");
     println!("  Pocket clear:   {POCKET_CLEARANCE:.1}mm per side");
     println!("  Shelf depth:    {SHELF_DEPTH:.1}mm (front)");
     println!("  Electronics:    {ELECTRONICS_DEPTH:.1}mm (rear)");
-    println!("  Mount holes:    4x M3 ({mount_spacing_x:.0}mm x {mount_spacing_y:.0}mm pattern)");
+    println!("  PCB mount holes: 4x M3 ({mount_spacing_x:.0}mm x {mount_spacing_y:.0}mm pattern)");
     println!("  USB cutout:     {usb_width:.0}mm x {usb_height:.0}mm (rear wall)");
+    println!("  Barrel jack:    {barrel_d:.0}mm dia (rear wall)");
     println!("  LED holes:      2x {led_d:.0}mm dia (front wall, {led_spacing:.0}mm apart)");
     println!("  Vents:          {num_vents}x per side ({vent_width:.0}mm x {vent_height:.0}mm slots)");
     println!("  Material:       PETG");

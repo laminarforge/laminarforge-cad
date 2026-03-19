@@ -1,0 +1,10 @@
+(version 1)
+
+(rule "JLCPCB clearance"
+  (constraint clearance (min 0.15mm)))
+
+(rule "JLCPCB hole clearance"
+  (constraint hole_clearance (min 0.15mm)))
+
+(rule "JLCPCB solder mask bridge"
+  (constraint solder_mask_margin (min 0.05mm)))

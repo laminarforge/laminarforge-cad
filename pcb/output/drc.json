@@ -1,0 +1,18 @@
+** Drc report for lamp_v1.kicad_pcb **
+** Created on 2026-03-03T14:47:42-0700 **
+
+** Found 0 DRC violations **
+
+** Found 2 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(0.0000 mm, 0.0000 mm): Zone [GND] on F.Cu, priority 0
+    @(0.0000 mm, 0.0000 mm): Zone [GND] on F.Cu, priority 0
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(0.0000 mm, 0.0000 mm): Zone [GND] on F.Cu, priority 0
+    @(0.0000 mm, 0.0000 mm): Zone [GND] on F.Cu, priority 0
+
+** Found 0 Footprint errors **
+
+** End of Report **
