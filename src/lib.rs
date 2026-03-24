@@ -317,6 +317,134 @@ pub const CNC16_LABEL_DEPTH: f64 = 0.1; // shallow engraving
 /// v2 corner radius — ANSI/SLAS 1-2004 §4.1.2.1 requires 3.18 ± 1.6mm
 pub const CNC16_CORNER_RADIUS: f64 = 3.18;
 
+// ─── CNC-Milled Microfluidic Chip Constants (Rev C — 16-chamber, well-plate format) ───
+// Open-well design for 100-chip scale. Gravity-driven rocker flow, robotic liquid handler.
+// Two-sided CNC: wells + vias on TOP face, channels + chambers on BOTTOM face.
+// Sealed by 150μm borosilicate glass bottom (PSA tape bonding).
+// Well positions aligned to 96-well grid (9mm pitch) for Opentrons/Hamilton compatibility.
+
+/// Rev C plate dimensions (mm) — ANSI/SLAS microplate footprint
+pub const REVC_CHIP_LENGTH: f64 = 127.76; // X axis (long edge)
+pub const REVC_CHIP_WIDTH: f64 = 85.48;   // Y axis (short edge)
+pub const REVC_CORNER_RADIUS: f64 = 3.18; // ANSI/SLAS 1-2004 §4.1.2.1
+
+/// Rev C plate thickness — 14.20mm PMMA + 0.15mm glass = 14.35mm total
+/// ANSI/SLAS 2-2004: plate height = 14.35mm ± 0.25mm (at wells), ±0.76mm overall
+/// Minimum external clearance to plate bottom: 1.0mm (in well area)
+pub const REVC_PMMA_THICKNESS: f64 = 14.20;
+pub const REVC_GLASS_THICKNESS: f64 = 0.15; // 150μm borosilicate (#1.5 coverslip)
+pub const REVC_TOTAL_HEIGHT: f64 = 14.35;   // ANSI/SLAS 2-2004 standard plate height
+
+/// Rev C well dimensions — open-top wells on TOP face
+/// 4mm diameter fits 9mm pitch grid, compatible with 384-well robotic tips
+pub const REVC_WELL_DIAMETER: f64 = 4.0;
+pub const REVC_WELL_DEPTH: f64 = 10.0;    // ~125μL volume per well (π×2²×10)
+pub const REVC_WELL_VOLUME_UL: f64 = 125.7; // reference only, π×r²×h
+
+/// Rev C via dimensions — vertical through-hole connecting well bottom to channel
+/// Drilled from well bottom through remaining floor to bottom face
+/// Aspect ratio 4:1 — standard CNC drill operation (validated by Folch lab 96-well device)
+pub const REVC_VIA_DIAMETER: f64 = 1.0;
+pub const REVC_VIA_LENGTH: f64 = 4.0; // 14.20 - 10.0 - 0.2 = 4.0mm floor
+
+/// Rev C chamber dimensions — milled into BOTTOM face
+pub const REVC_CHAMBER_WIDTH: f64 = 3.0;   // X direction (unchanged from Rev B)
+pub const REVC_CHAMBER_LENGTH: f64 = 7.0;  // Y direction (was 10mm in Rev B, fits 9mm well spacing)
+pub const REVC_CHAMBER_DEPTH: f64 = 0.2;   // 200μm (unchanged from Rev B)
+
+/// Rev C channel dimensions — milled into BOTTOM face, connect vias to chambers
+pub const REVC_CHANNEL_WIDTH: f64 = 0.5;   // 500μm (unchanged from Rev B)
+pub const REVC_CHANNEL_DEPTH: f64 = 0.2;   // 200μm (unchanged from Rev B)
+pub const REVC_CHANNEL_LENGTH: f64 = 1.0;  // via center to chamber edge
+
+/// Rev C grid layout — 4×4 chambers, each with inlet + outlet well = 32 wells
+pub const REVC_NUM_CHAMBERS: usize = 16;
+pub const REVC_GRID_COLS: usize = 4;
+pub const REVC_GRID_ROWS: usize = 4;
+
+/// 96-well grid reference (ANSI/SLAS 4-2004)
+/// A1 center from plate corner (0,0): X=14.38mm ± 0.50mm, Y=11.24mm ± 0.50mm
+/// Pitch: 9.00mm ± 0.05mm in both X and Y
+pub const WELL96_A1_X: f64 = 14.38;
+pub const WELL96_A1_Y: f64 = 11.24;
+pub const WELL96_PITCH: f64 = 9.0;
+
+/// Rev C column positions — 96-well grid columns 2, 5, 8, 11 (1-indexed)
+/// Spacing: 27mm (3 × 9mm pitch)
+/// In chip-centered coordinates (origin at plate center):
+pub const REVC_COL_GRID_INDICES: [usize; 4] = [2, 5, 8, 11]; // 1-indexed grid columns
+pub const REVC_COL_XS_CENTERED: [f64; 4] = [-40.50, -13.50, 13.50, 40.50];
+pub const REVC_COL_SPACING: f64 = 27.0;
+
+/// Rev C row pairs — inlet/outlet wells in adjacent 96-well rows
+/// Pairs: (A,B), (C,D), (E,F), (G,H) — 9mm between inlet and outlet
+/// Chamber center Y is midpoint of each pair
+/// 18mm between chamber row centers (matches Rev B)
+pub const REVC_ROW_PAIR_GRID_INDICES: [(usize, usize); 4] = [(1, 2), (3, 4), (5, 6), (7, 8)]; // (inlet_row, outlet_row), 1-indexed
+pub const REVC_CHAMBER_CENTER_YS: [f64; 4] = [-27.00, -9.00, 9.00, 27.00]; // chip-centered
+pub const REVC_ROW_SPACING: f64 = 18.0;
+
+/// Rev C inlet well Y positions (chip-centered)
+pub const REVC_INLET_YS: [f64; 4] = [-31.50, -13.50, 4.50, 22.50];
+/// Rev C outlet well Y positions (chip-centered)
+pub const REVC_OUTLET_YS: [f64; 4] = [-22.50, -4.50, 13.50, 31.50];
+
+/// Rev C alignment pin holes — 4 corners, same as Rev B
+pub const REVC_ALIGN_DIAMETER: f64 = 1.0;
+pub const REVC_ALIGN_DEPTH: f64 = 0.5;
+pub const REVC_ALIGN_INSET: f64 = 4.0;
+
+/// Rev C mounting holes — M3 clearance, 4 near corners
+pub const REVC_MOUNT_DIAMETER: f64 = 3.2;
+pub const REVC_MOUNT_INSET: f64 = 6.0;
+
+/// Rev C label area (engraved rectangle for chip ID)
+pub const REVC_LABEL_LENGTH: f64 = 20.0;
+pub const REVC_LABEL_WIDTH: f64 = 5.0;
+pub const REVC_LABEL_DEPTH: f64 = 0.1;
+
+/// Rev C chamber labels — revised tissue panel (Schwann cells replace DRG replicate)
+pub const REVC_CHAMBER_LABELS: [&str; 16] = [
+    "DRG sensory neurons (TARGET)",
+    "Hepatocytes (liver)",
+    "Motor neurons",
+    "Cortical neurons",
+    "Astrocytes",
+    "Cardiomyocytes (heart)",
+    "Skeletal muscle",
+    "Endothelial cells",
+    "Kidney (renal epithelial)",
+    "Lung epithelial",
+    "PBMCs / T cells",
+    "Pancreatic beta cells",
+    "Enteric neurons",
+    "Schwann cells",
+    "Positive control (HEK293)",
+    "Negative control (empty)",
+];
+
+/// Rev C well labels — 96-well grid positions for each chamber (inlet, outlet)
+/// Format: (column_letter, inlet_row, outlet_row) per the 96-well grid
+/// Chamber order: row-major through the 4×4 grid
+pub const REVC_WELL_POSITIONS: [(&str, &str); 16] = [
+    ("A2",  "B2"),   // Ch1:  DRG sensory neurons
+    ("A5",  "B5"),   // Ch2:  Hepatocytes
+    ("A8",  "B8"),   // Ch3:  Motor neurons
+    ("A11", "B11"),  // Ch4:  Cortical neurons
+    ("C2",  "D2"),   // Ch5:  Astrocytes
+    ("C5",  "D5"),   // Ch6:  Cardiomyocytes
+    ("C8",  "D8"),   // Ch7:  Skeletal muscle
+    ("C11", "D11"),  // Ch8:  Endothelial cells
+    ("E2",  "F2"),   // Ch9:  Kidney epithelial
+    ("E5",  "F5"),   // Ch10: Lung epithelial
+    ("E8",  "F8"),   // Ch11: PBMCs
+    ("E11", "F11"),  // Ch12: Pancreatic beta
+    ("G2",  "H2"),   // Ch13: Enteric neurons
+    ("G5",  "H5"),   // Ch14: Schwann cells
+    ("G8",  "H8"),   // Ch15: HEK293 (pos ctrl)
+    ("G11", "H11"),  // Ch16: Empty (neg ctrl)
+];
+
 // ─── PCB Heater Trace Constants ───
 // Serpentine copper trace on B.Cu for resistive heating
 

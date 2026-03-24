@@ -158,5 +158,9 @@ name = "microfluidic_chip_cnc_step"
 path = "src/bin/microfluidic_chip_cnc_step.rs"
 
 [[bin]]
+name = "microfluidic_chip_cnc_revc"
+path = "src/bin/microfluidic_chip_cnc_revc.rs"
+
+[[bin]]
 name = "fcb_board"
 path = "src/bin/fcb_board.rs"
