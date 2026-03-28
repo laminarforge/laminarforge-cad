@@ -1,0 +1,276 @@
+# =============================================================================
+# FluidNC Configuration - LaminarForge Liquid Handler Robot
+# =============================================================================
+#
+# 4-axis belt/leadscrew robot for automated liquid handling
+#   X-axis: Belt-driven gantry (GT2 20T)
+#   Y-axis: Belt-driven gantry (GT2 20T)
+#   Z-axis: Belt-driven with 3:1 gear reduction (20T motor / 60T carriage)
+#   I-axis: T8x2 lead screw syringe plunger (Hamilton 1710RN 100uL)
+#
+# MCU: ESP32-S3 DevKitC
+# Drivers: 4x TMC2209 in UART mode (shared UART bus, individual addresses)
+# PSU: 24V
+#
+# Steps/mm calculations (200 steps/rev, 16 microsteps = 3200 steps/rev):
+#   X/Y: GT2 20T, pitch dia 12.73mm, circ = pi * 12.73 = 39.98mm
+#         3200 / 39.98 = 80.04 steps/mm
+#   Z:   Same pulley with 3:1 reduction -> 80.04 * 3 = 240.12 steps/mm
+#   I:   T8x2 lead screw, 2mm lead -> 3200 / 2 = 1600 steps/mm
+#
+# Syringe volume calibration (Hamilton 1710RN 100uL, barrel ID 1.46mm):
+#   Barrel area = pi * (0.73mm)^2 = 1.6742 mm^2
+#   1 uL = 1 mm^3 -> 1 uL requires 1 / 1.6742 = 0.5973 mm travel
+#   100 uL full stroke ~ 59.73 mm (mechanical travel limited to 30mm ~ 50.2 uL)
+#
+# =============================================================================
+
+name: "LaminarForge Liquid Handler"
+board: "ESP32-S3 DevKitC"
+
+# ---------------------------------------------------------------------------
+# Stepping engine
+# ---------------------------------------------------------------------------
+stepping:
+  engine: RMT         # ESP32-S3 RMT peripheral for precise pulse generation
+  idle_ms: 250        # ms before motors de-energize after idle
+  pulse_us: 4         # step pulse width (microseconds)
+  dir_delay_us: 1     # direction change settle time
+
+# ---------------------------------------------------------------------------
+# UART bus for TMC2209 drivers (shared single-wire UART)
+# ---------------------------------------------------------------------------
+uart1:
+  txd_pin: gpio.17
+  rxd_pin: gpio.18
+  baud: 115200
+  mode: 8N1
+
+# ---------------------------------------------------------------------------
+# Axes
+# ---------------------------------------------------------------------------
+axes:
+  shared_stepper_disable_pin: NO_PIN   # each driver has its own enable
+
+  # -------------------------------------------------------------------------
+  # X-axis: Belt-driven gantry
+  #   GT2 belt, 20-tooth pulley, pitch diameter 12.73mm
+  #   80.04 steps/mm
+  # -------------------------------------------------------------------------
+  x:
+    steps_per_mm: 80.040
+    max_rate_mm_per_min: 6000.0      # 100 mm/s
+    acceleration_mm_per_sec2: 500.0
+    max_travel_mm: 300.0
+    soft_limits: true
+    homing:
+      cycle: 1
+      positive_direction: false       # home toward min
+      mpos_mm: 0.0
+      feed_mm_per_min: 600.0         # 10 mm/s homing seek
+      seek_mm_per_min: 3000.0        # 50 mm/s fast seek
+      settle_ms: 250
+      seek_scaler: 1.100
+      feed_scaler: 1.100
+
+    motor0:
+      limit_neg_pin: gpio.4
+      limit_pos_pin: NO_PIN
+      hard_limits: true
+      pulloff_mm: 2.0
+      tmc_2209:
+        uart_num: 1
+        addr: 0
+        r_sense_ohms: 0.110
+        run_current_amps: 0.800       # conservative for NEMA 17
+        hold_current_amps: 0.400
+        microsteps: 16
+        stallguard: 40
+        direction_pin: gpio.5
+        step_pin: gpio.6
+        disable_pin: gpio.7
+
+  # -------------------------------------------------------------------------
+  # Y-axis: Belt-driven gantry
+  #   Identical drive to X-axis
+  #   80.04 steps/mm
+  # -------------------------------------------------------------------------
+  y:
+    steps_per_mm: 80.040
+    max_rate_mm_per_min: 6000.0      # 100 mm/s
+    acceleration_mm_per_sec2: 500.0
+    max_travel_mm: 300.0
+    soft_limits: true
+    homing:
+      cycle: 2
+      positive_direction: false
+      mpos_mm: 0.0
+      feed_mm_per_min: 600.0
+      seek_mm_per_min: 3000.0
+      settle_ms: 250
+      seek_scaler: 1.100
+      feed_scaler: 1.100
+
+    motor0:
+      limit_neg_pin: gpio.15
+      limit_pos_pin: NO_PIN
+      hard_limits: true
+      pulloff_mm: 2.0
+      tmc_2209:
+        uart_num: 1
+        addr: 1
+        r_sense_ohms: 0.110
+        run_current_amps: 0.800
+        hold_current_amps: 0.400
+        microsteps: 16
+        stallguard: 40
+        direction_pin: gpio.16
+        step_pin: gpio.8
+        disable_pin: gpio.9
+
+  # -------------------------------------------------------------------------
+  # Z-axis: Belt-driven with 3:1 gear reduction
+  #   20T motor pulley -> 60T carriage pulley
+  #   240.12 steps/mm
+  # -------------------------------------------------------------------------
+  z:
+    steps_per_mm: 240.120
+    max_rate_mm_per_min: 3000.0      # 50 mm/s
+    acceleration_mm_per_sec2: 200.0
+    max_travel_mm: 100.0
+    soft_limits: true
+    homing:
+      cycle: 3                        # home Z before I, after X/Y
+      positive_direction: false       # home toward min (Z up / retracted)
+      mpos_mm: 0.0
+      feed_mm_per_min: 300.0         # 5 mm/s homing seek
+      seek_mm_per_min: 1500.0        # 25 mm/s fast seek
+      settle_ms: 500                  # extra settle to avoid bounce
+      seek_scaler: 1.100
+      feed_scaler: 1.100
+
+    motor0:
+      limit_neg_pin: gpio.10
+      limit_pos_pin: NO_PIN
+      hard_limits: true
+      pulloff_mm: 1.0
+      tmc_2209:
+        uart_num: 1
+        addr: 2
+        r_sense_ohms: 0.110
+        run_current_amps: 0.900       # slightly higher for geared axis
+        hold_current_amps: 0.500
+        microsteps: 16
+        stallguard: 50
+        direction_pin: gpio.11
+        step_pin: gpio.12
+        disable_pin: gpio.13
+
+  # -------------------------------------------------------------------------
+  # I-axis: Syringe plunger (Hamilton 1710RN 100uL)
+  #   T8x2 lead screw: 2mm pitch, 2mm lead, 1 start
+  #   1600 steps/mm
+  #   Very gentle acceleration to avoid bubble formation / splashing
+  #   Homes to plunger fully retracted (min position)
+  # -------------------------------------------------------------------------
+  i:
+    steps_per_mm: 1600.000
+    max_rate_mm_per_min: 300.0       # 5 mm/s
+    acceleration_mm_per_sec2: 100.0   # gentle for liquid handling
+    max_travel_mm: 30.0              # ~50.2 uL with Hamilton 1710RN
+    soft_limits: true
+    homing:
+      cycle: 4                        # home last (after Z is safe)
+      positive_direction: false       # home to plunger fully retracted
+      mpos_mm: 0.0
+      feed_mm_per_min: 60.0          # 1 mm/s - very slow for syringe
+      seek_mm_per_min: 150.0         # 2.5 mm/s seek
+      settle_ms: 1000                 # long settle for fluid stabilization
+      seek_scaler: 1.100
+      feed_scaler: 1.100
+
+    motor0:
+      limit_neg_pin: gpio.14
+      limit_pos_pin: NO_PIN
+      hard_limits: true
+      pulloff_mm: 0.5                 # minimal pulloff for syringe
+      tmc_2209:
+        uart_num: 1
+        addr: 3
+        r_sense_ohms: 0.110
+        run_current_amps: 0.600       # lower current, leadscrew is efficient
+        hold_current_amps: 0.350
+        microsteps: 16
+        stallguard: 30                # lower threshold - leadscrew has more drag
+        direction_pin: gpio.21
+        step_pin: gpio.47
+        disable_pin: gpio.48
+
+# ---------------------------------------------------------------------------
+# SPI / I2C (reserved, unused for now)
+# ---------------------------------------------------------------------------
+spi:
+  miso_pin: NO_PIN
+  mosi_pin: NO_PIN
+  sck_pin: NO_PIN
+
+i2c0:
+  sda_pin: gpio.1
+  scl_pin: gpio.2
+  frequency: 100000
+
+# ---------------------------------------------------------------------------
+# Control pins
+# ---------------------------------------------------------------------------
+control:
+  safety_door_pin: NO_PIN
+  reset_pin: NO_PIN
+  feed_hold_pin: NO_PIN
+  cycle_start_pin: NO_PIN
+
+# ---------------------------------------------------------------------------
+# Probe pin (for tip-touch liquid level detection, future use)
+# ---------------------------------------------------------------------------
+probe:
+  pin: gpio.38                        # ADC1 capable for analog sensing
+  check_mode_start: true
+
+# ---------------------------------------------------------------------------
+# Coolant / auxiliary outputs (for valve control)
+# ---------------------------------------------------------------------------
+coolant:
+  flood_pin: gpio.39                  # repurposed: solenoid valve 1
+  mist_pin: gpio.40                   # repurposed: solenoid valve 2
+
+# ---------------------------------------------------------------------------
+# Status LED
+# ---------------------------------------------------------------------------
+user_outputs:
+  analog0_pin: NO_PIN
+  analog1_pin: NO_PIN
+  digital0_pin: gpio.41               # status LED
+  digital1_pin: gpio.42               # error LED
+
+# ---------------------------------------------------------------------------
+# Serial / Comms
+# ---------------------------------------------------------------------------
+comms:
+  wifi_sta:
+    ssid: ""
+    password: ""
+  wifi_ap:
+    ssid: "LaminarForge"
+    password: "laminarforge"
+    ip_address: 192.168.0.1
+  telnet:
+    port: 23
+  http:
+    port: 80
+  bluetooth:
+    name: "LaminarForge"
+
+# ---------------------------------------------------------------------------
+# Start-up line (run after homing)
+# ---------------------------------------------------------------------------
+start:
+  must_home: true                     # require homing before any motion
