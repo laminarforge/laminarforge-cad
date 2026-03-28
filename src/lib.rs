@@ -171,14 +171,14 @@ pub const F625ZZ_OD: f64 = 16.0;
 pub const F625ZZ_WIDTH: f64 = 5.0;
 pub const F625ZZ_FLANGE_OD: f64 = 17.0;
 
-/// Hamilton 1710RN syringe (100μL gastight, PN 81020)
+/// Hamilton 1710RN syringe (100μL gastight, PN 81030)
 /// Selected per gap analysis: 1nL/microstep resolution, covers 10-100μL range
-/// NOTE: barrel OD, barrel length, flange dims are estimates — verify before printing
-pub const H1710_BARREL_OD: f64 = 6.60;   // estimated — measure actual
+/// Dimensions verified from Hamilton datasheet (PN 81065 / Knowledge Center)
+pub const H1710_BARREL_OD: f64 = 7.75;    // confirmed: 0.305" (NOT 6.6mm — that's the 1701/10μL)
 pub const H1710_BARREL_ID: f64 = 1.46;    // confirmed from Hamilton spec
-pub const H1710_BARREL_LENGTH: f64 = 60.0; // estimated
-pub const H1710_FLANGE_WIDTH: f64 = 14.0;  // estimated
-pub const H1710_FLANGE_THICKNESS: f64 = 2.0; // estimated
+pub const H1710_BARREL_LENGTH: f64 = 65.0; // ~65mm (verified, was 60mm estimate)
+pub const H1710_FLANGE_WIDTH: f64 = 12.5;  // ~12.5mm (verified, was 14mm estimate)
+pub const H1710_FLANGE_THICKNESS: f64 = 2.0; // estimated — verify in hand
 pub const H1710_NEEDLE_OD: f64 = 0.72;    // 22s gauge blunt
 
 /// V-slot M5 mounting (T-nut interface)
