@@ -162,5 +162,25 @@ name = "microfluidic_chip_cnc_revc"
 path = "src/bin/microfluidic_chip_cnc_revc.rs"
 
 [[bin]]
+name = "microfluidic_chip_revc_print_sample"
+path = "src/bin/microfluidic_chip_revc_print_sample.rs"
+
+[[bin]]
 name = "fcb_board"
 path = "src/bin/fcb_board.rs"
+
+[[bin]]
+name = "chip_adapter_plate"
+path = "src/bin/chip_adapter_plate.rs"
+
+[[bin]]
+name = "wash_station"
+path = "src/bin/wash_station.rs"
+
+[[bin]]
+name = "gantry_brackets"
+path = "src/bin/gantry_brackets.rs"
+
+[[bin]]
+name = "xy_carriage"
+path = "src/bin/xy_carriage.rs"

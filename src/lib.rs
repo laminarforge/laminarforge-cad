@@ -136,6 +136,55 @@ pub const NUM_FLUID_CHANNELS: usize = 3; // lysis buffer + master mix + primer m
 pub const SYRINGE_GUIDE_ROD_DIAMETER: f64 = 4.0;
 pub const SYRINGE_GUIDE_ROD_OFFSET: f64 = 12.0; // from lead screw center
 
+// ─── V-Slot Gantry Constants (Liquid Handler XYZ+I) ───
+// MULA-style 4-axis gantry: X/Y belt-driven, Z geared-belt 3:1, I lead-screw (plunger)
+
+/// V-slot 2040 aluminum extrusion (OpenBuilds standard)
+pub const VSLOT_2040_W: f64 = 20.0; // mm
+pub const VSLOT_2040_H: f64 = 40.0; // mm
+pub const VSLOT_SLOT_WIDTH: f64 = 6.0; // channel opening for M5 T-nuts
+
+/// OpenBuilds Mini V-Wheel (Delrin)
+pub const VWHEEL_OD: f64 = 15.23; // mm outer diameter
+pub const VWHEEL_BORE: f64 = 5.0;  // M5 bore
+pub const VWHEEL_WIDTH: f64 = 8.80; // mm
+
+/// Eccentric spacer (for V-wheel preload adjustment)
+pub const ECCENTRIC_OD: f64 = 7.12; // mm body OD
+pub const ECCENTRIC_BORE: f64 = 5.0; // M5
+
+/// GT2 timing belt
+pub const GT2_BELT_WIDTH: f64 = 6.0; // mm (standard 6mm)
+pub const GT2_BELT_PITCH: f64 = 2.0; // mm tooth pitch
+
+/// GT2 20-tooth pulley (on motor shaft)
+pub const GT2_20T_PITCH_DIA: f64 = 12.73; // mm pitch diameter
+pub const GT2_20T_OD: f64 = 14.0; // mm approximate outer
+pub const GT2_PULLEY_BORE: f64 = 5.0; // mm shaft bore
+
+/// GT2 60-tooth pulley (Z-axis driven, 3:1 reduction)
+pub const GT2_60T_PITCH_DIA: f64 = 38.20; // mm pitch diameter
+
+/// F625ZZ flanged bearing (GT2 idler)
+pub const F625ZZ_BORE: f64 = 5.0;
+pub const F625ZZ_OD: f64 = 16.0;
+pub const F625ZZ_WIDTH: f64 = 5.0;
+pub const F625ZZ_FLANGE_OD: f64 = 17.0;
+
+/// Hamilton 1710RN syringe (100μL gastight, PN 81020)
+/// Selected per gap analysis: 1nL/microstep resolution, covers 10-100μL range
+/// NOTE: barrel OD, barrel length, flange dims are estimates — verify before printing
+pub const H1710_BARREL_OD: f64 = 6.60;   // estimated — measure actual
+pub const H1710_BARREL_ID: f64 = 1.46;    // confirmed from Hamilton spec
+pub const H1710_BARREL_LENGTH: f64 = 60.0; // estimated
+pub const H1710_FLANGE_WIDTH: f64 = 14.0;  // estimated
+pub const H1710_FLANGE_THICKNESS: f64 = 2.0; // estimated
+pub const H1710_NEEDLE_OD: f64 = 0.72;    // 22s gauge blunt
+
+/// V-slot M5 mounting (T-nut interface)
+pub const VSLOT_M5_HOLE: f64 = 5.3; // M5 clearance hole
+pub const VSLOT_M5_CBORE: f64 = 9.0; // counterbore for M5 button head
+
 // ─── Still Air Box Constants ───
 
 /// Interior dimensions
