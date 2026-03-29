@@ -756,14 +756,18 @@ pub const TG_COMP_TIP_CLEARANCE: f64 = 0.4;     // mm radial
 pub const TG_COMP_BLADE_THICKNESS: f64 = 1.5;   // mm (body)
 pub const TG_COMP_BLADE_LE_THICKNESS: f64 = 0.8; // mm (leading edge taper)
 
-// ── Turbine wheel (A-EE749EE3) ──
+// ── Turbine wheel (A-EE749EE3) — Investment cast Inconel 713C ──
 pub const TG_TURB_TIP_DIA: f64 = 75.0;
 pub const TG_TURB_TIP_RADIUS: f64 = 37.5;
 pub const TG_TURB_INLET_BLADE_HEIGHT: f64 = 12.0;
 pub const TG_TURB_BLADE_COUNT: usize = 13;
-pub const TG_TURB_TIP_CLEARANCE: f64 = 0.5; // mm radial
-pub const TG_TURB_EXIT_TIP_RADIUS: f64 = 27.5; // mm
+pub const TG_TURB_TIP_CLEARANCE: f64 = 0.5;      // mm radial
+pub const TG_TURB_EXIT_TIP_RADIUS: f64 = 27.5;   // mm
 pub const TG_TURB_EXIT_HUB_RADIUS: f64 = 10.0;
+pub const TG_TURB_BLADE_THICKNESS: f64 = 1.5;     // mm (body)
+pub const TG_TURB_BLADE_LE_THICKNESS: f64 = 1.0;  // mm (leading edge taper)
+pub const TG_TURB_AXIAL_LENGTH: f64 = 45.0;       // mm (meridional channel depth)
+pub const TG_TURB_BACK_DISK_THICKNESS: f64 = 8.0; // mm
 
 // ── Cold section housing (A-58E55C4B §4) ──
 pub const TG_COLD_MAX_OD: f64 = 150.0;      // mm (6" billet)
