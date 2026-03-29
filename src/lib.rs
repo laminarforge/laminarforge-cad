@@ -720,3 +720,85 @@ pub fn fcb16_inlet_y(row_center_y: f64) -> f64 {
 pub fn fcb16_outlet_y(row_center_y: f64) -> f64 {
     row_center_y + CNC16_CHAMBER_LENGTH / 2.0 + FCB16_CHANNEL_LENGTH // center + 5 + 5 = center + 10
 }
+
+// ════════════════════════════════════════════════════════════════════════
+// ═══ Turbogenerator Prototype — Shared Dimensions ═════════════════════
+// ════════════════════════════════════════════════════════════════════════
+// Hydrogen micro gas turbine for Adaptive Altitude GEV propulsion.
+// Source artifacts: A-0798601A (thermo), A-839C84B9 (compressor),
+// A-EE749EE3 (turbine), A-A9A9F291 (combustor), A-D45A776A (shaft),
+// A-58E55C4B (housing).
+
+// ── Engine design point ──
+pub const TG_DESIGN_RPM: f64 = 95_000.0;
+pub const TG_MASS_FLOW: f64 = 0.220; // kg/s
+
+// ── Shaft (A-D45A776A) ──
+pub const TG_SHAFT_DIA: f64 = 12.0;     // mm, main body
+pub const TG_SHAFT_LENGTH: f64 = 198.0; // mm, total
+pub const TG_SHAFT_THREAD_DIA: f64 = 8.0; // M8
+pub const TG_SHAFT_CHOKE_DIA: f64 = 8.0;  // thermal choke
+pub const TG_BEARING_SPAN: f64 = 110.0;   // center-to-center
+
+// ── Bearings (S6001-2RS) ──
+pub const TG_BEARING_OD: f64 = 28.0;    // mm
+pub const TG_BEARING_ID: f64 = 12.0;    // mm (shaft bore)
+pub const TG_BEARING_WIDTH: f64 = 8.0;  // mm
+
+// ── Compressor wheel (A-839C84B9) ──
+pub const TG_COMP_TIP_DIA: f64 = 80.0;      // mm
+pub const TG_COMP_TIP_RADIUS: f64 = 40.0;
+pub const TG_COMP_INDUCER_TIP_DIA: f64 = 48.0;
+pub const TG_COMP_EXIT_BLADE_HEIGHT: f64 = 5.5; // mm
+pub const TG_COMP_BLADE_COUNT: usize = 7;       // main blades
+pub const TG_COMP_SPLITTER_COUNT: usize = 7;    // splitter blades
+pub const TG_COMP_TIP_CLEARANCE: f64 = 0.4;     // mm radial
+pub const TG_COMP_BLADE_THICKNESS: f64 = 1.5;   // mm (body)
+pub const TG_COMP_BLADE_LE_THICKNESS: f64 = 0.8; // mm (leading edge taper)
+
+// ── Turbine wheel (A-EE749EE3) ──
+pub const TG_TURB_TIP_DIA: f64 = 75.0;
+pub const TG_TURB_TIP_RADIUS: f64 = 37.5;
+pub const TG_TURB_INLET_BLADE_HEIGHT: f64 = 12.0;
+pub const TG_TURB_BLADE_COUNT: usize = 13;
+pub const TG_TURB_TIP_CLEARANCE: f64 = 0.5; // mm radial
+pub const TG_TURB_EXIT_TIP_RADIUS: f64 = 27.5; // mm
+pub const TG_TURB_EXIT_HUB_RADIUS: f64 = 10.0;
+
+// ── Cold section housing (A-58E55C4B §4) ──
+pub const TG_COLD_MAX_OD: f64 = 150.0;      // mm (6" billet)
+pub const TG_COLD_LENGTH: f64 = 85.0;       // mm axial
+pub const TG_COLD_BILLET_DIA: f64 = 152.4;  // 6" = 152.4mm
+pub const TG_COLD_BILLET_LENGTH: f64 = 100.0;
+pub const TG_INLET_BELL_OD: f64 = 80.0;
+pub const TG_INLET_EYE_ID: f64 = 52.0;
+pub const TG_COMP_BORE_ID: f64 = 80.8;      // wheel + clearance
+pub const TG_DIFFUSER_EXIT_RADIUS: f64 = 60.0;
+pub const TG_DIFFUSER_EXIT_WIDTH: f64 = 4.84; // hub-pinched
+
+// ── Hot section housing (A-58E55C4B §6) ──
+pub const TG_HOT_MAX_OD: f64 = 120.0;
+pub const TG_HOT_LENGTH: f64 = 55.0;
+pub const TG_HOT_BILLET_DIA: f64 = 127.0;   // 5" = 127mm
+pub const TG_HOT_BILLET_LENGTH: f64 = 70.0;
+pub const TG_TURB_BORE_ID: f64 = 76.0;      // wheel + clearance
+pub const TG_EXHAUST_CONE_EXIT_DIA: f64 = 65.0;
+
+// ── Shared housing features ──
+pub const TG_BEARING_BORE_DIA: f64 = 28.0;  // H7
+pub const TG_BEARING_BORE_DEPTH: f64 = 10.0;
+pub const TG_BOLT_PCD: f64 = 100.0;         // bolt circle
+pub const TG_BOLT_COUNT: usize = 6;
+pub const TG_BOLT_CLEARANCE_DIA: f64 = 6.5; // M6 clearance
+pub const TG_FLANGE_OD: f64 = 110.0;
+pub const TG_SHAFT_TUNNEL_OD: f64 = 20.0;
+pub const TG_SHAFT_TUNNEL_ID: f64 = 16.0;
+
+// ── Scroll geometry — cold section (A-58E55C4B §4.5) ──
+pub const TG_COMP_SCROLL_INNER_R: f64 = 60.0;  // diffuser exit
+pub const TG_COMP_SCROLL_RADIAL_DEPTH: f64 = 15.0; // max
+pub const TG_COMP_SCROLL_MAX_HEIGHT: f64 = 40.0;    // axial, at 360°
+
+// ── Scroll geometry — hot section (A-58E55C4B §6.2) ──
+pub const TG_TURB_SCROLL_INNER_R: f64 = 40.1;  // vaneless gap
+pub const TG_TURB_SCROLL_MAX_DIA: f64 = 31.3;  // cross-section at 360°
