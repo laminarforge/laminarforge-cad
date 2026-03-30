@@ -1,0 +1,53 @@
+================================================================================
+              DRAWING NOTES — LF-TW-001 Rev A
+              Turbogenerator Gas Generator Turbine Wheel
+================================================================================
+
+NOTES: (these notes apply to the STEP model turbogen_turbine_wheel.stp)
+
+1.  MATERIAL: INCONEL 713C PER AMS 5391. VIM/VAC MELT PRACTICE.
+
+2.  PROCESS: VACUUM INVESTMENT CASTING.
+
+3.  CAD FILE TAKES PRECEDENCE OVER THIS DOCUMENT FOR GEOMETRY DEFINITION.
+    STEP FILE: turbogen_turbine_wheel.stp (AP203 format).
+
+4.  UNLESS OTHERWISE SPECIFIED:
+    a) Linear tolerance: +/-0.25 mm (first 25 mm) + +/-0.10 mm per 25 mm
+    b) Angular tolerance: +/-0.5 deg
+    c) Surface finish: 3.2 Ra (um) / 125 RMS (uin) or better
+    d) Fillet radii: as modeled in STEP. Min R0.3 mm, max R0.8 mm.
+    e) External corners: 0.3 mm max break
+
+5.  CRITICAL MACHINED FEATURES (MACHINE AFTER CASTING):
+    A  BORE: 12.0 H7 (+0.000/+0.018 mm). 0.8 Ra. CONCENTRIC TO TIP OD 0.025 TIR.
+    B  TIP OD: 75.0 +/-0.15 mm. 3.2 Ra. ROUNDNESS 0.05 mm.
+    C  BACK FACE: PERP TO BORE AXIS 0.03 mm. 1.6 Ra. BALANCE DATUM.
+
+6.  BLADE LEADING EDGE THICKNESS: 1.2 mm MIN. THINNER NOT ACCEPTABLE.
+
+7.  BLADE ROOT FILLETS: R0.4 mm NOM IN STEP MODEL. FOUNDRY MAY INCREASE
+    UP TO R0.8 mm FOR CASTABILITY. DO NOT REDUCE BELOW R0.3 mm.
+
+8.  SHRINKAGE: FOUNDRY TO APPLY (~2.0-2.2% FOR IN713C). FOUNDRY DETERMINES
+    EXACT VALUE.
+
+9.  HIP REQUIRED PER AMS 2175. TYPICAL: 1200 C / 100 MPa Ar / 4 HR.
+
+10. HEAT TREATMENT: AS-CAST (NO SOLUTION TREATMENT) UNLESS FOUNDRY ADVISES.
+
+11. BALANCING: ISO 1940 G2.5 AT 95,000 RPM. MATERIAL REMOVAL FROM BACK DISK
+    FACE ONLY. MAX RESIDUAL UNBALANCE 0.02 g-mm.
+
+12. FPI REQUIRED 100%. PER ASTM E1417. NO LINEAR INDICATIONS ON BLADES/BORE.
+
+13. RADIOGRAPHY: FIRST ARTICLE. PER ASTM E2422 / AMS 2175. LEVEL 2 BLADES,
+    LEVEL 3 HUB.
+
+14. WELD REPAIR NOT PERMITTED ON BLADES OR BORE.
+
+15. GATE WITNESS MARKS NOT TO EXCEED 0.25 mm. NO GATES ON BLADE SURFACES.
+
+16. ALL DIMENSIONS IN MILLIMETERS. ALL ANGLES IN DEGREES.
+
+================================================================================

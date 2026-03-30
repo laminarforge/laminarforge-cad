@@ -1,0 +1,232 @@
+================================================================================
+              INVESTMENT CASTING SPECIFICATION
+              LaminarForge Transport — Turbine Wheel
+================================================================================
+
+Document:       LF-TW-SPEC-001 Rev A
+Date:           2026-03-30
+Part Name:      Turbogenerator Gas Generator Turbine Wheel
+Part Number:    LF-TW-001
+CAD File:       turbogen_turbine_wheel.stp (STEP AP203)
+Material:       Inconel 713C per AMS 5391
+Process:        Vacuum investment casting (VIM/VAC)
+Quantity:       1 (prototype — see RFQ for production quantities)
+
+================================================================================
+1. SCOPE
+================================================================================
+
+This specification defines the requirements for investment casting of a radial
+inflow turbine wheel for a hydrogen-fueled turbogenerator. The part operates at
+95,000 RPM and 850 deg C inlet temperature. It is a single-piece integral wheel
+(blades + hub + back disk) with no inserts or joints.
+
+================================================================================
+2. MATERIAL
+================================================================================
+
+Alloy:          Inconel 713C (UNS N07713)
+Specification:  AMS 5391 (latest revision)
+Melt Practice:  Vacuum induction melted, vacuum arc remelted (VIM/VAC)
+                Air-melted argon-cast (AM/AC) NOT acceptable.
+
+Chemistry per AMS 5391:
+  Cr   12.0-14.0%      Mo   3.80-5.20%
+  Al   5.50-6.50%      Ti   0.50-1.00%
+  Nb+Ta 1.80-2.80%     C    0.08-0.20%
+  B    0.005-0.015%     Zr   0.05-0.15%
+  Si   0.50 max         Mn   0.25 max
+  Fe   2.50 max         Cu   0.50 max
+  Ni   Balance
+
+Mechanical properties (as-cast, per AMS 5391):
+  Tensile strength:     110,000 psi min (758 MPa)
+  0.2% Yield strength:  100,000 psi min (690 MPa)
+  Elongation:           3% min in 4D
+  Hardness:             30-42 HRC
+
+Material certification required with each shipment.
+
+================================================================================
+3. PART GEOMETRY
+================================================================================
+
+Reference: STEP file LF-TW-001 Rev A (turbogen_turbine_wheel.stp)
+The CAD file takes precedence over this document for geometry definition.
+
+Overall dimensions:
+  Tip diameter:             75.0 mm
+  Overall length (axial):   53.0 mm (45mm passage + 8mm back disk)
+  Bore diameter:            12.0 mm (through bore, full length)
+  Weight (estimated):       ~300 g
+
+Blade geometry:
+  Number of blades:         13
+  Blade thickness (body):   1.5 mm
+  Blade thickness (LE):     1.2 mm (smooth taper over first 10% of path)
+  Inlet blade height:       12.0 mm (at tip diameter)
+  Blade wrap angle:         ~48 deg
+
+Hub contour (meridional, z mm / r mm):
+  H1(0, 37.5) - H2(8, 32) - H3(20, 22) - H4(35, 14) - H5(45, 10)
+
+Exit annulus:
+  Exit tip radius:          27.5 mm
+  Exit hub radius:          10.0 mm
+
+Back disk:
+  Thickness:                8.0 mm
+  Outer radius:             37.5 mm (full tip radius)
+
+================================================================================
+4. CRITICAL DIMENSIONS AND TOLERANCES
+================================================================================
+
+All tolerances are as-cast unless noted "MACHINE AFTER CASTING."
+
+CRITICAL — MACHINE AFTER CASTING:
+  A. Bore diameter:     12.0 +0.000/-0.018 mm (H7 fit)
+                        Surface finish: 0.8 Ra (um) or better
+                        Concentricity to tip OD: 0.025 mm TIR
+
+  B. Tip OD:            75.0 +/-0.15 mm
+                        Surface finish: 3.2 Ra (um)
+                        Roundness: 0.05 mm
+
+  C. Back face (datum): Perpendicularity to bore axis: 0.03 mm
+                        Surface finish: 1.6 Ra (um)
+                        This is the balance and clamping datum.
+
+IMPORTANT — AS-CAST:
+  D. Blade thickness:   1.5 +/-0.15 mm (body)
+                        1.2 +0.2/-0.1 mm (leading edge — thinner NOT acceptable)
+
+  E. Blade count:       13 (exact)
+
+  F. Blade pitch:       Equal spacing +/-0.3 deg (27.69 deg nominal)
+
+  G. Axial length:      53.0 +/-0.5 mm (overall)
+
+  H. Blade root fillets: R0.4 mm nominal in STEP model
+                         Foundry may increase up to R0.8 mm for castability.
+                         Do NOT reduce below R0.3 mm.
+
+GENERAL AS-CAST TOLERANCES (non-critical features):
+  Linear:   +/-0.25 mm for first 25 mm, +/-0.10 mm per additional 25 mm
+  Angular:  +/-0.5 deg
+  Surface finish: 3.2 Ra (um) or better (125 RMS microinch)
+
+================================================================================
+5. CASTING NOTES
+================================================================================
+
+1. This part is designed for INVESTMENT CASTING ONLY. Do not CNC from billet.
+   Inconel 713C is a cast-only alloy (not wrought).
+
+2. Shrinkage: Foundry to apply appropriate shrinkage factor for IN713C
+   (typically ~2.0-2.2%). Foundry determines exact value based on their process.
+
+3. Gating and risers: Foundry to design gating system. Center-pour through
+   bore or bottom-pour through back disk face recommended. Blade tips are
+   the highest hot-tearing risk area per ProCAST simulation literature.
+
+4. Blade root fillets: The STEP model includes R0.4 mm fillets at blade-hub
+   junctions. Foundry may increase fillet radii up to R0.8 mm if their
+   process simulation indicates hot tearing risk. Do NOT eliminate fillets.
+
+5. All internal corners and transitions shall have radii (no sharp corners).
+   External corners: 0.3 mm max break.
+
+6. Weld repair is NOT permitted on blades or bore. Minor weld repair on
+   back disk OD is acceptable per AMS 5391.
+
+7. Parting line flash and gate witness marks shall not exceed 0.25 mm.
+   No gate remnants on blade surfaces.
+
+8. Casting shall be free of visual cracks, laps, cold shuts, and inclusions
+   in blade and bore areas.
+
+================================================================================
+6. POST-CAST PROCESSING
+================================================================================
+
+6.1 HOT ISOSTATIC PRESSING (HIP)
+    Required. Per AMS 2175 or foundry standard practice.
+    Typical: 1200 deg C, 100 MPa argon, 4 hours.
+    Purpose: Close internal microporosity.
+
+6.2 HEAT TREATMENT
+    IN713C is normally used AS-CAST (no solution treatment needed).
+    If foundry recommends solution + age for improved properties:
+      Solution: 2150 deg F (1177 deg C) for 2 hours, vacuum, air cool
+      Stabilize: 1700 deg F (927 deg C) for 16 hours, air cool
+    Foundry to advise based on their experience with 713C.
+
+6.3 MACHINING (by foundry or customer — to be determined)
+    A. Bore: Ream or hone to 12.0 H7 (+0.000/+0.018 mm)
+    B. Tip OD: Turn to 75.0 +/-0.15 mm, concentric to bore
+    C. Back face: Face to perpendicularity, establish balance datum
+
+6.4 BALANCING
+    Balance to ISO 1940 Grade G2.5 at 95,000 RPM.
+    Material removal from back disk face only (no blade grinding).
+    Residual unbalance: max 0.02 g-mm.
+    Balancing may be performed by customer if foundry does not offer.
+
+================================================================================
+7. INSPECTION AND QUALITY
+================================================================================
+
+7.1 DIMENSIONAL
+    First article: Full CMM inspection of all critical dimensions (Section 4).
+    Production: Sample inspection per agreed AQL.
+    CMM report required with first article.
+
+7.2 MATERIAL
+    Material test report (MTR) / mill certification per heat.
+    Chemical analysis per AMS 5391.
+    Mechanical properties (tensile test bar cast with the part).
+
+7.3 NON-DESTRUCTIVE TESTING
+    A. Visual inspection: 100% of parts, all surfaces.
+       Accept/reject per AMS 5391 and ASTM E155 (reference radiographs).
+
+    B. Fluorescent penetrant inspection (FPI): 100% of parts.
+       Per ASTM E1417. No linear indications on blades or bore.
+
+    C. Radiographic inspection: First article only (or per foundry recommendation).
+       Per ASTM E2422 or AMS 2175.
+       Level 2 acceptance on blades, Level 3 on hub.
+
+7.4 DOCUMENTATION DELIVERABLES
+    With each shipment:
+      - Material test report (chemistry + mechanical properties)
+      - CMM dimensional report (first article)
+      - FPI report
+      - Certificate of conformance
+      - Radiographic film/digital images (first article)
+
+================================================================================
+8. PACKAGING AND SHIPPING
+================================================================================
+
+Parts shall be individually wrapped in VCI paper or equivalent corrosion
+inhibitor. Blades shall be protected from contact damage. Parts shall be
+packed in rigid containers to prevent damage during shipping.
+
+================================================================================
+9. APPLICABLE SPECIFICATIONS
+================================================================================
+
+AMS 5391    - Inconel 713C, investment castings
+AMS 2175    - Castings, classification and inspection
+AMS 2750    - Pyrometry (for heat treatment furnace calibration)
+ASTM E1417  - Liquid penetrant testing
+ASTM E2422  - Radiographic examination of castings
+ASTM E155   - Reference radiographs for inspection of castings
+ISO 1940    - Balance quality requirements of rotating bodies
+ISO 8062    - Dimensional tolerances for castings
+
+================================================================================
+END OF SPECIFICATION — LF-TW-SPEC-001 Rev A
+================================================================================

@@ -1,0 +1,92 @@
+================================================================================
+              FOUNDRY SHORTLIST — IN713C Turbine Wheel
+================================================================================
+
+Target: Investment casting foundries with demonstrated IN713C / superalloy
+turbine wheel capability. Prioritized by relevance to our part.
+
+================================================================================
+TIER 1 — SUPERALLOY TURBINE SPECIALISTS
+================================================================================
+
+1. PBS Velka Bites (Czech Republic)
+   Website:  https://www.pbs.cz/en/Invesment-casting/Turbine-wheels
+   Why:      Specialist in IN713C turbine wheels. Range: 50-400mm, 0.15-44 kg.
+             Our 75mm wheel is their core business. They cast IN713C, IN713LC,
+             B1914, MAR-M247. Full service: design, casting, machining, final
+             product. Major turbocharger supplier (Siemens, MAN, etc.).
+   Contact:  Ales Winkler, Sales — casting@pbs.cz, +420 566 822 403
+   Notes:    European, may have longer shipping. Ask about MOQ and prototype
+             pricing. They do SLA patterns for prototypes.
+
+2. Aristo Cast (Almont, Michigan, USA)
+   Website:  https://www.aristocast.com
+   Why:      US-based, specializes in small precision castings including
+             superalloys. Handles prototype quantities. Located in Michigan.
+   Contact:  Request quote via website.
+   Notes:    Verify IN713C capability (they may subcontract vacuum casting).
+             Good for small prototype runs.
+
+3. Barron Industries (Oxford, Michigan, USA)
+   Website:  https://www.barron-industries.com
+   Why:      Full-service investment casting, handles nickel superalloys.
+             In-house heat treat, machining, and NDT. Michigan-based.
+   Contact:  Request quote via website.
+   Notes:    AS9100 certified (aerospace). May be more expensive for prototype
+             but offers full traceability and quality documentation.
+
+================================================================================
+TIER 2 — GENERAL SUPERALLOY FOUNDRIES
+================================================================================
+
+4. Shellcast Foundries (Montreal, Canada)
+   Website:  https://www.shellcast.com
+   Why:      Premium investment casting. Detailed drawing notes template
+             available (used as reference for our spec). Handles complex
+             aerospace parts.
+   Notes:    Primarily aluminum — verify superalloy capability.
+
+5. Signicast (Hartford, Wisconsin, USA)
+   Website:  https://www.signicast.com
+   Why:      Large US investment casting house. High volume capability.
+   Notes:    May not be cost-effective for 1-off prototype. Better for
+             production quantities (50+).
+
+6. BasTech (Dayton, Ohio, USA)
+   Website:  https://bastech.com
+   Why:      Integrates additive manufacturing with investment casting.
+             Can do SLA patterns from STEP file for rapid prototyping.
+             Published the 2026 Investment Casting Guide.
+   Notes:    Good DFM collaboration. Ask about their rapid prototype program
+             (2-3 week turnaround on first article).
+
+================================================================================
+TIER 3 — INTERNATIONAL OPTIONS (LOWER COST)
+================================================================================
+
+7. ZHY Casting (China)
+   Website:  https://www.zhycasting.com
+   Why:      Published the IN713C hot tearing study we referenced. Demonstrated
+             capability with 86mm IN713C turbine wheels at 0.7mm blade thickness.
+             They clearly know the metallurgy.
+   Notes:    Lower cost but longer lead time and shipping. Quality documentation
+             may need extra oversight. Good backup option.
+
+8. Allied Casting (China)
+   Website:  https://alliedcasting.com
+   Why:      Active publisher of turbine blade casting content. Handles
+             superalloy turbine components.
+   Notes:    Same China-sourcing considerations as above.
+
+================================================================================
+RECOMMENDATION
+================================================================================
+
+Start with PBS (Tier 1, #1) — they are the closest match to our exact part.
+Send the RFQ email + STEP + spec to PBS first. If pricing is too high or lead
+time too long, follow up with Aristo Cast and Barron Industries (US-based).
+
+For fastest prototype turnaround, BasTech's SLA-pattern-to-casting approach
+may be worth exploring in parallel (no hard tooling = 2-3 weeks).
+
+================================================================================

@@ -1,0 +1,54 @@
+Subject: RFQ — Inconel 713C Investment Cast Turbine Wheel (75mm, Prototype)
+
+Dear [Foundry Contact],
+
+I am requesting a quotation for the investment casting of a radial inflow
+turbine wheel in Inconel 713C (AMS 5391).
+
+PART SUMMARY:
+  - Part: Gas generator turbine wheel (integral bladed disk)
+  - Material: Inconel 713C per AMS 5391 (VIM/VAC)
+  - Process: Vacuum investment casting
+  - Size: 75 mm tip diameter, 53 mm axial length, ~300 g
+  - Features: 13 blades (1.2-1.5 mm thick), 12 mm through-bore
+  - Quantity: 1 prototype (with option for 3-5 additional units)
+
+ATTACHED FILES:
+  1. turbogen_turbine_wheel.stp — STEP AP203 solid model (3.2 MB)
+     This is the primary geometry definition. Smooth NURBS blade surfaces
+     with R0.4 mm blade-root fillets included.
+
+  2. turbine_wheel_casting_spec.txt — Full casting specification
+     Material, tolerances, post-cast processing, inspection requirements.
+
+REQUESTING:
+  - Unit price for 1 piece (prototype)
+  - Unit price for 5 pieces
+  - Tooling cost (wax injection die or SLA pattern — your recommendation)
+  - Lead time to first article
+  - Lead time for production quantities
+  - Whether you can provide post-cast machining (bore, tip OD, back face)
+  - Whether you can provide balancing to G2.5
+  - Any design feedback or DFM suggestions
+
+NOTES:
+  - This is a new design, no existing tooling.
+  - For prototype, SLA/3D-printed patterns are acceptable if more cost-effective
+    than hard tooling.
+  - The bore (12.0 mm H7) and tip OD (75.0 mm) are the only features requiring
+    post-cast machining. All other geometry is as-cast.
+  - Blade root fillets in the STEP model are R0.4 mm. You may increase up to
+    R0.8 mm for castability. Please advise if you see any concerns.
+  - Operating conditions: 95,000 RPM, 850 deg C turbine inlet temperature.
+
+I would also welcome a brief design review if you see opportunities to
+improve castability or reduce cost. We are flexible on non-critical
+dimensions and surface finish.
+
+Please let me know if you need any additional information.
+
+Best regards,
+Alex Lewis
+LaminarForge Transport
+[email]
+[phone]
