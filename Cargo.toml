@@ -8,6 +8,10 @@ vcad = "0.1"
 opencascade = "0.2"
 glam = "0.23"
 
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
 [lib]
 name = "laminarforge_cad"
 path = "src/lib.rs"
