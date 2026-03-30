@@ -389,26 +389,41 @@ fn bore_stress_safety_factor() {
 #[test]
 fn tip_clearance_thermal_aluminum() {
     let s = load_spec();
+    let omega = s.operating_point.design_rpm * 2.0 * PI / 60.0;
     // Temperature assumptions: rotor bulk ~700C (973K), housing ~300C (573K) with cooling
     let delta_t_rotor = 700.0; // K above ambient (20C)
     let delta_t_housing = 300.0;
 
     let r_rotor_mm = s.geometry.tip_radius_mm;
+    let r_rotor_m = r_rotor_mm / 1000.0;
     let r_housing_mm = s.housing_materials.housing_bore_id_mm / 2.0;
 
-    let rotor_growth = r_rotor_mm * s.material_inconel_713c.cte_per_k * delta_t_rotor;
+    // Thermal expansion
+    let thermal_growth = r_rotor_mm * s.material_inconel_713c.cte_per_k * delta_t_rotor;
     let housing_growth = r_housing_mm * s.housing_materials.aluminum_cte * delta_t_housing;
 
+    // Centrifugal radial expansion of rotor tip (solid disk at outer radius, per Kumar et al. 2020)
+    // delta_R = (rho * omega^2 * R^3 * (1-nu)) / (4*E)
+    // Use hot modulus (~170 GPa at 700C, ~15% reduction from RT)
+    let e_hot = s.material_inconel_713c.youngs_modulus_GPa_RT * 0.85 * 1e9; // Pa
+    let centrifugal_growth_m = s.material_inconel_713c.density_kg_m3
+        * omega.powi(2) * r_rotor_m.powi(3)
+        * (1.0 - s.material_inconel_713c.poissons_ratio) / (4.0 * e_hot);
+    let centrifugal_growth = centrifugal_growth_m * 1000.0; // mm
+
+    let total_rotor_growth = thermal_growth + centrifugal_growth;
+
     let cold_clearance = r_housing_mm - r_rotor_mm;
-    let hot_clearance = cold_clearance + housing_growth - rotor_growth;
+    let hot_clearance = cold_clearance + housing_growth - total_rotor_growth;
 
     let min = s.validation_bounds.tip_clearance_hot_mm.min_clearance_mm;
     let max = s.validation_bounds.tip_clearance_hot_mm.max_clearance_mm;
 
     println!("Tip clearance (Al housing): cold = {:.3} mm, hot = {:.3} mm (bounds: {:.2}..{:.2})",
         cold_clearance, hot_clearance, min, max);
-    println!("  Rotor growth = {:.3} mm, Housing growth = {:.3} mm",
-        rotor_growth, housing_growth);
+    println!("  Thermal rotor growth = {:.3} mm, Centrifugal growth = {:.3} mm, Total = {:.3} mm",
+        thermal_growth, centrifugal_growth, total_rotor_growth);
+    println!("  Housing growth = {:.3} mm", housing_growth);
     assert!(hot_clearance >= min && hot_clearance <= max,
         "Hot clearance {:.3} mm outside bounds [{:.2}, {:.2}]", hot_clearance, min, max);
 }
@@ -416,25 +431,37 @@ fn tip_clearance_thermal_aluminum() {
 #[test]
 fn tip_clearance_thermal_steel() {
     let s = load_spec();
+    let omega = s.operating_point.design_rpm * 2.0 * PI / 60.0;
     let delta_t_rotor = 700.0;
     let delta_t_housing = 300.0;
 
     let r_rotor_mm = s.geometry.tip_radius_mm;
+    let r_rotor_m = r_rotor_mm / 1000.0;
     let r_housing_mm = s.housing_materials.housing_bore_id_mm / 2.0;
 
-    let rotor_growth = r_rotor_mm * s.material_inconel_713c.cte_per_k * delta_t_rotor;
+    let thermal_growth = r_rotor_mm * s.material_inconel_713c.cte_per_k * delta_t_rotor;
     let housing_growth = r_housing_mm * s.housing_materials.steel_cte * delta_t_housing;
 
+    // Centrifugal radial expansion (same as aluminum test)
+    let e_hot = s.material_inconel_713c.youngs_modulus_GPa_RT * 0.85 * 1e9;
+    let centrifugal_growth_m = s.material_inconel_713c.density_kg_m3
+        * omega.powi(2) * r_rotor_m.powi(3)
+        * (1.0 - s.material_inconel_713c.poissons_ratio) / (4.0 * e_hot);
+    let centrifugal_growth = centrifugal_growth_m * 1000.0;
+
+    let total_rotor_growth = thermal_growth + centrifugal_growth;
+
     let cold_clearance = r_housing_mm - r_rotor_mm;
-    let hot_clearance = cold_clearance + housing_growth - rotor_growth;
+    let hot_clearance = cold_clearance + housing_growth - total_rotor_growth;
 
     let min = s.validation_bounds.tip_clearance_hot_mm.min_clearance_mm;
     let max = s.validation_bounds.tip_clearance_hot_mm.max_clearance_mm;
 
     println!("Tip clearance (steel housing): cold = {:.3} mm, hot = {:.3} mm (bounds: {:.2}..{:.2})",
         cold_clearance, hot_clearance, min, max);
-    println!("  Rotor growth = {:.3} mm, Housing growth = {:.3} mm",
-        rotor_growth, housing_growth);
+    println!("  Thermal rotor growth = {:.3} mm, Centrifugal growth = {:.3} mm, Total = {:.3} mm",
+        thermal_growth, centrifugal_growth, total_rotor_growth);
+    println!("  Housing growth = {:.3} mm", housing_growth);
     assert!(hot_clearance >= min && hot_clearance <= max,
         "Hot clearance {:.3} mm outside bounds [{:.2}, {:.2}]", hot_clearance, min, max);
 }
