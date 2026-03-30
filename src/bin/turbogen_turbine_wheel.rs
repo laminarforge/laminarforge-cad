@@ -230,7 +230,7 @@ fn main() {
     let tau = 2.0 * std::f64::consts::PI;
     let hub_penetration = 0.3; // mm — blade extends into hub for clean boolean
     let le_taper_frac = 0.10; // LE thickness transitions over first 10% of meridional path
-    let root_fillet_r = 0.5; // mm — casting fillet at blade-hub junctions (hot-tear prevention)
+    let root_fillet_r = 0.4; // mm — casting fillet at blade-hub junctions (hot-tear prevention)
 
     // ── Phase 1: Loft and union all 13 blades ──
 
