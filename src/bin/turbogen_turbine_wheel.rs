@@ -21,7 +21,7 @@ use opencascade::primitives::{Edge, Face, Shape, Solid, Wire};
 //
 // Investment casting design rules applied:
 //   - Min wall thickness 1.0mm LE / 1.5mm body (Inconel 713C minimum ~1.5mm)
-//   - Blade root fillets 0.5mm (casting hot-tear prevention)
+//   - Blade root fillets 0.5mm minimum — foundry instruction (see drawing notes)
 //   - Smooth contours throughout (no stepped/faceted surfaces)
 //   - Uniform section transitions (gradual LE-to-body thickness taper)
 //
@@ -230,6 +230,9 @@ fn main() {
     let tau = 2.0 * std::f64::consts::PI;
     let hub_penetration = 0.3; // mm — blade extends into hub for clean boolean
     let le_taper_frac = 0.10; // LE thickness transitions over first 10% of meridional path
+    let root_fillet_r = 0.5; // mm — casting fillet at blade-hub junctions (hot-tear prevention)
+
+    // ── Phase 1: Loft and union all 13 blades ──
 
     for bi in 0..n_blades {
         let base = (bi as f64) * tau / n_blades as f64;
@@ -296,7 +299,89 @@ fn main() {
         // Union blade with hub disc
         wheel = wheel.union(&blade_shape).into();
 
-        println!("  Blade {}/{} lofted and unioned", bi + 1, n_blades);
+        println!("  Blade {}/{} lofted + unioned", bi + 1, n_blades);
+    }
+
+    // ── Phase 2: Selective blade-root filleting ──
+    //
+    // After all blades are unioned, iterate the shape's edges and fillet
+    // ONLY the blade-root edges (where blade meets hub surface).
+    //
+    // Selection criterion: edge midpoint radius is near the hub contour
+    // (within 1mm of hub_pts interpolated surface), AND the edge is not
+    // on the bore, back disk, or shroud tip.
+    //
+    // This avoids fillet_new_edges() which tries ALL boolean edges and hangs
+    // on complex degenerate intersection topology.
+
+    println!();
+    println!("Selecting blade-root edges for filleting...");
+
+    let mut root_edges: Vec<opencascade::primitives::Edge> = Vec::new();
+    let mut total_edges = 0_usize;
+
+    for edge in wheel.edges() {
+        total_edges += 1;
+
+        // Get edge start/end points
+        let sp = edge.start_point();
+        let ep = edge.end_point();
+        let mid_x = (sp.x + ep.x) / 2.0;
+        let mid_y = (sp.y + ep.y) / 2.0;
+        let mid_z = (sp.z + ep.z) / 2.0;
+        let mid_r = (mid_x * mid_x + mid_y * mid_y).sqrt();
+
+        // Skip edges clearly on the bore (r ≈ bore_r)
+        if mid_r < bore_r + 1.0 {
+            continue;
+        }
+        // Skip edges on the back disk face (z ≈ depth or z ≈ depth+back_t)
+        if mid_z > depth - 1.0 {
+            continue;
+        }
+        // Skip edges at the inlet face (z ≈ 0)
+        if mid_z < 0.5 {
+            continue;
+        }
+
+        // Check if this edge's midpoint radius is near the hub contour
+        // Interpolate hub radius at this z position
+        let t_z = (mid_z / depth).clamp(0.0, 1.0);
+        let (_, hub_r_at_z) = interp(&hub_pts, t_z);
+
+        // Blade-root intersection curves sit right at the hub surface.
+        // Use tight tolerance to exclude loft cross-section edges that are
+        // merely near the hub but not ON it.
+        let r_diff = (mid_r - hub_r_at_z).abs();
+        if r_diff < 0.6 {
+            // Root curves are long (span multiple stations along meridional path).
+            // Loft cross-section edges at hub side are only ~blade_thick (1.5mm).
+            // Filter out short edges that are station cross-sections, not root curves.
+            let edge_len = ((ep.x - sp.x).powi(2)
+                + (ep.y - sp.y).powi(2)
+                + (ep.z - sp.z).powi(2))
+            .sqrt();
+            // Root curves should be >3mm (they span ~2-3 stations of meridional path)
+            if edge_len > 3.0 {
+                root_edges.push(edge);
+            }
+        }
+    }
+
+    let n_root_edges = root_edges.len();
+    println!(
+        "  Found {} blade-root edges out of {} total edges",
+        n_root_edges, total_edges
+    );
+
+    if !root_edges.is_empty() {
+        println!("  Applying R{:.1}mm fillet to blade-root edges...", root_fillet_r);
+        // fillet_edges mutates wheel in-place
+        wheel.fillet_edges(root_fillet_r, root_edges);
+        println!("  Blade-root fillets applied successfully!");
+    } else {
+        println!("  WARNING: No blade-root edges found for filleting.");
+        println!("  STEP will be exported without fillets — add as foundry instruction.");
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -328,12 +413,18 @@ fn main() {
         "Blade thickness: {}mm LE → {}mm body (smooth taper over first 10%)",
         TG_TURB_BLADE_LE_THICKNESS, TG_TURB_BLADE_THICKNESS
     );
+    println!(
+        "Blade root fillet: R{:.1}mm (modeled in CAD, {} root edges filleted)",
+        root_fillet_r,
+        n_root_edges
+    );
     println!("Hub:    H1(0,37.5) → H2(8,32) → H3(20,22) → H4(35,14) → H5(45,10)");
     println!("Shroud: S1(12,37.5) → S2(18,34) → S3(28,30) → S4(38,27.5) → S5(45,27.5)");
     println!();
     println!("Geometry method:");
     println!("  Hub disc: solid of revolution (exact analytical surfaces)");
     println!("  Blades:   B-spline loft through {} cross-sections (smooth NURBS)", n_sta + 1);
+    println!("  Fillets:  selective edge fillet on blade-root intersection curves");
     println!("  Bore:     integral to hub profile (no boolean subtract)");
     println!();
     println!("Manufacturing: Investment casting (NOT CNC).");
@@ -341,5 +432,5 @@ fn main() {
     println!("  Foundry applies ~2% shrinkage compensation for 713C.");
     println!("  Pattern: foundry SLA or wax injection from this geometry.");
     println!("  Post-cast: HIP + solution treat + age, then balance to G2.5.");
-    println!("  Min fillet radius at blade roots: 0.5mm (casting hot-tear prevention).");
+    println!("  Tip clearance: 0.6mm radial cold (0.23mm hot with Al housing).");
 }

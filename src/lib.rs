@@ -761,11 +761,11 @@ pub const TG_TURB_TIP_DIA: f64 = 75.0;
 pub const TG_TURB_TIP_RADIUS: f64 = 37.5;
 pub const TG_TURB_INLET_BLADE_HEIGHT: f64 = 12.0;
 pub const TG_TURB_BLADE_COUNT: usize = 13;
-pub const TG_TURB_TIP_CLEARANCE: f64 = 0.5;      // mm radial
+pub const TG_TURB_TIP_CLEARANCE: f64 = 0.6;      // mm radial (bumped from 0.5 for thermal margin)
 pub const TG_TURB_EXIT_TIP_RADIUS: f64 = 27.5;   // mm
 pub const TG_TURB_EXIT_HUB_RADIUS: f64 = 10.0;
 pub const TG_TURB_BLADE_THICKNESS: f64 = 1.5;     // mm (body)
-pub const TG_TURB_BLADE_LE_THICKNESS: f64 = 1.0;  // mm (leading edge taper)
+pub const TG_TURB_BLADE_LE_THICKNESS: f64 = 1.2;  // mm (leading edge taper — min for Inconel casting)
 pub const TG_TURB_AXIAL_LENGTH: f64 = 45.0;       // mm (meridional channel depth)
 pub const TG_TURB_BACK_DISK_THICKNESS: f64 = 8.0; // mm
 
@@ -785,7 +785,7 @@ pub const TG_HOT_MAX_OD: f64 = 120.0;
 pub const TG_HOT_LENGTH: f64 = 55.0;
 pub const TG_HOT_BILLET_DIA: f64 = 127.0;   // 5" = 127mm
 pub const TG_HOT_BILLET_LENGTH: f64 = 70.0;
-pub const TG_TURB_BORE_ID: f64 = 76.0;      // wheel + clearance
+pub const TG_TURB_BORE_ID: f64 = 76.2;      // wheel + 0.6mm clearance per side
 pub const TG_EXHAUST_CONE_EXIT_DIA: f64 = 65.0;
 
 // ── Shared housing features ──
