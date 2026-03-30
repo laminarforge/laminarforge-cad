@@ -25,8 +25,8 @@
   "operating_point": {
     "design_rpm": 95000.0,
     "mass_flow_kg_s": 0.220,
-    "total_to_static_efficiency": 0.82,
-    "total_to_total_efficiency": 0.86,
+    "total_to_static_efficiency": 0.80,
+    "total_to_total_efficiency": 0.84,
     "turbine_power_kw": 30.0,
     "exit_swirl": "zero (alpha_6 = 0)"
   },
@@ -34,14 +34,15 @@
   "thermodynamics": {
     "T03_K": 1123.0,
     "P03_kPa": 281.1,
-    "P5_kPa": 101.325,
+    "P5_kPa": 154.5,
     "gamma_hot": 1.33,
     "Cp_hot_J_kgK": 1148.0,
     "R_gas_J_kgK": 287.0,
-    "expansion_ratio": 2.775,
-    "isentropic_delta_h_J_kg": 218400.0,
-    "actual_delta_h_J_kg": 179100.0,
-    "C_spouting_m_s": 660.7
+    "expansion_ratio": 1.819,
+    "isentropic_delta_h_J_kg": 177915.0,
+    "actual_delta_h_J_kg": 142300.0,
+    "C_spouting_m_s": 596.5,
+    "_note": "GG turbine expands to 154.5 kPa (NOT atmospheric). Free power turbine (Phase 2) handles remaining expansion."
   },
 
   "material_inconel_713c": {
