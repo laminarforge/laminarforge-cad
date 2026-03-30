@@ -189,22 +189,3 @@ path = "src/bin/gantry_brackets.rs"
 name = "xy_carriage"
 path = "src/bin/xy_carriage.rs"
 
-[[bin]]
-name = "turbogen_shaft"
-path = "src/bin/turbogen_shaft.rs"
-
-[[bin]]
-name = "turbogen_cold_section"
-path = "src/bin/turbogen_cold_section.rs"
-
-[[bin]]
-name = "turbogen_hot_section"
-path = "src/bin/turbogen_hot_section.rs"
-
-[[bin]]
-name = "turbogen_compressor_wheel"
-path = "src/bin/turbogen_compressor_wheel.rs"
-
-[[bin]]
-name = "turbogen_turbine_wheel"
-path = "src/bin/turbogen_turbine_wheel.rs"
