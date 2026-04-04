@@ -411,6 +411,10 @@ pub const REVC_NUM_CHAMBERS: usize = 16;
 pub const REVC_GRID_COLS: usize = 4;
 pub const REVC_GRID_ROWS: usize = 4;
 
+/// 96-well plate footprint (ANSI/SLAS 4-2004)
+pub const PLATE96_LENGTH: f64 = 127.76; // mm (X direction, 12 columns)
+pub const PLATE96_WIDTH: f64 = 85.48; // mm (Y direction, 8 rows)
+
 /// 96-well grid reference (ANSI/SLAS 4-2004)
 /// A1 center from plate corner (0,0): X=14.38mm ± 0.50mm, Y=11.24mm ± 0.50mm
 /// Pitch: 9.00mm ± 0.05mm in both X and Y

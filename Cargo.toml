@@ -189,3 +189,7 @@ path = "src/bin/gantry_brackets.rs"
 name = "xy_carriage"
 path = "src/bin/xy_carriage.rs"
 
+[[bin]]
+name = "sample_cold_block"
+path = "src/bin/sample_cold_block.rs"
+
