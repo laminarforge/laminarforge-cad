@@ -1,56 +1,102 @@
 use vcad::{centered_cylinder, Part};
 
-// ─── BCC Microlattice Swab Head ───
+// ─── BCC Microlattice Swab — Genital Specimen Collection ───
 //
-// 3D-printed (Elegoo Saturn 4 Ultra 16K resin) diagnostic sampling swab
-// with a body-centered cubic (BCC) microlattice head for maximum surface
-// area collection. The lattice structure traps cells and fluid in its
-// interstitial spaces, improving sample yield over smooth swabs.
+// Literature-validated 3D-printed diagnostic sampling swab with BCC
+// microlattice head optimized for genital mucosal specimen collection.
 //
-// Design:
-// - Lattice head: 3mm dia cylinder, 15mm long, filled with BCC lattice
-//   (1.0mm unit cells, 0.3mm strut diameter)
-// - Handle shaft: 2mm dia cylinder, 60mm long
-// - Breakpoint notch: 0.8mm neck at 75mm from tip (snap-off into tube)
-// - Total length: ~80mm
+// Research basis (see artifact A-E5A1E1FD):
+//   Lu et al. 2024, Nature Comm Eng — BCC/auxetic/dodecahedron lattice
+//     swabs, 2.3x release volume, ~100% centrifugal recovery
+//   Tooker et al. 2021, MRS Bulletin — 6 commercial 3D-printed swabs
+//     vs Copan FLOQSwab, mechanical + functional benchmarks
+//   van der Elst et al. 2020, Adv Eng Mater — SLA swab fabrication,
+//     Formlabs Surgical Guide Resin, autoclave validation
 //
-// BCC lattice: Each unit cell has 8 corner vertices and 1 body center.
-// Struts connect each corner to the body center (8 struts per cell).
-// Cells tile in X/Y/Z within the cylindrical head envelope.
+// Genital vs nasopharyngeal adaptations:
+//   - Tapered tip (2.6mm -> 3.0mm) for flat mucosal surfaces
+//     instead of cylindrical head designed for nasal cavity navigation
+//   - Same BCC lattice: capillary uptake + centrifugal release proven
 //
-// Material: biocompatible resin (e.g., Elegoo ABS-like or bio-resin)
-// Printer: Elegoo Saturn 4 Ultra 16K (12μm XY resolution)
+// Geometry (literature-validated ranges in parentheses):
+//   Total length:   150mm  (literature: >=150mm)
+//   Lattice head:   18mm   (literature: 15-20mm)
+//   Head diameter:  2.6mm tip -> 3.0mm base (tapered for genital anatomy)
+//   Neck taper:     3mm transition to shaft
+//   Shaft:          2.0mm dia (literature: 2.0-2.5mm)
+//   Breakpoint:     0.8mm neck at 80mm from tip (literature: 70-80mm)
+//   Tail:           69mm finger grip
+//
+// Lattice:
+//   Topology: BCC (body-centered cubic) — best balance of printability,
+//     flexibility, and sample capture (Lu 2024)
+//   Unit cell: 0.8mm (literature: 0.5-1.0mm)
+//   Strut dia: 0.3mm (literature: 0.2-0.4mm, ~6 layers at 50um)
+//
+// Printer: Elegoo Saturn 4 Ultra 16K
+//   XY resolution: 14x19um
+//   Build area: 218.88 x 122.88mm
+//   Layer height: 50um (for 0.3mm struts = ~6 layers/strut diameter)
+// Resin: Liqcreate Bio-Med Clear (ISO 10993 biocompatible)
+// Post-process: IPA wash -> UV cure -> autoclave 121C 15min
 
 fn main() {
-    // ── Dimensions ──
+    // ── Dimensions (validated against literature A-E5A1E1FD) ──
 
-    let head_diameter = 3.0; // mm
-    let head_length = 15.0; // mm
-    let head_radius = head_diameter / 2.0;
+    let head_length = 18.0;          // mm  (literature: 15-20mm, mid-range)
+    let head_tip_diameter = 2.6;     // mm  (tapered for genital anatomy)
+    let head_base_diameter = 3.0;    // mm  (max, fits 12mm OD collector tube)
+    let shaft_diameter = 2.0;        // mm  (literature: 2.0-2.5mm)
+    let total_length = 150.0;        // mm  (literature: >=150mm)
+    let breakpoint_from_tip = 80.0;  // mm  (literature: 70-80mm)
 
-    let shaft_diameter = 2.0; // mm
-    let shaft_length = 60.0; // mm
-
-    let unit_cell = 1.0; // mm BCC unit cell size
-    let strut_diameter = 0.3; // mm
+    let unit_cell = 0.8;            // mm  (literature: 0.5-1.0mm)
+    let strut_diameter = 0.3;       // mm  (literature: 0.2-0.4mm)
     let strut_radius = strut_diameter / 2.0;
 
-    let breakpoint_diameter = 0.8; // mm
-    let breakpoint_length = 1.0; // mm (short neck region)
+    let breakpoint_diameter = 0.8;   // mm  (snap-off neck)
+    let breakpoint_length = 1.0;     // mm
+    let neck_length = 3.0;           // mm  (taper from head to shaft)
 
-    // Total: head (15) + transition (4) + shaft (60) + break zone (1) = 80mm
-    let transition_length = 4.0; // taper zone between head and shaft
+    // Derived dimensions
+    let head_tip_radius = head_tip_diameter / 2.0;
+    let head_base_radius = head_base_diameter / 2.0;
+    let shaft_radius = shaft_diameter / 2.0;
 
-    // ── Build lattice head ──
-    // Generate BCC struts within the head cylinder envelope.
-    // Head is centered at origin, extending along Z axis.
+    // The shaft+tail is one continuous piece, with a notch subtracted
+    // at the breakpoint. This avoids precision issues at segment boundaries.
+    let shaft_total = total_length - head_length - neck_length;
+    // = 150 - 18 - 3 = 129mm
 
-    // Number of cells along each axis
-    let cells_x = ((head_diameter / unit_cell) as f64).ceil() as i32 + 1;
+    // Verify total length
+    let computed_total = head_length + neck_length + shaft_total;
+    let length_error: f64 = computed_total - total_length;
+    assert!(
+        length_error.abs() < 0.01,
+        "Length mismatch: {computed_total:.1}mm != {total_length:.1}mm"
+    );
+
+    // ── Z-axis coordinate system ──
+    // Head centered at origin: tip at +Z, base at -Z
+    // Everything else extends downward (-Z)
+    //
+    //   z = +9.0   tip (top of head)
+    //   z = -9.0   head base / neck top
+    //   z = -12.0  neck bottom / shaft top
+    //   z = -71.0  breakpoint center (80mm from tip)
+    //   z = -141.0 bottom of tail
+    //
+    // Total: 9.0 + 141.0 = 150mm from tip to bottom
+
+    let tip_z = head_length / 2.0; // +9.0
+
+    // ── Build BCC lattice head ──
+    // Generate struts within the head envelope, then clip to tapered cone.
+
+    let cells_x = ((head_base_diameter / unit_cell) as f64).ceil() as i32 + 1;
     let cells_y = cells_x;
     let cells_z = ((head_length / unit_cell) as f64).ceil() as i32;
 
-    // Offset so lattice is centered on head cylinder
     let offset_x = -(cells_x as f64 * unit_cell) / 2.0;
     let offset_y = -(cells_y as f64 * unit_cell) / 2.0;
     let offset_z = -(cells_z as f64 * unit_cell) / 2.0;
@@ -60,24 +106,22 @@ fn main() {
     for iz in 0..cells_z {
         for iy in 0..cells_y {
             for ix in 0..cells_x {
-                // Cell origin (corner)
                 let cx = offset_x + (ix as f64) * unit_cell;
                 let cy = offset_y + (iy as f64) * unit_cell;
                 let cz = offset_z + (iz as f64) * unit_cell;
 
-                // Body center of this cell
+                // Body center of this unit cell
                 let bx = cx + unit_cell / 2.0;
                 let by = cy + unit_cell / 2.0;
                 let bz = cz + unit_cell / 2.0;
 
-                // Check if body center is within the head cylinder radius
+                // Skip cells clearly outside the head envelope
                 let r = (bx * bx + by * by).sqrt();
-                if r > head_radius + unit_cell * 0.5 {
+                if r > head_base_radius + unit_cell * 0.5 {
                     continue;
                 }
 
-                // BCC struts: connect each corner to body center
-                // 8 corners of the unit cell
+                // BCC: 8 struts from corners to body center
                 let corners: [(f64, f64, f64); 8] = [
                     (cx, cy, cz),
                     (cx + unit_cell, cy, cz),
@@ -90,7 +134,6 @@ fn main() {
                 ];
 
                 for (ci, &(px, py, pz)) in corners.iter().enumerate() {
-                    // Strut from corner to body center
                     let dx = bx - px;
                     let dy = by - py;
                     let dz = bz - pz;
@@ -100,22 +143,18 @@ fn main() {
                         continue;
                     }
 
-                    // Midpoint of strut
                     let mx = (px + bx) / 2.0;
                     let my = (py + by) / 2.0;
                     let mz = (pz + bz) / 2.0;
 
-                    // Rotation angles to orient the cylinder from Z-axis to strut direction
-                    // Elevation angle from Z axis
                     let elevation = (dz / length).acos().to_degrees();
-                    // Azimuth angle in XY plane
                     let azimuth = dy.atan2(dx).to_degrees();
 
                     let strut = centered_cylinder(
-                        &format!("strut_{iz}_{iy}_{ix}_{ci}"),
+                        &format!("s_{iz}_{iy}_{ix}_{ci}"),
                         strut_radius,
                         length,
-                        6, // low poly for performance (many struts)
+                        6, // low-poly for performance (many struts)
                     )
                     .rotate(0.0, elevation, azimuth)
                     .translate(mx, my, mz);
@@ -126,93 +165,114 @@ fn main() {
         }
     }
 
-    // Clip lattice to head cylinder
-    let head_envelope = centered_cylinder(
+    // Clip lattice to tapered head envelope (cone, not cylinder).
+    // Taper: 3.0mm base (-Z) to 2.6mm tip (+Z) for genital anatomy.
+    let head_envelope = Part::cone(
         "head_envelope",
-        head_radius,
+        head_base_radius,  // bottom (-Z) = base, wider
+        head_tip_radius,   // top (+Z) = tip, narrower
         head_length,
         32,
     );
 
     let lattice_head = lattice & head_envelope;
 
-    // ── Handle shaft ──
-    // Shaft extends below the head along -Z
+    // ── Neck taper: head base -> shaft ──
+    // Transitions from 3.0mm (head base) down to 2.0mm (shaft)
+    let neck = Part::cone(
+        "neck",
+        shaft_radius,       // bottom (-Z) = shaft side, narrower
+        head_base_radius,   // top (+Z) = head base side, wider
+        neck_length,
+        24,
+    )
+    .translate(0.0, 0.0, -(head_length / 2.0 + neck_length / 2.0));
 
+    // ── Continuous shaft + tail ──
+    // One long cylinder from below neck to swab bottom.
+    // The breakpoint notch is subtracted later.
     let shaft = centered_cylinder(
         "shaft",
-        shaft_diameter / 2.0,
-        shaft_length,
+        shaft_radius,
+        shaft_total,
         24,
     )
-    .translate(0.0, 0.0, -(head_length / 2.0 + transition_length + shaft_length / 2.0));
-
-    // ── Transition taper ──
-    // Cone from head diameter to shaft diameter
-    let taper = Part::cone(
-        "taper",
-        head_radius,
-        shaft_diameter / 2.0,
-        transition_length,
-        24,
-    )
-    .translate(0.0, 0.0, -(head_length / 2.0 + transition_length / 2.0));
+    .translate(0.0, 0.0, -(head_length / 2.0 + neck_length + shaft_total / 2.0));
 
     // ── Breakpoint notch ──
-    // Located at 75mm from tip = shaft end region
-    // Tip is at +Z (top of head), so breakpoint is at:
-    // head/2 + transition + shaft - (total - 75) from center of head
-    let total_length = head_length + transition_length + shaft_length + breakpoint_length;
-    let tip_z = head_length / 2.0;
-    let break_z = tip_z - 75.0;
+    // Ring subtracted at 80mm from tip to create snap-off neck.
+    // break_z = center of notch = tip position minus breakpoint distance
+    let break_z = tip_z - breakpoint_from_tip; // 9.0 - 80.0 = -71.0
 
-    // Create the notch by subtracting a ring at the breakpoint
-    let break_full = centered_cylinder(
-        "break_full",
-        shaft_diameter / 2.0 + 0.1,
+    let notch_outer = centered_cylinder(
+        "notch_outer",
+        shaft_radius + 0.1,
         breakpoint_length,
         24,
     )
     .translate(0.0, 0.0, break_z);
 
-    let break_core = centered_cylinder(
-        "break_core",
+    let notch_inner = centered_cylinder(
+        "notch_inner",
         breakpoint_diameter / 2.0,
         breakpoint_length + 0.2,
         24,
     )
     .translate(0.0, 0.0, break_z);
 
-    let notch_ring = break_full - break_core;
+    let notch = notch_outer - notch_inner;
 
-    // ── Short tail beyond breakpoint ──
-    let tail_length = total_length - 75.0 - breakpoint_length;
-    let tail = centered_cylinder(
-        "tail",
-        shaft_diameter / 2.0,
-        tail_length,
-        24,
-    )
-    .translate(0.0, 0.0, break_z - breakpoint_length / 2.0 - tail_length / 2.0);
+    // ── Assemble single swab ──
 
-    // ── Assemble ──
-
-    let swab = lattice_head + taper + shaft + tail - notch_ring;
+    let swab = lattice_head + neck + shaft - notch;
 
     // ── Export ──
 
     swab.write_stl("output/microlattice_swab.stl").unwrap();
 
+    // ── Build plate array parameters ──
+    // Elegoo Saturn 4 Ultra 16K: 218.88 x 122.88mm build area
+    // Swabs printed vertically (Z-axis), XY footprint = head diameter
+    // Per Lu 2024: batch printing improves success rate for slender structures
+    //
+    // Array handled by slicer (Chitubox/Lychee) — CSG boolean of 500+
+    // lattice swabs would take hours. Import single STL, use slicer's
+    // array/clone tool with the pitch below.
+
+    let build_x = 218.88_f64;
+    let build_y = 122.88_f64;
+    let pitch = 5.0; // mm center-to-center (3mm head + 2mm gap)
+
+    let cols = (build_x / pitch) as i32;
+    let rows = (build_y / pitch) as i32;
+    let swabs_per_plate = cols * rows;
+
+    // ── Print report ──
+
     println!("Exported: output/microlattice_swab.stl");
     println!();
-    println!("── Microlattice Swab Specs ──");
-    println!("  Total length:   {total_length:.1}mm");
-    println!("  Lattice head:   {head_diameter:.1}mm dia x {head_length:.1}mm");
-    println!("  Unit cell:      {unit_cell:.1}mm BCC");
-    println!("  Strut dia:      {strut_diameter:.1}mm");
-    println!("  Handle shaft:   {shaft_diameter:.1}mm dia x {shaft_length:.1}mm");
-    println!("  Breakpoint:     {breakpoint_diameter:.1}mm neck at 75mm from tip");
-    println!("  Lattice cells:  {cells_x} x {cells_y} x {cells_z}");
-    println!("  Printer:        Elegoo Saturn 4 Ultra 16K");
-    println!("  Material:       biocompatible resin");
+    println!("── Microlattice Swab Design Report ──");
+    println!("  Research: Lu 2024, Tooker 2021, van der Elst 2020");
+    println!("  Artifact: A-E5A1E1FD");
+    println!();
+    println!("  Geometry");
+    println!("    Total length:    {total_length:.1}mm");
+    println!("    Lattice head:    {head_length:.1}mm, {head_tip_diameter:.1}->{head_base_diameter:.1}mm tapered");
+    println!("    Neck taper:      {neck_length:.1}mm transition to shaft");
+    println!("    Shaft:           {shaft_diameter:.1}mm dia");
+    println!("    Breakpoint:      {breakpoint_diameter:.1}mm neck at {breakpoint_from_tip:.0}mm from tip");
+    println!("    Tail:            {:.1}mm below breakpoint", total_length - breakpoint_from_tip - breakpoint_length);
+    println!();
+    println!("  Lattice");
+    println!("    Topology:        BCC (body-centered cubic)");
+    println!("    Unit cell:       {unit_cell:.1}mm");
+    println!("    Strut diameter:  {strut_diameter:.1}mm ({:.0} layers at 50um)", strut_diameter / 0.05);
+    println!("    Grid:            {cells_x} x {cells_y} x {cells_z} cells");
+    println!();
+    println!("  Build Plate (Elegoo Saturn 4 Ultra 16K)");
+    println!("    Build area:      {build_x:.2} x {build_y:.2}mm");
+    println!("    Array pitch:     {pitch:.1}mm");
+    println!("    Swabs per plate: {cols} x {rows} = {swabs_per_plate}");
+    println!("    Layer height:    50um");
+    println!("    Resin:           Liqcreate Bio-Med Clear (ISO 10993)");
 }
