@@ -1,0 +1,24 @@
+LaminarForge - Open Source Licensing
+=====================================
+
+This project uses a triple-license structure to appropriately cover
+hardware designs, software, and documentation.
+
+Hardware Designs (CAD models, PCB layouts, schematics, mechanical drawings)
+  License: CERN Open Hardware Licence Version 2 - Strongly Reciprocal (CERN-OHL-S-2.0)
+  Full text: LICENSE-HARDWARE
+
+Software (firmware, Rust source code, build scripts, tests, tools)
+  License: GNU General Public License Version 3 (GPL-3.0-or-later)
+  Full text: LICENSE-SOFTWARE
+
+Documentation (protocols, design specs, guides, data)
+  License: Creative Commons Attribution-ShareAlike 4.0 International (CC-BY-SA-4.0)
+  Full text: LICENSE-DOCS
+
+SPDX License Identifiers:
+  Hardware:      SPDX-License-Identifier: CERN-OHL-S-2.0
+  Software:      SPDX-License-Identifier: GPL-3.0-or-later
+  Documentation: SPDX-License-Identifier: CC-BY-SA-4.0
+
+Copyright (c) 2026 LaminarForge contributors
