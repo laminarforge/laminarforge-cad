@@ -2,19 +2,28 @@ use vcad::{centered_cube, centered_cylinder, Part};
 
 // ─── Reservoir Tray ───
 //
-// 3D-printed (PETG) tray that holds 3 reagent bottles for the
-// dispensing system. Bottles sit in cylindrical pockets with
-// a flat base for stability. A label slot on the front face
-// allows identification of reagent contents.
+// Bench development fixture: 3D-printed (PLA) tray that holds 3 reagent
+// bottles for the v1 LAMP device syringe pump dispensing system.
+//
+// Bottles (master mix, primers, lysis buffer) sit in cylindrical pockets.
+// Silicone tubing (~3mm OD) exits through U-shaped routing notches on the
+// back wall of each pocket and runs to the syringe pump via pinch valves.
+//
+// This is a temporary prototyping fixture for bench testing the v1 fluid
+// path (reservoir → tubing → pinch valve → syringe → dispensing tip).
+// The production v2 device uses lyophilized reagents in pre-loaded tubes,
+// eliminating external bottles entirely. The liquid handler robot (separate
+// epic) has its own Peltier-controlled deck-mounted reservoir blocks.
 //
 // Features:
-// - 3 cylindrical pockets: 22mm OD, 25mm deep, 30mm spacing
-// - Flat base for stable surface mounting
-// - Label slot on front face (60x10mm recess, 1mm deep)
-// - 2x M3 mounting holes on bottom for frame attachment
+// - 3 cylindrical pockets: 22mm OD, 25mm deep, 30mm c-to-c spacing
+// - Tube routing notches: U-shaped cutouts on back wall per pocket (4mm wide)
+// - Per-pocket label recesses on front face (20x8mm, 0.8mm deep)
+// - 2x M3 mounting holes on bottom for bench/frame attachment
 //
 // Dimensions: ~100mm x 35mm x 30mm
-// Material: PETG
+// Material: PLA
+// Ticket: T-DD17E865
 
 fn main() {
     // ── Dimensions ──
@@ -23,15 +32,20 @@ fn main() {
     let tray_width = 35.0; // Y
     let tray_height = 30.0; // Z
 
-    let pocket_diameter = 22.0; // mm
+    let pocket_diameter = 22.0; // mm (matches 22mm OD reagent bottles)
     let pocket_depth = 25.0; // mm
     let pocket_spacing = 30.0; // center-to-center
-    let num_pockets = 3;
+    let num_pockets: usize = 3;
 
-    // Label slot on front face (-Y)
-    let label_width = 60.0; // mm (X)
-    let label_height = 10.0; // mm (Z)
-    let label_depth = 1.0; // mm (recess into Y face)
+    // Tube routing notches — U-shaped cutouts on back wall (+Y side)
+    // for silicone tubing (~3mm OD) to exit each pocket
+    let notch_width = 4.0; // mm (clearance for 3mm tubing + tolerance)
+    let notch_depth = 5.0; // mm (cuts through back wall)
+
+    // Per-pocket label recesses on front face (-Y)
+    let label_width = 20.0; // mm (X) — per pocket
+    let label_height = 8.0; // mm (Z)
+    let label_depth = 0.8; // mm (recess into Y face)
 
     // Mounting holes
     let mount_hole_d = 3.2; // M3 clearance
@@ -60,16 +74,52 @@ fn main() {
         pockets = pockets + pocket;
     }
 
-    // ── Label slot ──
-    // Shallow recess on the front face (-Y) for a label/sticker
+    // ── Tube routing notches ──
+    // U-shaped cutouts on the back wall (+Y side) of each pocket.
+    // Silicone tubing exits here and runs to the syringe pump.
+    // Each notch is a rectangular slot from the pocket rim down to
+    // just above the pocket floor, cutting through the back wall.
 
-    let label_slot = centered_cube(
-        "label_slot",
-        label_width,
-        label_depth + 0.1,
-        label_height,
-    )
-    .translate(0.0, -(tray_width / 2.0) + label_depth / 2.0, -(tray_height / 2.0) + label_height / 2.0 + 5.0);
+    let notch_height = pocket_depth - 5.0; // leave 5mm floor below notch
+    let mut notches = Part::empty("notches");
+
+    for i in 0..num_pockets {
+        let x = first_pocket_x + (i as f64) * pocket_spacing;
+        let notch = centered_cube(
+            &format!("notch_{i}"),
+            notch_width,
+            notch_depth + 0.1,
+            notch_height,
+        )
+        .translate(
+            x,
+            tray_width / 2.0 - notch_depth / 2.0 + 0.05,
+            (tray_height - notch_height) / 2.0 + 0.5,
+        );
+        notches = notches + notch;
+    }
+
+    // ── Per-pocket label recesses ──
+    // Shallow recesses on the front face (-Y), one per pocket,
+    // for adhesive labels identifying reagent contents.
+
+    let mut labels = Part::empty("labels");
+
+    for i in 0..num_pockets {
+        let x = first_pocket_x + (i as f64) * pocket_spacing;
+        let label = centered_cube(
+            &format!("label_{i}"),
+            label_width,
+            label_depth + 0.1,
+            label_height,
+        )
+        .translate(
+            x,
+            -(tray_width / 2.0) + label_depth / 2.0,
+            -(tray_height / 2.0) + label_height / 2.0 + 5.0,
+        );
+        labels = labels + label;
+    }
 
     // ── Mounting holes ──
     // Through the bottom face for M3 bolts
@@ -92,7 +142,7 @@ fn main() {
 
     // ── Assemble ──
 
-    let tray = body - pockets - label_slot - mount_hole_1 - mount_hole_2;
+    let tray = body - pockets - notches - labels - mount_hole_1 - mount_hole_2;
 
     // ── Export ──
 
@@ -104,7 +154,14 @@ fn main() {
     println!("  Body:           {tray_length:.0}mm x {tray_width:.0}mm x {tray_height:.0}mm");
     println!("  Pockets:        {num_pockets}x {pocket_diameter:.0}mm dia x {pocket_depth:.0}mm deep");
     println!("  Pocket spacing: {pocket_spacing:.0}mm center-to-center");
-    println!("  Label slot:     {label_width:.0}mm x {label_height:.0}mm x {label_depth:.0}mm recess (front face)");
+    println!("  Tube notches:   {num_pockets}x {notch_width:.0}mm wide on back wall (for 3mm silicone tubing)");
+    println!("  Label recesses: {num_pockets}x {label_width:.0}mm x {label_height:.0}mm x {label_depth:.1}mm (front face, per pocket)");
     println!("  Mounting holes: 2x M3 ({mount_hole_d:.1}mm) at {mount_hole_spacing:.0}mm spacing");
-    println!("  Material:       PETG");
+    println!("  Material:       PLA");
+    println!();
+    println!("── Context ──");
+    println!("  Bench fixture for v1 LAMP device fluid path development.");
+    println!("  Bottles: master mix, primers, lysis buffer (22mm OD).");
+    println!("  Tubing routes through back-wall notches to syringe pump.");
+    println!("  NOT a product component — v2 uses lyophilized reagents.");
 }
