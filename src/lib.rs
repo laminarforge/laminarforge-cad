@@ -90,17 +90,6 @@ pub fn floor_z() -> f64 {
     -(OUTER_Z / 2.0) + ENCLOSURE_FLOOR
 }
 
-// ─── Fluid Handling System Constants ───
-
-/// Silicone tubing (pinch valve sections)
-pub const SILICONE_ID: f64 = 1.6;
-pub const SILICONE_OD: f64 = 3.2;
-pub const SILICONE_WALL: f64 = (SILICONE_OD - SILICONE_ID) / 2.0; // 0.8mm
-
-/// PTFE tubing (main fluid path)
-pub const PTFE_ID: f64 = 0.5;
-pub const PTFE_OD: f64 = 1.5;
-
 /// NEMA17 stepper motor dimensions
 pub const NEMA17_BODY: f64 = 42.3;
 pub const NEMA17_SHAFT_DIAMETER: f64 = 5.0;

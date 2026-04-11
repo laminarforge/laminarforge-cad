@@ -30,48 +30,8 @@ name = "lid"
 path = "src/bin/lid.rs"
 
 [[bin]]
-name = "dispensing_frame"
-path = "src/bin/dispensing_frame.rs"
-
-[[bin]]
-name = "dispensing_carriage"
-path = "src/bin/dispensing_carriage.rs"
-
-[[bin]]
-name = "syringe_pump_cradle"
-path = "src/bin/syringe_pump_cradle.rs"
-
-[[bin]]
-name = "syringe_plunger_pusher"
-path = "src/bin/syringe_plunger_pusher.rs"
-
-[[bin]]
-name = "syringe_motor_mount"
-path = "src/bin/syringe_motor_mount.rs"
-
-[[bin]]
 name = "syringe_pump_standalone"
 path = "src/bin/syringe_pump_standalone.rs"
-
-[[bin]]
-name = "outlet_valve_mount"
-path = "src/bin/outlet_valve_mount.rs"
-
-[[bin]]
-name = "capping_arm"
-path = "src/bin/capping_arm.rs"
-
-[[bin]]
-name = "rail_mounts"
-path = "src/bin/rail_mounts.rs"
-
-[[bin]]
-name = "reservoir_tray"
-path = "src/bin/reservoir_tray.rs"
-
-[[bin]]
-name = "waste_tray"
-path = "src/bin/waste_tray.rs"
 
 [[bin]]
 name = "assembly"
