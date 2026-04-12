@@ -13,10 +13,6 @@ use vcad::{centered_cube, centered_cylinder, Part};
 // - Aluminum heating block on PCB (replaces copper spreader + PETG tube holder)
 // - Lid on top of enclosure
 // - 8 PCR tubes in heating block
-// - Dispensing frame above enclosure
-// - 2× syringe pump cradles on frame back wall
-// - Linear rail near top of frame
-// - Dispensing carriage on rail
 //
 // All parts are simplified (no internal features like bolt holes, channels,
 // or ventilation slots) to keep the assembly lightweight.
@@ -103,43 +99,6 @@ fn build_tubes() -> Part {
     tubes
 }
 
-/// Simplified dispensing frame: open rectangular frame (no floor/ceiling)
-fn build_dispensing_frame() -> Part {
-    let frame_width = OUTER_X + 20.0; // 120mm
-    let frame_depth = OUTER_Y + 4.0;  // 80mm
-    let frame_height = 110.0;
-    let wall = 4.0;
-
-    let outer = centered_cube("frame_outer", frame_width, frame_depth, frame_height);
-    let inner = centered_cube(
-        "frame_inner",
-        frame_width - wall * 2.0,
-        frame_depth - wall * 2.0,
-        frame_height + 2.0,
-    );
-    outer - inner
-}
-
-/// Simplified syringe pump cradle: small box
-fn build_syringe_cradle() -> Part {
-    let body_width = SYRINGE_FLANGE_WIDTH + 6.0; // 20mm
-    let body_depth = SYRINGE_BARREL_OD + 6.0;    // 12.5mm
-    let body_height = SYRINGE_BARREL_LENGTH + SYRINGE_FLANGE_THICKNESS + 5.0; // ~71.5mm
-
-    centered_cube("cradle", body_width, body_depth, body_height)
-}
-
-/// Simplified linear rail: cylinder representing the 8mm rod
-fn build_linear_rail(length: f64) -> Part {
-    centered_cylinder("linear_rail", LINEAR_ROD_DIAMETER / 2.0, length, 24)
-        .rotate(0.0, 90.0, 0.0) // align along X
-}
-
-/// Simplified dispensing carriage: small block on the rail
-fn build_carriage() -> Part {
-    centered_cube("carriage", 35.0, 25.0, 20.0)
-}
-
 fn main() {
     // ── Position all parts relative to enclosure at origin ──
 
@@ -167,55 +126,13 @@ fn main() {
     let tubes = build_tubes()
         .translate(0.0, shelf_center_y(), tube_z);
 
-    // Dispensing frame sits above the enclosure
-    let frame_height = 110.0;
-    let frame_z = OUTER_Z / 2.0 + frame_height / 2.0;
-    let dispensing_frame = build_dispensing_frame()
-        .translate(0.0, 0.0, frame_z);
-
-    // Syringe cradles on back wall of frame (2×, spaced 50mm apart)
-    let syringe_spacing = 50.0;
-    let frame_depth = OUTER_Y + 4.0;
-    let cradle_depth = SYRINGE_BARREL_OD + 6.0;
-
-    let cradle_1 = build_syringe_cradle()
-        .translate(
-            -(syringe_spacing / 2.0),
-            frame_depth / 2.0 - cradle_depth / 2.0 - 4.0,
-            frame_z - 5.0,
-        );
-
-    let cradle_2 = build_syringe_cradle()
-        .translate(
-            syringe_spacing / 2.0,
-            frame_depth / 2.0 - cradle_depth / 2.0 - 4.0,
-            frame_z - 5.0,
-        );
-
-    // Linear rail near top of frame
-    let frame_width = OUTER_X + 20.0;
-    let rail_length = frame_width - 20.0; // slightly shorter than frame
-    let rail_z = frame_z; // mid-height of frame
-
-    let linear_rail = build_linear_rail(rail_length)
-        .translate(0.0, -(frame_depth / 4.0), rail_z);
-
-    // Dispensing carriage on the rail (positioned at center)
-    let carriage = build_carriage()
-        .translate(0.0, -(frame_depth / 4.0), rail_z);
-
     // ── Union all parts ──
 
     let assembly = enclosure
         + pcb
         + heating_block
         + lid
-        + tubes
-        + dispensing_frame
-        + cradle_1
-        + cradle_2
-        + linear_rail
-        + carriage;
+        + tubes;
 
     // ── Export ──
 
@@ -234,18 +151,11 @@ fn main() {
     println!("  Heating block         (0, {:.1}, {block_z:.1})", shelf_center_y());
     println!("  Lid                   (0, 0, {lid_z:.1})");
     println!("  Tubes (8x)            (0, {:.1}, {tube_z:.1})", shelf_center_y());
-    println!("  Dispensing frame      (0, 0, {frame_z:.1})");
-    println!("  Syringe cradle L      ({:.1}, back wall, {:.1})", -(syringe_spacing / 2.0), frame_z - 5.0);
-    println!("  Syringe cradle R      ({:.1}, back wall, {:.1})", syringe_spacing / 2.0, frame_z - 5.0);
-    println!("  Linear rail           (0, {:.1}, {rail_z:.1})", -(frame_depth / 4.0));
-    println!("  Carriage              (0, {:.1}, {rail_z:.1})", -(frame_depth / 4.0));
     println!();
     println!("── Key Dimensions ──");
     println!("  Enclosure:            {OUTER_X:.0}mm x {OUTER_Y:.0}mm x {OUTER_Z:.0}mm");
     println!("  PCB:                  {PCB_LENGTH:.0}mm x {PCB_WIDTH:.0}mm x {PCB_THICKNESS:.1}mm");
     println!("  Heating block:        {BLOCK_LENGTH:.0}mm x {BLOCK_WIDTH:.0}mm x {BLOCK_HEIGHT:.0}mm (aluminum, 8 wells)");
-    println!("  Frame:                {frame_width:.0}mm x {frame_depth:.0}mm x {frame_height:.0}mm");
-    println!("  Total height:         {:.0}mm (enclosure bottom to frame top)", OUTER_Z / 2.0 + frame_z + frame_height / 2.0);
     println!("  Detection:            Horizontal optical path (LED + photodiode above block)");
     println!("  Purpose:              Visualization only (not for printing)");
 }
