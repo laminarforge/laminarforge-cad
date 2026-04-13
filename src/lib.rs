@@ -9,7 +9,9 @@ pub mod pcb;
 pub const NUM_SLOTS: usize = 8;
 
 /// Center-to-center spacing between tube slots (mm)
-pub const SLOT_SPACING: f64 = 10.0;
+/// Changed from 10.0mm to 12.0mm to accommodate OPT101P DIP-8 package
+/// (9.81mm body length along pin direction requires >10mm spacing)
+pub const SLOT_SPACING: f64 = 12.0;
 
 /// Tube specs (Novas Bio 0.2mL PCR tube, datasheet: 0.2400" = 6.096mm OD)
 pub const TUBE_OD: f64 = 6.096;
@@ -21,7 +23,7 @@ pub const PCB_LENGTH: f64 = 100.0; // full board length, spans enclosure
 pub const PCB_WIDTH: f64 = 80.0; // full board width
 
 /// Heater zone (serpentine copper trace on PCB bottom layer)
-pub const HEATER_ZONE_LENGTH: f64 = (NUM_SLOTS as f64 - 1.0) * SLOT_SPACING + 14.0; // 84mm, matches tube array span
+pub const HEATER_ZONE_LENGTH: f64 = (NUM_SLOTS as f64 - 1.0) * SLOT_SPACING + 14.0; // 98mm at 12mm spacing (was 84mm at 10mm)
 pub const HEATER_ZONE_WIDTH: f64 = 22.0; // slightly wider than tubes for heat margin
 
 /// Copper spreader plate (LEGACY — replaced by aluminum heating block in v1)
@@ -54,6 +56,32 @@ pub const BLOCK_MOUNT_HOLE_DIAMETER: f64 = 3.2; // M3 clearance
 pub const BLOCK_MOUNT_HOLE_X: f64 = 39.0; // from center, near block ends
 pub const BLOCK_MOUNT_HOLE_Y: f64 = 8.0; // from center, outside wells and heater bore
 
+/// Optical mount dimensions (mm)
+/// 3D-printed PETG bar holding LEDs (front) and OPT101P detectors (back)
+/// PCR tubes pass through vertical channels between LED and detector sides
+pub const OPTICAL_MOUNT_WIDTH: f64 = 26.0; // LED wall + tube gap + detector wall
+pub const OPTICAL_MOUNT_HEIGHT: f64 = 16.0; // tall enough for OPT101 recess + walls
+
+/// LED hole dimensions (470nm blue LED, 5mm T-1¾ package)
+pub const OPTICAL_LED_HOLE_DIAMETER: f64 = 5.2; // press-fit for 5mm LED
+pub const OPTICAL_LED_HOLE_DEPTH: f64 = 8.0; // LED body depth into front wall
+
+/// OPT101P DIP-8 package recess (on back face)
+/// TI OPT101P: 9.81mm body length, ~6.35mm body width, ~5.08mm height
+/// Recess includes 0.3mm clearance per side
+pub const OPTICAL_OPT101_RECESS_X: f64 = 10.4; // 9.81mm + 0.6mm clearance (along slot array)
+pub const OPTICAL_OPT101_RECESS_Z: f64 = 10.0; // body height + clearance (vertical)
+pub const OPTICAL_OPT101_RECESS_DEPTH: f64 = 5.0; // depth into back face (Y)
+
+/// Optical mount internal dimensions
+pub const OPTICAL_LED_WALL: f64 = 10.0; // front wall: LED depth (8mm) + back wall (2mm)
+pub const OPTICAL_TUBE_GAP: f64 = 8.0; // gap for PCR tubes (7mm + clearance)
+pub const OPTICAL_DETECTOR_WALL: f64 = 8.0; // back wall: OPT101 depth (5mm) + front wall (3mm)
+pub const OPTICAL_APERTURE_DIAMETER: f64 = 3.0; // light path aperture between LED and OPT101
+pub const OPTICAL_TUBE_CHANNEL_WIDTH: f64 = 7.0; // vertical tube pass-through (tube OD + clearance)
+pub const OPTICAL_WIRE_CHANNEL_WIDTH: f64 = 3.0; // wire routing groove width
+pub const OPTICAL_WIRE_CHANNEL_DEPTH: f64 = 2.5; // wire routing groove depth from back face
+
 /// Enclosure dimensions (mm)
 pub const ENCLOSURE_WALL: f64 = 3.0;
 pub const ENCLOSURE_FLOOR: f64 = 3.0;
@@ -62,10 +90,10 @@ pub const SHELF_DEPTH: f64 = BLOCK_WIDTH + 6.0; // 28mm
 pub const ELECTRONICS_DEPTH: f64 = 42.0;
 
 /// Derived enclosure dimensions
-pub const INNER_X: f64 = HEATER_ZONE_LENGTH + 10.0; // 94mm
+pub const INNER_X: f64 = HEATER_ZONE_LENGTH + 10.0; // 108mm (was 94mm at 10mm spacing)
 pub const INNER_Y: f64 = SHELF_DEPTH + ELECTRONICS_DEPTH; // 70mm
 pub const WALL_HEIGHT: f64 = PCB_THICKNESS + BLOCK_HEIGHT + 5.0; // 31.6mm
-pub const OUTER_X: f64 = INNER_X + ENCLOSURE_WALL * 2.0; // 100mm
+pub const OUTER_X: f64 = INNER_X + ENCLOSURE_WALL * 2.0; // 114mm (was 100mm)
 pub const OUTER_Y: f64 = INNER_Y + ENCLOSURE_WALL * 2.0; // 76mm
 pub const OUTER_Z: f64 = WALL_HEIGHT + ENCLOSURE_FLOOR; // ~31.6mm
 

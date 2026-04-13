@@ -11,6 +11,7 @@ use vcad::{centered_cube, centered_cylinder, Part};
 // - Enclosure at origin (reference frame)
 // - PCB on enclosure floor
 // - Aluminum heating block on PCB (replaces copper spreader + PETG tube holder)
+// - Optical mount on top of heating block (LED + OPT101 detection)
 // - Lid on top of enclosure
 // - 8 PCR tubes in heating block
 //
@@ -79,6 +80,16 @@ fn build_lid() -> Part {
     plate - holes
 }
 
+/// Simplified optical mount: rectangular bar above heating block
+fn build_optical_mount() -> Part {
+    centered_cube(
+        "optical_mount",
+        HEATER_ZONE_LENGTH,
+        OPTICAL_MOUNT_WIDTH,
+        OPTICAL_MOUNT_HEIGHT,
+    )
+}
+
 /// Simplified PCR tubes: thin cylinders representing 8 tubes in the holder
 fn build_tubes() -> Part {
     let tube_length = 20.0; // visible portion above holder
@@ -115,12 +126,17 @@ fn main() {
     let heating_block = build_heating_block()
         .translate(0.0, shelf_center_y(), block_z);
 
+    // Optical mount sits on top of the heating block
+    let optical_z = block_z + BLOCK_HEIGHT / 2.0 + OPTICAL_MOUNT_HEIGHT / 2.0;
+    let optical_mount = build_optical_mount()
+        .translate(0.0, shelf_center_y(), optical_z);
+
     // Lid sits on top of the enclosure
     let lid_z = OUTER_Z / 2.0 + LID_THICKNESS / 2.0;
     let lid = build_lid()
         .translate(0.0, 0.0, lid_z);
 
-    // Tubes extend upward from the heating block
+    // Tubes extend upward from the heating block (through optical mount)
     let tube_visible_length = 20.0;
     let tube_z = block_z + BLOCK_HEIGHT / 2.0 + tube_visible_length / 2.0;
     let tubes = build_tubes()
@@ -131,6 +147,7 @@ fn main() {
     let assembly = enclosure
         + pcb
         + heating_block
+        + optical_mount
         + lid
         + tubes;
 
@@ -149,6 +166,7 @@ fn main() {
     println!("  Enclosure             (0, 0, 0)");
     println!("  PCB                   (0, 0, {pcb_z:.1})");
     println!("  Heating block         (0, {:.1}, {block_z:.1})", shelf_center_y());
+    println!("  Optical mount         (0, {:.1}, {optical_z:.1})", shelf_center_y());
     println!("  Lid                   (0, 0, {lid_z:.1})");
     println!("  Tubes (8x)            (0, {:.1}, {tube_z:.1})", shelf_center_y());
     println!();
@@ -156,6 +174,8 @@ fn main() {
     println!("  Enclosure:            {OUTER_X:.0}mm x {OUTER_Y:.0}mm x {OUTER_Z:.0}mm");
     println!("  PCB:                  {PCB_LENGTH:.0}mm x {PCB_WIDTH:.0}mm x {PCB_THICKNESS:.1}mm");
     println!("  Heating block:        {BLOCK_LENGTH:.0}mm x {BLOCK_WIDTH:.0}mm x {BLOCK_HEIGHT:.0}mm (aluminum, 8 wells)");
-    println!("  Detection:            Horizontal optical path (LED + photodiode above block)");
+    println!("  Optical mount:        {HEATER_ZONE_LENGTH:.0}mm x {OPTICAL_MOUNT_WIDTH:.0}mm x {OPTICAL_MOUNT_HEIGHT:.0}mm (PETG, LED+OPT101)");
+    println!("  Slot spacing:         {SLOT_SPACING:.0}mm center-to-center (12mm for OPT101P DIP-8)");
+    println!("  Detection:            Horizontal optical path (LED -> tube -> OPT101P)");
     println!("  Purpose:              Visualization only (not for printing)");
 }

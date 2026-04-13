@@ -1,6 +1,16 @@
+#[cfg(not(feature = "step"))]
+fn main() {
+    eprintln!("This binary requires the 'step' feature. Build with: cargo build --bin microfluidic_chip_cnc_step --features step");
+    std::process::exit(1);
+}
+
+#[cfg(feature = "step")]
 use glam::dvec3;
+#[cfg(feature = "step")]
 use laminarforge_cad::*;
+#[cfg(feature = "step")]
 use opencascade::primitives::Shape;
+#[cfg(feature = "step")]
 use opencascade::workplane::Workplane;
 
 // ─── CNC-Milled 16-Chamber Microfluidic Chip (Rev B) — STEP Export ───
@@ -8,6 +18,7 @@ use opencascade::workplane::Workplane;
 // Identical geometry to microfluidic_chip_cnc.rs but uses OpenCascade B-rep
 // kernel for proper STEP file output (required by CNC shops).
 
+#[cfg(feature = "step")]
 /// Centered box at (cx, cy, cz) with dimensions (w, d, h)
 fn centered_box(cx: f64, cy: f64, cz: f64, w: f64, d: f64, h: f64) -> Shape {
     let wire = Workplane::xy()
@@ -16,6 +27,7 @@ fn centered_box(cx: f64, cy: f64, cz: f64, w: f64, d: f64, h: f64) -> Shape {
     wire.to_face().extrude(dvec3(0.0, 0.0, h)).into()
 }
 
+#[cfg(feature = "step")]
 /// Centered cylinder at (cx, cy, cz) with radius r and height h along Z
 fn centered_cyl(cx: f64, cy: f64, cz: f64, r: f64, h: f64) -> Shape {
     let wire = Workplane::xy()
@@ -24,6 +36,7 @@ fn centered_cyl(cx: f64, cy: f64, cz: f64, r: f64, h: f64) -> Shape {
     wire.to_face().extrude(dvec3(0.0, 0.0, h)).into()
 }
 
+#[cfg(feature = "step")]
 /// Cylinder from z_bottom upward with height h
 fn cyl_at(cx: f64, cy: f64, z_bottom: f64, r: f64, h: f64) -> Shape {
     let wire = Workplane::xy()
@@ -32,6 +45,7 @@ fn cyl_at(cx: f64, cy: f64, z_bottom: f64, r: f64, h: f64) -> Shape {
     wire.to_face().extrude(dvec3(0.0, 0.0, h)).into()
 }
 
+#[cfg(feature = "step")]
 fn main() {
     // ── Dimensions from lib.rs ──
     let length = CNC16_CHIP_LENGTH;
