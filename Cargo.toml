@@ -172,3 +172,7 @@ path = "src/bin/chip_incubator_v2.rs"
 name = "rack_rocker"
 path = "src/bin/rack_rocker.rs"
 
+[[bin]]
+name = "chip_farm_assembly"
+path = "src/bin/chip_farm_assembly.rs"
+
