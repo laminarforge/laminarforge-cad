@@ -189,6 +189,10 @@ name = "controller_pcb"
 path = "src/bin/controller_pcb.rs"
 
 [[bin]]
+name = "controller_enclosure"
+path = "src/bin/controller_enclosure.rs"
+
+[[bin]]
 name = "tier3_chamber"
 path = "src/bin/tier3_chamber.rs"
 
