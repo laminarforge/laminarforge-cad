@@ -133,6 +133,10 @@ name = "microfluidic_chip_revc_print_sample"
 path = "src/bin/microfluidic_chip_revc_print_sample.rs"
 
 [[bin]]
+name = "microfluidic_chip_revd"
+path = "src/bin/microfluidic_chip_revd.rs"
+
+[[bin]]
 name = "fcb_board"
 path = "src/bin/fcb_board.rs"
 
@@ -203,4 +207,8 @@ path = "src/bin/tier3_chamber.rs"
 [[bin]]
 name = "hil_harness"
 path = "src/bin/hil_harness.rs"
+
+[[bin]]
+name = "cogs_model"
+path = "src/bin/cogs_model.rs"
 
