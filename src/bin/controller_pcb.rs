@@ -478,13 +478,15 @@ fn define_components() -> Vec<Component> {
     });
 
     // ── J1: 24V DC barrel jack input (left edge, top) ──
+    // v2 fix: moved from (8, 8) → (10, 5) so pad 3 at (14.5, 10.7) clears U2
+    // TO-263-5 pad row (y=14.6) by ~3.15 mm (LM2596S datasheet keep-out).
     c.push(Component {
         reference: "J1",
         value: "DC_BARREL_2.1x5.5mm",
         footprint_lib: "laminarforge",
         footprint_name: "BarrelJack_2.1x5.5mm",
         lcsc: "C3296358",
-        x: 8.0, y: 8.0, rotation: 0.0, layer: "F.Cu",
+        x: 10.0, y: 5.0, rotation: 0.0, layer: "F.Cu",
         description: "24V DC input",
         pads: barrel_jack_pads(),
     });
@@ -514,13 +516,16 @@ fn define_components() -> Vec<Component> {
     });
 
     // ── C1: 220uF electrolytic on 24V input ──
+    // v2 fix: moved from (18, 10) → (36, 10). Pad 1 at (15.5, 10) collided
+    // with J1 pad 3 after J1 was repositioned. New location clears L1 pad 2
+    // (x=30) by 2.6 mm and U3 SOT-223 pad row (x 28.25-31.75, y 14.1-15.7).
     c.push(Component {
         reference: "C1",
         value: "220uF_35V",
         footprint_lib: "laminarforge",
         footprint_name: "CP_Radial_D8.0mm",
         lcsc: "C92068",
-        x: 18.0, y: 10.0, rotation: 0.0, layer: "F.Cu",
+        x: 36.0, y: 10.0, rotation: 0.0, layer: "F.Cu",
         description: "24V input bulk cap",
         pads: vec![
             pad_th("1", -2.5, 0.0, 1.8, 0.9, NET_24V_SW),
@@ -529,13 +534,16 @@ fn define_components() -> Vec<Component> {
     });
 
     // ── C2: 220uF electrolytic on 5V rail ──
+    // v2 fix: moved from (22, 22) → (25, 28). Previous placement put pad 1 at
+    // (20, 22) directly on top of U2's TAB (x 10.5-19.5, y 18-24). New position
+    // clears U2 TAB by 2.7 mm in x and is 4 mm below it in y.
     c.push(Component {
         reference: "C2",
         value: "220uF_10V",
         footprint_lib: "laminarforge",
         footprint_name: "CP_Radial_D6.3mm",
         lcsc: "C41238",
-        x: 22.0, y: 22.0, rotation: 0.0, layer: "F.Cu",
+        x: 25.0, y: 28.0, rotation: 0.0, layer: "F.Cu",
         description: "5V rail bulk cap",
         pads: vec![
             pad_th("1", -2.0, 0.0, 1.6, 0.8, NET_5V),
@@ -544,13 +552,16 @@ fn define_components() -> Vec<Component> {
     });
 
     // ── L1: inductor 33uH for LM2596 output ──
+    // v2 fix: moved from (20, 13) → (27, 11). Pad 1 at (24, 11) now clears U2
+    // TO-263-5 pad row (x ≤ 18.5, y 14.6-15.4) by 2.6 mm in y and C1's pad 2
+    // at (20.5, 10) by 3.5 mm in x.
     c.push(Component {
         reference: "L1",
         value: "33uH_CDRH127",
         footprint_lib: "laminarforge",
         footprint_name: "L_Wurth_WE-PD_7345",
         lcsc: "C1046",
-        x: 20.0, y: 13.0, rotation: 0.0, layer: "F.Cu",
+        x: 27.0, y: 11.0, rotation: 0.0, layer: "F.Cu",
         description: "LM2596 output inductor",
         pads: vec![
             pad_smd("1", -3.0, 0.0, 2.5, 3.0, NET_12V),
@@ -598,13 +609,18 @@ fn define_components() -> Vec<Component> {
     });
 
     // ── R1, R2: EN pull-up + BOOT pull-up on MCU ──
+    // v2 fix: moved from (42, 21) and (58, 21) → (42, 43) and (58, 43).
+    // Previous placement overlapped U1 ESP32-S3-WROOM-1 castellated pads
+    // (left pads x 40.75-42.25, right pads x 57.75-59.25). New positions are
+    // ~1.25 mm below U1's pad row bottom (y=41.25), meeting Espressif's 0.5 mm
+    // module keep-out. X preserved so EN/BOOT traces can drop straight down.
     c.push(Component {
         reference: "R1",
         value: "10K",
         footprint_lib: "laminarforge",
         footprint_name: "R_0603",
         lcsc: "C25804",
-        x: 42.0, y: 21.0, rotation: 0.0, layer: "F.Cu",
+        x: 42.0, y: 43.0, rotation: 0.0, layer: "F.Cu",
         description: "EN pull-up",
         pads: r0603_pads(NET_3V3, NET_ESP_EN),
     });
@@ -615,7 +631,7 @@ fn define_components() -> Vec<Component> {
         footprint_lib: "laminarforge",
         footprint_name: "R_0603",
         lcsc: "C25804",
-        x: 58.0, y: 21.0, rotation: 0.0, layer: "F.Cu",
+        x: 58.0, y: 43.0, rotation: 0.0, layer: "F.Cu",
         description: "BOOT pull-up",
         pads: r0603_pads(NET_3V3, NET_ESP_BOOT),
     });
@@ -1363,6 +1379,25 @@ fn main() {
         println!("\nImporting SES: {} nets, {} wires, {} vias",
             ses_data.routes.len(), total_wires, total_vias);
         laminarforge_cad::pcb::ses::write_ses_traces(&mut s, &ses_data);
+    }
+
+    // v2: GND pour zones on F.Cu and B.Cu. Required so DRC sees the GND
+    // plane connection between every GND pad — without zones, KiCad flags
+    // every GND pad as "unconnected" even though the DSN pour exists.
+    // connect_pads yes (solid) avoids starved-thermal DRC errors on TAB pads
+    // and castellated modules (U1 pin 15, U2 pin 3, J10 M2).
+    for (layer, tstamp_seed) in [("F.Cu", 1u8), ("B.Cu", 2u8)] {
+        writeln!(&mut s, "  (zone").unwrap();
+        writeln!(&mut s, "    (net {}) (net_name \"GND\")", NET_GND).unwrap();
+        writeln!(&mut s, "    (layer \"{}\") (tstamp \"{:08x}-0000-0000-0000-{:012x}\")", layer, tstamp_seed as u32, tstamp_seed as u64).unwrap();
+        writeln!(&mut s, "    (hatch edge 0.5)").unwrap();
+        writeln!(&mut s, "    (connect_pads yes (clearance 0.2))").unwrap();
+        writeln!(&mut s, "    (min_thickness 0.15) (filled_areas_thickness no)").unwrap();
+        writeln!(&mut s, "    (fill yes (thermal_gap 0.25) (thermal_bridge_width 0.3) (smoothing none) (radius 0.5))").unwrap();
+        writeln!(&mut s, "    (polygon (pts").unwrap();
+        writeln!(&mut s, "      (xy 0 0) (xy {} 0) (xy {} {}) (xy 0 {})", BOARD_W, BOARD_W, BOARD_H, BOARD_H).unwrap();
+        writeln!(&mut s, "    ))").unwrap();
+        writeln!(&mut s, "  )").unwrap();
     }
 
     s.push_str(")\n");

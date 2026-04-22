@@ -32,13 +32,13 @@
       (place H4 96000 -76000 front 0.0)
     )
     (component laminarforge:BarrelJack_2.1x5.5mm
-      (place J1 8000 -8000 front 0.0 (PN DC_BARREL_2.1x5.5mm))
+      (place J1 10000 -5000 front 0.0 (PN DC_BARREL_2.1x5.5mm))
     )
     (component laminarforge:CP_Radial_D6.3mm
-      (place C2 22000 -22000 front 0.0 (PN 220uF_10V))
+      (place C2 25000 -28000 front 0.0 (PN 220uF_10V))
     )
     (component laminarforge:CP_Radial_D8.0mm
-      (place C1 18000 -10000 front 0.0 (PN 220uF_35V))
+      (place C1 36000 -10000 front 0.0 (PN 220uF_35V))
     )
     (component laminarforge:C_0603
       (place C3 45000 -17000 front 0.0 (PN 100nF))
@@ -69,7 +69,7 @@
       (place LD4 84000 -11000 front 0.0 (PN RED_LED))
     )
     (component laminarforge:L_Wurth_WE-PD_7345
-      (place L1 20000 -13000 front 0.0 (PN 33uH_CDRH127))
+      (place L1 27000 -11000 front 0.0 (PN 33uH_CDRH127))
     )
     (component laminarforge:PinHeader_1x4_2.54mm
       (place J12 88000 -25000 front 0.0 (PN SWD_Header))
@@ -78,8 +78,8 @@
       (place J11 25000 -72000 front 0.0 (PN TMC2209_Header))
     )
     (component laminarforge:R_0603
-      (place R1 42000 -21000 front 0.0 (PN 10K))
-      (place R2 58000 -21000 front 0.0 (PN 10K))
+      (place R1 42000 -43000 front 0.0 (PN 10K))
+      (place R2 58000 -43000 front 0.0 (PN 10K))
       (place R3 44000 -25000 front 0.0 (PN 4.7K))
       (place R4 47000 -25000 front 0.0 (PN 4.7K))
       (place R5 50000 -25000 front 0.0 (PN 4.7K))
