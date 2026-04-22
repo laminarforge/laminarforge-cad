@@ -7,6 +7,13 @@ edition = "2021"
 vcad = "0.1"
 opencascade = { version = "0.2", optional = true }
 glam = "0.23"
+clap = { version = "4", features = ["derive"] }
+rand = "0.8"
+rand_pcg = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_derive = "1"
+csv = "1.3"
+statrs = "0.17"
 
 [features]
 step = ["opencascade"]
@@ -177,6 +184,10 @@ name = "rack_rocker"
 path = "src/bin/rack_rocker.rs"
 
 [[bin]]
+name = "rack_rocker_2axis"
+path = "src/bin/rack_rocker_2axis.rs"
+
+[[bin]]
 name = "chip_farm_assembly"
 path = "src/bin/chip_farm_assembly.rs"
 
@@ -211,4 +222,8 @@ path = "src/bin/hil_harness.rs"
 [[bin]]
 name = "cogs_model"
 path = "src/bin/cogs_model.rs"
+
+[[bin]]
+name = "doe_plan"
+path = "src/bin/doe_plan.rs"
 
