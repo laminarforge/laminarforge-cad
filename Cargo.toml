@@ -176,3 +176,15 @@ path = "src/bin/rack_rocker.rs"
 name = "chip_farm_assembly"
 path = "src/bin/chip_farm_assembly.rs"
 
+[[bin]]
+name = "media_reservoir"
+path = "src/bin/media_reservoir.rs"
+
+[[bin]]
+name = "lh_interface"
+path = "src/bin/lh_interface.rs"
+
+[[bin]]
+name = "controller_pcb"
+path = "src/bin/controller_pcb.rs"
+
