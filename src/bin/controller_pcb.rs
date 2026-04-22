@@ -1323,6 +1323,14 @@ fn main() {
     let output_dir: PathBuf = Path::new("pcb/output").to_path_buf();
     fs::create_dir_all(&output_dir).expect("create output dir");
 
+    let args: Vec<String> = std::env::args().collect();
+    let from_ses = args.iter().position(|a| a == "--from-ses")
+        .map(|i| {
+            args.get(i + 1)
+                .unwrap_or_else(|| panic!("--from-ses requires a path argument"))
+                .clone()
+        });
+
     let comps = define_components();
 
     // Sanity check: report component count + net usage
@@ -1346,6 +1354,17 @@ fn main() {
     write_setup(&mut s);
     write_board_outline(&mut s);
     for c in &comps { write_footprint(&mut s, c); }
+
+    // Import routed traces from Freerouting SES file (pure Rust)
+    if let Some(ses_path) = &from_ses {
+        let ses_data = laminarforge_cad::pcb::ses::parse_ses(Path::new(ses_path));
+        let total_wires: usize = ses_data.routes.iter().map(|r| r.wires.len()).sum();
+        let total_vias: usize = ses_data.routes.iter().map(|r| r.vias.len()).sum();
+        println!("\nImporting SES: {} nets, {} wires, {} vias",
+            ses_data.routes.len(), total_wires, total_vias);
+        laminarforge_cad::pcb::ses::write_ses_traces(&mut s, &ses_data);
+    }
+
     s.push_str(")\n");
 
     let pcb_path = output_dir.join("controller.kicad_pcb");
@@ -1360,13 +1379,20 @@ fn main() {
     write_cpl(&cpl_path, &comps);
     println!("Written: {}", cpl_path.display());
 
-    // Always export DSN for Freerouting
-    let dsn_path = output_dir.join("controller.dsn");
-    write_dsn(&dsn_path, &comps);
-    println!("Written: {}", dsn_path.display());
+    // Always export DSN for Freerouting (unless we're just importing SES)
+    if from_ses.is_none() {
+        let dsn_path = output_dir.join("controller.dsn");
+        write_dsn(&dsn_path, &comps);
+        println!("Written: {}", dsn_path.display());
 
-    println!("\nControl PCB generation complete.");
-    println!("Run Freerouting:");
-    println!("  /opt/homebrew/opt/openjdk/bin/java -jar tools/freerouting.jar");
-    println!("  File -> Open Design -> {}", dsn_path.display());
+        println!("\nControl PCB generation complete.");
+        println!("Run Freerouting:");
+        println!("  /opt/homebrew/opt/openjdk/bin/java -jar tools/freerouting.jar");
+        println!("  File -> Open Design -> {}", dsn_path.display());
+    }
+
+    // If --validate, run DRC
+    if args.iter().any(|a| a == "--validate") {
+        laminarforge_cad::pcb::export::validate_and_export(&pcb_path, &output_dir);
+    }
 }

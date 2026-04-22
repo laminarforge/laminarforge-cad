@@ -1,0 +1,51 @@
+Reference,Value,LCSC,Footprint,Description
+U1,ESP32-S3-WROOM-1-N8R8,C2913204,laminarforge:ESP32-S3-WROOM-1,WiFi/BT/BLE MCU module
+U2,LM2596S-5.0,C9864,laminarforge:TO-263-5,Buck regulator 24V->5V 2A
+U3,AMS1117-3.3,C6186,laminarforge:SOT-223,LDO 5V->3.3V 1A
+U4,CH340N,C506813,laminarforge:SOP-8,USB-UART bridge
+J1,DC_BARREL_2.1x5.5mm,C3296358,laminarforge:BarrelJack_2.1x5.5mm,24V DC input
+D1,SS54,C22452,laminarforge:SMA,Schottky reverse-protection
+D2,SMBJ30A,C8963,laminarforge:SMB,TVS 30V 600W
+C1,220uF_35V,C92068,laminarforge:CP_Radial_D8.0mm,24V input bulk cap
+C2,220uF_10V,C41238,laminarforge:CP_Radial_D6.3mm,5V rail bulk cap
+L1,33uH_CDRH127,C1046,laminarforge:L_Wurth_WE-PD_7345,LM2596 output inductor
+C3,100nF,C14663,laminarforge:C_0603,MCU decoupling
+C4,100nF,C14663,laminarforge:C_0603,MCU decoupling
+C5,100nF,C14663,laminarforge:C_0603,MCU decoupling
+C6,10uF,C15850,laminarforge:C_0805,MCU bulk decoupling
+C7,100nF,C14663,laminarforge:C_0603,CH340 VCC bypass
+R1,10K,C25804,laminarforge:R_0603,EN pull-up
+R2,10K,C25804,laminarforge:R_0603,BOOT pull-up
+R3,4.7K,C23162,laminarforge:R_0603,SDA pull-up
+R4,4.7K,C23162,laminarforge:R_0603,SCL pull-up
+R5,4.7K,C23162,laminarforge:R_0603,1-Wire pull-up
+R6,1K,C21190,laminarforge:R_0603,SSR control series
+R7,100R,C22775,laminarforge:R_0603,Fan MOSFET gate resistor
+R8,100K,C25741,laminarforge:R_0603,Fan MOSFET gate pulldown
+R9,330R,C23138,laminarforge:R_0603,LED current-limit
+R10,330R,C23138,laminarforge:R_0603,LED current-limit
+R11,330R,C23138,laminarforge:R_0603,LED current-limit
+R12,330R,C23138,laminarforge:R_0603,LED current-limit
+LD1,GREEN_LED,C72041,laminarforge:LED_0805,Status LED
+LD2,BLUE_LED,C72041,laminarforge:LED_0805,Status LED
+LD3,YELLOW_LED,C72041,laminarforge:LED_0805,Status LED
+LD4,RED_LED,C72041,laminarforge:LED_0805,Status LED
+Q1,IRLZ44N,C69224,laminarforge:TO-220-3_Vertical,Fan MOSFET
+D3,SS54,C22452,laminarforge:SMA,Fan flyback diode
+Q2,IRLZ44N,C69224,laminarforge:TO-220-3_Vertical,CO2 solenoid MOSFET
+D4,SS54,C22452,laminarforge:SMA,Solenoid flyback diode
+K1,G6K-2F-Y,C37368,laminarforge:Relay_DPDT_Omron_G6K,5V EMR CO2 solenoid (alt path)
+J2,KSD9700_100C_NC,C2909862,laminarforge:ThermalCutoff_KSD9700,Overtemp cutoff (SSR interlock)
+J3,ScrewTerm_SSR_Ctrl,C8735,laminarforge:ScrewTerm_2.54mm_2P,SSR control output
+J4,ScrewTerm_Fan,C8735,laminarforge:ScrewTerm_2.54mm_2P,12V fan output
+J5,ScrewTerm_Solenoid,C8735,laminarforge:ScrewTerm_2.54mm_2P,5V CO2 solenoid output
+J6,JST_SHT40,C131367,laminarforge:JST_PH_4P,SHT40 remote connector
+J7,JST_MHZ19,C131367,laminarforge:JST_PH_4P,MH-Z19B remote connector
+J8,JST_DS18B20,C131365,laminarforge:JST_PH_3P,DS18B20 remote connector
+J9,JST_Window_Heater,C131366,laminarforge:JST_PH_2P,Window anti-condensation heater
+J10,USB-C_Receptacle,C165948,laminarforge:USB_C_Receptacle_HRO-TYPE-C-31-M-12,USB-C programming port
+J11,TMC2209_Header,C124378,laminarforge:PinHeader_1x6_2.54mm,TMC2209 stepper driver breakout
+J12,SWD_Header,C124379,laminarforge:PinHeader_1x4_2.54mm,SWD/JTAG debug
+R13,5.1K,C23186,laminarforge:R_0603,USB-C CC1 pulldown
+R14,5.1K,C23186,laminarforge:R_0603,USB-C CC2 pulldown
+D5,SS54,C22452,laminarforge:SMA,VBUS->5V OR-ing schottky
