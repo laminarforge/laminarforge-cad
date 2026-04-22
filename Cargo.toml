@@ -160,3 +160,11 @@ path = "src/bin/sample_cold_block.rs"
 name = "optical_mount"
 path = "src/bin/optical_mount.rs"
 
+[[bin]]
+name = "chip_stack_rack"
+path = "src/bin/chip_stack_rack.rs"
+
+[[bin]]
+name = "chip_incubator_v2"
+path = "src/bin/chip_incubator_v2.rs"
+
