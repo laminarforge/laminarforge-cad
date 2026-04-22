@@ -635,4 +635,16 @@ fn main() {
     println!("  rack_rocker_linkage.stl      — PETG FDM");
     println!("  rack_rocker_nut_block.stl    — PETG FDM");
     println!("  rack_rocker_assembly.stl     — visualization at 0° tilt");
+
+    // STEP export (STL → STEP via stltostp)
+    for stl in [
+        "output/rack_rocker_base.stl",
+        "output/rack_rocker_top.stl",
+        "output/rack_rocker_pivot_block.stl",
+        "output/rack_rocker_linkage.stl",
+        "output/rack_rocker_nut_block.stl",
+        "output/rack_rocker_assembly.stl",
+    ] {
+        laminarforge_cad::stl_to_step(stl);
+    }
 }

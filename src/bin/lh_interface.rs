@@ -658,4 +658,17 @@ fn main() {
     println!("   output/lh_interface_fiducial_frame.stl");
     println!("   output/lh_interface_assembly.stl");
     println!("══════════════════════════════════════════════════════════════");
+
+    // STEP export (STL → STEP via stltostp)
+    for stl in [
+        "output/lh_interface_hatch_panel.stl",
+        "output/lh_interface_hatch_frame.stl",
+        "output/lh_interface_rail_outer.stl",
+        "output/lh_interface_rail_inner.stl",
+        "output/lh_interface_locking_pin.stl",
+        "output/lh_interface_fiducial_frame.stl",
+        "output/lh_interface_assembly.stl",
+    ] {
+        laminarforge_cad::stl_to_step(stl);
+    }
 }

@@ -701,4 +701,16 @@ fn main() {
     println!("   output/imaging_gantry_ceiling_mount.stl");
     println!("   output/imaging_gantry_assembly.stl");
     println!("══════════════════════════════════════════════════════════════");
+
+    // STEP export (STL → STEP via stltostp)
+    for stl in [
+        "output/imaging_gantry_x_beam.stl",
+        "output/imaging_gantry_y_carriage.stl",
+        "output/imaging_gantry_head.stl",
+        "output/imaging_gantry_heated_window.stl",
+        "output/imaging_gantry_ceiling_mount.stl",
+        "output/imaging_gantry_assembly.stl",
+    ] {
+        laminarforge_cad::stl_to_step(stl);
+    }
 }

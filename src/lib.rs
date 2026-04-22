@@ -741,3 +741,60 @@ pub fn fcb16_inlet_y(row_center_y: f64) -> f64 {
 pub fn fcb16_outlet_y(row_center_y: f64) -> f64 {
     row_center_y + CNC16_CHAMBER_LENGTH / 2.0 + FCB16_CHANNEL_LENGTH // center + 5 + 5 = center + 10
 }
+
+// ─── STEP Export Helpers ───
+//
+// vcad 0.1 does not natively export STEP. We use stltostp, a standalone C++
+// tool (https://github.com/slugdev/stltostp) that converts STL triangles
+// directly to STEP BRep faces without needing OpenCASCADE or FreeCAD.
+//
+// Install: git clone https://github.com/slugdev/stltostp && cd stltostp
+//          && mkdir build && cd build && cmake .. && make
+//          && cp stltostp ~/.local/bin/
+//
+// Usage in a bin:
+//   part.write_stl("output/foo.stl").unwrap();
+//   println!("Exported: output/foo.stl");
+//   laminarforge_cad::stl_to_step("output/foo.stl");
+
+/// Convert an STL file to a STEP file (.stp) next to it using stltostp.
+/// Silent no-op if stltostp isn't installed or conversion fails; prints a
+/// note on success. Path conventions: `output/foo.stl` -> `output/foo.stp`.
+pub fn stl_to_step(stl_path: &str) {
+    let stltostp = std::path::Path::new(env!("HOME")).join(".local/bin/stltostp");
+    if !stltostp.exists() {
+        static mut WARNED: bool = false;
+        // Safety: single-threaded bin output; worst case is a duplicate note.
+        unsafe {
+            if !WARNED {
+                WARNED = true;
+                eprintln!(
+                    "NOTE: stltostp not found at ~/.local/bin/stltostp — skipping STEP export"
+                );
+            }
+        }
+        return;
+    }
+    let step_path = stl_path
+        .strip_suffix(".stl")
+        .map(|s| format!("{}.stp", s))
+        .unwrap_or_else(|| format!("{}.stp", stl_path));
+    match std::process::Command::new(&stltostp)
+        .arg(stl_path)
+        .arg(&step_path)
+        .output()
+    {
+        Ok(out) if out.status.success() => {
+            println!("Exported: {}", step_path);
+        }
+        Ok(out) => {
+            eprintln!(
+                "WARNING: stltostp failed for {stl_path}: {}",
+                String::from_utf8_lossy(&out.stderr)
+            );
+        }
+        Err(e) => {
+            eprintln!("WARNING: failed to spawn stltostp for {stl_path}: {e}");
+        }
+    }
+}

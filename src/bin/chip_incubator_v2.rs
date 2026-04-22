@@ -637,4 +637,16 @@ fn main() {
     println!("   output/chip_incubator_v2_water_tray.stl");
     println!("   output/chip_incubator_v2_rail.stl");
     println!("══════════════════════════════════════════════════════════════");
+
+    // STEP export (STL → STEP via stltostp)
+    for stl in [
+        "output/chip_incubator_v2_chamber.stl",
+        "output/chip_incubator_v2_shell.stl",
+        "output/chip_incubator_v2_door.stl",
+        "output/chip_incubator_v2_top_hatch.stl",
+        "output/chip_incubator_v2_water_tray.stl",
+        "output/chip_incubator_v2_rail.stl",
+    ] {
+        laminarforge_cad::stl_to_step(stl);
+    }
 }

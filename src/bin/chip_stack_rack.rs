@@ -666,4 +666,15 @@ fn main() {
     println!("    - output/chip_stack_rack_base.stl");
     println!("    - output/chip_stack_rack_handle.stl");
     println!("    - output/chip_stack_rack_assembly.stl");
+
+    // STEP export (STL → STEP via stltostp)
+    for stl in [
+        "output/chip_stack_rack_shelf.stl",
+        "output/chip_stack_rack_post.stl",
+        "output/chip_stack_rack_base.stl",
+        "output/chip_stack_rack_handle.stl",
+        "output/chip_stack_rack_assembly.stl",
+    ] {
+        laminarforge_cad::stl_to_step(stl);
+    }
 }

@@ -675,4 +675,18 @@ fn main() {
     println!("   output/media_reservoir_drip_tray.stl");
     println!("   output/media_reservoir_waste_bottle.stl");
     println!("══════════════════════════════════════════════════════════════");
+
+    // STEP export (STL → STEP via stltostp)
+    for stl in [
+        "output/media_reservoir_body.stl",
+        "output/media_reservoir_lid.stl",
+        "output/media_reservoir_pump_manifold.stl",
+        "output/media_reservoir_passthrough.stl",
+        "output/media_reservoir_grommet.stl",
+        "output/media_reservoir_drip_head.stl",
+        "output/media_reservoir_drip_tray.stl",
+        "output/media_reservoir_waste_bottle.stl",
+    ] {
+        laminarforge_cad::stl_to_step(stl);
+    }
 }
