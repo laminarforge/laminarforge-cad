@@ -177,6 +177,10 @@ name = "chip_farm_assembly"
 path = "src/bin/chip_farm_assembly.rs"
 
 [[bin]]
+name = "chip_farm_assembly_v2"
+path = "src/bin/chip_farm_assembly_v2.rs"
+
+[[bin]]
 name = "media_reservoir"
 path = "src/bin/media_reservoir.rs"
 
