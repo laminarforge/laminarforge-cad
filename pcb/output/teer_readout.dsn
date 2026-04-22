@@ -1,0 +1,749 @@
+(pcb teer_readout.dsn
+  (parser
+    (string_quote ")
+    (space_in_quoted_tokens on)
+    (host_cad "LaminarForge")
+    (host_version "1.0")
+  )
+  (resolution um 10)
+  (unit um)
+  (structure
+    (layer F.Cu (type signal) (property (index 0)))
+    (layer B.Cu (type signal) (property (index 1)))
+    (boundary (path pcb 0  0 0  80000 0  80000 -60000  0 -60000  0 0))
+    (plane GND (polygon F.Cu 0  0 0  80000 0  80000 -60000  0 -60000  0 0))
+    (plane GND (polygon B.Cu 0  0 0  80000 0  80000 -60000  0 -60000  0 0))
+    (keepout "" (circle signal 6950 18000 -4000))
+    (keepout "" (circle signal 6950 76000 -4000))
+    (keepout "" (circle signal 6950 18000 -56000))
+    (keepout "" (circle signal 6950 76000 -56000))
+    (via "Via[0-1]_600:300_um")
+    (keepout "" (rect signal 0 0 80000 -1000))
+    (keepout "" (rect signal 0 -59000 80000 -60000))
+    (keepout "" (rect signal 0 0 1000 -60000))
+    (keepout "" (rect signal 79000 0 80000 -60000))
+    (rule (width 200) (clearance 180))
+  )
+  (placement
+    (component MountingHole:MountingHole_3.2mm_M3
+      (place H1 18000 -4000 front 0.0)
+      (place H2 76000 -4000 front 0.0)
+      (place H3 18000 -56000 front 0.0)
+      (place H4 76000 -56000 front 0.0)
+    )
+    (component laminarforge:C_0603
+      (place C1 38000 -24000 front 0.0 (PN 100nF))
+      (place C2 42000 -24000 front 0.0 (PN 100nF))
+      (place C3 38000 -36000 front 0.0 (PN 100nF))
+      (place C5 46000 -30000 front 0.0 (PN 1uF))
+      (place C6 16000 -8000 front 0.0 (PN 100nF))
+      (place C8 16000 -52000 front 0.0 (PN 100nF))
+      (place C10 58000 -24000 front 0.0 (PN 100nF))
+      (place C11 62000 -24000 front 0.0 (PN 100nF))
+      (place C12 62000 -36000 front 0.0 (PN 10nF))
+      (place C13 66000 -32000 front 0.0 (PN 100nF))
+    )
+    (component laminarforge:C_0805
+      (place C4 42000 -36000 front 0.0 (PN 10uF))
+      (place C7 24000 -8000 front 0.0 (PN 10uF))
+      (place C9 24000 -52000 front 0.0 (PN 10uF))
+    )
+    (component laminarforge:LFCSP-32_5x5mm_P0.5mm
+      (place U1 40000 -30000 front 0.0 (PN AD5940BCBZ-RL7))
+    )
+    (component laminarforge:PinHeader_2x5_2.54mm
+      (place J1 75000 -30000 front 0.0 (PN Header_2x5_0.1in))
+    )
+    (component laminarforge:PogoPin_MillMax_0906
+      (place PP1_0 6000 -6000 front 0.0 (PN POGO_C1_CH0_IP))
+      (place PP1_1 6000 -7270 front 0.0 (PN POGO_C1_CH0_IN))
+      (place PP1_2 6000 -8540 front 0.0 (PN POGO_C1_CH0_VP))
+      (place PP1_3 6000 -9810 front 0.0 (PN POGO_C1_CH0_VN))
+      (place PP1_4 6000 -11080 front 0.0 (PN POGO_C1_CH1_IP))
+      (place PP1_5 6000 -12350 front 0.0 (PN POGO_C1_CH1_IN))
+      (place PP1_6 6000 -13620 front 0.0 (PN POGO_C1_CH1_VP))
+      (place PP1_7 6000 -14890 front 0.0 (PN POGO_C1_CH1_VN))
+      (place PP1_8 6000 -16160 front 0.0 (PN POGO_C1_CH2_IP))
+      (place PP1_9 6000 -17430 front 0.0 (PN POGO_C1_CH2_IN))
+      (place PP1_10 6000 -18700 front 0.0 (PN POGO_C1_CH2_VP))
+      (place PP1_11 6000 -19970 front 0.0 (PN POGO_C1_CH2_VN))
+      (place PP1_12 6000 -21240 front 0.0 (PN POGO_C1_CH3_IP))
+      (place PP1_13 6000 -22510 front 0.0 (PN POGO_C1_CH3_IN))
+      (place PP1_14 6000 -23780 front 0.0 (PN POGO_C1_CH3_VP))
+      (place PP1_15 6000 -25050 front 0.0 (PN POGO_C1_CH3_VN))
+      (place PP1_16 6000 -26320 front 0.0 (PN POGO_C1_RTD_FP))
+      (place PP1_17 6000 -27590 front 0.0 (PN POGO_C1_RTD_FN))
+      (place PP1_18 6000 -28860 front 0.0 (PN POGO_C1_RTD_SP))
+      (place PP1_19 6000 -30130 front 0.0 (PN POGO_C1_RTD_SN))
+      (place PP2_0 6000 -31400 front 0.0 (PN POGO_C2_CH0_IP))
+      (place PP2_1 6000 -32670 front 0.0 (PN POGO_C2_CH0_IN))
+      (place PP2_2 6000 -33940 front 0.0 (PN POGO_C2_CH0_VP))
+      (place PP2_3 6000 -35210 front 0.0 (PN POGO_C2_CH0_VN))
+      (place PP2_4 6000 -36480 front 0.0 (PN POGO_C2_CH1_IP))
+      (place PP2_5 7500 -6000 front 0.0 (PN POGO_C2_CH1_IN))
+      (place PP2_6 7500 -7270 front 0.0 (PN POGO_C2_CH1_VP))
+      (place PP2_7 7500 -8540 front 0.0 (PN POGO_C2_CH1_VN))
+      (place PP2_8 7500 -9810 front 0.0 (PN POGO_C2_CH2_IP))
+      (place PP2_9 7500 -11080 front 0.0 (PN POGO_C2_CH2_IN))
+      (place PP2_10 7500 -12350 front 0.0 (PN POGO_C2_CH2_VP))
+      (place PP2_11 7500 -13620 front 0.0 (PN POGO_C2_CH2_VN))
+      (place PP2_12 7500 -14890 front 0.0 (PN POGO_C2_CH3_IP))
+      (place PP2_13 7500 -16160 front 0.0 (PN POGO_C2_CH3_IN))
+      (place PP2_14 7500 -17430 front 0.0 (PN POGO_C2_CH3_VP))
+      (place PP2_15 7500 -18700 front 0.0 (PN POGO_C2_CH3_VN))
+      (place PP2_16 7500 -19970 front 0.0 (PN POGO_C2_RTD_FP))
+      (place PP2_17 7500 -21240 front 0.0 (PN POGO_C2_RTD_FN))
+      (place PP2_18 7500 -22510 front 0.0 (PN POGO_C2_RTD_SP))
+      (place PP2_19 7500 -23780 front 0.0 (PN POGO_C2_RTD_SN))
+      (place PP3_0 7500 -25050 front 0.0 (PN POGO_C3_CH0_IP))
+      (place PP3_1 7500 -26320 front 0.0 (PN POGO_C3_CH0_IN))
+      (place PP3_2 7500 -27590 front 0.0 (PN POGO_C3_CH0_VP))
+      (place PP3_3 7500 -28860 front 0.0 (PN POGO_C3_CH0_VN))
+      (place PP3_4 7500 -30130 front 0.0 (PN POGO_C3_CH1_IP))
+      (place PP3_5 7500 -31400 front 0.0 (PN POGO_C3_CH1_IN))
+      (place PP3_6 7500 -32670 front 0.0 (PN POGO_C3_CH1_VP))
+      (place PP3_7 7500 -33940 front 0.0 (PN POGO_C3_CH1_VN))
+      (place PP3_8 7500 -35210 front 0.0 (PN POGO_C3_CH2_IP))
+      (place PP3_9 7500 -36480 front 0.0 (PN POGO_C3_CH2_IN))
+      (place PP3_10 9000 -6000 front 0.0 (PN POGO_C3_CH2_VP))
+      (place PP3_11 9000 -7270 front 0.0 (PN POGO_C3_CH2_VN))
+      (place PP3_12 9000 -8540 front 0.0 (PN POGO_C3_CH3_IP))
+      (place PP3_13 9000 -9810 front 0.0 (PN POGO_C3_CH3_IN))
+      (place PP3_14 9000 -11080 front 0.0 (PN POGO_C3_CH3_VP))
+      (place PP3_15 9000 -12350 front 0.0 (PN POGO_C3_CH3_VN))
+      (place PP3_16 9000 -13620 front 0.0 (PN POGO_C3_RTD_FP))
+      (place PP3_17 9000 -14890 front 0.0 (PN POGO_C3_RTD_FN))
+      (place PP3_18 9000 -16160 front 0.0 (PN POGO_C3_RTD_SP))
+      (place PP3_19 9000 -17430 front 0.0 (PN POGO_C3_RTD_SN))
+      (place PP4_0 9000 -18700 front 0.0 (PN POGO_C4_CH0_IP))
+      (place PP4_1 9000 -19970 front 0.0 (PN POGO_C4_CH0_IN))
+      (place PP4_2 9000 -21240 front 0.0 (PN POGO_C4_CH0_VP))
+      (place PP4_3 9000 -22510 front 0.0 (PN POGO_C4_CH0_VN))
+      (place PP4_4 9000 -23780 front 0.0 (PN POGO_C4_CH1_IP))
+      (place PP4_5 9000 -25050 front 0.0 (PN POGO_C4_CH1_IN))
+      (place PP4_6 9000 -26320 front 0.0 (PN POGO_C4_CH1_VP))
+      (place PP4_7 9000 -27590 front 0.0 (PN POGO_C4_CH1_VN))
+      (place PP4_8 9000 -28860 front 0.0 (PN POGO_C4_CH2_IP))
+      (place PP4_9 9000 -30130 front 0.0 (PN POGO_C4_CH2_IN))
+      (place PP4_10 9000 -31400 front 0.0 (PN POGO_C4_CH2_VP))
+      (place PP4_11 9000 -32670 front 0.0 (PN POGO_C4_CH2_VN))
+      (place PP4_12 9000 -33940 front 0.0 (PN POGO_C4_CH3_IP))
+      (place PP4_13 9000 -35210 front 0.0 (PN POGO_C4_CH3_IN))
+      (place PP4_14 9000 -36480 front 0.0 (PN POGO_C4_CH3_VP))
+      (place PP4_15 10500 -6000 front 0.0 (PN POGO_C4_CH3_VN))
+      (place PP4_16 10500 -7270 front 0.0 (PN POGO_C4_RTD_FP))
+      (place PP4_17 10500 -8540 front 0.0 (PN POGO_C4_RTD_FN))
+      (place PP4_18 10500 -9810 front 0.0 (PN POGO_C4_RTD_SP))
+      (place PP4_19 10500 -11080 front 0.0 (PN POGO_C4_RTD_SN))
+      (place PP5_0 10500 -12350 front 0.0 (PN POGO_C5_CH0_IP))
+      (place PP5_1 10500 -13620 front 0.0 (PN POGO_C5_CH0_IN))
+      (place PP5_2 10500 -14890 front 0.0 (PN POGO_C5_CH0_VP))
+      (place PP5_3 10500 -16160 front 0.0 (PN POGO_C5_CH0_VN))
+      (place PP5_4 10500 -17430 front 0.0 (PN POGO_C5_CH1_IP))
+      (place PP5_5 10500 -18700 front 0.0 (PN POGO_C5_CH1_IN))
+      (place PP5_6 10500 -19970 front 0.0 (PN POGO_C5_CH1_VP))
+      (place PP5_7 10500 -21240 front 0.0 (PN POGO_C5_CH1_VN))
+      (place PP5_8 10500 -22510 front 0.0 (PN POGO_C5_CH2_IP))
+      (place PP5_9 10500 -23780 front 0.0 (PN POGO_C5_CH2_IN))
+      (place PP5_10 10500 -25050 front 0.0 (PN POGO_C5_CH2_VP))
+      (place PP5_11 10500 -26320 front 0.0 (PN POGO_C5_CH2_VN))
+      (place PP5_12 10500 -27590 front 0.0 (PN POGO_C5_CH3_IP))
+      (place PP5_13 10500 -28860 front 0.0 (PN POGO_C5_CH3_IN))
+      (place PP5_14 10500 -30130 front 0.0 (PN POGO_C5_CH3_VP))
+      (place PP5_15 10500 -31400 front 0.0 (PN POGO_C5_CH3_VN))
+      (place PP5_16 10500 -32670 front 0.0 (PN POGO_C5_RTD_FP))
+      (place PP5_17 10500 -33940 front 0.0 (PN POGO_C5_RTD_FN))
+      (place PP5_18 10500 -35210 front 0.0 (PN POGO_C5_RTD_SP))
+      (place PP5_19 10500 -36480 front 0.0 (PN POGO_C5_RTD_SN))
+    )
+    (component laminarforge:R_0603
+      (place R1 65000 -36000 front 0.0 (PN 4.3K_0.1%_25ppm))
+      (place R2 65000 -26000 front 0.0 (PN 10K))
+      (place R3 45000 -26000 front 0.0 (PN 10K))
+      (place FB1 70000 -10000 front 0.0 (PN BLM18PG471SN1D))
+      (place FB2 70000 -14000 front 0.0 (PN BLM18PG471SN1D))
+    )
+    (component laminarforge:TQFN-20_5x5mm_P0.65mm
+      (place U4 60000 -30000 front 0.0 (PN MAX31865ATP+))
+    )
+    (component laminarforge:TQFP-48_7x7mm_P0.5mm
+      (place U2 20000 -15000 front 0.0 (PN ADG731BSUZ))
+      (place U3 20000 -45000 front 0.0 (PN ADG731BSUZ))
+    )
+  )
+  (library
+    (image MountingHole:MountingHole_3.2mm_M3
+      (pin Round[A]Pad_6350_um 1 0 0)
+    )
+    (image laminarforge:LFCSP-32_5x5mm_P0.5mm
+      (pin Rect[T]Pad_550x300_um 1 -2400 1750)
+      (pin Rect[T]Pad_550x300_um 2 -2400 1250)
+      (pin Rect[T]Pad_550x300_um 3 -2400 750)
+      (pin Rect[T]Pad_550x300_um 4 -2400 250)
+      (pin Rect[T]Pad_550x300_um 5 -2400 -250)
+      (pin Rect[T]Pad_550x300_um 6 -2400 -750)
+      (pin Rect[T]Pad_550x300_um 7 -2400 -1250)
+      (pin Rect[T]Pad_550x300_um 8 -2400 -1750)
+      (pin Rect[T]Pad_300x550_um 9 -1750 -2400)
+      (pin Rect[T]Pad_300x550_um 10 -1250 -2400)
+      (pin Rect[T]Pad_300x550_um 11 -750 -2400)
+      (pin Rect[T]Pad_300x550_um 12 -250 -2400)
+      (pin Rect[T]Pad_300x550_um 13 250 -2400)
+      (pin Rect[T]Pad_300x550_um 14 750 -2400)
+      (pin Rect[T]Pad_300x550_um 15 1250 -2400)
+      (pin Rect[T]Pad_300x550_um 16 1750 -2400)
+      (pin Rect[T]Pad_550x300_um 17 2400 -1750)
+      (pin Rect[T]Pad_550x300_um 18 2400 -1250)
+      (pin Rect[T]Pad_550x300_um 19 2400 -750)
+      (pin Rect[T]Pad_550x300_um 20 2400 -250)
+      (pin Rect[T]Pad_550x300_um 21 2400 250)
+      (pin Rect[T]Pad_550x300_um 22 2400 750)
+      (pin Rect[T]Pad_550x300_um 23 2400 1250)
+      (pin Rect[T]Pad_550x300_um 24 2400 1750)
+      (pin Rect[T]Pad_300x550_um 25 1750 2400)
+      (pin Rect[T]Pad_300x550_um 26 1250 2400)
+      (pin Rect[T]Pad_300x550_um 27 750 2400)
+      (pin Rect[T]Pad_300x550_um 28 250 2400)
+      (pin Rect[T]Pad_300x550_um 29 -250 2400)
+      (pin Rect[T]Pad_300x550_um 30 -750 2400)
+      (pin Rect[T]Pad_300x550_um 31 -1250 2400)
+      (pin Rect[T]Pad_300x550_um 32 -1750 2400)
+      (pin Rect[T]Pad_3100x3100_um 33 0 -0)
+    )
+    (image laminarforge:TQFP-48_7x7mm_P0.5mm
+      (pin Rect[T]Pad_1300x300_um 1 -3700 2750)
+      (pin Rect[T]Pad_1300x300_um 2 -3700 2250)
+      (pin Rect[T]Pad_1300x300_um 3 -3700 1750)
+      (pin Rect[T]Pad_1300x300_um 4 -3700 1250)
+      (pin Rect[T]Pad_1300x300_um 5 -3700 750)
+      (pin Rect[T]Pad_1300x300_um 6 -3700 250)
+      (pin Rect[T]Pad_1300x300_um 7 -3700 -250)
+      (pin Rect[T]Pad_1300x300_um 8 -3700 -750)
+      (pin Rect[T]Pad_1300x300_um 9 -3700 -1250)
+      (pin Rect[T]Pad_1300x300_um 10 -3700 -1750)
+      (pin Rect[T]Pad_1300x300_um 11 -3700 -2250)
+      (pin Rect[T]Pad_1300x300_um 12 -3700 -2750)
+      (pin Rect[T]Pad_300x1300_um 13 -2750 -3700)
+      (pin Rect[T]Pad_300x1300_um 14 -2250 -3700)
+      (pin Rect[T]Pad_300x1300_um 15 -1750 -3700)
+      (pin Rect[T]Pad_300x1300_um 16 -1250 -3700)
+      (pin Rect[T]Pad_300x1300_um 17 -750 -3700)
+      (pin Rect[T]Pad_300x1300_um 18 -250 -3700)
+      (pin Rect[T]Pad_300x1300_um 19 250 -3700)
+      (pin Rect[T]Pad_300x1300_um 20 750 -3700)
+      (pin Rect[T]Pad_300x1300_um 21 1250 -3700)
+      (pin Rect[T]Pad_300x1300_um 22 1750 -3700)
+      (pin Rect[T]Pad_300x1300_um 23 2250 -3700)
+      (pin Rect[T]Pad_300x1300_um 24 2750 -3700)
+      (pin Rect[T]Pad_1300x300_um 25 3700 -2750)
+      (pin Rect[T]Pad_1300x300_um 26 3700 -2250)
+      (pin Rect[T]Pad_1300x300_um 27 3700 -1750)
+      (pin Rect[T]Pad_1300x300_um 28 3700 -1250)
+      (pin Rect[T]Pad_1300x300_um 29 3700 -750)
+      (pin Rect[T]Pad_1300x300_um 30 3700 -250)
+      (pin Rect[T]Pad_1300x300_um 31 3700 250)
+      (pin Rect[T]Pad_1300x300_um 32 3700 750)
+      (pin Rect[T]Pad_1300x300_um 33 3700 1250)
+      (pin Rect[T]Pad_1300x300_um 34 3700 1750)
+      (pin Rect[T]Pad_1300x300_um 35 3700 2250)
+      (pin Rect[T]Pad_1300x300_um 36 3700 2750)
+      (pin Rect[T]Pad_300x1300_um 37 2750 3700)
+      (pin Rect[T]Pad_300x1300_um 38 2250 3700)
+      (pin Rect[T]Pad_300x1300_um 39 1750 3700)
+      (pin Rect[T]Pad_300x1300_um 40 1250 3700)
+      (pin Rect[T]Pad_300x1300_um 41 750 3700)
+      (pin Rect[T]Pad_300x1300_um 42 250 3700)
+      (pin Rect[T]Pad_300x1300_um 43 -250 3700)
+      (pin Rect[T]Pad_300x1300_um 44 -750 3700)
+      (pin Rect[T]Pad_300x1300_um 45 -1250 3700)
+      (pin Rect[T]Pad_300x1300_um 46 -1750 3700)
+      (pin Rect[T]Pad_300x1300_um 47 -2250 3700)
+      (pin Rect[T]Pad_300x1300_um 48 -2750 3700)
+    )
+    (image laminarforge:TQFN-20_5x5mm_P0.65mm
+      (pin Rect[T]Pad_600x350_um 1 -2400 1300)
+      (pin Rect[T]Pad_600x350_um 2 -2400 650)
+      (pin Rect[T]Pad_600x350_um 3 -2400 -0)
+      (pin Rect[T]Pad_600x350_um 4 -2400 -650)
+      (pin Rect[T]Pad_600x350_um 5 -2400 -1300)
+      (pin Rect[T]Pad_350x600_um 6 -1300 -2400)
+      (pin Rect[T]Pad_350x600_um 7 -650 -2400)
+      (pin Rect[T]Pad_350x600_um 8 0 -2400)
+      (pin Rect[T]Pad_350x600_um 9 650 -2400)
+      (pin Rect[T]Pad_350x600_um 10 1300 -2400)
+      (pin Rect[T]Pad_600x350_um 11 2400 -1300)
+      (pin Rect[T]Pad_600x350_um 12 2400 -650)
+      (pin Rect[T]Pad_600x350_um 13 2400 -0)
+      (pin Rect[T]Pad_600x350_um 14 2400 650)
+      (pin Rect[T]Pad_600x350_um 15 2400 1300)
+      (pin Rect[T]Pad_350x600_um 16 1300 2400)
+      (pin Rect[T]Pad_350x600_um 17 650 2400)
+      (pin Rect[T]Pad_350x600_um 18 0 2400)
+      (pin Rect[T]Pad_350x600_um 19 -650 2400)
+      (pin Rect[T]Pad_350x600_um 20 -1300 2400)
+      (pin Rect[T]Pad_3100x3100_um 21 0 -0)
+    )
+    (image laminarforge:R_0603
+      (pin Rect[T]Pad_950x950_um 1 -800 -0)
+      (pin Rect[T]Pad_950x950_um 2 800 -0)
+    )
+    (image laminarforge:C_0603
+      (pin Rect[T]Pad_950x950_um 1 -800 -0)
+      (pin Rect[T]Pad_950x950_um 2 800 -0)
+    )
+    (image laminarforge:C_0805
+      (pin Rect[T]Pad_1200x1400_um 1 -1000 -0)
+      (pin Rect[T]Pad_1200x1400_um 2 1000 -0)
+    )
+    (image laminarforge:PinHeader_2x5_2.54mm
+      (pin Round[A]Pad_1700_um 1 -1270 5080)
+      (pin Round[A]Pad_1700_um 2 1270 5080)
+      (pin Round[A]Pad_1700_um 3 -1270 2540)
+      (pin Round[A]Pad_1700_um 4 1270 2540)
+      (pin Round[A]Pad_1700_um 5 -1270 -0)
+      (pin Round[A]Pad_1700_um 6 1270 -0)
+      (pin Round[A]Pad_1700_um 7 -1270 -2540)
+      (pin Round[A]Pad_1700_um 8 1270 -2540)
+      (pin Round[A]Pad_1700_um 9 -1270 -5080)
+      (pin Round[A]Pad_1700_um 10 1270 -5080)
+    )
+    (image laminarforge:PogoPin_MillMax_0906
+      (pin Round[A]Pad_900_um 1 0 -0)
+    )
+    (padstack Rect[T]Pad_1200x1400_um
+      (shape (rect F.Cu -600 -700 600 700))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_1300x300_um
+      (shape (rect F.Cu -650 -150 650 150))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_300x1300_um
+      (shape (rect F.Cu -150 -650 150 650))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_300x550_um
+      (shape (rect F.Cu -150 -275 150 275))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_3100x3100_um
+      (shape (rect F.Cu -1550 -1550 1550 1550))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_350x600_um
+      (shape (rect F.Cu -175 -300 175 300))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_550x300_um
+      (shape (rect F.Cu -275 -150 275 150))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_600x350_um
+      (shape (rect F.Cu -300 -175 300 175))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_950x950_um
+      (shape (rect F.Cu -475 -475 475 475))
+      (attach off)
+    )
+    (padstack Round[A]Pad_1700_um
+      (shape (circle F.Cu 1700))
+      (shape (circle B.Cu 1700))
+      (attach off)
+    )
+    (padstack Round[A]Pad_6350_um
+      (shape (circle F.Cu 6350))
+      (shape (circle B.Cu 6350))
+      (attach off)
+    )
+    (padstack Round[A]Pad_900_um
+      (shape (circle F.Cu 900))
+      (shape (circle B.Cu 900))
+      (attach off)
+    )
+    (padstack "Via[0-1]_600:300_um"
+      (shape (circle F.Cu 600))
+      (shape (circle B.Cu 600))
+      (attach off)
+    )
+  )
+  (network
+    (net GND
+      (pins H1-1 H2-1 H3-1 H4-1 U1-3 U1-20 U1-33 U2-13 U2-18 U2-25 U2-26 U2-38 U3-13 U3-18 U3-25 U3-26 U3-38 U4-11 U4-12 U4-18 U4-21 C1-2 C2-2 C3-2 C4-2 C5-2 C6-2 C7-2 C8-2 C9-2 C10-2 C11-2 J1-2)
+    )
+    (net +3V3
+      (pins U2-6 U3-6 R2-1 R3-1 FB1-1 FB2-1 J1-1)
+    )
+    (net C1_CH0_IP
+      (pins U2-7 PP1_0-1)
+    )
+    (net C1_CH0_IN
+      (pins U2-8 PP1_1-1)
+    )
+    (net C1_CH0_VP
+      (pins U2-9 PP1_2-1)
+    )
+    (net C1_CH0_VN
+      (pins U2-10 PP1_3-1)
+    )
+    (net C1_CH1_IP
+      (pins U2-11 PP1_4-1)
+    )
+    (net C1_CH1_IN
+      (pins U2-12 PP1_5-1)
+    )
+    (net C1_CH1_VP
+      (pins U2-14 PP1_6-1)
+    )
+    (net C1_CH1_VN
+      (pins U2-15 PP1_7-1)
+    )
+    (net C1_CH2_IP
+      (pins U2-16 PP1_8-1)
+    )
+    (net C1_CH2_IN
+      (pins U2-17 PP1_9-1)
+    )
+    (net C1_CH2_VP
+      (pins U2-19 PP1_10-1)
+    )
+    (net C1_CH2_VN
+      (pins U2-20 PP1_11-1)
+    )
+    (net C1_CH3_IP
+      (pins U2-21 PP1_12-1)
+    )
+    (net C1_CH3_IN
+      (pins U2-22 PP1_13-1)
+    )
+    (net C1_CH3_VP
+      (pins U2-23 PP1_14-1)
+    )
+    (net C1_CH3_VN
+      (pins U2-24 PP1_15-1)
+    )
+    (net C1_RTD_FP
+      (pins U2-27 PP1_16-1)
+    )
+    (net C1_RTD_FN
+      (pins U2-28 PP1_17-1)
+    )
+    (net C1_RTD_SP
+      (pins U2-29 PP1_18-1)
+    )
+    (net C1_RTD_SN
+      (pins U2-30 PP1_19-1)
+    )
+    (net C2_CH0_IP
+      (pins U2-31 PP2_0-1)
+    )
+    (net C2_CH0_IN
+      (pins U2-32 PP2_1-1)
+    )
+    (net C2_CH0_VP
+      (pins U2-33 PP2_2-1)
+    )
+    (net C2_CH0_VN
+      (pins U2-34 PP2_3-1)
+    )
+    (net C2_CH1_IP
+      (pins U2-35 PP2_4-1)
+    )
+    (net C2_CH1_IN
+      (pins U2-36 PP2_5-1)
+    )
+    (net C2_CH1_VP
+      (pins U2-37 PP2_6-1)
+    )
+    (net C2_CH1_VN
+      (pins U2-39 PP2_7-1)
+    )
+    (net C2_CH2_IP
+      (pins U2-40 PP2_8-1)
+    )
+    (net C2_CH2_IN
+      (pins U2-41 PP2_9-1)
+    )
+    (net C2_CH2_VP
+      (pins U2-42 PP2_10-1)
+    )
+    (net C2_CH2_VN
+      (pins U2-43 PP2_11-1)
+    )
+    (net C2_CH3_IP
+      (pins PP2_12-1)
+    )
+    (net C2_CH3_IN
+      (pins PP2_13-1)
+    )
+    (net C2_CH3_VP
+      (pins PP2_14-1)
+    )
+    (net C2_CH3_VN
+      (pins PP2_15-1)
+    )
+    (net C2_RTD_FP
+      (pins PP2_16-1)
+    )
+    (net C2_RTD_FN
+      (pins PP2_17-1)
+    )
+    (net C2_RTD_SP
+      (pins PP2_18-1)
+    )
+    (net C2_RTD_SN
+      (pins PP2_19-1)
+    )
+    (net C3_CH0_IP
+      (pins U3-7 PP3_0-1)
+    )
+    (net C3_CH0_IN
+      (pins U3-8 PP3_1-1)
+    )
+    (net C3_CH0_VP
+      (pins U3-9 PP3_2-1)
+    )
+    (net C3_CH0_VN
+      (pins U3-10 PP3_3-1)
+    )
+    (net C3_CH1_IP
+      (pins U3-11 PP3_4-1)
+    )
+    (net C3_CH1_IN
+      (pins U3-12 PP3_5-1)
+    )
+    (net C3_CH1_VP
+      (pins U3-14 PP3_6-1)
+    )
+    (net C3_CH1_VN
+      (pins U3-15 PP3_7-1)
+    )
+    (net C3_CH2_IP
+      (pins U3-16 PP3_8-1)
+    )
+    (net C3_CH2_IN
+      (pins U3-17 PP3_9-1)
+    )
+    (net C3_CH2_VP
+      (pins U3-19 PP3_10-1)
+    )
+    (net C3_CH2_VN
+      (pins U3-20 PP3_11-1)
+    )
+    (net C3_CH3_IP
+      (pins U3-21 PP3_12-1)
+    )
+    (net C3_CH3_IN
+      (pins U3-22 PP3_13-1)
+    )
+    (net C3_CH3_VP
+      (pins U3-23 PP3_14-1)
+    )
+    (net C3_CH3_VN
+      (pins U3-24 PP3_15-1)
+    )
+    (net C3_RTD_FP
+      (pins U3-27 PP3_16-1)
+    )
+    (net C3_RTD_FN
+      (pins U3-28 PP3_17-1)
+    )
+    (net C3_RTD_SP
+      (pins U3-29 PP3_18-1)
+    )
+    (net C3_RTD_SN
+      (pins U3-30 PP3_19-1)
+    )
+    (net C4_CH0_IP
+      (pins U3-31 PP4_0-1)
+    )
+    (net C4_CH0_IN
+      (pins U3-32 PP4_1-1)
+    )
+    (net C4_CH0_VP
+      (pins U3-33 PP4_2-1)
+    )
+    (net C4_CH0_VN
+      (pins U3-34 PP4_3-1)
+    )
+    (net C4_CH1_IP
+      (pins U3-35 PP4_4-1)
+    )
+    (net C4_CH1_IN
+      (pins U3-36 PP4_5-1)
+    )
+    (net C4_CH1_VP
+      (pins U3-37 PP4_6-1)
+    )
+    (net C4_CH1_VN
+      (pins U3-39 PP4_7-1)
+    )
+    (net C4_CH2_IP
+      (pins U3-40 PP4_8-1)
+    )
+    (net C4_CH2_IN
+      (pins U3-41 PP4_9-1)
+    )
+    (net C4_CH2_VP
+      (pins U3-42 PP4_10-1)
+    )
+    (net C4_CH2_VN
+      (pins U3-43 PP4_11-1)
+    )
+    (net C4_CH3_IP
+      (pins PP4_12-1)
+    )
+    (net C4_CH3_IN
+      (pins PP4_13-1)
+    )
+    (net C4_CH3_VP
+      (pins PP4_14-1)
+    )
+    (net C4_CH3_VN
+      (pins PP4_15-1)
+    )
+    (net C4_RTD_FP
+      (pins PP4_16-1)
+    )
+    (net C4_RTD_FN
+      (pins PP4_17-1)
+    )
+    (net C4_RTD_SP
+      (pins PP4_18-1)
+    )
+    (net C4_RTD_SN
+      (pins PP4_19-1)
+    )
+    (net C5_CH0_IP
+      (pins PP5_0-1)
+    )
+    (net C5_CH0_IN
+      (pins PP5_1-1)
+    )
+    (net C5_CH0_VP
+      (pins PP5_2-1)
+    )
+    (net C5_CH0_VN
+      (pins PP5_3-1)
+    )
+    (net C5_CH1_IP
+      (pins PP5_4-1)
+    )
+    (net C5_CH1_IN
+      (pins PP5_5-1)
+    )
+    (net C5_CH1_VP
+      (pins PP5_6-1)
+    )
+    (net C5_CH1_VN
+      (pins PP5_7-1)
+    )
+    (net C5_CH2_IP
+      (pins PP5_8-1)
+    )
+    (net C5_CH2_IN
+      (pins PP5_9-1)
+    )
+    (net C5_CH2_VP
+      (pins PP5_10-1)
+    )
+    (net C5_CH2_VN
+      (pins PP5_11-1)
+    )
+    (net C5_CH3_IP
+      (pins PP5_12-1)
+    )
+    (net C5_CH3_IN
+      (pins PP5_13-1)
+    )
+    (net C5_CH3_VP
+      (pins PP5_14-1)
+    )
+    (net C5_CH3_VN
+      (pins PP5_15-1)
+    )
+    (net C5_RTD_FP
+      (pins PP5_16-1)
+    )
+    (net C5_RTD_FN
+      (pins PP5_17-1)
+    )
+    (net C5_RTD_SP
+      (pins PP5_18-1)
+    )
+    (net C5_RTD_SN
+      (pins PP5_19-1)
+    )
+    (net MUX_I_OUT
+      (pins U1-4 U1-9 U2-1)
+    )
+    (net MUX_V_OUT
+      (pins U1-5 U1-8 U3-1)
+    )
+    (net AFE_EXC_OUT
+      (pins U1-6)
+    )
+    (net AFE_EXC_RTN
+      (pins U1-7)
+    )
+    (net RTD_FORCE_P
+      (pins U4-15 U4-16 U4-20 R1-2)
+    )
+    (net RTD_FORCE_N
+      (pins U4-6 U4-14)
+    )
+    (net RTD_SENSE_P
+      (pins U4-10 C13-1)
+    )
+    (net RTD_SENSE_N
+      (pins U4-9 C13-2)
+    )
+    (net RTD_REF_P
+      (pins U4-8 R1-1 C12-1)
+    )
+    (net RTD_REF_N
+      (pins U4-7 C12-2)
+    )
+    (net SPI_SCLK
+      (pins U1-26 U2-4 U3-4 U4-4 J1-3)
+    )
+    (net SPI_MOSI
+      (pins U1-28 U2-3 U3-3 U4-2 J1-4)
+    )
+    (net SPI_MISO
+      (pins U1-27 U4-1 J1-5)
+    )
+    (net CS_AD5940
+      (pins U1-25 J1-6)
+    )
+    (net CS_MAX31865
+      (pins U4-3 J1-7)
+    )
+    (net CS_ADG731_I
+      (pins U2-2 J1-8)
+    )
+    (net CS_ADG731_V
+      (pins U3-2 J1-9)
+    )
+    (net INT_AD5940
+      (pins U1-30 R3-2 J1-10)
+    )
+    (net DRDY_MAX31865
+      (pins U4-5 R2-2)
+    )
+    (net AFE_VBIAS_CAP
+      (pins U1-19 C5-1)
+    )
+    (net AFE_AVDD
+      (pins U1-1 U1-2 U2-5 U3-5 U4-17 C1-1 C2-1 C4-1 C6-1 C7-1 C8-1 C9-1 C10-1 FB1-2)
+    )
+    (net AFE_DVDD
+      (pins U1-21 U4-19 C3-1 C11-1 FB2-2)
+    )
+    (class kicad_default GND +3V3 C1_CH0_IP C1_CH0_IN C1_CH0_VP C1_CH0_VN C1_CH1_IP C1_CH1_IN C1_CH1_VP C1_CH1_VN C1_CH2_IP C1_CH2_IN C1_CH2_VP C1_CH2_VN C1_CH3_IP C1_CH3_IN C1_CH3_VP C1_CH3_VN C1_RTD_FP C1_RTD_FN C1_RTD_SP C1_RTD_SN C2_CH0_IP C2_CH0_IN C2_CH0_VP C2_CH0_VN C2_CH1_IP C2_CH1_IN C2_CH1_VP C2_CH1_VN C2_CH2_IP C2_CH2_IN C2_CH2_VP C2_CH2_VN C2_CH3_IP C2_CH3_IN C2_CH3_VP C2_CH3_VN C2_RTD_FP C2_RTD_FN C2_RTD_SP C2_RTD_SN C3_CH0_IP C3_CH0_IN C3_CH0_VP C3_CH0_VN C3_CH1_IP C3_CH1_IN C3_CH1_VP C3_CH1_VN C3_CH2_IP C3_CH2_IN C3_CH2_VP C3_CH2_VN C3_CH3_IP C3_CH3_IN C3_CH3_VP C3_CH3_VN C3_RTD_FP C3_RTD_FN C3_RTD_SP C3_RTD_SN C4_CH0_IP C4_CH0_IN C4_CH0_VP C4_CH0_VN C4_CH1_IP C4_CH1_IN C4_CH1_VP C4_CH1_VN C4_CH2_IP C4_CH2_IN C4_CH2_VP C4_CH2_VN C4_CH3_IP C4_CH3_IN C4_CH3_VP C4_CH3_VN C4_RTD_FP C4_RTD_FN C4_RTD_SP C4_RTD_SN C5_CH0_IP C5_CH0_IN C5_CH0_VP C5_CH0_VN C5_CH1_IP C5_CH1_IN C5_CH1_VP C5_CH1_VN C5_CH2_IP C5_CH2_IN C5_CH2_VP C5_CH2_VN C5_CH3_IP C5_CH3_IN C5_CH3_VP C5_CH3_VN C5_RTD_FP C5_RTD_FN C5_RTD_SP C5_RTD_SN MUX_I_OUT MUX_V_OUT AFE_EXC_OUT AFE_EXC_RTN RTD_FORCE_P RTD_FORCE_N RTD_SENSE_P RTD_SENSE_N RTD_REF_P RTD_REF_N SPI_SCLK SPI_MOSI SPI_MISO CS_AD5940 CS_MAX31865 CS_ADG731_I CS_ADG731_V INT_AD5940 DRDY_MAX31865 AFE_VBIAS_CAP AFE_AVDD AFE_DVDD
+      (circuit (use_via "Via[0-1]_600:300_um"))
+      (rule (width 200) (clearance 180))
+    )
+  )
+  (wiring)
+)

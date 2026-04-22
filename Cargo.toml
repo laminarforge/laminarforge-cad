@@ -208,6 +208,10 @@ name = "controller_pcb"
 path = "src/bin/controller_pcb.rs"
 
 [[bin]]
+name = "teer_readout_pcb"
+path = "src/bin/teer_readout_pcb.rs"
+
+[[bin]]
 name = "controller_enclosure"
 path = "src/bin/controller_enclosure.rs"
 
