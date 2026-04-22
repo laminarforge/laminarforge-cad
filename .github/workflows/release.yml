@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-release:
+    name: Build all bins + package STLs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo + target
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: laminarforge-cad-release
+
+      - name: Build all bins (release)
+        run: cargo build --release --bins
+
+      - name: Run all bins to generate STLs
+        run: |
+          mkdir -p output
+          # Some bins may fail (missing inputs, panics) — don't abort the whole release.
+          for bin in $(cargo read-manifest | python3 -c "import json,sys; m=json.load(sys.stdin); print('\n'.join(t['name'] for t in m['targets'] if t['kind']==['bin']))"); do
+            echo "=== running $bin ==="
+            ./target/release/"$bin" || echo "(bin $bin failed, continuing)"
+          done
+
+      - name: Zip STL output
+        run: |
+          if compgen -G "output/*.stl" > /dev/null; then
+            zip -r laminarforge-cad-stls-${{ github.ref_name }}.zip output/*.stl
+          else
+            echo "No STLs produced; creating empty placeholder archive."
+            touch output/NO_STLS.txt
+            zip -r laminarforge-cad-stls-${{ github.ref_name }}.zip output/NO_STLS.txt
+          fi
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: laminarforge-cad-stls-${{ github.ref_name }}.zip
+          generate_release_notes: true
