@@ -192,3 +192,7 @@ path = "src/bin/controller_pcb.rs"
 name = "tier3_chamber"
 path = "src/bin/tier3_chamber.rs"
 
+[[bin]]
+name = "hil_harness"
+path = "src/bin/hil_harness.rs"
+
