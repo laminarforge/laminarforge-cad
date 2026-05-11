@@ -93,7 +93,8 @@ are present and non-empty. It also emits validated upload bundles under
 `fab_release/bundles/`: fabrication Gerbers/drills, assembly CSVs, and review
 artifacts. The release also includes a source snapshot bundle with the exact
 KiCad and TOML inputs used to generate the fab package. The review package
-includes a bring-up checklist generated from the configured Rev A test points.
+includes a bring-up checklist generated from the configured Rev A test points
+and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:
 

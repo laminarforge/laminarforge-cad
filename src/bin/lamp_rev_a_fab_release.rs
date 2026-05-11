@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fs;
@@ -64,6 +65,7 @@ struct Outputs {
     step_file: String,
     order_audit_file: String,
     bringup_file: String,
+    bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
     assembly_bundle: String,
@@ -878,6 +880,11 @@ fn write_manifest(
     writeln!(file, "bringup_checklist: {}", config.outputs.bringup_file)?;
     writeln!(
         file,
+        "bundle_checksums: {}",
+        config.outputs.bundle_checksums_file
+    )?;
+    writeln!(
+        file,
         "fabrication_bundle: {}",
         config.outputs.fabrication_bundle
     )?;
@@ -1077,10 +1084,20 @@ fn write_release_bundles(
         &assembly_entries,
     )?;
 
+    let source_entries = zip_entries_from_source_files(&config.source_snapshot.files)?;
+    write_zip_bundle(
+        repo_root,
+        &output_root.join(&config.outputs.source_bundle),
+        &source_entries,
+    )?;
+
+    write_bundle_checksums(config, output_root)?;
+
     let mut review_files = vec![
         config.outputs.manifest_file.as_str(),
         config.outputs.order_audit_file.as_str(),
         config.outputs.bringup_file.as_str(),
+        config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
         config.outputs.drill_report.as_str(),
@@ -1093,13 +1110,6 @@ fn write_release_bundles(
         output_root,
         &output_root.join(&config.outputs.review_bundle),
         &review_entries,
-    )?;
-
-    let source_entries = zip_entries_from_source_files(&config.source_snapshot.files)?;
-    write_zip_bundle(
-        repo_root,
-        &output_root.join(&config.outputs.source_bundle),
-        &source_entries,
     )?;
     Ok(())
 }
@@ -1140,6 +1150,39 @@ fn write_zip_bundle(
     }
     zip.finish()?;
     Ok(())
+}
+
+fn write_bundle_checksums(
+    config: &ReleaseConfig,
+    output_root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let checksum_paths = bundle_checksum_paths(config);
+    let mut file = fs::File::create(output_root.join(&config.outputs.bundle_checksums_file))?;
+    for relative in checksum_paths {
+        let digest = sha256_file(&output_root.join(&relative))?;
+        writeln!(file, "{digest}  {relative}")?;
+    }
+    Ok(())
+}
+
+fn bundle_checksum_paths(config: &ReleaseConfig) -> Vec<String> {
+    vec![
+        config.outputs.fabrication_bundle.clone(),
+        config.outputs.assembly_bundle.clone(),
+        config.outputs.source_bundle.clone(),
+    ]
+}
+
+fn sha256_file(path: &Path) -> Result<String, Box<dyn Error>> {
+    let content = fs::read(path)?;
+    if content.is_empty() {
+        return Err(format!("cannot checksum empty file {}", path.display()).into());
+    }
+    let digest = Sha256::digest(&content);
+    Ok(digest
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>())
 }
 
 fn zip_entries_from_dirs(
@@ -1244,6 +1287,7 @@ fn validate_release_outputs(
         &config.outputs.position_file,
         &config.outputs.order_audit_file,
         &config.outputs.bringup_file,
+        &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
         &config.outputs.erc_report,
@@ -1278,6 +1322,7 @@ fn validate_release_outputs(
         );
     }
     validate_release_bundles(config, output_root, &mut errors);
+    validate_bundle_checksums(config, output_root, &mut errors);
 
     if errors.is_empty() {
         Ok(())
@@ -1327,6 +1372,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.manifest_file.as_str(),
         config.outputs.order_audit_file.as_str(),
         config.outputs.bringup_file.as_str(),
+        config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
         config.outputs.drill_report.as_str(),
@@ -1363,6 +1409,63 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         "source snapshot bundle",
         errors,
     );
+}
+
+fn validate_bundle_checksums(config: &ReleaseConfig, output_root: &Path, errors: &mut Vec<String>) {
+    let checksum_path = output_root.join(&config.outputs.bundle_checksums_file);
+    validate_nonempty_file(&checksum_path, errors);
+
+    let content = match fs::read_to_string(&checksum_path) {
+        Ok(content) => content,
+        Err(err) => {
+            errors.push(format!(
+                "failed to read bundle checksum manifest {}: {err}",
+                checksum_path.display()
+            ));
+            return;
+        }
+    };
+
+    let mut actual = BTreeMap::new();
+    for (line_number, line) in content.lines().enumerate() {
+        let Some((digest, relative)) = line.split_once("  ") else {
+            errors.push(format!(
+                "bundle checksum manifest line {} is not '<sha256>  <path>': {}",
+                line_number + 1,
+                line
+            ));
+            continue;
+        };
+        actual.insert(relative.to_string(), digest.to_string());
+    }
+
+    for relative in bundle_checksum_paths(config) {
+        let expected_digest = match sha256_file(&output_root.join(&relative)) {
+            Ok(digest) => digest,
+            Err(err) => {
+                errors.push(format!("failed to compute checksum for {relative}: {err}"));
+                continue;
+            }
+        };
+        match actual.get(&relative) {
+            Some(actual_digest) if actual_digest == &expected_digest => {}
+            Some(actual_digest) => errors.push(format!(
+                "checksum mismatch for {relative}: manifest {actual_digest}, actual {expected_digest}"
+            )),
+            None => errors.push(format!("checksum manifest is missing {relative}")),
+        }
+    }
+
+    let expected_paths = bundle_checksum_paths(config)
+        .into_iter()
+        .collect::<BTreeSet<_>>();
+    for relative in actual.keys() {
+        if !expected_paths.contains(relative) {
+            errors.push(format!(
+                "checksum manifest contains unexpected bundle {relative}"
+            ));
+        }
+    }
 }
 
 fn validate_zip_entries(
