@@ -1,0 +1,32 @@
+(footprint "TESTPOINT_SMD_1.5MM"
+	(version 20260206)
+	(generator "laminarforge")
+	(generator_version "1.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -1.8 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "TESTPOINT_SMD_1.5MM"
+		(at 0 1.8 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.1)
+			)
+		)
+	)
+	(attr smd exclude_from_pos_files)
+	(pad "1" smd circle
+		(at 0 0)
+		(size 1.5 1.5)
+		(layers "F.Cu" "F.Mask")
+	)
+)

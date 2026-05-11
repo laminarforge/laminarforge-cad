@@ -15,7 +15,7 @@ workflow.
 - `optical_mode.md`: human-readable optical-mode decision and bench validation gate.
 - `placement.toml`: locked starting refs, coordinates, test points, and eight-slot optical geometry.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
-- `lamp_rev_a.kicad_pcb`: KiCad board seed with the Rev A outline and 4-layer stack.
+- `lamp_rev_a.kicad_pcb`: materialized KiCad board with the Rev A outline, 4-layer stack, placed footprints, test points, and optical-slot guides.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.
 - `sym-lib-table` / `fp-lib-table`: project-local library tables pointing at the locked `pcb/lib/lcsc` symbols and footprints.
 - `lamp_rev_a.kicad_dru`: custom KiCad design rules for power, heater, analog, and USB constraints.
@@ -30,10 +30,11 @@ schematic and PCB layout.
 contract.toml + parts.toml
   -> cargo run --release --bin lamp_pcba_check
   -> placement.toml refs and zone checks
+  -> cargo run --release --bin lamp_rev_a_materialize_board
   -> KiCad schematic capture in lamp_rev_a.kicad_sch
   -> KiCad ERC
   -> footprint/BOM/JLC field lock
-  -> KiCad placement using the board zones in contract.toml
+  -> KiCad placement cleanup from the materialized board
   -> KiCad interactive routing
   -> KiCad DRC + schematic/PCB parity
   -> KiBot/KiKit fab outputs
@@ -60,13 +61,14 @@ Run:
 
 ```bash
 cargo run --release --bin lamp_pcba_check
+cargo run --release --bin lamp_rev_a_materialize_board
 cargo run --release --bin lamp_rev_a_fab_preview
 ```
 
 The current schematic is an architecture shell, not a fabrication-ready circuit.
-The checker should not report fab-blocking part-selection gaps. Remaining work
-is schematic capture from the locked refs, KiCad placement materialization,
-routing, and bench validation.
+The checker should not report fab-blocking part-selection gaps. The board now
+materializes all selected parts into KiCad, but DRC is not clean yet; the active
+work is placement cleanup, pin/net assignment, routing, and bench validation.
 
 Current KiCad checks:
 

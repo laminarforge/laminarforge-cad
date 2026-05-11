@@ -38,6 +38,9 @@ jobs:
       - name: cargo build --release
         run: cargo build --release
 
+      - name: LAMP Rev A materialize KiCad board
+        run: cargo run --release --bin lamp_rev_a_materialize_board
+
       - name: LAMP Rev A PCBA contract check
         run: cargo run --release --bin lamp_pcba_check
 

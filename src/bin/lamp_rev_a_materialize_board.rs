@@ -1,0 +1,656 @@
+#![allow(dead_code)]
+
+use serde::Deserialize;
+use std::collections::BTreeMap;
+use std::error::Error;
+use std::fmt::Write as _;
+use std::fs;
+use std::path::{Path, PathBuf};
+
+const CONTRACT_PATH: &str = "pcb/lamp_rev_a/contract.toml";
+const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
+const PLACEMENT_PATH: &str = "pcb/lamp_rev_a/placement.toml";
+const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
+
+#[derive(Debug, Deserialize)]
+struct Contract {
+    board: Board,
+    stackup: Stackup,
+    zones: Vec<Zone>,
+    nets: Vec<Net>,
+    #[serde(default)]
+    net_groups: Vec<NetGroup>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Board {
+    width_mm: f64,
+    height_mm: f64,
+    thickness_mm: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct Stackup {
+    copper_layers: Vec<String>,
+    ground_plane_layer: String,
+    power_plane_layer: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct Zone {
+    name: String,
+    purpose: String,
+    x_min_mm: f64,
+    x_max_mm: f64,
+    y_min_mm: f64,
+    y_max_mm: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct Net {
+    name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct NetGroup {
+    prefix: String,
+    count: u32,
+}
+
+#[derive(Debug, Deserialize)]
+struct PartsManifest {
+    schematic: SchematicSource,
+    selected_parts: Vec<SelectedPart>,
+}
+
+#[derive(Debug, Deserialize)]
+struct SchematicSource {
+    footprint_library: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SelectedPart {
+    id: String,
+    module: String,
+    value: String,
+    footprint: String,
+    lcsc_part: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct PlacementPlan {
+    placements: Vec<FootprintPlacement>,
+    test_points: Vec<TestPointPlacement>,
+    optical_slots: Vec<OpticalSlotPlacement>,
+}
+
+#[derive(Debug, Deserialize)]
+struct FootprintPlacement {
+    reference: String,
+    part_id: String,
+    zone: String,
+    x_mm: f64,
+    y_mm: f64,
+    rotation_deg: f64,
+    side: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct TestPointPlacement {
+    name: String,
+    net: String,
+    x_mm: f64,
+    y_mm: f64,
+    side: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpticalSlotPlacement {
+    slot: u32,
+    x_mm: f64,
+    y_mm: f64,
+    emitter_ref: String,
+    detector_ref: String,
+    driver_ref: String,
+    led_resistor_ref: String,
+    base_resistor_ref: String,
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let root = std::env::current_dir()?;
+    let contract = read_toml::<Contract>(&root.join(CONTRACT_PATH))?;
+    let parts = read_toml::<PartsManifest>(&root.join(PARTS_PATH))?;
+    let placement = read_toml::<PlacementPlan>(&root.join(PLACEMENT_PATH))?;
+    let nets = expand_nets(&contract);
+
+    let board = render_board(&root, &contract, &parts, &placement, &nets)?;
+    fs::write(root.join(BOARD_PATH), board)?;
+
+    println!("Materialized LAMP Rev A KiCad board:");
+    println!("  {BOARD_PATH}");
+    println!("  footprints: {}", placement.placements.len());
+    println!("  test points: {}", placement.test_points.len());
+    println!("  nets: {}", nets.len());
+    Ok(())
+}
+
+fn read_toml<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, Box<dyn Error>> {
+    let content = fs::read_to_string(path)?;
+    Ok(toml::from_str(&content)?)
+}
+
+fn expand_nets(contract: &Contract) -> Vec<String> {
+    let mut names = contract
+        .nets
+        .iter()
+        .map(|net| net.name.clone())
+        .collect::<Vec<_>>();
+    for group in &contract.net_groups {
+        for index in 0..group.count {
+            names.push(format!("{}{}", group.prefix, index));
+        }
+    }
+    names
+}
+
+fn render_board(
+    root: &Path,
+    contract: &Contract,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    nets: &[String],
+) -> Result<String, Box<dyn Error>> {
+    let mut counter = UuidCounter::default();
+    let net_ids = net_ids(nets);
+    let part_by_id = parts
+        .selected_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+
+    let mut board = String::new();
+    write_header(&mut board, contract, nets)?;
+    write_board_geometry(&mut board, contract, &mut counter)?;
+    write_zone_guides(&mut board, contract, &mut counter)?;
+    write_optical_guides(&mut board, placement, &mut counter)?;
+
+    let footprint_dir = resolve_footprint_dir(root, &parts.schematic.footprint_library)?;
+    for item in &placement.placements {
+        let part = part_by_id.get(item.part_id.as_str()).ok_or_else(|| {
+            format!(
+                "placement {} references unknown part {}",
+                item.reference, item.part_id
+            )
+        })?;
+        write_placed_footprint(&mut board, &footprint_dir, item, part, &mut counter)?;
+    }
+
+    for point in &placement.test_points {
+        write_test_point(&mut board, point, &net_ids, &mut counter)?;
+    }
+
+    board.push_str(")\n");
+    Ok(board)
+}
+
+fn write_header(
+    board: &mut String,
+    contract: &Contract,
+    nets: &[String],
+) -> Result<(), Box<dyn Error>> {
+    writeln!(
+        board,
+        r#"(kicad_pcb
+  (version 20240108)
+  (generator "laminarforge_lamp_rev_a_materializer")
+  (generator_version "1.0")
+  (general
+    (thickness {})
+    (legacy_teardrops no)
+  )
+  (paper "A4")
+  (layers"#,
+        fmt(contract.board.thickness_mm)
+    )?;
+
+    for layer in &contract.stackup.copper_layers {
+        match layer.as_str() {
+            "F.Cu" => writeln!(board, r#"    (0 "F.Cu" signal)"#)?,
+            "In1.Cu" => writeln!(
+                board,
+                r#"    (1 "In1.Cu" power "{}")"#,
+                contract.stackup.ground_plane_layer
+            )?,
+            "In2.Cu" => writeln!(
+                board,
+                r#"    (2 "In2.Cu" power "{}")"#,
+                contract.stackup.power_plane_layer
+            )?,
+            "B.Cu" => writeln!(board, r#"    (31 "B.Cu" signal)"#)?,
+            other => return Err(format!("unsupported copper layer {other}").into()),
+        }
+    }
+
+    board.push_str(
+        r#"    (32 "B.Adhes" user "B.Adhesive")
+    (33 "F.Adhes" user "F.Adhesive")
+    (34 "B.Paste" user)
+    (35 "F.Paste" user)
+    (36 "B.SilkS" user "B.Silkscreen")
+    (37 "F.SilkS" user "F.Silkscreen")
+    (38 "B.Mask" user)
+    (39 "F.Mask" user)
+    (40 "Dwgs.User" user "User.Drawings")
+    (41 "Cmts.User" user "User.Comments")
+    (42 "Eco1.User" user "User.Eco1")
+    (43 "Eco2.User" user "User.Eco2")
+    (44 "Edge.Cuts" user)
+    (45 "Margin" user)
+    (46 "B.CrtYd" user "B.Courtyard")
+    (47 "F.CrtYd" user "F.Courtyard")
+    (48 "B.Fab" user "B.Fabrication")
+    (49 "F.Fab" user "F.Fabrication")
+  )
+  (setup
+    (pad_to_mask_clearance 0)
+    (allow_soldermask_bridges_in_footprints yes)
+    (pcbplotparams
+      (layerselection 0x00010fc_ffffffff)
+      (plot_on_all_layers_selection 0x0000000_00000000)
+      (disableapertmacros no)
+      (usegerberextensions yes)
+      (usegerberattributes yes)
+      (usegerberadvancedattributes yes)
+      (creategerberjobfile yes)
+      (plotframeref no)
+      (viasonmask no)
+      (mode 1)
+      (useauxorigin no)
+      (dxf_units mm)
+      (dxfpolygonmode yes)
+      (dxfimperialunits no)
+      (dxfusepcbnewfont yes)
+      (plotreference yes)
+      (plotvalue yes)
+      (plotfptext yes)
+      (subtractmaskfromsilk yes)
+      (outputformat 1)
+      (mirror no)
+      (drillshape 0)
+      (scaleselection 1)
+      (outputdirectory "fab/gerbers/")
+    )
+  )
+  (net 0 "")
+"#,
+    );
+
+    for (index, net) in nets.iter().enumerate() {
+        writeln!(board, r#"  (net {} "{}")"#, index + 1, escape(net))?;
+    }
+    Ok(())
+}
+
+fn write_board_geometry(
+    board: &mut String,
+    contract: &Contract,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    writeln!(
+        board,
+        r#"  (gr_rect
+    (start 0 0)
+    (end {} {})
+    (stroke (width 0.1) (type solid))
+    (fill none)
+    (layer "Edge.Cuts")
+    (uuid "{}")
+  )"#,
+        fmt(contract.board.width_mm),
+        fmt(contract.board.height_mm),
+        counter.next()
+    )?;
+    write_text(
+        board,
+        "LaminarForge LAMP Rev A",
+        contract.board.width_mm / 2.0,
+        contract.board.height_mm - 2.0,
+        "F.SilkS",
+        1.2,
+        counter,
+    )?;
+    write_text(
+        board,
+        "CERN-OHL-S v2",
+        contract.board.width_mm / 2.0,
+        contract.board.height_mm - 4.0,
+        "F.SilkS",
+        1.0,
+        counter,
+    )?;
+    Ok(())
+}
+
+fn write_zone_guides(
+    board: &mut String,
+    contract: &Contract,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    for zone in &contract.zones {
+        writeln!(
+            board,
+            r#"  (gr_rect
+    (start {} {})
+    (end {} {})
+    (stroke (width 0.05) (type dash))
+    (fill none)
+    (layer "Dwgs.User")
+    (uuid "{}")
+  )"#,
+            fmt(zone.x_min_mm),
+            fmt(zone.y_min_mm),
+            fmt(zone.x_max_mm),
+            fmt(zone.y_max_mm),
+            counter.next()
+        )?;
+        write_text(
+            board,
+            &format!("{}: {}", zone.name, zone.purpose),
+            zone.x_min_mm + 1.0,
+            zone.y_min_mm + 2.0,
+            "Dwgs.User",
+            0.75,
+            counter,
+        )?;
+    }
+    Ok(())
+}
+
+fn write_optical_guides(
+    board: &mut String,
+    placement: &PlacementPlan,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    for slot in &placement.optical_slots {
+        writeln!(
+            board,
+            r#"  (gr_circle
+    (center {} {})
+    (end {} {})
+    (stroke (width 0.05) (type solid))
+    (fill none)
+    (layer "Dwgs.User")
+    (uuid "{}")
+  )"#,
+            fmt(slot.x_mm),
+            fmt(slot.y_mm),
+            fmt(slot.x_mm + 2.5),
+            fmt(slot.y_mm),
+            counter.next()
+        )?;
+        write_text(
+            board,
+            &format!("S{}", slot.slot),
+            slot.x_mm - 1.2,
+            slot.y_mm + 0.35,
+            "Dwgs.User",
+            0.6,
+            counter,
+        )?;
+    }
+    Ok(())
+}
+
+fn write_placed_footprint(
+    board: &mut String,
+    footprint_dir: &Path,
+    item: &FootprintPlacement,
+    part: &SelectedPart,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    if item.side != "top" {
+        return Err(format!("{} is on unsupported side {}", item.reference, item.side).into());
+    }
+
+    let footprint_name = footprint_name(&part.footprint)?;
+    let path = footprint_dir.join(format!("{footprint_name}.kicad_mod"));
+    let source = fs::read_to_string(&path)
+        .map_err(|error| format!("failed to read footprint {}: {error}", path.display()))?;
+    if source.contains("(module ") {
+        return Err(format!(
+            "{} is still in legacy module syntax; run kicad-cli fp upgrade on pcb/lib/lcsc.pretty",
+            path.display()
+        )
+        .into());
+    }
+
+    let mut footprint = rewrite_footprint_name(&source, &part.footprint)?;
+    footprint = replace_property_value(&footprint, "Reference", &item.reference)?;
+    footprint = replace_property_value(&footprint, "Value", &part.value)?;
+    footprint = rewrite_uuids(&footprint, counter);
+    footprint = insert_placement_metadata(&footprint, item, part, counter)?;
+    footprint = demote_footprint_silkscreen(&footprint);
+
+    board.push('\n');
+    for line in footprint.lines() {
+        writeln!(board, "  {line}")?;
+    }
+    Ok(())
+}
+
+fn write_test_point(
+    board: &mut String,
+    point: &TestPointPlacement,
+    net_ids: &BTreeMap<&str, usize>,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    if point.side != "top" {
+        return Err(format!("{} is on unsupported side {}", point.name, point.side).into());
+    }
+    let net_id = *net_ids.get(point.net.as_str()).ok_or_else(|| {
+        format!(
+            "test point {} references unknown net {}",
+            point.name, point.net
+        )
+    })?;
+    writeln!(
+        board,
+        r#"
+  (footprint "lcsc:TESTPOINT_SMD_1.5MM"
+    (layer "F.Cu")
+    (at {} {} 0)
+    (tstamp "{}")
+    (property "Reference" "{}" (at 0 -1.8 0) (layer "F.Fab") (uuid "{}") (effects (font (size 0.8 0.8) (thickness 0.1))))
+    (property "Value" "{}" (at 0 1.8 0) (layer "F.Fab") (uuid "{}") (effects (font (size 0.8 0.8) (thickness 0.1))))
+    (attr smd exclude_from_pos_files)
+    (pad "1" smd circle (at 0 0) (size 1.5 1.5) (layers "F.Cu" "F.Mask") (net {} "{}") (uuid "{}"))
+  )"#,
+        fmt(point.x_mm),
+        fmt(point.y_mm),
+        counter.next(),
+        escape(&point.name),
+        counter.next(),
+        escape(&point.net),
+        counter.next(),
+        net_id,
+        escape(&point.net),
+        counter.next()
+    )?;
+    Ok(())
+}
+
+fn write_text(
+    board: &mut String,
+    text: &str,
+    x: f64,
+    y: f64,
+    layer: &str,
+    size: f64,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    writeln!(
+        board,
+        r#"  (gr_text "{}"
+    (at {} {} 0)
+    (layer "{}")
+    (uuid "{}")
+    (effects (font (size {} {}) (thickness 0.1)))
+  )"#,
+        escape(text),
+        fmt(x),
+        fmt(y),
+        layer,
+        counter.next(),
+        fmt(size),
+        fmt(size)
+    )?;
+    Ok(())
+}
+
+fn resolve_footprint_dir(root: &Path, manifest_path: &str) -> Result<PathBuf, Box<dyn Error>> {
+    let dir = root.join("pcb/lamp_rev_a").join(manifest_path);
+    if !dir.is_dir() {
+        return Err(format!("footprint library path does not exist: {}", dir.display()).into());
+    }
+    Ok(dir)
+}
+
+fn footprint_name(footprint: &str) -> Result<&str, Box<dyn Error>> {
+    footprint
+        .split_once(':')
+        .map(|(_, name)| name)
+        .ok_or_else(|| format!("footprint {footprint} must include a library prefix").into())
+}
+
+fn rewrite_footprint_name(source: &str, footprint: &str) -> Result<String, Box<dyn Error>> {
+    let rest = source
+        .strip_prefix("(footprint ")
+        .ok_or_else(|| "footprint file must start with (footprint".to_string())?;
+    let quote_start = rest
+        .find('"')
+        .ok_or_else(|| "footprint name is missing opening quote".to_string())?;
+    let name_start = quote_start + 1;
+    let name_end = rest[name_start..]
+        .find('"')
+        .map(|index| name_start + index)
+        .ok_or_else(|| "footprint name is missing closing quote".to_string())?;
+    let mut out = String::new();
+    out.push_str("(footprint \"");
+    out.push_str(&escape(footprint));
+    out.push('"');
+    out.push_str(&rest[name_end + 1..]);
+    Ok(out)
+}
+
+fn replace_property_value(
+    source: &str,
+    property: &str,
+    value: &str,
+) -> Result<String, Box<dyn Error>> {
+    let needle = format!("(property \"{}\" \"", escape(property));
+    let start = source
+        .find(&needle)
+        .ok_or_else(|| format!("footprint is missing property {property}"))?;
+    let value_start = start + needle.len();
+    let value_end = source[value_start..]
+        .find('"')
+        .map(|index| value_start + index)
+        .ok_or_else(|| format!("footprint property {property} has no closing quote"))?;
+    let mut out = String::new();
+    out.push_str(&source[..value_start]);
+    out.push_str(&escape(value));
+    out.push_str(&source[value_end..]);
+    Ok(out)
+}
+
+fn rewrite_uuids(source: &str, counter: &mut UuidCounter) -> String {
+    let needle = "(uuid \"";
+    let mut out = String::with_capacity(source.len());
+    let mut cursor = 0;
+    while let Some(relative) = source[cursor..].find(needle) {
+        let start = cursor + relative;
+        let value_start = start + needle.len();
+        let Some(value_end_relative) = source[value_start..].find('"') else {
+            break;
+        };
+        let value_end = value_start + value_end_relative;
+        out.push_str(&source[cursor..value_start]);
+        out.push_str(&counter.next());
+        cursor = value_end;
+    }
+    out.push_str(&source[cursor..]);
+    out
+}
+
+fn insert_placement_metadata(
+    source: &str,
+    item: &FootprintPlacement,
+    part: &SelectedPart,
+    counter: &mut UuidCounter,
+) -> Result<String, Box<dyn Error>> {
+    let layer_marker = "(layer \"F.Cu\")";
+    let layer_start = source
+        .find(layer_marker)
+        .ok_or_else(|| "footprint is missing F.Cu layer marker".to_string())?;
+    let insert_at = source[layer_start..]
+        .find('\n')
+        .map(|index| layer_start + index + 1)
+        .ok_or_else(|| "footprint layer marker is not line terminated".to_string())?;
+
+    let metadata = format!(
+        "\t(at {} {} {})\n\t(tstamp \"{}\")\n\t(property \"LCSC Part\" \"{}\" (at 0 5.5 0) (layer \"F.Fab\") (hide yes) (uuid \"{}\") (effects (font (size 0.8 0.8))))\n\t(property \"Part Group\" \"{}\" (at 0 6.5 0) (layer \"F.Fab\") (hide yes) (uuid \"{}\") (effects (font (size 0.8 0.8))))\n\t(property \"Module\" \"{}\" (at 0 7.5 0) (layer \"F.Fab\") (hide yes) (uuid \"{}\") (effects (font (size 0.8 0.8))))\n\t(property \"Zone\" \"{}\" (at 0 8.5 0) (layer \"F.Fab\") (hide yes) (uuid \"{}\") (effects (font (size 0.8 0.8))))\n",
+        fmt(item.x_mm),
+        fmt(item.y_mm),
+        fmt(item.rotation_deg),
+        counter.next(),
+        escape(&part.lcsc_part),
+        counter.next(),
+        escape(&part.id),
+        counter.next(),
+        escape(&part.module),
+        counter.next(),
+        escape(&item.zone),
+        counter.next()
+    );
+
+    let mut out = String::new();
+    out.push_str(&source[..insert_at]);
+    out.push_str(&metadata);
+    out.push_str(&source[insert_at..]);
+    Ok(out)
+}
+
+fn demote_footprint_silkscreen(source: &str) -> String {
+    source.replace(r#""F.SilkS""#, r#""F.Fab""#)
+}
+
+fn net_ids(nets: &[String]) -> BTreeMap<&str, usize> {
+    nets.iter()
+        .enumerate()
+        .map(|(index, net)| (net.as_str(), index + 1))
+        .collect()
+}
+
+fn fmt(value: f64) -> String {
+    if (value.fract()).abs() < 1e-9 {
+        format!("{value:.0}")
+    } else {
+        format!("{value:.3}")
+    }
+}
+
+fn escape(value: &str) -> String {
+    value.replace('\\', "\\\\").replace('"', "\\\"")
+}
+
+#[derive(Default)]
+struct UuidCounter {
+    next_value: usize,
+}
+
+impl UuidCounter {
+    fn next(&mut self) -> String {
+        self.next_value += 1;
+        format!("00000000-0000-4000-8000-{:012x}", self.next_value)
+    }
+}

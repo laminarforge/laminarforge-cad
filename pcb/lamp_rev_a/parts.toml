@@ -1,8 +1,8 @@
 [package]
 name = "lamp_rev_a_parts"
-ticket = "T-44DA2427"
+ticket = "T-ADC0BC73"
 revision = "Rev A"
-source_stage = "placement_locked"
+source_stage = "materialized_board"
 
 [schematic]
 root_file = "lamp_rev_a.kicad_sch"
