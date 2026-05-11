@@ -659,14 +659,14 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  Drawing Rev:    A (initial release)\n");
     drawing.push_str("  Date:           2026-02-26\n");
     drawing.push_str("  Units:          millimeters (mm)\n");
     drawing.push_str("  Origin:         Geometric center of FCB\n");
     drawing.push_str("  Coordinate:     X = long axis, Y = short axis, Z = thickness axis\n");
     drawing.push_str("  Tolerances:     See Section 8\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 1: Overall Dimensions
     drawing.push_str(
@@ -676,12 +676,12 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str(&format!(
         "  FCB Overall:      {:.0}mm x {:.0}mm x {:.0}mm (two bonded {:.0}mm plates)\n",
         length, width, FCB16_TOTAL_THICKNESS, plate_t
     ));
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  PART 1 -- BOTTOM PLATE (channel plate)\n");
     drawing.push_str(&format!("    Length (X):     {:.0} mm\n", length));
     drawing.push_str(&format!("    Width  (Y):     {:.0} mm\n", width));
@@ -689,7 +689,7 @@ fn main() {
     drawing.push_str("    Z range:        -3.0 to 0.0 mm\n");
     drawing.push_str("    Features:       Channels milled into TOP face (Z ~ 0)\n");
     drawing.push_str("    Material:       Cast PMMA (acrylic), optically clear\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  PART 2 -- TOP PLATE (port plate)\n");
     drawing.push_str(&format!("    Length (X):     {:.0} mm\n", length));
     drawing.push_str(&format!("    Width  (Y):     {:.0} mm\n", width));
@@ -697,7 +697,7 @@ fn main() {
     drawing.push_str("    Z range:        0.0 to +3.0 mm\n");
     drawing.push_str("    Features:       Through-holes + O-ring grooves on TOP face\n");
     drawing.push_str("    Material:       Cast PMMA (acrylic), optically clear\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  PART 3 -- CLAMP PLATE (optional accessory)\n");
     drawing.push_str(&format!("    Length (X):     {:.2} mm\n", clamp_length));
     drawing.push_str(&format!("    Width  (Y):     {:.2} mm\n", clamp_width_dim));
@@ -707,12 +707,12 @@ fn main() {
         window_x, window_y
     ));
     drawing.push_str("    Material:       Cast PMMA (acrylic)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  ASSEMBLY:\n");
     drawing.push_str("    Bond bottom plate to top plate with Weld-On 3 solvent cement.\n");
     drawing.push_str("    Chip (127.76 x 85.48 mm) sits centered on top face of FCB.\n");
     drawing.push_str("    Secured with clamp plate + M3 bolts through clamp holes.\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 2: Port Coordinates
     drawing.push_str(
@@ -722,13 +722,13 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str(&format!(
         "  Port diameter:    {:.2} mm (all ports)\n",
         port_dia
     ));
     drawing.push_str("  Port type:        Through-hole, both plates\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Input ports
     drawing.push_str("  INPUT PORTS (4, left edge):\n");
@@ -743,7 +743,7 @@ fn main() {
             iy
         ));
     }
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Output ports
     drawing.push_str("  OUTPUT PORTS (2, right edge):\n");
@@ -758,7 +758,7 @@ fn main() {
             oy
         ));
     }
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Chip interface ports
     drawing.push_str("  CHIP INTERFACE PORTS (32: 16 inlet + 16 outlet):\n");
@@ -772,7 +772,7 @@ fn main() {
         ));
         ch_num += 1;
     }
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Valve ports
     drawing.push_str("  VALVE PORTS (32: 16 OUT + 16 RETURN, bottom edge):\n");
@@ -787,14 +787,14 @@ fn main() {
         ));
         ch_num += 1;
     }
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  TOTAL THROUGH-HOLES: 68\n");
     drawing.push_str("    Input ports:         4\n");
     drawing.push_str("    Output ports:        2\n");
     drawing.push_str("    Chip interface:      32 (16 inlet + 16 outlet)\n");
     drawing.push_str("    Valve ports:         32 (16 OUT + 16 RETURN)\n");
     drawing.push_str("    (All ports present in BOTH plates)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 3: Channel Dimensions and Routing
     drawing.push_str(
@@ -804,10 +804,10 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  All channels milled into TOP face of bottom plate only.\n");
     drawing.push_str("  Sealed by bonding top plate on top.\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str(&format!(
         "  Bus channel:          {:.1}mm W x {:.1}mm D (500um x 300um)\n",
         bus_w, bus_d
@@ -820,30 +820,30 @@ fn main() {
         "  Outlet collection ch: {:.1}mm W x {:.1}mm D (500um x 200um)\n",
         out_w, out_d
     ));
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  DISTRIBUTION ROUTING (per chamber):\n");
     drawing.push_str("    1. Bus tap: horizontal at bus_y from bus to distribution X offset\n");
     drawing.push_str("    2. Segment A: vertical from bus_y down to valve OUT port\n");
     drawing.push_str("    3. [External solenoid pinch valve on silicone tubing]\n");
     drawing.push_str("    4. Segment B: vertical from valve RETURN port up to chip inlet\n");
     drawing.push_str("    5. Horizontal connector at inlet_y if valve return X != col X\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  Distribution X offsets (within each column, to avoid crossing):\n");
     drawing.push_str("    Row 3 channel: col_x - 7.5 mm (shortest path)\n");
     drawing.push_str("    Row 2 channel: col_x - 2.5 mm\n");
     drawing.push_str("    Row 1 channel: col_x + 2.5 mm\n");
     drawing.push_str("    Row 0 channel: col_x + 7.5 mm (longest path)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  OUTLET ROUTING (per chamber):\n");
     drawing.push_str("    1. Horizontal connector from col_x to outlet_route_x at outlet_y\n");
     drawing.push_str("    2. Vertical from outlet_y up to collector manifold at Y = +47\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  Outlet X offsets (within each column, to avoid crossing):\n");
     drawing.push_str("    Row 0: col_x - 1.5 mm (closest to collector)\n");
     drawing.push_str("    Row 1: col_x - 0.5 mm\n");
     drawing.push_str("    Row 2: col_x + 0.5 mm\n");
     drawing.push_str("    Row 3: col_x + 1.5 mm (longest path)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 4: Bus Layout
     drawing.push_str(
@@ -853,7 +853,7 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str(&format!("  Horizontal shared bus at Y = {:.1} mm\n", bus_y));
     drawing.push_str(&format!(
         "  Runs from X = {:.1} (input port) to X = {:.1} (rightmost column)\n",
@@ -864,7 +864,7 @@ fn main() {
         "  Bus dimensions:     {:.1}mm W x {:.1}mm D\n",
         bus_w, bus_d
     ));
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  Input feed channels: 4 vertical channels from input ports down to bus\n");
     for (i, &iy) in input_ys.iter().enumerate() {
         drawing.push_str(&format!(
@@ -877,7 +877,7 @@ fn main() {
             (iy - bus_y).abs()
         ));
     }
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str(&format!(
         "  Collector manifold at Y = {:.1} mm\n",
         collector_y
@@ -888,7 +888,7 @@ fn main() {
         output_x
     ));
     drawing.push_str(&format!("  Collector length:   {:.1} mm\n", collector_len));
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 5: O-ring Groove Specs
     drawing.push_str(
@@ -898,7 +898,7 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing
         .push_str("  Location:         Top face of top plate, around each chip interface port\n");
     drawing.push_str("  Number:           32 grooves (16 inlet + 16 outlet)\n");
@@ -914,7 +914,7 @@ fn main() {
     ));
     drawing.push_str("  O-ring spec:      AS568-003 or custom (1.78mm CS, ~2mm ID)\n");
     drawing.push_str("  Material:         FKM (Viton) or silicone, Shore 70A\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 6: Mounting Hole Positions
     drawing.push_str(
@@ -924,13 +924,13 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str(&format!(
         "  Hole diameter:    {:.1} mm (M3 clearance, ISO 273)\n",
         mount_dia
     ));
     drawing.push_str("  Hole type:        Through-hole, both plates\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  CHIP CLAMP HOLES (4) -- secure chip + clamp plate:\n");
     drawing.push_str(&format!(
         "    Positioned {:.0}mm outside chip footprint edges\n",
@@ -946,7 +946,7 @@ fn main() {
             my
         ));
     }
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  BASEPLATE HOLES (4) -- secure FCB to baseplate:\n");
     drawing.push_str(&format!(
         "    Positioned {:.0}mm from FCB edges\n",
@@ -962,7 +962,7 @@ fn main() {
             my
         ));
     }
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 7: Material Spec
     drawing.push_str(
@@ -972,7 +972,7 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing
         .push_str("  Material:       Cast PMMA (polymethyl methacrylate), also known as acrylic\n");
     drawing.push_str("  Grade:          Cell culture grade, optically clear\n");
@@ -982,17 +982,17 @@ fn main() {
     drawing.push_str("    - Cast (NOT extruded) -- required for solvent bonding with Weld-On 3\n");
     drawing.push_str("    - Optically clear -- required for fluorescence microscopy\n");
     drawing.push_str("    - Biocompatible -- no cytotoxic additives\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  Bottom plate stock: 3.0 mm thick cast PMMA sheet\n");
     drawing.push_str("  Top plate stock:    3.0 mm thick cast PMMA sheet\n");
     drawing.push_str("  Clamp plate stock:  3.0 mm thick cast PMMA sheet\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  Bonding agent:  Weld-On 3 (IPS Adhesives)\n");
     drawing.push_str("    - Capillary-action solvent cement for acrylic-to-acrylic bonding\n");
     drawing.push_str("    - Apply via syringe along plate edge, wicks into joint\n");
     drawing.push_str("    - Cure time: 24-48 hours before use\n");
     drawing.push_str("    - Achieves hermetic seal at microfluidic pressures (<10 psi)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 8: Tolerances
     drawing.push_str(
@@ -1002,7 +1002,7 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  Dimension                       Tolerance       Notes\n");
     drawing
         .push_str("  ----------------------------    -----------     -------------------------\n");
@@ -1020,13 +1020,13 @@ fn main() {
     drawing.push_str("  Mounting hole diameter           +/- 0.10 mm     M3 clearance\n");
     drawing.push_str("  Surface roughness (channels)    Ra < 0.4 um     Flow uniformity\n");
     drawing.push_str("  Surface roughness (mating face) Ra < 0.2 um     Bonding surface\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  CRITICAL DIMENSIONS:\n");
     drawing.push_str("  - Bus depth (300 um +/- 25 um): Primary feed channel, affects all flow.\n");
     drawing.push_str("  - Distribution depth (200 um +/- 25 um): Per-chamber flow uniformity.\n");
     drawing.push_str("  - O-ring groove depth (500 um +/- 25 um): Must seal against chip ports.\n");
     drawing.push_str("  - Mating surface flatness: < 5 um across full 180x140mm plate.\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
 
     // Section 9: Machinist Notes
     drawing.push_str(
@@ -1036,13 +1036,13 @@ fn main() {
     drawing.push_str(
         "================================================================================\n",
     );
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  End mills required:\n");
     drawing.push_str("    - 0.5 mm flat end mill -- bus + distribution + outlet channels\n");
     drawing.push_str("    - 0.75 mm flat end mill -- O-ring grooves (annular pockets)\n");
     drawing.push_str("    - 1.5 mm drill bit -- all port through-holes (68 total)\n");
     drawing.push_str("    - 3.2 mm drill bit -- mounting holes (8 total)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  BOTTOM PLATE milling strategy:\n");
     drawing.push_str("    1. Fixture 3 mm PMMA stock on vacuum table\n");
     drawing.push_str("    2. Face mill top surface for flatness\n");
@@ -1052,7 +1052,7 @@ fn main() {
     drawing.push_str("    6. Drill all 68 through-holes (1.5 mm dia)\n");
     drawing.push_str("    7. Drill 8 mounting holes (3.2 mm dia)\n");
     drawing.push_str("    8. Profile cut plate outline (180 x 140 mm)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  TOP PLATE milling strategy:\n");
     drawing.push_str("    1. Fixture 3 mm PMMA stock on vacuum table\n");
     drawing.push_str("    2. Face mill top surface for flatness\n");
@@ -1060,20 +1060,20 @@ fn main() {
     drawing.push_str("    4. Drill all 68 through-holes (1.5 mm dia)\n");
     drawing.push_str("    5. Drill 8 mounting holes (3.2 mm dia)\n");
     drawing.push_str("    6. Profile cut plate outline (180 x 140 mm)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  Feeds and speeds (cast PMMA):\n");
     drawing.push_str("    - 0.5 mm end mill: 18,000 RPM, 200 mm/min feed\n");
     drawing.push_str("    - 0.75 mm end mill: 16,000 RPM, 250 mm/min feed\n");
     drawing.push_str("    - Drilling: 8,000 RPM, 100 mm/min plunge rate\n");
     drawing.push_str("    - Use air blast or mist coolant (no flood -- swells PMMA)\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str("  CAUTION:\n");
     drawing.push_str("    - PMMA melts easily -- do not let chips reweld to surface\n");
     drawing.push_str("    - Use sharp, single-flute or O-flute end mills for plastics\n");
     drawing.push_str("    - Deburr all through-holes from both sides\n");
     drawing.push_str("    - Clean with IPA after machining (no acetone -- dissolves PMMA)\n");
     drawing.push_str("    - Handle with gloves after cleaning to prevent oil contamination\n");
-    drawing.push_str("\n");
+    drawing.push('\n');
     drawing.push_str(
         "================================================================================\n",
     );
