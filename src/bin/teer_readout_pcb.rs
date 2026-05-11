@@ -1,9 +1,20 @@
 #![allow(dead_code, unused_variables)]
-//! TEER / RTD Readout Daughter-Board PCB.
+//! TEER / RTD Readout Daughter-Board PCB — v2 (4-layer).
 //!
-//! 2-layer 80x60mm PCB that plugs into the ESP32-S3 controller PCB v2
+//! 4-layer 80x60mm PCB that plugs into the ESP32-S3 controller PCB v2
 //! (artifact A-496F33BE) via a 2x5 0.1" SPI header and reads Rev D
 //! microfluidic chip integrated electrodes (artifact A-2DFA1907).
+//!
+//! v2 upgrade (2026-04-21): v1 (artifact A-FBD95C73) routed electrically
+//! but Freerouting could not converge 150 ratlines on 2-layer because
+//! ~100 pogo-pin fanouts competed with SPI/power nets on a shared plane.
+//! v2 moves to a 4-layer stackup:
+//!   Top  (F.Cu)   — signal
+//!   In1  (In1.Cu) — solid GND plane (return paths, EMI shield)
+//!   In2  (In2.Cu) — signal (pogo fanout + mux routing bus)
+//!   Btm  (B.Cu)   — signal
+//! Board outline (80x60mm), BOM, and mechanical interface are unchanged.
+//! JLCPCB 4-layer cost delta: +$5/unit (vs 2-layer, 5 units).
 //!
 //! Reads per chip:
 //!   - 4 TEER electrodes × 4 chambers = 16 signals per chip
@@ -40,17 +51,17 @@ use laminarforge_cad::pcb::{next_uuid, Component, Pad};
 
 // ───────────────────────── Board dimensions ─────────────────────────
 
-const BOARD_W: f64 = 80.0;  // X, mm
-const BOARD_H: f64 = 60.0;  // Y, mm
+const BOARD_W: f64 = 80.0; // X, mm
+const BOARD_H: f64 = 60.0; // Y, mm
 
-const MOUNT_INSET: f64 = 4.0;   // 4 mm inset so 6.35 mm annular ring has 0.82 mm edge clearance
+const MOUNT_INSET: f64 = 4.0; // 4 mm inset so 6.35 mm annular ring has 0.82 mm edge clearance
 
 const MOUNT_HOLES: &[(&str, f64, f64)] = &[
     // Mount holes pulled to the right half so they stay clear of the pogo-pin
     // array along the left (x ≈ 6..14) edge.
-    ("H1", 18.0,                  MOUNT_INSET),
+    ("H1", 18.0, MOUNT_INSET),
     ("H2", BOARD_W - MOUNT_INSET, MOUNT_INSET),
-    ("H3", 18.0,                  BOARD_H - MOUNT_INSET),
+    ("H3", 18.0, BOARD_H - MOUNT_INSET),
     ("H4", BOARD_W - MOUNT_INSET, BOARD_H - MOUNT_INSET),
 ];
 
@@ -82,11 +93,11 @@ const MOUNT_HOLES: &[(&str, f64, f64)] = &[
 // 4 columns × 1.5 mm horizontal span = 6 mm total.
 const POGO_PITCH_Y: f64 = 1.27;
 const POGO_PITCH_X: f64 = 1.5;
-const POGO_COL_X0: f64 = 6.0;          // leftmost pogo column (≥ mount-hole keepout edge)
-const POGO_ROW_Y0: f64 = 6.0;          // first pin y (below mount hole H1 at y=4)
+const POGO_COL_X0: f64 = 6.0; // leftmost pogo column (≥ mount-hole keepout edge)
+const POGO_ROW_Y0: f64 = 6.0; // first pin y (below mount hole H1 at y=4)
 const POGO_PINS_PER_CHIP: usize = 20;
 const NUM_CHIPS: usize = 5;
-const POGO_ROWS: usize = 25;           // 100 pins / 4 cols
+const POGO_ROWS: usize = 25; // 100 pins / 4 cols
 
 // ───────────────────────── Nets ─────────────────────────
 //
@@ -100,50 +111,50 @@ const POGO_ROWS: usize = 25;           // 100 pins / 4 cols
 //     pins 16-19: RTD (drive+, drive-, sense+, sense-)
 // After per-chip block: mux output nets, AFE nets, SPI nets, etc.
 
-const NET_UNCONNECTED: u32  = 0;
-const NET_GND: u32          = 1;
-const NET_3V3: u32          = 2;
+const NET_UNCONNECTED: u32 = 0;
+const NET_GND: u32 = 1;
+const NET_3V3: u32 = 2;
 
 // TEER chamber electrode raw nets (one per pogo pin, 100 total)
-const NET_TEER_BASE: u32    = 3;
+const NET_TEER_BASE: u32 = 3;
 const NET_TEER_PER_CHIP: u32 = 20;
-const TEER_TOTAL_NETS: u32 = (NUM_CHIPS as u32) * NET_TEER_PER_CHIP;  // 100
-const NET_TEER_END: u32     = NET_TEER_BASE + TEER_TOTAL_NETS - 1;    // 102
+const TEER_TOTAL_NETS: u32 = (NUM_CHIPS as u32) * NET_TEER_PER_CHIP; // 100
+const NET_TEER_END: u32 = NET_TEER_BASE + TEER_TOTAL_NETS - 1; // 102
 
 // Mux-common output nets (post-mux, routed to AFE):
-const NET_MUX_I_OUT: u32    = NET_TEER_END + 1;      // 103: current path (to AIN0)
-const NET_MUX_V_OUT: u32    = NET_TEER_END + 2;      // 104: sense path  (to AIN1)
+const NET_MUX_I_OUT: u32 = NET_TEER_END + 1; // 103: current path (to AIN0)
+const NET_MUX_V_OUT: u32 = NET_TEER_END + 2; // 104: sense path  (to AIN1)
 
 // AFE excitation output (from AD5940 HSTIA/EXCITER feeding mux common)
-const NET_AFE_EXC_OUT: u32  = NET_TEER_END + 3;      // 105
-const NET_AFE_EXC_RTN: u32  = NET_TEER_END + 4;      // 106 (return)
+const NET_AFE_EXC_OUT: u32 = NET_TEER_END + 3; // 105
+const NET_AFE_EXC_RTN: u32 = NET_TEER_END + 4; // 106 (return)
 
 // MAX31865 RTD front-end
-const NET_RTD_FORCE_P: u32  = NET_TEER_END + 5;      // 107
-const NET_RTD_FORCE_N: u32  = NET_TEER_END + 6;      // 108
-const NET_RTD_SENSE_P: u32  = NET_TEER_END + 7;      // 109
-const NET_RTD_SENSE_N: u32  = NET_TEER_END + 8;      // 110
-const NET_RTD_REF_P: u32    = NET_TEER_END + 9;      // 111 (REFIN+)
-const NET_RTD_REF_N: u32    = NET_TEER_END + 10;     // 112 (REFIN-)
+const NET_RTD_FORCE_P: u32 = NET_TEER_END + 5; // 107
+const NET_RTD_FORCE_N: u32 = NET_TEER_END + 6; // 108
+const NET_RTD_SENSE_P: u32 = NET_TEER_END + 7; // 109
+const NET_RTD_SENSE_N: u32 = NET_TEER_END + 8; // 110
+const NET_RTD_REF_P: u32 = NET_TEER_END + 9; // 111 (REFIN+)
+const NET_RTD_REF_N: u32 = NET_TEER_END + 10; // 112 (REFIN-)
 
 // Shared SPI bus
-const NET_SPI_SCLK: u32     = NET_TEER_END + 11;     // 113
-const NET_SPI_MOSI: u32     = NET_TEER_END + 12;     // 114
-const NET_SPI_MISO: u32     = NET_TEER_END + 13;     // 115
-const NET_CS_AD5940: u32    = NET_TEER_END + 14;     // 116
-const NET_CS_MAX31865: u32  = NET_TEER_END + 15;     // 117
-const NET_CS_ADG731_I: u32  = NET_TEER_END + 16;     // 118 (current-path mux SYNC)
-const NET_CS_ADG731_V: u32  = NET_TEER_END + 17;     // 119 (sense-path   mux SYNC)
-const NET_INT_AD5940: u32   = NET_TEER_END + 18;     // 120 (AD5940 GP0 interrupt)
-const NET_DRDY_MAX31865: u32 = NET_TEER_END + 19;    // 121 (MAX31865 DRDY)
+const NET_SPI_SCLK: u32 = NET_TEER_END + 11; // 113
+const NET_SPI_MOSI: u32 = NET_TEER_END + 12; // 114
+const NET_SPI_MISO: u32 = NET_TEER_END + 13; // 115
+const NET_CS_AD5940: u32 = NET_TEER_END + 14; // 116
+const NET_CS_MAX31865: u32 = NET_TEER_END + 15; // 117
+const NET_CS_ADG731_I: u32 = NET_TEER_END + 16; // 118 (current-path mux SYNC)
+const NET_CS_ADG731_V: u32 = NET_TEER_END + 17; // 119 (sense-path   mux SYNC)
+const NET_INT_AD5940: u32 = NET_TEER_END + 18; // 120 (AD5940 GP0 interrupt)
+const NET_DRDY_MAX31865: u32 = NET_TEER_END + 19; // 121 (MAX31865 DRDY)
 
 // AD5940 support
-const NET_AFE_VBIAS_CAP: u32 = NET_TEER_END + 20;    // 122 (VBIAS_CAP)
-const NET_AFE_LPF: u32       = NET_TEER_END + 21;    // 123 (LPF pin for lock-in)
-const NET_AFE_AVDD: u32      = NET_TEER_END + 22;    // 124 (analog 3V3, filtered)
-const NET_AFE_DVDD: u32      = NET_TEER_END + 23;    // 125 (digital 3V3)
+const NET_AFE_VBIAS_CAP: u32 = NET_TEER_END + 20; // 122 (VBIAS_CAP)
+const NET_AFE_LPF: u32 = NET_TEER_END + 21; // 123 (LPF pin for lock-in)
+const NET_AFE_AVDD: u32 = NET_TEER_END + 22; // 124 (analog 3V3, filtered)
+const NET_AFE_DVDD: u32 = NET_TEER_END + 23; // 125 (digital 3V3)
 
-const TOTAL_NETS: u32 = NET_TEER_END + 24;           // 126
+const TOTAL_NETS: u32 = NET_TEER_END + 24; // 126
 
 fn teer_net(chip: usize, pin: usize) -> u32 {
     NET_TEER_BASE + (chip as u32) * NET_TEER_PER_CHIP + (pin as u32)
@@ -155,10 +166,22 @@ fn teer_net(chip: usize, pin: usize) -> u32 {
 fn teer_net_name(chip: usize, pin: usize) -> String {
     if pin < 16 {
         let chamber = pin / 4;
-        let elec = match pin % 4 { 0 => "IP", 1 => "IN", 2 => "VP", 3 => "VN", _ => "?" };
+        let elec = match pin % 4 {
+            0 => "IP",
+            1 => "IN",
+            2 => "VP",
+            3 => "VN",
+            _ => "?",
+        };
         format!("C{}_CH{}_{}", chip + 1, chamber, elec)
     } else {
-        let rtd = match pin - 16 { 0 => "RTD_FP", 1 => "RTD_FN", 2 => "RTD_SP", 3 => "RTD_SN", _ => "?" };
+        let rtd = match pin - 16 {
+            0 => "RTD_FP",
+            1 => "RTD_FN",
+            2 => "RTD_SP",
+            3 => "RTD_SN",
+            _ => "?",
+        };
         format!("C{}_{}", chip + 1, rtd)
     }
 }
@@ -209,30 +232,50 @@ fn pad_smd_named(number: String, x: f64, y: f64, w: f64, h: f64, net_id: u32) ->
     let name_s: &'static str = Box::leak(net_name_of(net_id).into_boxed_str());
     Pad {
         number: num_s,
-        pad_type: "smd", shape: "rect",
-        x, y, width: w, height: h,
+        pad_type: "smd",
+        shape: "rect",
+        x,
+        y,
+        width: w,
+        height: h,
         layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id, net_name: name_s, drill: None,
+        net_id,
+        net_name: name_s,
+        drill: None,
     }
 }
 
 fn pad_smd(number: &'static str, x: f64, y: f64, w: f64, h: f64, net_id: u32) -> Pad {
     let name_s: &'static str = Box::leak(net_name_of(net_id).into_boxed_str());
     Pad {
-        number, pad_type: "smd", shape: "rect",
-        x, y, width: w, height: h,
+        number,
+        pad_type: "smd",
+        shape: "rect",
+        x,
+        y,
+        width: w,
+        height: h,
         layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id, net_name: name_s, drill: None,
+        net_id,
+        net_name: name_s,
+        drill: None,
     }
 }
 
 fn pad_th(number: &'static str, x: f64, y: f64, d_pad: f64, d_drill: f64, net_id: u32) -> Pad {
     let name_s: &'static str = Box::leak(net_name_of(net_id).into_boxed_str());
     Pad {
-        number, pad_type: "thru_hole", shape: "circle",
-        x, y, width: d_pad, height: d_pad,
+        number,
+        pad_type: "thru_hole",
+        shape: "circle",
+        x,
+        y,
+        width: d_pad,
+        height: d_pad,
         layers: "\"*.Cu\" \"*.Mask\"",
-        net_id, net_name: name_s, drill: Some(d_drill),
+        net_id,
+        net_name: name_s,
+        drill: Some(d_drill),
     }
 }
 
@@ -241,10 +284,16 @@ fn pad_th_named(number: String, x: f64, y: f64, d_pad: f64, d_drill: f64, net_id
     let name_s: &'static str = Box::leak(net_name_of(net_id).into_boxed_str());
     Pad {
         number: num_s,
-        pad_type: "thru_hole", shape: "circle",
-        x, y, width: d_pad, height: d_pad,
+        pad_type: "thru_hole",
+        shape: "circle",
+        x,
+        y,
+        width: d_pad,
+        height: d_pad,
         layers: "\"*.Cu\" \"*.Mask\"",
-        net_id, net_name: name_s, drill: Some(d_drill),
+        net_id,
+        net_name: name_s,
+        drill: Some(d_drill),
     }
 }
 
@@ -252,7 +301,7 @@ fn pad_th_named(number: String, x: f64, y: f64, d_pad: f64, d_drill: f64, net_id
 fn r0603_pads(net_a: u32, net_b: u32) -> Vec<Pad> {
     vec![
         pad_smd("1", -0.8, 0.0, 0.95, 0.95, net_a),
-        pad_smd("2",  0.8, 0.0, 0.95, 0.95, net_b),
+        pad_smd("2", 0.8, 0.0, 0.95, 0.95, net_b),
     ]
 }
 
@@ -260,7 +309,7 @@ fn r0603_pads(net_a: u32, net_b: u32) -> Vec<Pad> {
 fn r0805_pads(net_a: u32, net_b: u32) -> Vec<Pad> {
     vec![
         pad_smd("1", -1.0, 0.0, 1.2, 1.4, net_a),
-        pad_smd("2",  1.0, 0.0, 1.2, 1.4, net_b),
+        pad_smd("2", 1.0, 0.0, 1.2, 1.4, net_b),
     ]
 }
 
@@ -296,14 +345,38 @@ fn r0805_pads(net_a: u32, net_b: u32) -> Vec<Pad> {
 fn ad5940_pads() -> Vec<Pad> {
     // Nets in pin order 1..32
     let nets: [u32; 32] = [
-        NET_AFE_AVDD, NET_AFE_AVDD, NET_GND,      NET_MUX_I_OUT,   // 1-4
-        NET_MUX_V_OUT, NET_AFE_EXC_OUT, NET_AFE_EXC_RTN, NET_MUX_V_OUT, // 5-8
-        NET_MUX_I_OUT, NET_UNCONNECTED, NET_UNCONNECTED, NET_UNCONNECTED, // 9-12
-        NET_UNCONNECTED, NET_UNCONNECTED, NET_UNCONNECTED, NET_UNCONNECTED, // 13-16
-        NET_UNCONNECTED, NET_UNCONNECTED, NET_AFE_VBIAS_CAP, NET_GND, // 17-20
-        NET_AFE_DVDD, NET_UNCONNECTED, NET_UNCONNECTED, NET_UNCONNECTED, // 21-24
-        NET_CS_AD5940, NET_SPI_SCLK, NET_SPI_MISO, NET_SPI_MOSI,  // 25-28
-        NET_UNCONNECTED, NET_INT_AD5940, NET_UNCONNECTED, NET_UNCONNECTED, // 29-32
+        NET_AFE_AVDD,
+        NET_AFE_AVDD,
+        NET_GND,
+        NET_MUX_I_OUT, // 1-4
+        NET_MUX_V_OUT,
+        NET_AFE_EXC_OUT,
+        NET_AFE_EXC_RTN,
+        NET_MUX_V_OUT, // 5-8
+        NET_MUX_I_OUT,
+        NET_UNCONNECTED,
+        NET_UNCONNECTED,
+        NET_UNCONNECTED, // 9-12
+        NET_UNCONNECTED,
+        NET_UNCONNECTED,
+        NET_UNCONNECTED,
+        NET_UNCONNECTED, // 13-16
+        NET_UNCONNECTED,
+        NET_UNCONNECTED,
+        NET_AFE_VBIAS_CAP,
+        NET_GND, // 17-20
+        NET_AFE_DVDD,
+        NET_UNCONNECTED,
+        NET_UNCONNECTED,
+        NET_UNCONNECTED, // 21-24
+        NET_CS_AD5940,
+        NET_SPI_SCLK,
+        NET_SPI_MISO,
+        NET_SPI_MOSI, // 25-28
+        NET_UNCONNECTED,
+        NET_INT_AD5940,
+        NET_UNCONNECTED,
+        NET_UNCONNECTED, // 29-32
     ];
     let mut pads = Vec::with_capacity(33);
     let half = 2.4_f64;
@@ -313,10 +386,10 @@ fn ad5940_pads() -> Vec<Pad> {
     for i in 0..32 {
         let pin = i + 1;
         let (x, y, pw, ph) = match pin {
-            1..=8   => (-half,  -1.75 + (pin as f64 - 1.0) * 0.5,  0.55, 0.3),  // left side
-            9..=16  => (-1.75 + (pin as f64 - 9.0) * 0.5,   half,   0.3, 0.55), // bottom side
-            17..=24 => ( half,   1.75 - (pin as f64 -17.0) * 0.5,  0.55, 0.3),  // right side
-            25..=32 => ( 1.75 - (pin as f64 -25.0) * 0.5,  -half,   0.3, 0.55), // top side
+            1..=8 => (-half, -1.75 + (pin as f64 - 1.0) * 0.5, 0.55, 0.3), // left side
+            9..=16 => (-1.75 + (pin as f64 - 9.0) * 0.5, half, 0.3, 0.55), // bottom side
+            17..=24 => (half, 1.75 - (pin as f64 - 17.0) * 0.5, 0.55, 0.3), // right side
+            25..=32 => (1.75 - (pin as f64 - 25.0) * 0.5, -half, 0.3, 0.55), // top side
             _ => unreachable!(),
         };
         let num = Box::leak(format!("{}", pin).into_boxed_str());
@@ -336,10 +409,26 @@ fn ad5940_pads() -> Vec<Pad> {
 ///  5  DRDY    10  RTDIN+   15 FORCE+   20 ISENSOR
 fn max31865_pads() -> Vec<Pad> {
     let nets: [u32; 20] = [
-        NET_SPI_MISO, NET_SPI_MOSI, NET_CS_MAX31865, NET_SPI_SCLK, NET_DRDY_MAX31865, // 1-5
-        NET_RTD_FORCE_N, NET_RTD_REF_N, NET_RTD_REF_P, NET_RTD_SENSE_N, NET_RTD_SENSE_P, // 6-10
-        NET_GND, NET_GND, NET_UNCONNECTED, NET_RTD_FORCE_N, NET_RTD_FORCE_P, // 11-15
-        NET_RTD_FORCE_P, NET_AFE_AVDD, NET_GND, NET_AFE_DVDD, NET_RTD_FORCE_P, // 16-20
+        NET_SPI_MISO,
+        NET_SPI_MOSI,
+        NET_CS_MAX31865,
+        NET_SPI_SCLK,
+        NET_DRDY_MAX31865, // 1-5
+        NET_RTD_FORCE_N,
+        NET_RTD_REF_N,
+        NET_RTD_REF_P,
+        NET_RTD_SENSE_N,
+        NET_RTD_SENSE_P, // 6-10
+        NET_GND,
+        NET_GND,
+        NET_UNCONNECTED,
+        NET_RTD_FORCE_N,
+        NET_RTD_FORCE_P, // 11-15
+        NET_RTD_FORCE_P,
+        NET_AFE_AVDD,
+        NET_GND,
+        NET_AFE_DVDD,
+        NET_RTD_FORCE_P, // 16-20
     ];
     let mut pads = Vec::with_capacity(21);
     let half = 2.4_f64;
@@ -347,10 +436,10 @@ fn max31865_pads() -> Vec<Pad> {
     for i in 0..20 {
         let pin = i + 1;
         let (x, y, pw, ph) = match pin {
-            1..=5   => (-half,  -1.3 + (pin as f64 - 1.0) * 0.65,  0.6, 0.35),
-            6..=10  => (-1.3 + (pin as f64 - 6.0) * 0.65,   half,  0.35, 0.6),
-            11..=15 => ( half,   1.3 - (pin as f64 -11.0) * 0.65,  0.6, 0.35),
-            16..=20 => ( 1.3 - (pin as f64 -16.0) * 0.65,  -half,  0.35, 0.6),
+            1..=5 => (-half, -1.3 + (pin as f64 - 1.0) * 0.65, 0.6, 0.35),
+            6..=10 => (-1.3 + (pin as f64 - 6.0) * 0.65, half, 0.35, 0.6),
+            11..=15 => (half, 1.3 - (pin as f64 - 11.0) * 0.65, 0.6, 0.35),
+            16..=20 => (1.3 - (pin as f64 - 16.0) * 0.65, -half, 0.35, 0.6),
             _ => unreachable!(),
         };
         let num = Box::leak(format!("{}", pin).into_boxed_str());
@@ -411,40 +500,54 @@ fn adg731_pads(mux_index: usize, chip_start: usize) -> Vec<Pad> {
     // common output), pin 2 = SYNC, pin 3 = DIN, pin 4 = SCLK, pins 5/25 =
     // VDD/VSS, pins 13/18/26/38 = GND, and pins 7..12, 14..17, 19..24, 27..37,
     // 39..48 = S1..S32 (32 total).
-    let cs_net = if mux_index == 0 { NET_CS_ADG731_I } else { NET_CS_ADG731_V };
-    let mux_out = if mux_index == 0 { NET_MUX_I_OUT } else { NET_MUX_V_OUT };
+    let cs_net = if mux_index == 0 {
+        NET_CS_ADG731_I
+    } else {
+        NET_CS_ADG731_V
+    };
+    let mux_out = if mux_index == 0 {
+        NET_MUX_I_OUT
+    } else {
+        NET_MUX_V_OUT
+    };
 
     let mut s_nets: Vec<u32> = Vec::with_capacity(32);
     // For mux 0 (I path): chip_start, chip_start+1 → all 20+20 pogo pins = 40 >32
     // We take first 32 pogo pins (chip_start..chip_start+2 covers first 40, take 32).
     for c in chip_start..chip_start + 2 {
-        if c >= NUM_CHIPS { break; }
+        if c >= NUM_CHIPS {
+            break;
+        }
         for p in 0..POGO_PINS_PER_CHIP {
-            if s_nets.len() < 32 { s_nets.push(teer_net(c, p)); }
+            if s_nets.len() < 32 {
+                s_nets.push(teer_net(c, p));
+            }
         }
     }
     // Pad with unconnected if we have fewer than 32
-    while s_nets.len() < 32 { s_nets.push(NET_UNCONNECTED); }
+    while s_nets.len() < 32 {
+        s_nets.push(NET_UNCONNECTED);
+    }
 
     let mut s_idx = 0usize;
     // 0.5 mm pitch TQFP: pad 0.3 mm wide × 1.3 mm long.
     for pin in 1..=48 {
         let (x, y, pw, ph) = match pin {
-            1..=12   => (-half,  -2.75 + (pin as f64 - 1.0) * 0.5,   1.3, 0.3),
-            13..=24  => (-2.75 + (pin as f64 - 13.0) * 0.5,   half,  0.3, 1.3),
-            25..=36  => ( half,   2.75 - (pin as f64 - 25.0) * 0.5,  1.3, 0.3),
-            37..=48  => ( 2.75 - (pin as f64 - 37.0) * 0.5,  -half,  0.3, 1.3),
+            1..=12 => (-half, -2.75 + (pin as f64 - 1.0) * 0.5, 1.3, 0.3),
+            13..=24 => (-2.75 + (pin as f64 - 13.0) * 0.5, half, 0.3, 1.3),
+            25..=36 => (half, 2.75 - (pin as f64 - 25.0) * 0.5, 1.3, 0.3),
+            37..=48 => (2.75 - (pin as f64 - 37.0) * 0.5, -half, 0.3, 1.3),
             _ => unreachable!(),
         };
         let net = match pin {
-            1 => mux_out,           // DOUT common
-            2 => cs_net,            // SYNC
-            3 => NET_SPI_MOSI,      // DIN
-            4 => NET_SPI_SCLK,      // SCLK
-            5 => NET_AFE_AVDD,      // VDD
-            6 => NET_3V3,           // RESET (pull high)
+            1 => mux_out,      // DOUT common
+            2 => cs_net,       // SYNC
+            3 => NET_SPI_MOSI, // DIN
+            4 => NET_SPI_SCLK, // SCLK
+            5 => NET_AFE_AVDD, // VDD
+            6 => NET_3V3,      // RESET (pull high)
             13 | 18 | 26 | 38 => NET_GND,
-            25 => NET_GND,          // VSS (tie to GND for single-supply use)
+            25 => NET_GND, // VSS (tie to GND for single-supply use)
             _ => {
                 let n = s_nets.get(s_idx).copied().unwrap_or(NET_UNCONNECTED);
                 s_idx += 1;
@@ -466,11 +569,16 @@ fn adg731_pads(mux_index: usize, chip_start: usize) -> Vec<Pad> {
 ///   9  CS_ADG731_V 10 INT_AD5940 (or DRDY_MAX31865 shared)
 fn header_2x5_pads() -> Vec<Pad> {
     let nets = [
-        NET_3V3, NET_GND,
-        NET_SPI_SCLK, NET_SPI_MOSI,
-        NET_SPI_MISO, NET_CS_AD5940,
-        NET_CS_MAX31865, NET_CS_ADG731_I,
-        NET_CS_ADG731_V, NET_INT_AD5940,
+        NET_3V3,
+        NET_GND,
+        NET_SPI_SCLK,
+        NET_SPI_MOSI,
+        NET_SPI_MISO,
+        NET_CS_AD5940,
+        NET_CS_MAX31865,
+        NET_CS_ADG731_I,
+        NET_CS_ADG731_V,
+        NET_INT_AD5940,
     ];
     let mut pads = Vec::with_capacity(10);
     for i in 0..10 {
@@ -489,7 +597,7 @@ fn header_2x5_pads() -> Vec<Pad> {
 /// loaded into the stack; contact tips extend from the top side of the board.
 /// Through-hole footprint: 0.9 mm pad OD / 0.55 mm drill.
 fn pogo_pad(net_id: u32) -> Vec<Pad> {
-    vec![ pad_th("1", 0.0, 0.0, 0.9, 0.55, net_id) ]
+    vec![pad_th("1", 0.0, 0.0, 0.9, 0.55, net_id)]
 }
 
 // ───────────────────────── Component list ─────────────────────────
@@ -504,7 +612,10 @@ fn define_components() -> Vec<Component> {
         footprint_lib: "laminarforge",
         footprint_name: "LFCSP-32_5x5mm_P0.5mm",
         lcsc: "C650308",
-        x: 40.0, y: 30.0, rotation: 0.0, layer: "F.Cu",
+        x: 40.0,
+        y: 30.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "Bioimpedance + electrochem AFE (4-wire Kelvin)",
         pads: ad5940_pads(),
     });
@@ -516,9 +627,12 @@ fn define_components() -> Vec<Component> {
         footprint_lib: "laminarforge",
         footprint_name: "TQFP-48_7x7mm_P0.5mm",
         lcsc: "C579102",
-        x: 20.0, y: 15.0, rotation: 0.0, layer: "F.Cu",
+        x: 20.0,
+        y: 15.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "32:1 analog mux (current/drive path)",
-        pads: adg731_pads(0, 0),  // chips 1-2 → S inputs
+        pads: adg731_pads(0, 0), // chips 1-2 → S inputs
     });
 
     // ── U3: ADG731 #2 — sense path mux (lower-left of AFE) ──
@@ -528,9 +642,12 @@ fn define_components() -> Vec<Component> {
         footprint_lib: "laminarforge",
         footprint_name: "TQFP-48_7x7mm_P0.5mm",
         lcsc: "C579102",
-        x: 20.0, y: 45.0, rotation: 0.0, layer: "F.Cu",
+        x: 20.0,
+        y: 45.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "32:1 analog mux (voltage/sense path)",
-        pads: adg731_pads(1, 2),  // chips 3-4 → S inputs
+        pads: adg731_pads(1, 2), // chips 3-4 → S inputs
     });
 
     // ── U4: MAX31865 RTD-to-digital (right of AFE) ──
@@ -540,7 +657,10 @@ fn define_components() -> Vec<Component> {
         footprint_lib: "laminarforge",
         footprint_name: "TQFN-20_5x5mm_P0.65mm",
         lcsc: "C118474",
-        x: 60.0, y: 30.0, rotation: 0.0, layer: "F.Cu",
+        x: 60.0,
+        y: 30.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "Pt1000 RTD-to-digital (SPI)",
         pads: max31865_pads(),
     });
@@ -551,8 +671,11 @@ fn define_components() -> Vec<Component> {
         value: "4.3K_0.1%_25ppm",
         footprint_lib: "laminarforge",
         footprint_name: "R_0603",
-        lcsc: "C43676",   // Vishay PLT0603Z4301LGEK (0603 precision)
-        x: 65.0, y: 36.0, rotation: 0.0, layer: "F.Cu",
+        lcsc: "C43676", // Vishay PLT0603Z4301LGEK (0603 precision)
+        x: 65.0,
+        y: 36.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "MAX31865 reference resistor",
         pads: r0603_pads(NET_RTD_REF_P, NET_RTD_FORCE_P),
     });
@@ -564,7 +687,10 @@ fn define_components() -> Vec<Component> {
         footprint_lib: "laminarforge",
         footprint_name: "R_0603",
         lcsc: "C25804",
-        x: 65.0, y: 26.0, rotation: 0.0, layer: "F.Cu",
+        x: 65.0,
+        y: 26.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "DRDY pull-up",
         pads: r0603_pads(NET_3V3, NET_DRDY_MAX31865),
     });
@@ -576,7 +702,10 @@ fn define_components() -> Vec<Component> {
         footprint_lib: "laminarforge",
         footprint_name: "R_0603",
         lcsc: "C25804",
-        x: 45.0, y: 26.0, rotation: 0.0, layer: "F.Cu",
+        x: 45.0,
+        y: 26.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "AD5940 INT pull-up",
         pads: r0603_pads(NET_3V3, NET_INT_AD5940),
     });
@@ -584,36 +713,71 @@ fn define_components() -> Vec<Component> {
     // ── Decoupling caps ─────────────────────────────────────
     // C1..C4: AD5940 decoupling (4× 100nF + 1× 10µF)
     c.push(Component {
-        reference: "C1", value: "100nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C14663",
-        x: 38.0, y: 24.0, rotation: 0.0, layer: "F.Cu",
-        description: "AVDD1 decoupling", pads: r0603_pads(NET_AFE_AVDD, NET_GND),
+        reference: "C1",
+        value: "100nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C14663",
+        x: 38.0,
+        y: 24.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "AVDD1 decoupling",
+        pads: r0603_pads(NET_AFE_AVDD, NET_GND),
     });
     c.push(Component {
-        reference: "C2", value: "100nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C14663",
-        x: 42.0, y: 24.0, rotation: 0.0, layer: "F.Cu",
-        description: "AVDD2 decoupling", pads: r0603_pads(NET_AFE_AVDD, NET_GND),
+        reference: "C2",
+        value: "100nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C14663",
+        x: 42.0,
+        y: 24.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "AVDD2 decoupling",
+        pads: r0603_pads(NET_AFE_AVDD, NET_GND),
     });
     c.push(Component {
-        reference: "C3", value: "100nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C14663",
-        x: 38.0, y: 36.0, rotation: 0.0, layer: "F.Cu",
-        description: "DVDD decoupling", pads: r0603_pads(NET_AFE_DVDD, NET_GND),
+        reference: "C3",
+        value: "100nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C14663",
+        x: 38.0,
+        y: 36.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "DVDD decoupling",
+        pads: r0603_pads(NET_AFE_DVDD, NET_GND),
     });
     c.push(Component {
-        reference: "C4", value: "10uF",
-        footprint_lib: "laminarforge", footprint_name: "C_0805", lcsc: "C15850",
-        x: 42.0, y: 36.0, rotation: 0.0, layer: "F.Cu",
-        description: "AVDD bulk decoupling", pads: r0805_pads(NET_AFE_AVDD, NET_GND),
+        reference: "C4",
+        value: "10uF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0805",
+        lcsc: "C15850",
+        x: 42.0,
+        y: 36.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "AVDD bulk decoupling",
+        pads: r0805_pads(NET_AFE_AVDD, NET_GND),
     });
 
     // C5: VBIAS_CAP 1µF
     c.push(Component {
-        reference: "C5", value: "1uF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C15849",
-        x: 46.0, y: 30.0, rotation: 0.0, layer: "F.Cu",
-        description: "AD5940 VBIAS_CAP", pads: r0603_pads(NET_AFE_VBIAS_CAP, NET_GND),
+        reference: "C5",
+        value: "1uF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C15849",
+        x: 46.0,
+        y: 30.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "AD5940 VBIAS_CAP",
+        pads: r0603_pads(NET_AFE_VBIAS_CAP, NET_GND),
     });
 
     // C6..C9: ADG731 (2x) decoupling — 100nF + 10µF per chip on VDD.
@@ -621,75 +785,141 @@ fn define_components() -> Vec<Component> {
     // at y = 8.0 so 0603 upper pad (y=8+0.475=8.475) clears U2 top pads
     // (y=11.3 - 0.65 = 10.65) by 2.2 mm.
     c.push(Component {
-        reference: "C6", value: "100nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C14663",
-        x: 16.0, y: 8.0, rotation: 0.0, layer: "F.Cu",
-        description: "U2 VDD bypass", pads: r0603_pads(NET_AFE_AVDD, NET_GND),
+        reference: "C6",
+        value: "100nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C14663",
+        x: 16.0,
+        y: 8.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "U2 VDD bypass",
+        pads: r0603_pads(NET_AFE_AVDD, NET_GND),
     });
     c.push(Component {
-        reference: "C7", value: "10uF",
-        footprint_lib: "laminarforge", footprint_name: "C_0805", lcsc: "C15850",
-        x: 24.0, y: 8.0, rotation: 0.0, layer: "F.Cu",
-        description: "U2 VDD bulk", pads: r0805_pads(NET_AFE_AVDD, NET_GND),
+        reference: "C7",
+        value: "10uF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0805",
+        lcsc: "C15850",
+        x: 24.0,
+        y: 8.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "U2 VDD bulk",
+        pads: r0805_pads(NET_AFE_AVDD, NET_GND),
     });
     // U3 at (20, 45) with bottom pad row at y = 45 + 3.7 = 48.7. Caps at y=52.
     c.push(Component {
-        reference: "C8", value: "100nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C14663",
-        x: 16.0, y: 52.0, rotation: 0.0, layer: "F.Cu",
-        description: "U3 VDD bypass", pads: r0603_pads(NET_AFE_AVDD, NET_GND),
+        reference: "C8",
+        value: "100nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C14663",
+        x: 16.0,
+        y: 52.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "U3 VDD bypass",
+        pads: r0603_pads(NET_AFE_AVDD, NET_GND),
     });
     c.push(Component {
-        reference: "C9", value: "10uF",
-        footprint_lib: "laminarforge", footprint_name: "C_0805", lcsc: "C15850",
-        x: 24.0, y: 52.0, rotation: 0.0, layer: "F.Cu",
-        description: "U3 VDD bulk", pads: r0805_pads(NET_AFE_AVDD, NET_GND),
+        reference: "C9",
+        value: "10uF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0805",
+        lcsc: "C15850",
+        x: 24.0,
+        y: 52.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "U3 VDD bulk",
+        pads: r0805_pads(NET_AFE_AVDD, NET_GND),
     });
 
     // C10..C11: MAX31865 decoupling
     c.push(Component {
-        reference: "C10", value: "100nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C14663",
-        x: 58.0, y: 24.0, rotation: 0.0, layer: "F.Cu",
-        description: "MAX31865 VDD bypass", pads: r0603_pads(NET_AFE_AVDD, NET_GND),
+        reference: "C10",
+        value: "100nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C14663",
+        x: 58.0,
+        y: 24.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "MAX31865 VDD bypass",
+        pads: r0603_pads(NET_AFE_AVDD, NET_GND),
     });
     c.push(Component {
-        reference: "C11", value: "100nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C14663",
-        x: 62.0, y: 24.0, rotation: 0.0, layer: "F.Cu",
-        description: "MAX31865 DVDD bypass", pads: r0603_pads(NET_AFE_DVDD, NET_GND),
+        reference: "C11",
+        value: "100nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C14663",
+        x: 62.0,
+        y: 24.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "MAX31865 DVDD bypass",
+        pads: r0603_pads(NET_AFE_DVDD, NET_GND),
     });
 
     // C12: reference divider cap across REFIN+/REFIN- (10nF per 4-wire Pt1000)
     c.push(Component {
-        reference: "C12", value: "10nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C36687",
-        x: 62.0, y: 36.0, rotation: 0.0, layer: "F.Cu",
-        description: "REFIN differential cap", pads: r0603_pads(NET_RTD_REF_P, NET_RTD_REF_N),
+        reference: "C12",
+        value: "10nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C36687",
+        x: 62.0,
+        y: 36.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "REFIN differential cap",
+        pads: r0603_pads(NET_RTD_REF_P, NET_RTD_REF_N),
     });
 
     // C13: RTD differential cap across RTDIN+/RTDIN- (100nF for Pt1000)
     c.push(Component {
-        reference: "C13", value: "100nF",
-        footprint_lib: "laminarforge", footprint_name: "C_0603", lcsc: "C14663",
-        x: 66.0, y: 32.0, rotation: 0.0, layer: "F.Cu",
-        description: "RTDIN differential cap", pads: r0603_pads(NET_RTD_SENSE_P, NET_RTD_SENSE_N),
+        reference: "C13",
+        value: "100nF",
+        footprint_lib: "laminarforge",
+        footprint_name: "C_0603",
+        lcsc: "C14663",
+        x: 66.0,
+        y: 32.0,
+        rotation: 0.0,
+        layer: "F.Cu",
+        description: "RTDIN differential cap",
+        pads: r0603_pads(NET_RTD_SENSE_P, NET_RTD_SENSE_N),
     });
 
     // ── Ferrite bead FB1: AVDD isolation from 3V3 ──
     c.push(Component {
-        reference: "FB1", value: "BLM18PG471SN1D",
-        footprint_lib: "laminarforge", footprint_name: "R_0603",
+        reference: "FB1",
+        value: "BLM18PG471SN1D",
+        footprint_lib: "laminarforge",
+        footprint_name: "R_0603",
         lcsc: "C1017",
-        x: 70.0, y: 10.0, rotation: 0.0, layer: "F.Cu",
+        x: 70.0,
+        y: 10.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "AVDD ferrite bead",
         pads: r0603_pads(NET_3V3, NET_AFE_AVDD),
     });
     c.push(Component {
-        reference: "FB2", value: "BLM18PG471SN1D",
-        footprint_lib: "laminarforge", footprint_name: "R_0603",
+        reference: "FB2",
+        value: "BLM18PG471SN1D",
+        footprint_lib: "laminarforge",
+        footprint_name: "R_0603",
         lcsc: "C1017",
-        x: 70.0, y: 14.0, rotation: 0.0, layer: "F.Cu",
+        x: 70.0,
+        y: 14.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "DVDD ferrite bead",
         pads: r0603_pads(NET_3V3, NET_AFE_DVDD),
     });
@@ -701,7 +931,10 @@ fn define_components() -> Vec<Component> {
         footprint_lib: "laminarforge",
         footprint_name: "PinHeader_2x5_2.54mm",
         lcsc: "C124378",
-        x: 75.0, y: 30.0, rotation: 0.0, layer: "F.Cu",
+        x: 75.0,
+        y: 30.0,
+        rotation: 0.0,
+        layer: "F.Cu",
         description: "SPI to controller PCB v2",
         pads: header_2x5_pads(),
     });
@@ -721,24 +954,25 @@ fn define_components() -> Vec<Component> {
     for c_idx in 0..NUM_CHIPS {
         for p_idx in 0..POGO_PINS_PER_CHIP {
             let net = teer_net(c_idx, p_idx);
-            let global_idx = c_idx * POGO_PINS_PER_CHIP + p_idx;  // 0..99
+            let global_idx = c_idx * POGO_PINS_PER_CHIP + p_idx; // 0..99
             let col = global_idx / POGO_ROWS;
             let row = global_idx % POGO_ROWS;
             let x = POGO_COL_X0 + (col as f64) * POGO_PITCH_X;
             let y = POGO_ROW_Y0 + (row as f64) * POGO_PITCH_Y;
-            let ref_s: &'static str = Box::leak(
-                format!("PP{}_{}", c_idx + 1, p_idx).into_boxed_str()
-            );
-            let val_s: &'static str = Box::leak(
-                format!("POGO_{}", net_name_of(net)).into_boxed_str()
-            );
+            let ref_s: &'static str =
+                Box::leak(format!("PP{}_{}", c_idx + 1, p_idx).into_boxed_str());
+            let val_s: &'static str =
+                Box::leak(format!("POGO_{}", net_name_of(net)).into_boxed_str());
             c.push(Component {
                 reference: ref_s,
                 value: val_s,
                 footprint_lib: "laminarforge",
                 footprint_name: "PogoPin_MillMax_0906",
-                lcsc: "",  // Mill-Max, not on LCSC (hand-populate)
-                x, y, rotation: 0.0, layer: "F.Cu",
+                lcsc: "", // Mill-Max, not on LCSC (hand-populate)
+                x,
+                y,
+                rotation: 0.0,
+                layer: "F.Cu",
                 description: "Pogo-pin contact (Mill-Max 0906)",
                 pads: pogo_pad(net),
             });
@@ -751,7 +985,8 @@ fn define_components() -> Vec<Component> {
 // ───────────────────────── KiCad PCB writer ─────────────────────────
 
 fn write_header(pcb: &mut String) {
-    pcb.push_str(r#"(kicad_pcb
+    pcb.push_str(
+        r#"(kicad_pcb
   (version 20240108)
   (generator "laminarforge_teer_readout_pcb")
   (generator_version "1.0")
@@ -762,6 +997,8 @@ fn write_header(pcb: &mut String) {
   (paper "A4")
   (layers
     (0 "F.Cu" signal)
+    (1 "In1.Cu" power "GND")
+    (2 "In2.Cu" signal)
     (31 "B.Cu" signal)
     (32 "B.Adhes" user "B.Adhesive")
     (33 "F.Adhes" user "F.Adhesive")
@@ -782,20 +1019,24 @@ fn write_header(pcb: &mut String) {
     (48 "B.Fab" user "B.Fabrication")
     (49 "F.Fab" user "F.Fabrication")
   )
-"#);
+"#,
+    );
 }
 
 fn write_nets(pcb: &mut String, used_nets: &BTreeSet<u32>) {
     writeln!(pcb, "  (net 0 \"\")").unwrap();
     for &nid in used_nets.iter() {
-        if nid == 0 { continue; }
+        if nid == 0 {
+            continue;
+        }
         writeln!(pcb, "  (net {} \"{}\")", nid, net_name_of(nid)).unwrap();
     }
     pcb.push('\n');
 }
 
 fn write_setup(pcb: &mut String) {
-    pcb.push_str(r#"  (setup
+    pcb.push_str(
+        r#"  (setup
     (pad_to_mask_clearance 0)
     (allow_soldermask_bridges_in_footprints yes)
   )
@@ -807,7 +1048,8 @@ fn write_setup(pcb: &mut String) {
     (uvia_dia 0.3)
     (uvia_drill 0.1)
   )
-"#);
+"#,
+    );
 }
 
 fn write_board_outline(pcb: &mut String) {
@@ -829,7 +1071,12 @@ fn write_board_outline(pcb: &mut String) {
 }
 
 fn write_footprint(pcb: &mut String, comp: &Component) {
-    writeln!(pcb, "  (footprint \"{}:{}\"", comp.footprint_lib, comp.footprint_name).unwrap();
+    writeln!(
+        pcb,
+        "  (footprint \"{}:{}\"",
+        comp.footprint_lib, comp.footprint_name
+    )
+    .unwrap();
     writeln!(pcb, "    (layer \"{}\")", comp.layer).unwrap();
     writeln!(pcb, "    (tstamp \"{}\")", next_uuid()).unwrap();
     writeln!(pcb, "    (at {} {} {})", comp.x, comp.y, comp.rotation).unwrap();
@@ -864,10 +1111,18 @@ fn write_footprint(pcb: &mut String, comp: &Component) {
             writeln!(
                 pcb,
                 "    (pad \"{}\" {} {} (at {} {}) (size {} {}) (layers {}) (net {} \"{}\"))",
-                pad.number, pad.pad_type, pad.shape,
-                pad.x, pad.y, pad.width, pad.height,
-                pad.layers, pad.net_id, pad.net_name
-            ).unwrap();
+                pad.number,
+                pad.pad_type,
+                pad.shape,
+                pad.x,
+                pad.y,
+                pad.width,
+                pad.height,
+                pad.layers,
+                pad.net_id,
+                pad.net_name
+            )
+            .unwrap();
         }
     }
     pcb.push_str("  )\n\n");
@@ -889,7 +1144,11 @@ fn write_cpl(path: &Path, comps: &[Component]) {
     let mut s = String::new();
     s.push_str("Designator,Val,Package,Mid X,Mid Y,Rotation,Layer\n");
     for c in comps {
-        let layer = if c.layer.contains("B.Cu") { "Bottom" } else { "Top" };
+        let layer = if c.layer.contains("B.Cu") {
+            "Bottom"
+        } else {
+            "Top"
+        };
         s.push_str(&format!(
             "{},{},{},{},{},{},{}\n",
             c.reference, c.value, c.footprint_name, c.x, c.y, c.rotation, layer
@@ -900,8 +1159,12 @@ fn write_cpl(path: &Path, comps: &[Component]) {
 
 // ───────────────────────── DSN writer (Specctra, for Freerouting) ─────────────────────────
 
-fn mm_to_um(mm: f64) -> f64 { mm * 1000.0 }
-fn dsn_y(mm: f64) -> f64 { -(mm * 1000.0) }
+fn mm_to_um(mm: f64) -> f64 {
+    mm * 1000.0
+}
+fn dsn_y(mm: f64) -> f64 {
+    -(mm * 1000.0)
+}
 
 fn padstack_name(pad: &Pad) -> String {
     let w_um = mm_to_um(pad.width);
@@ -920,7 +1183,9 @@ fn fp_key(c: &Component) -> String {
 
 fn write_dsn(path: &Path, comps: &[Component], used_nets: &BTreeSet<u32>) {
     let mut s = String::with_capacity(256 * 1024);
-    let pcb_name = path.file_name().map(|n| n.to_string_lossy().to_string())
+    let pcb_name = path
+        .file_name()
+        .map(|n| n.to_string_lossy().to_string())
         .unwrap_or_else(|| "teer_readout.dsn".to_string());
 
     writeln!(s, "(pcb {}", pcb_name).unwrap();
@@ -937,43 +1202,77 @@ fn write_dsn(path: &Path, comps: &[Component], used_nets: &BTreeSet<u32>) {
     let board_x = mm_to_um(BOARD_W);
     let board_y_neg = dsn_y(BOARD_H);
     writeln!(s, "  (structure").unwrap();
-    writeln!(s, "    (layer F.Cu (type signal) (property (index 0)))").unwrap();
-    writeln!(s, "    (layer B.Cu (type signal) (property (index 1)))").unwrap();
+    // 4-layer stackup: F.Cu, In1.Cu (GND plane), In2.Cu (signal), B.Cu.
+    // In1.Cu is declared as a `power` layer in KiCad so no trace ever lands on
+    // it — only the (plane GND) polygon below. The router treats it as an
+    // obstacle and only places stitching vias to reach it. In2.Cu stays
+    // `signal` so Freerouting can route freely on it.
+    writeln!(s, "    (layer F.Cu   (type signal) (property (index 0)))").unwrap();
+    writeln!(s, "    (layer In1.Cu (type power)  (property (index 1)))").unwrap();
+    writeln!(s, "    (layer In2.Cu (type signal) (property (index 2)))").unwrap();
+    writeln!(s, "    (layer B.Cu   (type signal) (property (index 3)))").unwrap();
     writeln!(
         s,
         "    (boundary (path pcb 0  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}))",
         0.0, 0.0, board_x, 0.0, board_x, board_y_neg, 0.0, board_y_neg, 0.0, 0.0
     ).unwrap();
 
-    for layer in &["F.Cu", "B.Cu"] {
-        writeln!(
-            s,
-            "    (plane GND (polygon {} 0  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}))",
-            layer, 0.0, 0.0, board_x, 0.0, board_x, board_y_neg, 0.0, board_y_neg, 0.0, 0.0
-        ).unwrap();
-    }
+    // Solid GND plane on In1.Cu only. F.Cu/B.Cu/In2.Cu are free for routing.
+    writeln!(
+        s,
+        "    (plane GND (polygon In1.Cu 0  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}  {:.0} {:.0}))",
+        0.0, 0.0, board_x, 0.0, board_x, board_y_neg, 0.0, board_y_neg, 0.0, 0.0
+    ).unwrap();
 
     for &(_, x, y) in MOUNT_HOLES {
         writeln!(
             s,
             "    (keepout \"\" (circle signal 6950 {:.0} {:.0}))",
-            mm_to_um(x), dsn_y(y)
-        ).unwrap();
+            mm_to_um(x),
+            dsn_y(y)
+        )
+        .unwrap();
     }
 
-    writeln!(s, "    (via \"Via[0-1]_600:300_um\")").unwrap();
+    writeln!(s, "    (via \"Via[0-3]_600:300_um\")").unwrap();
     let edge_w = mm_to_um(1.0);
-    writeln!(s, "    (keepout \"\" (rect signal 0 0 {:.0} {:.0}))", board_x, -edge_w).unwrap();
-    writeln!(s, "    (keepout \"\" (rect signal 0 {:.0} {:.0} {:.0}))", board_y_neg + edge_w, board_x, board_y_neg).unwrap();
-    writeln!(s, "    (keepout \"\" (rect signal 0 0 {:.0} {:.0}))", edge_w, board_y_neg).unwrap();
-    writeln!(s, "    (keepout \"\" (rect signal {:.0} 0 {:.0} {:.0}))", board_x - edge_w, board_x, board_y_neg).unwrap();
+    writeln!(
+        s,
+        "    (keepout \"\" (rect signal 0 0 {:.0} {:.0}))",
+        board_x, -edge_w
+    )
+    .unwrap();
+    writeln!(
+        s,
+        "    (keepout \"\" (rect signal 0 {:.0} {:.0} {:.0}))",
+        board_y_neg + edge_w,
+        board_x,
+        board_y_neg
+    )
+    .unwrap();
+    writeln!(
+        s,
+        "    (keepout \"\" (rect signal 0 0 {:.0} {:.0}))",
+        edge_w, board_y_neg
+    )
+    .unwrap();
+    writeln!(
+        s,
+        "    (keepout \"\" (rect signal {:.0} 0 {:.0} {:.0}))",
+        board_x - edge_w,
+        board_x,
+        board_y_neg
+    )
+    .unwrap();
 
     writeln!(s, "    (rule (width 200) (clearance 180))").unwrap();
     writeln!(s, "  )").unwrap();
 
     // placement grouped by footprint
     let mut groups: BTreeMap<String, Vec<&Component>> = BTreeMap::new();
-    for c in comps { groups.entry(fp_key(c)).or_default().push(c); }
+    for c in comps {
+        groups.entry(fp_key(c)).or_default().push(c);
+    }
 
     writeln!(s, "  (placement").unwrap();
     writeln!(s, "    (component MountingHole:MountingHole_3.2mm_M3").unwrap();
@@ -981,22 +1280,39 @@ fn write_dsn(path: &Path, comps: &[Component], used_nets: &BTreeSet<u32>) {
         writeln!(
             s,
             "      (place {} {:.0} {:.0} front 0.0)",
-            ref_name, mm_to_um(x), dsn_y(y)
-        ).unwrap();
+            ref_name,
+            mm_to_um(x),
+            dsn_y(y)
+        )
+        .unwrap();
     }
     writeln!(s, "    )").unwrap();
 
     for (k, cs) in &groups {
         writeln!(s, "    (component {}", k).unwrap();
         for c in cs {
-            let side = if c.layer.contains("B.Cu") { "back" } else { "front" };
+            let side = if c.layer.contains("B.Cu") {
+                "back"
+            } else {
+                "front"
+            };
             let mut rot = c.rotation % 360.0;
-            if rot >= 180.0 { rot -= 360.0; } else if rot < -180.0 { rot += 360.0; }
+            if rot >= 180.0 {
+                rot -= 360.0;
+            } else if rot < -180.0 {
+                rot += 360.0;
+            }
             writeln!(
                 s,
                 "      (place {} {:.0} {:.0} {} {:.1} (PN {}))",
-                c.reference, mm_to_um(c.x), dsn_y(c.y), side, rot, c.value
-            ).unwrap();
+                c.reference,
+                mm_to_um(c.x),
+                dsn_y(c.y),
+                side,
+                rot,
+                c.value
+            )
+            .unwrap();
         }
         writeln!(s, "    )").unwrap();
     }
@@ -1008,14 +1324,27 @@ fn write_dsn(path: &Path, comps: &[Component], used_nets: &BTreeSet<u32>) {
     writeln!(s, "      (pin Round[A]Pad_6350_um 1 0 0)").unwrap();
     writeln!(s, "    )").unwrap();
 
-    struct PSDef { w: f64, h: f64, thru: bool }
+    struct PSDef {
+        w: f64,
+        h: f64,
+        thru: bool,
+    }
     let mut padstacks: BTreeMap<String, PSDef> = BTreeMap::new();
-    padstacks.insert("Round[A]Pad_6350_um".to_string(), PSDef { w: 6350.0, h: 6350.0, thru: true });
+    padstacks.insert(
+        "Round[A]Pad_6350_um".to_string(),
+        PSDef {
+            w: 6350.0,
+            h: 6350.0,
+            thru: true,
+        },
+    );
 
     let mut seen: BTreeSet<String> = BTreeSet::new();
     for c in comps {
         let k = fp_key(c);
-        if seen.contains(&k) { continue; }
+        if seen.contains(&k) {
+            continue;
+        }
         seen.insert(k.clone());
         writeln!(s, "    (image {}", k).unwrap();
         for pad in &c.pads {
@@ -1023,8 +1352,12 @@ fn write_dsn(path: &Path, comps: &[Component], used_nets: &BTreeSet<u32>) {
             writeln!(
                 s,
                 "      (pin {} {} {:.0} {:.0})",
-                ps, pad.number, mm_to_um(pad.x), dsn_y(pad.y)
-            ).unwrap();
+                ps,
+                pad.number,
+                mm_to_um(pad.x),
+                dsn_y(pad.y)
+            )
+            .unwrap();
             padstacks.entry(ps).or_insert(PSDef {
                 w: mm_to_um(pad.width),
                 h: mm_to_um(pad.height),
@@ -1038,18 +1371,31 @@ fn write_dsn(path: &Path, comps: &[Component], used_nets: &BTreeSet<u32>) {
         writeln!(s, "    (padstack {}", name).unwrap();
         if d.thru {
             let dia = d.w.max(d.h);
+            // Through-hole pad appears on all 4 copper layers.
             writeln!(s, "      (shape (circle F.Cu {:.0}))", dia).unwrap();
+            writeln!(s, "      (shape (circle In1.Cu {:.0}))", dia).unwrap();
+            writeln!(s, "      (shape (circle In2.Cu {:.0}))", dia).unwrap();
             writeln!(s, "      (shape (circle B.Cu {:.0}))", dia).unwrap();
         } else {
-            let hw = d.w / 2.0; let hh = d.h / 2.0;
-            writeln!(s, "      (shape (rect F.Cu {:.0} {:.0} {:.0} {:.0}))", -hw, -hh, hw, hh).unwrap();
+            // SMD pads only exist on F.Cu (no back-side SMDs in this design).
+            let hw = d.w / 2.0;
+            let hh = d.h / 2.0;
+            writeln!(
+                s,
+                "      (shape (rect F.Cu {:.0} {:.0} {:.0} {:.0}))",
+                -hw, -hh, hw, hh
+            )
+            .unwrap();
         }
         writeln!(s, "      (attach off)").unwrap();
         writeln!(s, "    )").unwrap();
     }
 
-    writeln!(s, "    (padstack \"Via[0-1]_600:300_um\"").unwrap();
+    // Through via spans all 4 layers (0..3): F.Cu → In1.Cu → In2.Cu → B.Cu.
+    writeln!(s, "    (padstack \"Via[0-3]_600:300_um\"").unwrap();
     writeln!(s, "      (shape (circle F.Cu 600))").unwrap();
+    writeln!(s, "      (shape (circle In1.Cu 600))").unwrap();
+    writeln!(s, "      (shape (circle In2.Cu 600))").unwrap();
     writeln!(s, "      (shape (circle B.Cu 600))").unwrap();
     writeln!(s, "      (attach off)").unwrap();
     writeln!(s, "    )").unwrap();
@@ -1058,12 +1404,19 @@ fn write_dsn(path: &Path, comps: &[Component], used_nets: &BTreeSet<u32>) {
     // network
     let mut net_pins: BTreeMap<u32, Vec<String>> = BTreeMap::new();
     for &(ref_name, _, _) in MOUNT_HOLES {
-        net_pins.entry(NET_GND).or_default().push(format!("{}-1", ref_name));
+        net_pins
+            .entry(NET_GND)
+            .or_default()
+            .push(format!("{}-1", ref_name));
     }
     for c in comps {
         for pad in &c.pads {
-            if pad.net_id == NET_UNCONNECTED { continue; }
-            net_pins.entry(pad.net_id).or_default()
+            if pad.net_id == NET_UNCONNECTED {
+                continue;
+            }
+            net_pins
+                .entry(pad.net_id)
+                .or_default()
                 .push(format!("{}-{}", c.reference, pad.number));
         }
     }
@@ -1071,19 +1424,27 @@ fn write_dsn(path: &Path, comps: &[Component], used_nets: &BTreeSet<u32>) {
     writeln!(s, "  (network").unwrap();
     let mut all_names: Vec<String> = Vec::new();
     for (&nid, pins) in &net_pins {
-        if !used_nets.contains(&nid) { continue; }
+        if !used_nets.contains(&nid) {
+            continue;
+        }
         let n = net_name_of(nid);
-        if n.is_empty() { continue; }
+        if n.is_empty() {
+            continue;
+        }
         all_names.push(n.clone());
         write!(s, "    (net {}\n      (pins", n).unwrap();
-        for p in pins { write!(s, " {}", p).unwrap(); }
+        for p in pins {
+            write!(s, " {}", p).unwrap();
+        }
         writeln!(s, ")").unwrap();
         writeln!(s, "    )").unwrap();
     }
     write!(s, "    (class kicad_default").unwrap();
-    for n in &all_names { write!(s, " {}", n).unwrap(); }
+    for n in &all_names {
+        write!(s, " {}", n).unwrap();
+    }
     writeln!(s).unwrap();
-    writeln!(s, "      (circuit (use_via \"Via[0-1]_600:300_um\"))").unwrap();
+    writeln!(s, "      (circuit (use_via \"Via[0-3]_600:300_um\"))").unwrap();
     writeln!(s, "      (rule (width 200) (clearance 180))").unwrap();
     writeln!(s, "    )").unwrap();
     writeln!(s, "  )").unwrap();
@@ -1101,12 +1462,11 @@ fn main() {
     fs::create_dir_all(&output_dir).expect("create output dir");
 
     let args: Vec<String> = std::env::args().collect();
-    let from_ses = args.iter().position(|a| a == "--from-ses")
-        .map(|i| {
-            args.get(i + 1)
-                .unwrap_or_else(|| panic!("--from-ses requires a path argument"))
-                .clone()
-        });
+    let from_ses = args.iter().position(|a| a == "--from-ses").map(|i| {
+        args.get(i + 1)
+            .unwrap_or_else(|| panic!("--from-ses requires a path argument"))
+            .clone()
+    });
 
     let comps = define_components();
 
@@ -1115,7 +1475,9 @@ fn main() {
     used_nets.insert(NET_GND);
     for c in &comps {
         for p in &c.pads {
-            if p.net_id != NET_UNCONNECTED { used_nets.insert(p.net_id); }
+            if p.net_id != NET_UNCONNECTED {
+                used_nets.insert(p.net_id);
+            }
         }
     }
 
@@ -1126,13 +1488,20 @@ fn main() {
             *net_counts.entry(p.net_id).or_insert(0) += 1;
         }
     }
-    println!("TEER Readout PCB: {} components, board {}x{}mm", comps.len(), BOARD_W, BOARD_H);
+    println!(
+        "TEER Readout PCB: {} components, board {}x{}mm",
+        comps.len(),
+        BOARD_W,
+        BOARD_H
+    );
     println!("Net usage: {} unique nets", used_nets.len());
     let top_n = 25;
     let mut top: Vec<(u32, usize)> = net_counts.iter().map(|(&k, &v)| (k, v)).collect();
     top.sort_by(|a, b| b.1.cmp(&a.1));
     for (nid, cnt) in top.iter().take(top_n) {
-        if *nid == NET_UNCONNECTED { continue; }
+        if *nid == NET_UNCONNECTED {
+            continue;
+        }
         println!("  {:>4}  {:<22}  {} pads", nid, net_name_of(*nid), cnt);
     }
     if top.len() > top_n {
@@ -1145,32 +1514,67 @@ fn main() {
     write_nets(&mut s, &used_nets);
     write_setup(&mut s);
     write_board_outline(&mut s);
-    for c in &comps { write_footprint(&mut s, c); }
+    for c in &comps {
+        write_footprint(&mut s, c);
+    }
 
-    // SES import (post-routing)
+    // SES import (post-routing). Use the teer-local `net_name_of` reverse map
+    // so multi-hundred-net boards resolve correctly — the central
+    // `src/pcb/nets::NET_NAMES` table only covers the controller PCB's 60
+    // nets and would otherwise map every teer trace back to net 0.
     if let Some(ses_path) = &from_ses {
         let ses_data = laminarforge_cad::pcb::ses::parse_ses(Path::new(ses_path));
         let total_wires: usize = ses_data.routes.iter().map(|r| r.wires.len()).sum();
         let total_vias: usize = ses_data.routes.iter().map(|r| r.vias.len()).sum();
-        println!("\nImporting SES: {} nets, {} wires, {} vias",
-            ses_data.routes.len(), total_wires, total_vias);
-        laminarforge_cad::pcb::ses::write_ses_traces(&mut s, &ses_data);
+        println!(
+            "\nImporting SES: {} nets, {} wires, {} vias",
+            ses_data.routes.len(),
+            total_wires,
+            total_vias
+        );
+
+        // Build name → id map across the used_nets set for O(1) lookup.
+        let mut name_to_id: BTreeMap<String, u32> = BTreeMap::new();
+        for &nid in &used_nets {
+            name_to_id.insert(net_name_of(nid), nid);
+        }
+
+        laminarforge_cad::pcb::ses::write_ses_traces_with_resolver(
+            &mut s,
+            &ses_data,
+            |name| *name_to_id.get(name).unwrap_or(&0),
+            &["F.Cu", "In1.Cu", "In2.Cu", "B.Cu"],
+        );
     }
 
-    // GND pour zones on F.Cu and B.Cu
-    for (layer, tstamp_seed) in [("F.Cu", 1u8), ("B.Cu", 2u8)] {
-        writeln!(&mut s, "  (zone").unwrap();
-        writeln!(&mut s, "    (net {}) (net_name \"GND\")", NET_GND).unwrap();
-        writeln!(&mut s, "    (layer \"{}\") (tstamp \"{:08x}-0000-0000-0000-{:012x}\")", layer, tstamp_seed as u32, tstamp_seed as u64).unwrap();
-        writeln!(&mut s, "    (hatch edge 0.5)").unwrap();
-        writeln!(&mut s, "    (connect_pads yes (clearance 0.2))").unwrap();
-        writeln!(&mut s, "    (min_thickness 0.15) (filled_areas_thickness no)").unwrap();
-        writeln!(&mut s, "    (fill yes (thermal_gap 0.25) (thermal_bridge_width 0.3) (smoothing none) (radius 0.5))").unwrap();
-        writeln!(&mut s, "    (polygon (pts").unwrap();
-        writeln!(&mut s, "      (xy 0 0) (xy {} 0) (xy {} {}) (xy 0 {})", BOARD_W, BOARD_W, BOARD_H, BOARD_H).unwrap();
-        writeln!(&mut s, "    ))").unwrap();
-        writeln!(&mut s, "  )").unwrap();
-    }
+    // Solid GND plane on the inner layer In1.Cu (4-layer stackup). F.Cu and
+    // B.Cu stay clear of pour so Freerouting has two full routing planes for
+    // signals; In2.Cu is also a free signal layer. In1.Cu is the only layer
+    // that carries copper fill, and the zone is GND everywhere.
+    writeln!(&mut s, "  (zone").unwrap();
+    writeln!(&mut s, "    (net {}) (net_name \"GND\")", NET_GND).unwrap();
+    writeln!(
+        &mut s,
+        "    (layer \"In1.Cu\") (tstamp \"00000001-0000-0000-0000-000000000001\")"
+    )
+    .unwrap();
+    writeln!(&mut s, "    (hatch edge 0.5)").unwrap();
+    writeln!(&mut s, "    (connect_pads yes (clearance 0.2))").unwrap();
+    writeln!(
+        &mut s,
+        "    (min_thickness 0.15) (filled_areas_thickness no)"
+    )
+    .unwrap();
+    writeln!(&mut s, "    (fill yes (thermal_gap 0.25) (thermal_bridge_width 0.3) (smoothing none) (radius 0.5))").unwrap();
+    writeln!(&mut s, "    (polygon (pts").unwrap();
+    writeln!(
+        &mut s,
+        "      (xy 0 0) (xy {} 0) (xy {} {}) (xy 0 {})",
+        BOARD_W, BOARD_W, BOARD_H, BOARD_H
+    )
+    .unwrap();
+    writeln!(&mut s, "    ))").unwrap();
+    writeln!(&mut s, "  )").unwrap();
 
     s.push_str(")\n");
 
@@ -1192,9 +1596,12 @@ fn main() {
         println!("Written: {}", dsn_path.display());
 
         println!("\nTEER Readout PCB generation complete.");
-        println!("Run Freerouting:");
+        println!("Run Freerouting (4-layer):");
         println!("  /opt/homebrew/opt/openjdk/bin/java -jar tools/freerouting.jar \\");
-        println!("    -de {} -do pcb/output/teer_readout.ses -mp 30 -us 5", dsn_path.display());
+        println!(
+            "    -de {} -do pcb/output/teer_readout.ses -mp 100 -us 2",
+            dsn_path.display()
+        );
     }
 
     if args.iter().any(|a| a == "--validate") {

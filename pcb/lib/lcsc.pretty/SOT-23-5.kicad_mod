@@ -5,7 +5,7 @@
 	(layer "F.Cu")
 	(property "Reference" "REF**"
 		(at 0 -4.5 0)
-		(layer "F.SilkS")
+		(layer "F.Fab")
 		(uuid "2f9dbf19-44f9-4c75-9929-8abcec484010")
 		(effects
 			(font
@@ -56,7 +56,7 @@
 			(width 0.15)
 			(type solid)
 		)
-		(layer "F.SilkS")
+		(layer "F.Fab")
 		(uuid "c0ddfce7-cf94-41f5-ab90-69a1f0d8e6e4")
 	)
 	(fp_line
@@ -66,7 +66,7 @@
 			(width 0.15)
 			(type solid)
 		)
-		(layer "F.SilkS")
+		(layer "F.Fab")
 		(uuid "5a9616be-3cf9-465c-8e80-d70e3ac3e8c6")
 	)
 	(fp_line
@@ -76,7 +76,7 @@
 			(width 0.15)
 			(type solid)
 		)
-		(layer "F.SilkS")
+		(layer "F.Fab")
 		(uuid "8631c5ed-6d34-4872-9c02-cbdc0c1b60dd")
 	)
 	(fp_line
@@ -86,7 +86,7 @@
 			(width 0.15)
 			(type solid)
 		)
-		(layer "F.SilkS")
+		(layer "F.Fab")
 		(uuid "95fe43b6-4b50-4398-8ed5-6eb6b55caa4a")
 	)
 	(fp_line
@@ -96,7 +96,7 @@
 			(width 0.15)
 			(type solid)
 		)
-		(layer "F.SilkS")
+		(layer "F.Fab")
 		(uuid "40d85b17-e7d3-4ed0-810b-7de16cee6f52")
 	)
 	(fp_circle

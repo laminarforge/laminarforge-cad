@@ -94,6 +94,7 @@ Cargo.lock
 
 # CAD output
 /output
+/pcb/output/
 *.kicad_prl
 pcb/lamp_rev_a/fab/
 pcb/lamp_rev_a/reports/

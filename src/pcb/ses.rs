@@ -90,9 +90,13 @@ fn tokenize(input: &str) -> Vec<Token> {
             _ => {
                 // Unquoted atom — consume until whitespace, '(' or ')'
                 let start = i;
-                while i < len && bytes[i] != b' ' && bytes[i] != b'\t'
-                    && bytes[i] != b'\n' && bytes[i] != b'\r'
-                    && bytes[i] != b'(' && bytes[i] != b')'
+                while i < len
+                    && bytes[i] != b' '
+                    && bytes[i] != b'\t'
+                    && bytes[i] != b'\n'
+                    && bytes[i] != b'\r'
+                    && bytes[i] != b'('
+                    && bytes[i] != b')'
                 {
                     i += 1;
                 }
@@ -302,10 +306,7 @@ fn extract_resolution(routes_node: &SExpr) -> f64 {
         if let Some(body) = res_node.tagged("resolution") {
             // body = [unit_atom, value_atom]
             if body.len() >= 2 {
-                let value = body[1]
-                    .as_atom()
-                    .map(|s| parse_f64(s))
-                    .unwrap_or(1.0);
+                let value = body[1].as_atom().map(|s| parse_f64(s)).unwrap_or(1.0);
                 // scale = value means 1 file unit = 1/value of the base unit (um)
                 // So to get um: file_coord / value * 1.0 um
                 // But Freerouting actually writes coordinates as integer um when
@@ -432,18 +433,46 @@ fn parse_via(via_node: &SExpr, resolution: f64) -> Option<SesVia> {
 /// found, net ID 0 (unconnected) is used.
 pub fn write_ses_traces(pcb: &mut String, ses: &SesData) {
     use super::nets::NET_NAMES;
+    write_ses_traces_with_resolver(
+        pcb,
+        ses,
+        |name| NET_NAMES.iter().position(|n| *n == name).unwrap_or(0) as u32,
+        &["F.Cu", "B.Cu"],
+    );
+}
+
+/// Like `write_ses_traces` but lets the caller supply its own net name → net id
+/// resolver (critical for bins whose net IDs don't live in the central
+/// `NET_NAMES` table) and specify the via layer span for multilayer boards.
+///
+/// `via_layers` is the list of copper layer names a through-via spans, written
+/// into the KiCad `(layers ...)` clause of each via. For a 2-layer board pass
+/// `&["F.Cu", "B.Cu"]`; for a 4-layer board pass `&["F.Cu", "In1.Cu", "In2.Cu", "B.Cu"]`.
+pub fn write_ses_traces_with_resolver<F>(
+    pcb: &mut String,
+    ses: &SesData,
+    resolve_net: F,
+    via_layers: &[&str],
+) where
+    F: Fn(&str) -> u32,
+{
     use super::next_uuid;
     use std::fmt::Write;
 
+    let mut via_layer_clause = String::new();
+    for (i, l) in via_layers.iter().enumerate() {
+        if i > 0 {
+            via_layer_clause.push(' ');
+        }
+        via_layer_clause.push('"');
+        via_layer_clause.push_str(l);
+        via_layer_clause.push('"');
+    }
+
     for route in &ses.routes {
-        // Look up net ID from name
-        let net_id = NET_NAMES
-            .iter()
-            .position(|n| *n == route.net_name)
-            .unwrap_or(0) as u32;
+        let net_id = resolve_net(&route.net_name);
 
         for wire in &route.wires {
-            // Write KiCad segments for each pair of consecutive points
             for window in wire.points.windows(2) {
                 let (x1, y1) = window[0];
                 let (x2, y2) = window[1];
@@ -457,13 +486,17 @@ pub fn write_ses_traces(pcb: &mut String, ses: &SesData) {
         }
 
         for via in &route.vias {
-            // Extract size and drill from padstack name if possible,
-            // otherwise default to 0.6mm size, 0.3mm drill
             let (size, drill) = parse_via_padstack_dimensions(&via.padstack);
             writeln!(
                 pcb,
-                "  (via (at {} {}) (size {}) (drill {}) (layers \"F.Cu\" \"B.Cu\") (net {}) (tstamp \"{}\"))",
-                via.x_mm, via.y_mm, size, drill, net_id, next_uuid()
+                "  (via (at {} {}) (size {}) (drill {}) (layers {}) (net {}) (tstamp \"{}\"))",
+                via.x_mm,
+                via.y_mm,
+                size,
+                drill,
+                via_layer_clause,
+                net_id,
+                next_uuid()
             )
             .unwrap();
         }
@@ -484,12 +517,8 @@ fn parse_via_padstack_dimensions(padstack: &str) -> (f64, f64) {
             let size_str = &after_bracket[..colon_pos];
             let rest = &after_bracket[colon_pos + 1..];
             // drill is everything before _um or end
-            let drill_str = rest
-                .split('_')
-                .next()
-                .unwrap_or(rest);
-            if let (Ok(size_um), Ok(drill_um)) =
-                (size_str.parse::<f64>(), drill_str.parse::<f64>())
+            let drill_str = rest.split('_').next().unwrap_or(rest);
+            if let (Ok(size_um), Ok(drill_um)) = (size_str.parse::<f64>(), drill_str.parse::<f64>())
             {
                 return (size_um / 1000.0, drill_um / 1000.0);
             }

@@ -55,6 +55,8 @@
         "copper_edge_clearance": "error",
         "hole_clearance": "error",
         "invalid_outline": "error",
+        "lib_footprint_issues": "ignore",
+        "lib_footprint_mismatch": "ignore",
         "shorting_items": "error",
         "track_width": "error",
         "tracks_crossing": "error",

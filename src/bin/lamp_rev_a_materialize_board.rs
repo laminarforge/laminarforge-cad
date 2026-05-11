@@ -458,7 +458,7 @@ fn write_placed_footprint(
     footprint = replace_property_value(&footprint, "Reference", &item.reference)?;
     footprint = replace_property_value(&footprint, "Value", &part.value)?;
     footprint = rewrite_uuids(&footprint, counter);
-    footprint = insert_placement_metadata(&footprint, item, part, counter)?;
+    footprint = insert_placement(&footprint, item, counter)?;
     if let Some(pin_nets) = pin_nets {
         footprint = apply_pin_nets(&footprint, pin_nets, net_ids)?;
     }
@@ -615,10 +615,9 @@ fn rewrite_uuids(source: &str, counter: &mut UuidCounter) -> String {
     out
 }
 
-fn insert_placement_metadata(
+fn insert_placement(
     source: &str,
     item: &FootprintPlacement,
-    part: &SelectedPart,
     counter: &mut UuidCounter,
 ) -> Result<String, Box<dyn Error>> {
     let layer_marker = "(layer \"F.Cu\")";
@@ -631,18 +630,10 @@ fn insert_placement_metadata(
         .ok_or_else(|| "footprint layer marker is not line terminated".to_string())?;
 
     let metadata = format!(
-        "\t(at {} {} {})\n\t(tstamp \"{}\")\n\t(property \"LCSC Part\" \"{}\" (at 0 5.5 0) (layer \"F.Fab\") (hide yes) (uuid \"{}\") (effects (font (size 0.8 0.8))))\n\t(property \"Part Group\" \"{}\" (at 0 6.5 0) (layer \"F.Fab\") (hide yes) (uuid \"{}\") (effects (font (size 0.8 0.8))))\n\t(property \"Module\" \"{}\" (at 0 7.5 0) (layer \"F.Fab\") (hide yes) (uuid \"{}\") (effects (font (size 0.8 0.8))))\n\t(property \"Zone\" \"{}\" (at 0 8.5 0) (layer \"F.Fab\") (hide yes) (uuid \"{}\") (effects (font (size 0.8 0.8))))\n",
+        "\t(at {} {} {})\n\t(tstamp \"{}\")\n",
         fmt(item.x_mm),
         fmt(item.y_mm),
         fmt(item.rotation_deg),
-        counter.next(),
-        escape(&part.lcsc_part),
-        counter.next(),
-        escape(&part.id),
-        counter.next(),
-        escape(&part.module),
-        counter.next(),
-        escape(&item.zone),
         counter.next()
     );
 

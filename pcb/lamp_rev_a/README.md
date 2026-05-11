@@ -69,8 +69,9 @@ cargo run --release --bin lamp_rev_a_fab_preview
 
 The current schematic is an architecture shell, not a fabrication-ready circuit.
 The checker should not report fab-blocking part-selection gaps. The board now
-materializes all selected parts into KiCad, but DRC is not clean yet; the active
-work is placement cleanup, pin/net assignment, routing, and bench validation.
+materializes all selected parts into KiCad with zero physical DRC violations
+before routing. The active work is schematic completion, routing the 93 current
+ratlines, schematic/PCB parity, and bench validation.
 
 Current KiCad checks:
 
@@ -78,9 +79,13 @@ Current KiCad checks:
 kicad-cli sch erc pcb/lamp_rev_a/lamp_rev_a.kicad_sch \
   -o pcb/lamp_rev_a/reports/erc.json --format json
 
-kicad-cli pcb drc pcb/lamp_rev_a/lamp_rev_a.kicad_pcb \
-  -o pcb/lamp_rev_a/reports/drc.json --format json --severity-all
+kicad-cli pcb drc --format json \
+  --output pcb/lamp_rev_a/reports/drc.json \
+  pcb/lamp_rev_a/lamp_rev_a.kicad_pcb
 ```
+
+Expected DRC state at this stage: `0 violations` and unrouted connections still
+listed under `unconnected_items`.
 
 Do not accept autorouter output by itself. Use it to expose bad placement or
 constraint problems, then finish and review the layout in KiCad.

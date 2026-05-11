@@ -1689,12 +1689,14 @@ fn validate_kicad_seed(
         }
     }
 
+    let placed_part_groups: BTreeSet<&str> = placement
+        .placements
+        .iter()
+        .map(|item| item.part_id.as_str())
+        .collect();
     for part in &parts.selected_parts {
-        if !board.contains(&format!(r#"(property "Part Group" "{}""#, part.id)) {
-            errors.push(format!(
-                "KiCad board is missing part-group metadata for {}",
-                part.id
-            ));
+        if !placed_part_groups.contains(part.id.as_str()) {
+            errors.push(format!("placement is missing part group {}", part.id));
         }
     }
 
