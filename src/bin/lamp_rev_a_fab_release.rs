@@ -11,8 +11,10 @@ const CONFIG_PATH: &str = "pcb/lamp_rev_a/fab_release.toml";
 #[derive(Debug, Deserialize)]
 struct ReleaseConfig {
     package: Package,
+    toolchain: ToolchainConfig,
     inputs: Inputs,
     outputs: Outputs,
+    assembly: AssemblyConfig,
     gerbers: GerberConfig,
     drills: DrillConfig,
     position: PositionConfig,
@@ -24,6 +26,11 @@ struct ReleaseConfig {
 struct Package {
     name: String,
     revision: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ToolchainConfig {
+    min_kicad_major: u32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -47,9 +54,17 @@ struct Outputs {
     drill_report: String,
     bom_file: String,
     cpl_file: String,
+    manual_file: String,
     position_file: String,
     step_file: String,
     manifest_file: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct AssemblyConfig {
+    machine_side: String,
+    manual_part_ids: Vec<String>,
+    require_cpl_matches_kicad_position: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -166,7 +181,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     ensure_file(&parts_path)?;
     ensure_file(&placement_path)?;
 
-    run_command("kicad-cli", &["version".to_string()])?;
+    validate_kicad_version(config.toolchain.min_kicad_major)?;
 
     let drc_report = output_root.join(&config.outputs.drc_report);
     let erc_report = output_root.join(&config.outputs.erc_report);
@@ -184,9 +199,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     write_bom(
         &parts,
         &placement,
+        &config.assembly,
         &output_root.join(&config.outputs.bom_file),
     )?;
-    write_cpl(&placement, &output_root.join(&config.outputs.cpl_file))?;
+    write_cpl(
+        &parts,
+        &placement,
+        &config.assembly,
+        &output_root.join(&config.outputs.cpl_file),
+    )?;
+    write_manual_parts(
+        &parts,
+        &placement,
+        &config.assembly,
+        &output_root.join(&config.outputs.manual_file),
+    )?;
 
     run_gerber_export(&config, &board, &output_root)?;
     run_drill_export(&config, &board, &output_root)?;
@@ -194,6 +221,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     if config.step.enabled {
         run_step_export(&config, &board, &output_root)?;
     }
+    validate_release_outputs(&config, &parts, &placement, &output_root)?;
 
     write_manifest(
         &config,
@@ -228,6 +256,9 @@ fn validate_config(config: &ReleaseConfig) -> Result<(), Box<dyn Error>> {
     if config.gerbers.layers.is_empty() {
         return Err("gerber layer list cannot be empty".into());
     }
+    if config.assembly.machine_side != "top" {
+        return Err("Rev A release supports top-side machine assembly only".into());
+    }
     if config.gerbers.precision != 5 && config.gerbers.precision != 6 {
         return Err("gerber precision must be 5 or 6".into());
     }
@@ -255,6 +286,32 @@ fn create_output_dirs(output_root: &Path, outputs: &Outputs) -> Result<(), Box<d
 fn ensure_file(path: &Path) -> Result<(), Box<dyn Error>> {
     if !path.is_file() {
         return Err(format!("required file is missing: {}", path.display()).into());
+    }
+    Ok(())
+}
+
+fn validate_kicad_version(min_major: u32) -> Result<(), Box<dyn Error>> {
+    let output = Command::new("kicad-cli").arg("version").output()?;
+    if !output.status.success() {
+        return Err(format!(
+            "kicad-cli version failed\nstdout:\n{}\nstderr:\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        )
+        .into());
+    }
+    let version = String::from_utf8_lossy(&output.stdout);
+    let major = version
+        .trim()
+        .split('.')
+        .next()
+        .ok_or("kicad-cli version output is empty")?
+        .parse::<u32>()?;
+    if major < min_major {
+        return Err(format!(
+            "KiCad {version} is too old for LAMP Rev A fab release; require major version {min_major} or newer"
+        )
+        .into());
     }
     Ok(())
 }
@@ -404,6 +461,7 @@ fn validate_assembly_sources(
 fn write_bom(
     parts: &PartsManifest,
     placement: &PlacementPlan,
+    assembly: &AssemblyConfig,
     path: &Path,
 ) -> Result<(), Box<dyn Error>> {
     let mut by_part: BTreeMap<&str, Vec<&Placement>> = BTreeMap::new();
@@ -414,6 +472,9 @@ fn write_bom(
     let mut writer = csv::Writer::from_path(path)?;
     writer.write_record(["Comment", "Designator", "Footprint", "LCSC Part #"])?;
     for part in &parts.selected_parts {
+        if is_manual_part(assembly, part) {
+            continue;
+        }
         let mut placements = by_part
             .remove(part.id.as_str())
             .ok_or_else(|| format!("missing placement group {}", part.id))?;
@@ -434,8 +495,18 @@ fn write_bom(
     Ok(())
 }
 
-fn write_cpl(placement: &PlacementPlan, path: &Path) -> Result<(), Box<dyn Error>> {
-    let mut placements = placement.placements.iter().collect::<Vec<_>>();
+fn write_cpl(
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    assembly: &AssemblyConfig,
+    path: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let machine_part_ids = machine_part_ids(parts, assembly);
+    let mut placements = placement
+        .placements
+        .iter()
+        .filter(|item| machine_part_ids.contains(item.part_id.as_str()))
+        .collect::<Vec<_>>();
     placements.sort_by_key(|item| reference_order(&item.reference));
 
     let mut writer = csv::Writer::from_path(path)?;
@@ -451,6 +522,70 @@ fn write_cpl(placement: &PlacementPlan, path: &Path) -> Result<(), Box<dyn Error
     }
     writer.flush()?;
     Ok(())
+}
+
+fn write_manual_parts(
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    assembly: &AssemblyConfig,
+    path: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let manual_part_ids = manual_part_ids(assembly);
+    let mut by_part: BTreeMap<&str, Vec<&Placement>> = BTreeMap::new();
+    for item in &placement.placements {
+        by_part.entry(item.part_id.as_str()).or_default().push(item);
+    }
+
+    let mut writer = csv::Writer::from_path(path)?;
+    writer.write_record([
+        "Designator",
+        "Value",
+        "Footprint",
+        "LCSC Part #",
+        "Install Note",
+    ])?;
+    for part in &parts.selected_parts {
+        if !manual_part_ids.contains(part.id.as_str()) {
+            continue;
+        }
+        let mut placements = by_part
+            .remove(part.id.as_str())
+            .ok_or_else(|| format!("missing manual placement group {}", part.id))?;
+        placements.sort_by_key(|item| reference_order(&item.reference));
+        for item in placements {
+            writer.write_record([
+                item.reference.as_str(),
+                part.value.as_str(),
+                part.footprint.as_str(),
+                part.lcsc_part.as_str(),
+                "Manual install after SMT assembly",
+            ])?;
+        }
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn is_manual_part(assembly: &AssemblyConfig, part: &SelectedPart) -> bool {
+    assembly.manual_part_ids.iter().any(|id| id == &part.id)
+}
+
+fn manual_part_ids(assembly: &AssemblyConfig) -> BTreeSet<&str> {
+    assembly
+        .manual_part_ids
+        .iter()
+        .map(String::as_str)
+        .collect()
+}
+
+fn machine_part_ids<'a>(parts: &'a PartsManifest, assembly: &AssemblyConfig) -> BTreeSet<&'a str> {
+    let manual_part_ids = manual_part_ids(assembly);
+    parts
+        .selected_parts
+        .iter()
+        .filter(|part| !manual_part_ids.contains(part.id.as_str()))
+        .map(|part| part.id.as_str())
+        .collect()
 }
 
 fn run_gerber_export(
@@ -632,11 +767,169 @@ fn write_manifest(
     )?;
     writeln!(file, "bom: {}", config.outputs.bom_file)?;
     writeln!(file, "cpl: {}", config.outputs.cpl_file)?;
+    writeln!(file, "manual_install_parts: {}", config.outputs.manual_file)?;
     writeln!(file, "position: {}", config.outputs.position_file)?;
     if config.step.enabled {
         writeln!(file, "step: {}", config.outputs.step_file)?;
     }
     Ok(())
+}
+
+fn validate_release_outputs(
+    config: &ReleaseConfig,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    output_root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let mut errors = Vec::new();
+
+    for layer in &config.gerbers.layers {
+        let filename = expected_gerber_filename(layer).ok_or_else(|| {
+            format!("fab release does not know expected Gerber filename for layer {layer}")
+        })?;
+        validate_nonempty_file(
+            &output_root.join(&config.outputs.gerbers_dir).join(filename),
+            &mut errors,
+        );
+    }
+    validate_nonempty_file(
+        &output_root
+            .join(&config.outputs.gerbers_dir)
+            .join("lamp_rev_a-job.gbrjob"),
+        &mut errors,
+    );
+
+    for filename in [
+        "lamp_rev_a-PTH.drl",
+        "lamp_rev_a-NPTH.drl",
+        "lamp_rev_a-PTH-drl_map.pdf",
+        "lamp_rev_a-NPTH-drl_map.pdf",
+    ] {
+        validate_nonempty_file(
+            &output_root.join(&config.outputs.drills_dir).join(filename),
+            &mut errors,
+        );
+    }
+
+    for relative in [
+        &config.outputs.bom_file,
+        &config.outputs.cpl_file,
+        &config.outputs.manual_file,
+        &config.outputs.position_file,
+        &config.outputs.drill_report,
+        &config.outputs.erc_report,
+        &config.outputs.drc_report,
+    ] {
+        validate_nonempty_file(&output_root.join(relative), &mut errors);
+    }
+    if config.step.enabled {
+        validate_nonempty_file(&output_root.join(&config.outputs.step_file), &mut errors);
+    }
+
+    let machine_count = machine_placement_count(parts, placement, &config.assembly);
+    let manual_count = manual_placement_count(placement, &config.assembly);
+    validate_csv_data_rows(
+        &output_root.join(&config.outputs.cpl_file),
+        machine_count,
+        "JLCPCB CPL",
+        &mut errors,
+    );
+    validate_csv_data_rows(
+        &output_root.join(&config.outputs.manual_file),
+        manual_count,
+        "manual install parts",
+        &mut errors,
+    );
+    if config.assembly.require_cpl_matches_kicad_position {
+        validate_csv_data_rows(
+            &output_root.join(&config.outputs.position_file),
+            machine_count,
+            "KiCad position export",
+            &mut errors,
+        );
+    }
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(errors.join("\n").into())
+    }
+}
+
+fn expected_gerber_filename(layer: &str) -> Option<&'static str> {
+    match layer {
+        "F.Cu" => Some("lamp_rev_a-F_Cu.gtl"),
+        "In1.Cu" => Some("lamp_rev_a-In1_Cu.g1"),
+        "In2.Cu" => Some("lamp_rev_a-In2_Cu.g2"),
+        "B.Cu" => Some("lamp_rev_a-B_Cu.gbl"),
+        "F.SilkS" => Some("lamp_rev_a-F_Silkscreen.gto"),
+        "B.SilkS" => Some("lamp_rev_a-B_Silkscreen.gbo"),
+        "F.Mask" => Some("lamp_rev_a-F_Mask.gts"),
+        "B.Mask" => Some("lamp_rev_a-B_Mask.gbs"),
+        "F.Paste" => Some("lamp_rev_a-F_Paste.gtp"),
+        "Edge.Cuts" => Some("lamp_rev_a-Edge_Cuts.gm1"),
+        _ => None,
+    }
+}
+
+fn validate_nonempty_file(path: &Path, errors: &mut Vec<String>) {
+    match fs::metadata(path) {
+        Ok(metadata) if metadata.is_file() && metadata.len() > 0 => {}
+        Ok(metadata) if metadata.is_file() => {
+            errors.push(format!("release artifact is empty: {}", path.display()));
+        }
+        Ok(_) => errors.push(format!(
+            "release artifact is not a file: {}",
+            path.display()
+        )),
+        Err(err) => errors.push(format!(
+            "release artifact is missing: {} ({err})",
+            path.display()
+        )),
+    }
+}
+
+fn validate_csv_data_rows(path: &Path, expected: usize, label: &str, errors: &mut Vec<String>) {
+    match csv_data_rows(path) {
+        Ok(actual) if actual == expected => {}
+        Ok(actual) => errors.push(format!(
+            "{label} has {actual} data rows, expected {expected}: {}",
+            path.display()
+        )),
+        Err(err) => errors.push(format!("failed to read {label} {}: {err}", path.display())),
+    }
+}
+
+fn csv_data_rows(path: &Path) -> Result<usize, Box<dyn Error>> {
+    let mut reader = csv::Reader::from_path(path)?;
+    let mut count = 0usize;
+    for record in reader.records() {
+        record?;
+        count += 1;
+    }
+    Ok(count)
+}
+
+fn machine_placement_count(
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    assembly: &AssemblyConfig,
+) -> usize {
+    let machine_part_ids = machine_part_ids(parts, assembly);
+    placement
+        .placements
+        .iter()
+        .filter(|item| machine_part_ids.contains(item.part_id.as_str()))
+        .count()
+}
+
+fn manual_placement_count(placement: &PlacementPlan, assembly: &AssemblyConfig) -> usize {
+    let manual_part_ids = manual_part_ids(assembly);
+    placement
+        .placements
+        .iter()
+        .filter(|item| manual_part_ids.contains(item.part_id.as_str()))
+        .count()
 }
 
 fn count_files(path: &Path) -> Result<usize, Box<dyn Error>> {

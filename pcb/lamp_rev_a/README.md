@@ -86,6 +86,9 @@ currently at 112 accepted segments, zero real unrouted ratlines after KiCad zone
 refill, and one ignored KiCad self-zone report item for the front GND pour. The
 active work is schematic completion, schematic/PCB parity, fab export validation,
 and bench validation.
+`lamp_rev_a_fab_release` emits JLCPCB machine-assembly BOM/CPL files separately
+from through-hole/manual-install parts, then verifies that required Gerbers,
+drills, reports, position files, and review STEP output are present and non-empty.
 
 Current KiCad checks:
 

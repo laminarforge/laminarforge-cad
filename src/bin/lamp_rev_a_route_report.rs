@@ -3,7 +3,9 @@ use std::collections::BTreeMap;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 
+const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
 const DRC_REPORT_PATH: &str = "pcb/lamp_rev_a/reports/drc.json";
 
 #[derive(Debug, Deserialize)]
@@ -28,12 +30,9 @@ struct DrcItem {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
+    refresh_drc_report()?;
     let path = Path::new(DRC_REPORT_PATH);
-    let content = fs::read_to_string(path).map_err(|error| {
-        format!(
-            "read {DRC_REPORT_PATH}: {error}; run `kicad-cli pcb drc --format json --output {DRC_REPORT_PATH} pcb/lamp_rev_a/lamp_rev_a.kicad_pcb` first"
-        )
-    })?;
+    let content = fs::read_to_string(path)?;
     let report: DrcReport = serde_json::from_str(&content)?;
     let active_unconnected = report
         .unconnected_items
@@ -74,6 +73,36 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     Ok(())
+}
+
+fn refresh_drc_report() -> Result<(), Box<dyn Error>> {
+    let report_path = Path::new(DRC_REPORT_PATH);
+    if let Some(parent) = report_path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    let args = [
+        "pcb",
+        "drc",
+        "--refill-zones",
+        "--output",
+        DRC_REPORT_PATH,
+        "--format",
+        "json",
+        "--severity-all",
+        BOARD_PATH,
+    ];
+    let output = Command::new("kicad-cli").args(args).output()?;
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "failed to refresh KiCad DRC report with kicad-cli\nstdout:\n{}\nstderr:\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        )
+        .into())
+    }
 }
 
 fn extract_net(description: &str) -> Option<String> {
