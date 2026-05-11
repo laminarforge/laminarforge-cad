@@ -30,6 +30,7 @@ manual_file = "assembly/manual_install_parts.csv"
 position_file = "assembly/kicad_position_front.csv"
 step_file = "review/lamp_rev_a_board.step"
 order_audit_file = "review/order_audit.md"
+bringup_file = "review/bringup_checklist.md"
 manifest_file = "release_manifest.txt"
 fabrication_bundle = "bundles/lamp_rev_a_jlcpcb_fabrication.zip"
 assembly_bundle = "bundles/lamp_rev_a_jlcpcb_assembly.zip"
@@ -51,6 +52,28 @@ remaining_gates = [
   "Heater current, copper temperature-rise, fuse trip-curve, and external thermal-cutoff bench validation.",
   "Optical one-channel bench calibration for 650 nm turbidimetry signal slope, negative-control stability, and detector saturation margin.",
   "Enclosure/connector fit check against the Rev A mechanical assembly before ordering assembled boards.",
+]
+
+[bringup]
+usb_power_limit_ma = 500
+heater_power_limit_ma = 3500
+required_test_points = [
+  "TP_GND",
+  "TP_VBUS",
+  "TP_5V",
+  "TP_3V3",
+  "TP_12V",
+  "TP_HEATER",
+  "TP_HEATER_SUPPLY",
+  "TP_PWM",
+  "TP_ADC",
+  "TP_MUX",
+  "TP_SDA",
+  "TP_SCL",
+  "TP_EN",
+  "TP_BOOT",
+  "TP_TX",
+  "TP_RX",
 ]
 
 [source_snapshot]

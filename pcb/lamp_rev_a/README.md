@@ -92,7 +92,8 @@ drills, reports, position files, review STEP output, and the order audit report
 are present and non-empty. It also emits validated upload bundles under
 `fab_release/bundles/`: fabrication Gerbers/drills, assembly CSVs, and review
 artifacts. The release also includes a source snapshot bundle with the exact
-KiCad and TOML inputs used to generate the fab package.
+KiCad and TOML inputs used to generate the fab package. The review package
+includes a bring-up checklist generated from the configured Rev A test points.
 
 Current KiCad checks:
 

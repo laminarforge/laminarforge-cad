@@ -17,6 +17,7 @@ struct ReleaseConfig {
     outputs: Outputs,
     assembly: AssemblyConfig,
     review: ReviewConfig,
+    bringup: BringupConfig,
     source_snapshot: SourceSnapshotConfig,
     gerbers: GerberConfig,
     drills: DrillConfig,
@@ -62,6 +63,7 @@ struct Outputs {
     position_file: String,
     step_file: String,
     order_audit_file: String,
+    bringup_file: String,
     manifest_file: String,
     fabrication_bundle: String,
     assembly_bundle: String,
@@ -79,6 +81,13 @@ struct AssemblyConfig {
 #[derive(Debug, Deserialize)]
 struct ReviewConfig {
     remaining_gates: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct BringupConfig {
+    usb_power_limit_ma: u32,
+    heater_power_limit_ma: u32,
+    required_test_points: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -147,6 +156,7 @@ struct SelectedPart {
 #[derive(Debug, Deserialize)]
 struct PlacementPlan {
     placements: Vec<Placement>,
+    test_points: Vec<TestPoint>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -156,6 +166,15 @@ struct Placement {
     x_mm: f64,
     y_mm: f64,
     rotation_deg: f64,
+    side: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct TestPoint {
+    name: String,
+    net: String,
+    x_mm: f64,
+    y_mm: f64,
     side: String,
 }
 
@@ -215,6 +234,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let parts = read_toml::<PartsManifest>(&parts_path)?;
     let placement = read_toml::<PlacementPlan>(&placement_path)?;
     validate_assembly_sources(&parts, &placement)?;
+    validate_bringup_sources(&config.bringup, &placement)?;
     write_bom(
         &parts,
         &placement,
@@ -258,6 +278,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ignored_self_zone,
         erc_violations,
     )?;
+    write_bringup_checklist(&config, &placement, &output_root)?;
     write_release_bundles(&config, &root, &output_root)?;
     validate_release_outputs(&config, &parts, &placement, &output_root)?;
 
@@ -290,6 +311,12 @@ fn validate_config(config: &ReleaseConfig) -> Result<(), Box<dyn Error>> {
     }
     if config.review.remaining_gates.is_empty() {
         return Err("fab release review remaining_gates cannot be empty".into());
+    }
+    if config.bringup.required_test_points.is_empty() {
+        return Err("fab release bringup required_test_points cannot be empty".into());
+    }
+    if config.bringup.usb_power_limit_ma == 0 || config.bringup.heater_power_limit_ma == 0 {
+        return Err("fab release bringup current limits must be greater than zero".into());
     }
     if config.source_snapshot.files.is_empty() {
         return Err("fab release source_snapshot files cannot be empty".into());
@@ -483,6 +510,45 @@ fn validate_assembly_sources(
             errors.push(format!(
                 "part group {} expects {} placements but found {}",
                 part.id, part.quantity, count
+            ));
+        }
+    }
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(errors.join("\n").into())
+    }
+}
+
+fn validate_bringup_sources(
+    bringup: &BringupConfig,
+    placement: &PlacementPlan,
+) -> Result<(), Box<dyn Error>> {
+    let mut errors = Vec::new();
+    let mut names = BTreeSet::new();
+    for point in &placement.test_points {
+        if !names.insert(point.name.as_str()) {
+            errors.push(format!("duplicate bring-up test point {}", point.name));
+        }
+        if point.net.trim().is_empty() {
+            errors.push(format!(
+                "bring-up test point {} has an empty net",
+                point.name
+            ));
+        }
+        if point.side != "top" {
+            errors.push(format!(
+                "bring-up test point {} is {}, but Rev A inspection expects top-side access",
+                point.name, point.side
+            ));
+        }
+    }
+
+    for required in &bringup.required_test_points {
+        if !names.contains(required.as_str()) {
+            errors.push(format!(
+                "bring-up checklist requires missing test point {required}"
             ));
         }
     }
@@ -809,6 +875,7 @@ fn write_manifest(
         writeln!(file, "step: {}", config.outputs.step_file)?;
     }
     writeln!(file, "order_audit: {}", config.outputs.order_audit_file)?;
+    writeln!(file, "bringup_checklist: {}", config.outputs.bringup_file)?;
     writeln!(
         file,
         "fabrication_bundle: {}",
@@ -900,6 +967,88 @@ fn write_order_audit_report(
     Ok(())
 }
 
+fn write_bringup_checklist(
+    config: &ReleaseConfig,
+    placement: &PlacementPlan,
+    output_root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let mut points = placement.test_points.iter().collect::<Vec<_>>();
+    points.sort_by_key(|point| reference_order(&point.name));
+
+    let mut file = fs::File::create(output_root.join(&config.outputs.bringup_file))?;
+    writeln!(file, "# LaminarForge LAMP Rev A Bring-Up Checklist")?;
+    writeln!(file)?;
+    writeln!(
+        file,
+        "Use this checklist after receiving the Rev A PCBA and before applying heater power."
+    )?;
+    writeln!(file)?;
+
+    writeln!(file, "## Power-Off Inspection")?;
+    writeln!(file)?;
+    writeln!(
+        file,
+        "- Confirm J2 and J3 are installed manually after SMT assembly and match the enclosure/mechanical stack."
+    )?;
+    writeln!(
+        file,
+        "- Inspect USB-C, ESP32-S3 module, AMS1117 regulator, optical mux, ADC, and TIA footprints under magnification."
+    )?;
+    writeln!(
+        file,
+        "- Verify the external heater assembly includes the inline thermal cutoff before connecting J3."
+    )?;
+    writeln!(
+        file,
+        "- Check resistance from each power rail test point to `TP_GND` before applying power."
+    )?;
+    writeln!(file)?;
+
+    writeln!(file, "## Staged Power-Up")?;
+    writeln!(file)?;
+    writeln!(
+        file,
+        "1. Apply USB power only with a current limit of `{}` mA; verify `TP_VBUS`, `TP_5V`, and `TP_3V3` before connecting 12 V.",
+        config.bringup.usb_power_limit_ma
+    )?;
+    writeln!(
+        file,
+        "2. Connect 12 V heater supply with a current limit of `{}` mA; verify `TP_12V` and `TP_HEATER_SUPPLY` while firmware keeps `TP_PWM` inactive.",
+        config.bringup.heater_power_limit_ma
+    )?;
+    writeln!(
+        file,
+        "3. Confirm boot/programming access through `TP_EN`, `TP_BOOT`, `TP_TX`, and `TP_RX` before loading heater-control firmware."
+    )?;
+    writeln!(
+        file,
+        "4. Run one dark optical read and one 650 nm emitter read per slot; watch `TP_ADC` and `TP_MUX` for saturation or unstable baseline."
+    )?;
+    writeln!(file)?;
+
+    writeln!(file, "## Required Test Points")?;
+    writeln!(file)?;
+    writeln!(file, "| Test Point | Net | X mm | Y mm | Side |")?;
+    writeln!(file, "| --- | --- | ---: | ---: | --- |")?;
+    for point in points {
+        writeln!(
+            file,
+            "| `{}` | `{}` | {:.3} | {:.3} | {} |",
+            point.name, point.net, point.x_mm, point.y_mm, point.side
+        )?;
+    }
+    writeln!(file)?;
+
+    writeln!(file, "## Release Gate")?;
+    writeln!(file)?;
+    writeln!(
+        file,
+        "All `{}` configured required test points must be accessible before the board is accepted for firmware bring-up.",
+        config.bringup.required_test_points.len()
+    )?;
+    Ok(())
+}
+
 fn write_release_bundles(
     config: &ReleaseConfig,
     repo_root: &Path,
@@ -931,6 +1080,7 @@ fn write_release_bundles(
     let mut review_files = vec![
         config.outputs.manifest_file.as_str(),
         config.outputs.order_audit_file.as_str(),
+        config.outputs.bringup_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
         config.outputs.drill_report.as_str(),
@@ -1093,6 +1243,7 @@ fn validate_release_outputs(
         &config.outputs.manual_file,
         &config.outputs.position_file,
         &config.outputs.order_audit_file,
+        &config.outputs.bringup_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
         &config.outputs.erc_report,
@@ -1175,6 +1326,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
     let mut review_files = vec![
         config.outputs.manifest_file.as_str(),
         config.outputs.order_audit_file.as_str(),
+        config.outputs.bringup_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
         config.outputs.drill_report.as_str(),
