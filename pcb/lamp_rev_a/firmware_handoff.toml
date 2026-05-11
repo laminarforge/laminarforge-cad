@@ -1,0 +1,256 @@
+[package]
+name = "lamp_rev_a_firmware_handoff"
+ticket = "T-1FEC6E03"
+revision = "Rev A"
+source_stage = "routed_board_release_export"
+
+[datasheet]
+source = "ESP32-S3-WROOM-1 and ESP32-S3-WROOM-1U Datasheet v1.8"
+url = "https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_en.html"
+pin_table = "Table 3-1 Pin Definitions"
+
+[mcu]
+reference = "U1"
+module = "ESP32-S3-WROOM-1-N8"
+module_pin_unit = "module pad number"
+firmware_pin_unit = "ESP32-S3 SoC GPIO number"
+
+[peripherals]
+i2c_sda_net = "SDA"
+i2c_scl_net = "SCL"
+adc_device = "ADS1115"
+adc_i2c_address = "0x48"
+adc_input_net = "ADC_AIN1"
+mux_common_net = "MUX_COM"
+mux_select_nets = ["MUX_S0", "MUX_S1", "MUX_S2"]
+heater_pwm_net = "HEATER_PWM"
+usb_dn_net = "USB_DN"
+usb_dp_net = "USB_DP"
+uart_rx_net = "UART_RX"
+uart_tx_net = "UART_TX"
+boot_net = "ESP_GPIO0"
+enable_net = "ESP_EN"
+activity_net = "ESP_GPIO_ACT"
+
+notes = [
+  "Module pin numbers are physical ESP32-S3-WROOM-1 pad numbers; firmware must use the SoC GPIO numbers in this file.",
+  "USB_DN and USB_DP use the ESP32-S3 native USB pins and are not general remappable firmware GPIOs.",
+  "ESP_GPIO0 is a boot strap net; firmware can use it only after boot and must not fight the BOOT switch/pull network during reset.",
+  "Heater firmware must default HEATER_PWM inactive until TP_12V, TP_HEATER_SUPPLY, and external thermal cutoff checks pass.",
+]
+
+[[module_pins]]
+module_pin = 3
+soc_gpio = -1
+net = "ESP_EN"
+role = "chip enable/reset"
+firmware_direction = "reset-control/test-only"
+boot_sensitive = true
+
+[[module_pins]]
+module_pin = 13
+soc_gpio = 19
+net = "USB_DN"
+role = "native USB D-"
+firmware_direction = "usb"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 14
+soc_gpio = 20
+net = "USB_DP"
+role = "native USB D+"
+firmware_direction = "usb"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 15
+soc_gpio = 3
+net = "HEATER_PWM"
+role = "heater gate PWM"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 16
+soc_gpio = 46
+net = "SDA"
+role = "I2C data"
+firmware_direction = "bidirectional-open-drain"
+boot_sensitive = true
+
+[[module_pins]]
+module_pin = 17
+soc_gpio = 9
+net = "SCL"
+role = "I2C clock"
+firmware_direction = "output-open-drain"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 18
+soc_gpio = 10
+net = "MUX_S0"
+role = "optical mux select bit 0"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 19
+soc_gpio = 11
+net = "MUX_S1"
+role = "optical mux select bit 1"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 20
+soc_gpio = 12
+net = "MUX_S2"
+role = "optical mux select bit 2"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 21
+soc_gpio = 13
+net = "LED_BASE_0"
+role = "slot 0 650 nm emitter drive"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 22
+soc_gpio = 14
+net = "LED_BASE_1"
+role = "slot 1 650 nm emitter drive"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 23
+soc_gpio = 21
+net = "LED_BASE_2"
+role = "slot 2 650 nm emitter drive"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 24
+soc_gpio = 47
+net = "LED_BASE_3"
+role = "slot 3 650 nm emitter drive"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 25
+soc_gpio = 48
+net = "LED_BASE_4"
+role = "slot 4 650 nm emitter drive"
+firmware_direction = "output"
+boot_sensitive = true
+
+[[module_pins]]
+module_pin = 26
+soc_gpio = 45
+net = "LED_BASE_5"
+role = "slot 5 650 nm emitter drive"
+firmware_direction = "output"
+boot_sensitive = true
+
+[[module_pins]]
+module_pin = 27
+soc_gpio = 0
+net = "ESP_GPIO0"
+role = "BOOT strap"
+firmware_direction = "input-after-boot"
+boot_sensitive = true
+
+[[module_pins]]
+module_pin = 28
+soc_gpio = 35
+net = "LED_BASE_7"
+role = "slot 7 650 nm emitter drive"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 30
+soc_gpio = 37
+net = "LED_BASE_6"
+role = "slot 6 650 nm emitter drive"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 35
+soc_gpio = 42
+net = "ESP_GPIO_ACT"
+role = "activity LED"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 36
+soc_gpio = 44
+net = "UART_RX"
+role = "UART0 RX"
+firmware_direction = "input"
+boot_sensitive = false
+
+[[module_pins]]
+module_pin = 37
+soc_gpio = 43
+net = "UART_TX"
+role = "UART0 TX"
+firmware_direction = "output"
+boot_sensitive = false
+
+[[slots]]
+slot = 0
+led_net = "LED_BASE_0"
+mux_channel_net = "MUX_Y0"
+select_bits = [0, 0, 0]
+
+[[slots]]
+slot = 1
+led_net = "LED_BASE_1"
+mux_channel_net = "MUX_Y1"
+select_bits = [1, 0, 0]
+
+[[slots]]
+slot = 2
+led_net = "LED_BASE_2"
+mux_channel_net = "MUX_Y2"
+select_bits = [0, 1, 0]
+
+[[slots]]
+slot = 3
+led_net = "LED_BASE_3"
+mux_channel_net = "MUX_Y3"
+select_bits = [1, 1, 0]
+
+[[slots]]
+slot = 4
+led_net = "LED_BASE_4"
+mux_channel_net = "MUX_Y4"
+select_bits = [0, 0, 1]
+
+[[slots]]
+slot = 5
+led_net = "LED_BASE_5"
+mux_channel_net = "MUX_Y5"
+select_bits = [1, 0, 1]
+
+[[slots]]
+slot = 6
+led_net = "LED_BASE_6"
+mux_channel_net = "MUX_Y6"
+select_bits = [0, 1, 1]
+
+[[slots]]
+slot = 7
+led_net = "LED_BASE_7"
+mux_channel_net = "MUX_Y7"
+select_bits = [1, 1, 1]

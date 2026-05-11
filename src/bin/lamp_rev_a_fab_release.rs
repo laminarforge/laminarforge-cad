@@ -42,8 +42,11 @@ struct ToolchainConfig {
 struct Inputs {
     board: String,
     schematic: String,
+    contract: String,
     parts: String,
     placement: String,
+    pin_nets: String,
+    firmware_handoff: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -65,6 +68,7 @@ struct Outputs {
     step_file: String,
     order_audit_file: String,
     bringup_file: String,
+    firmware_handoff_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
@@ -181,6 +185,119 @@ struct TestPoint {
 }
 
 #[derive(Debug, Deserialize)]
+struct Contract {
+    board: BoardContract,
+    nets: Vec<ContractNet>,
+    #[serde(default)]
+    net_groups: Vec<ContractNetGroup>,
+    gpio_map: Vec<GpioMap>,
+}
+
+#[derive(Debug, Deserialize)]
+struct BoardContract {
+    slot_count: usize,
+    primary_mcu: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ContractNet {
+    name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ContractNetGroup {
+    prefix: String,
+    count: usize,
+}
+
+#[derive(Debug, Deserialize)]
+struct GpioMap {
+    esp32_module_pin: u32,
+    net: String,
+    function: String,
+    locked: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct PinNetManifest {
+    assignments: Vec<PinNetAssignment>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PinNetAssignment {
+    reference: String,
+    pins: BTreeMap<String, String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirmwareHandoff {
+    package: FirmwareHandoffPackage,
+    datasheet: FirmwareDatasheet,
+    mcu: FirmwareMcu,
+    peripherals: FirmwarePeripherals,
+    module_pins: Vec<FirmwareModulePin>,
+    slots: Vec<FirmwareSlot>,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirmwareHandoffPackage {
+    revision: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirmwareDatasheet {
+    source: String,
+    url: String,
+    pin_table: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirmwareMcu {
+    reference: String,
+    module: String,
+    module_pin_unit: String,
+    firmware_pin_unit: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirmwarePeripherals {
+    i2c_sda_net: String,
+    i2c_scl_net: String,
+    adc_device: String,
+    adc_i2c_address: String,
+    adc_input_net: String,
+    mux_common_net: String,
+    mux_select_nets: Vec<String>,
+    heater_pwm_net: String,
+    usb_dn_net: String,
+    usb_dp_net: String,
+    uart_rx_net: String,
+    uart_tx_net: String,
+    boot_net: String,
+    enable_net: String,
+    activity_net: String,
+    notes: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirmwareModulePin {
+    module_pin: u32,
+    soc_gpio: i32,
+    net: String,
+    role: String,
+    firmware_direction: String,
+    boot_sensitive: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirmwareSlot {
+    slot: usize,
+    led_net: String,
+    mux_channel_net: String,
+    select_bits: Vec<u8>,
+}
+
+#[derive(Debug, Deserialize)]
 struct KiCadReport {
     #[serde(default)]
     violations: Vec<ReportEntry>,
@@ -214,12 +331,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let board = root.join(&config.inputs.board);
     let schematic = root.join(&config.inputs.schematic);
+    let contract_path = root.join(&config.inputs.contract);
     let parts_path = root.join(&config.inputs.parts);
     let placement_path = root.join(&config.inputs.placement);
+    let pin_nets_path = root.join(&config.inputs.pin_nets);
+    let firmware_handoff_path = root.join(&config.inputs.firmware_handoff);
     ensure_file(&board)?;
     ensure_file(&schematic)?;
+    ensure_file(&contract_path)?;
     ensure_file(&parts_path)?;
     ensure_file(&placement_path)?;
+    ensure_file(&pin_nets_path)?;
+    ensure_file(&firmware_handoff_path)?;
 
     validate_kicad_version(config.toolchain.min_kicad_major)?;
 
@@ -235,8 +358,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let parts = read_toml::<PartsManifest>(&parts_path)?;
     let placement = read_toml::<PlacementPlan>(&placement_path)?;
+    let contract = read_toml::<Contract>(&contract_path)?;
+    let pin_nets = read_toml::<PinNetManifest>(&pin_nets_path)?;
+    let firmware_handoff = read_toml::<FirmwareHandoff>(&firmware_handoff_path)?;
     validate_assembly_sources(&parts, &placement)?;
     validate_bringup_sources(&config.bringup, &placement)?;
+    validate_firmware_handoff_sources(&contract, &pin_nets, &firmware_handoff)?;
     write_bom(
         &parts,
         &placement,
@@ -281,6 +408,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         erc_violations,
     )?;
     write_bringup_checklist(&config, &placement, &output_root)?;
+    write_firmware_handoff(
+        &config,
+        &contract,
+        &placement,
+        &firmware_handoff,
+        &output_root,
+    )?;
     write_release_bundles(&config, &root, &output_root)?;
     validate_release_outputs(&config, &parts, &placement, &output_root)?;
 
@@ -560,6 +694,203 @@ fn validate_bringup_sources(
     } else {
         Err(errors.join("\n").into())
     }
+}
+
+fn validate_firmware_handoff_sources(
+    contract: &Contract,
+    pin_nets: &PinNetManifest,
+    firmware: &FirmwareHandoff,
+) -> Result<(), Box<dyn Error>> {
+    let mut errors = Vec::new();
+
+    if firmware.package.revision != "Rev A" {
+        errors.push(format!(
+            "firmware handoff revision must be Rev A, found {}",
+            firmware.package.revision
+        ));
+    }
+    if firmware.mcu.module != contract.board.primary_mcu {
+        errors.push(format!(
+            "firmware handoff MCU {} does not match contract MCU {}",
+            firmware.mcu.module, contract.board.primary_mcu
+        ));
+    }
+    if firmware.slots.len() != contract.board.slot_count {
+        errors.push(format!(
+            "firmware handoff has {} slots, contract requires {}",
+            firmware.slots.len(),
+            contract.board.slot_count
+        ));
+    }
+
+    let expanded_nets = expand_contract_nets(contract);
+    let Some(mcu_pins) = pin_nets
+        .assignments
+        .iter()
+        .find(|assignment| assignment.reference == firmware.mcu.reference)
+    else {
+        errors.push(format!(
+            "pin_nets is missing MCU reference {}",
+            firmware.mcu.reference
+        ));
+        return Err(errors.join("\n").into());
+    };
+
+    let mut module_pins = BTreeSet::new();
+    let mut soc_gpios = BTreeSet::new();
+    let mut nets_by_module_pin = BTreeMap::new();
+    let mut module_pin_by_net = BTreeMap::new();
+    for pin in &firmware.module_pins {
+        if !module_pins.insert(pin.module_pin) {
+            errors.push(format!(
+                "firmware handoff duplicates module pin {}",
+                pin.module_pin
+            ));
+        }
+        if pin.soc_gpio >= 0 && !soc_gpios.insert(pin.soc_gpio) {
+            errors.push(format!(
+                "firmware handoff duplicates SoC GPIO {}",
+                pin.soc_gpio
+            ));
+        }
+        if !expanded_nets.contains(pin.net.as_str()) {
+            errors.push(format!(
+                "firmware handoff net {} is missing from contract",
+                pin.net
+            ));
+        }
+        if pin.role.trim().is_empty() || pin.firmware_direction.trim().is_empty() {
+            errors.push(format!(
+                "firmware handoff module pin {} needs role and firmware_direction",
+                pin.module_pin
+            ));
+        }
+
+        let module_pin = pin.module_pin.to_string();
+        match mcu_pins.pins.get(&module_pin) {
+            Some(net) if net == &pin.net => {}
+            Some(net) => errors.push(format!(
+                "firmware handoff module pin {} net {} does not match pin_nets {}",
+                pin.module_pin, pin.net, net
+            )),
+            None => errors.push(format!(
+                "firmware handoff module pin {} is missing from pin_nets for {}",
+                pin.module_pin, firmware.mcu.reference
+            )),
+        }
+        nets_by_module_pin.insert(pin.module_pin, pin.net.as_str());
+        module_pin_by_net.insert(pin.net.as_str(), pin.module_pin);
+    }
+
+    for gpio in &contract.gpio_map {
+        match nets_by_module_pin.get(&gpio.esp32_module_pin) {
+            Some(net) if *net == gpio.net => {}
+            Some(net) => errors.push(format!(
+                "contract GPIO pin {} maps to {}, but firmware handoff maps it to {}",
+                gpio.esp32_module_pin, gpio.net, net
+            )),
+            None => errors.push(format!(
+                "firmware handoff missing contract GPIO pin {} for {}",
+                gpio.esp32_module_pin, gpio.net
+            )),
+        }
+        if !gpio.locked {
+            errors.push(format!(
+                "contract GPIO pin {} for {} is not locked",
+                gpio.esp32_module_pin, gpio.net
+            ));
+        }
+    }
+
+    for net in firmware_required_nets(firmware) {
+        if !expanded_nets.contains(net.as_str()) {
+            errors.push(format!(
+                "firmware handoff required net {} is missing from contract",
+                net
+            ));
+        }
+    }
+
+    let mut slot_numbers = BTreeSet::new();
+    for slot in &firmware.slots {
+        if !slot_numbers.insert(slot.slot) {
+            errors.push(format!("firmware handoff duplicates slot {}", slot.slot));
+        }
+        if slot.slot >= contract.board.slot_count {
+            errors.push(format!(
+                "firmware handoff slot {} is outside 0..{}",
+                slot.slot,
+                contract.board.slot_count - 1
+            ));
+        }
+        if slot.select_bits.len() != firmware.peripherals.mux_select_nets.len() {
+            errors.push(format!(
+                "firmware handoff slot {} has {} select bits, expected {}",
+                slot.slot,
+                slot.select_bits.len(),
+                firmware.peripherals.mux_select_nets.len()
+            ));
+        }
+        if slot.select_bits.iter().any(|bit| *bit > 1) {
+            errors.push(format!(
+                "firmware handoff slot {} select bits must be binary",
+                slot.slot
+            ));
+        }
+        for net in [&slot.led_net, &slot.mux_channel_net] {
+            if !expanded_nets.contains(net.as_str()) {
+                errors.push(format!(
+                    "firmware handoff slot {} net {} is missing from contract",
+                    slot.slot, net
+                ));
+            }
+        }
+        if !module_pin_by_net.contains_key(slot.led_net.as_str()) {
+            errors.push(format!(
+                "firmware handoff slot {} LED net {} has no MCU module pin mapping",
+                slot.slot, slot.led_net
+            ));
+        }
+    }
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(errors.join("\n").into())
+    }
+}
+
+fn expand_contract_nets(contract: &Contract) -> BTreeSet<String> {
+    let mut nets = contract
+        .nets
+        .iter()
+        .map(|net| net.name.clone())
+        .collect::<BTreeSet<_>>();
+    for group in &contract.net_groups {
+        for index in 0..group.count {
+            nets.insert(format!("{}{}", group.prefix, index));
+        }
+    }
+    nets
+}
+
+fn firmware_required_nets(firmware: &FirmwareHandoff) -> Vec<String> {
+    let mut nets = vec![
+        firmware.peripherals.i2c_sda_net.clone(),
+        firmware.peripherals.i2c_scl_net.clone(),
+        firmware.peripherals.adc_input_net.clone(),
+        firmware.peripherals.mux_common_net.clone(),
+        firmware.peripherals.heater_pwm_net.clone(),
+        firmware.peripherals.usb_dn_net.clone(),
+        firmware.peripherals.usb_dp_net.clone(),
+        firmware.peripherals.uart_rx_net.clone(),
+        firmware.peripherals.uart_tx_net.clone(),
+        firmware.peripherals.boot_net.clone(),
+        firmware.peripherals.enable_net.clone(),
+        firmware.peripherals.activity_net.clone(),
+    ];
+    nets.extend(firmware.peripherals.mux_select_nets.iter().cloned());
+    nets
 }
 
 fn write_bom(
@@ -880,6 +1211,11 @@ fn write_manifest(
     writeln!(file, "bringup_checklist: {}", config.outputs.bringup_file)?;
     writeln!(
         file,
+        "firmware_handoff: {}",
+        config.outputs.firmware_handoff_file
+    )?;
+    writeln!(
+        file,
         "bundle_checksums: {}",
         config.outputs.bundle_checksums_file
     )?;
@@ -1056,6 +1392,225 @@ fn write_bringup_checklist(
     Ok(())
 }
 
+fn write_firmware_handoff(
+    config: &ReleaseConfig,
+    contract: &Contract,
+    placement: &PlacementPlan,
+    firmware: &FirmwareHandoff,
+    output_root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let mut module_pins = firmware.module_pins.iter().collect::<Vec<_>>();
+    module_pins.sort_by_key(|pin| pin.module_pin);
+
+    let pin_by_net = module_pins
+        .iter()
+        .map(|pin| (pin.net.as_str(), *pin))
+        .collect::<BTreeMap<_, _>>();
+    let function_by_net = contract
+        .gpio_map
+        .iter()
+        .map(|gpio| (gpio.net.as_str(), gpio.function.as_str()))
+        .collect::<BTreeMap<_, _>>();
+
+    let mut slots = firmware.slots.iter().collect::<Vec<_>>();
+    slots.sort_by_key(|slot| slot.slot);
+
+    let mut test_points = placement.test_points.iter().collect::<Vec<_>>();
+    test_points.sort_by_key(|point| reference_order(&point.name));
+
+    let mut file = fs::File::create(output_root.join(&config.outputs.firmware_handoff_file))?;
+    writeln!(file, "# LaminarForge LAMP Rev A Firmware Handoff")?;
+    writeln!(file)?;
+    writeln!(
+        file,
+        "Generated from `contract.toml`, `pin_nets.toml`, and `firmware_handoff.toml` during the fab release gate."
+    )?;
+    writeln!(file)?;
+    writeln!(file, "## Source")?;
+    writeln!(file)?;
+    writeln!(file, "- Board revision: `{}`", firmware.package.revision)?;
+    writeln!(
+        file,
+        "- MCU: `{}` / `{}`",
+        firmware.mcu.reference, firmware.mcu.module
+    )?;
+    writeln!(
+        file,
+        "- Module pin unit: `{}`",
+        firmware.mcu.module_pin_unit
+    )?;
+    writeln!(
+        file,
+        "- Firmware pin unit: `{}`",
+        firmware.mcu.firmware_pin_unit
+    )?;
+    writeln!(
+        file,
+        "- Datasheet: {} ({}, {})",
+        firmware.datasheet.source, firmware.datasheet.pin_table, firmware.datasheet.url
+    )?;
+    writeln!(file)?;
+
+    writeln!(file, "## Gate Notes")?;
+    writeln!(file)?;
+    for note in &firmware.peripherals.notes {
+        writeln!(file, "- {note}")?;
+    }
+    writeln!(file)?;
+
+    writeln!(file, "## MCU Pin Map")?;
+    writeln!(file)?;
+    writeln!(
+        file,
+        "| Module Pin | SoC GPIO | Net | Role | Contract Function | Direction | Boot Sensitive |"
+    )?;
+    writeln!(file, "| ---: | ---: | --- | --- | --- | --- | --- |")?;
+    for pin in module_pins {
+        writeln!(
+            file,
+            "| {} | {} | `{}` | {} | {} | `{}` | {} |",
+            pin.module_pin,
+            firmware_gpio_label(pin),
+            pin.net,
+            pin.role,
+            function_by_net
+                .get(pin.net.as_str())
+                .copied()
+                .unwrap_or("n/a"),
+            pin.firmware_direction,
+            if pin.boot_sensitive { "yes" } else { "no" }
+        )?;
+    }
+    writeln!(file)?;
+
+    writeln!(file, "## Firmware Constants")?;
+    writeln!(file)?;
+    writeln!(file, "```rust")?;
+    writeln!(file, "pub const LAMP_REVISION: &str = \"Rev A\";")?;
+    writeln!(
+        file,
+        "pub const LAMP_SLOT_COUNT: usize = {};",
+        contract.board.slot_count
+    )?;
+    writeln!(
+        file,
+        "pub const ADS1115_I2C_ADDRESS: u8 = {};",
+        firmware.peripherals.adc_i2c_address
+    )?;
+    for (constant, net) in [
+        ("I2C_SDA_GPIO", firmware.peripherals.i2c_sda_net.as_str()),
+        ("I2C_SCL_GPIO", firmware.peripherals.i2c_scl_net.as_str()),
+        (
+            "HEATER_PWM_GPIO",
+            firmware.peripherals.heater_pwm_net.as_str(),
+        ),
+        (
+            "MUX_S0_GPIO",
+            firmware.peripherals.mux_select_nets[0].as_str(),
+        ),
+        (
+            "MUX_S1_GPIO",
+            firmware.peripherals.mux_select_nets[1].as_str(),
+        ),
+        (
+            "MUX_S2_GPIO",
+            firmware.peripherals.mux_select_nets[2].as_str(),
+        ),
+        ("UART_RX_GPIO", firmware.peripherals.uart_rx_net.as_str()),
+        ("UART_TX_GPIO", firmware.peripherals.uart_tx_net.as_str()),
+        (
+            "ACTIVITY_LED_GPIO",
+            firmware.peripherals.activity_net.as_str(),
+        ),
+    ] {
+        let pin = pin_by_net
+            .get(net)
+            .ok_or_else(|| format!("firmware constant net {net} has no pin mapping"))?;
+        writeln!(file, "pub const {constant}: i32 = {};", pin.soc_gpio)?;
+    }
+    writeln!(file, "```")?;
+    writeln!(file)?;
+
+    writeln!(file, "## Slot Map")?;
+    writeln!(file)?;
+    writeln!(
+        file,
+        "| Slot | LED Net | LED GPIO | Mux Channel | Select Bits S0/S1/S2 |"
+    )?;
+    writeln!(file, "| ---: | --- | ---: | --- | --- |")?;
+    for slot in slots {
+        let led_pin = pin_by_net.get(slot.led_net.as_str()).ok_or_else(|| {
+            format!(
+                "firmware slot {} LED net {} has no pin mapping",
+                slot.slot, slot.led_net
+            )
+        })?;
+        writeln!(
+            file,
+            "| {} | `{}` | {} | `{}` | `{}/{}/{}` |",
+            slot.slot,
+            slot.led_net,
+            firmware_gpio_label(led_pin),
+            slot.mux_channel_net,
+            slot.select_bits[0],
+            slot.select_bits[1],
+            slot.select_bits[2]
+        )?;
+    }
+    writeln!(file)?;
+
+    writeln!(file, "## Peripheral Nets")?;
+    writeln!(file)?;
+    writeln!(
+        file,
+        "- I2C: `{}`/`{}` to `{}` at `{}`.",
+        firmware.peripherals.i2c_sda_net,
+        firmware.peripherals.i2c_scl_net,
+        firmware.peripherals.adc_device,
+        firmware.peripherals.adc_i2c_address
+    )?;
+    writeln!(
+        file,
+        "- ADC input: `{}`; mux common: `{}`.",
+        firmware.peripherals.adc_input_net, firmware.peripherals.mux_common_net
+    )?;
+    writeln!(
+        file,
+        "- Native USB: `{}` and `{}`.",
+        firmware.peripherals.usb_dn_net, firmware.peripherals.usb_dp_net
+    )?;
+    writeln!(
+        file,
+        "- Boot/debug: `{}`, `{}`, `{}`, `{}`.",
+        firmware.peripherals.enable_net,
+        firmware.peripherals.boot_net,
+        firmware.peripherals.uart_rx_net,
+        firmware.peripherals.uart_tx_net
+    )?;
+    writeln!(file)?;
+
+    writeln!(file, "## Test Points")?;
+    writeln!(file)?;
+    writeln!(file, "| Test Point | Net | X mm | Y mm | Side |")?;
+    writeln!(file, "| --- | --- | ---: | ---: | --- |")?;
+    for point in test_points {
+        writeln!(
+            file,
+            "| `{}` | `{}` | {:.3} | {:.3} | {} |",
+            point.name, point.net, point.x_mm, point.y_mm, point.side
+        )?;
+    }
+    Ok(())
+}
+
+fn firmware_gpio_label(pin: &FirmwareModulePin) -> String {
+    if pin.soc_gpio >= 0 {
+        pin.soc_gpio.to_string()
+    } else {
+        "n/a".to_string()
+    }
+}
+
 fn write_release_bundles(
     config: &ReleaseConfig,
     repo_root: &Path,
@@ -1097,6 +1652,7 @@ fn write_release_bundles(
         config.outputs.manifest_file.as_str(),
         config.outputs.order_audit_file.as_str(),
         config.outputs.bringup_file.as_str(),
+        config.outputs.firmware_handoff_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
@@ -1287,6 +1843,7 @@ fn validate_release_outputs(
         &config.outputs.position_file,
         &config.outputs.order_audit_file,
         &config.outputs.bringup_file,
+        &config.outputs.firmware_handoff_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
@@ -1372,6 +1929,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.manifest_file.as_str(),
         config.outputs.order_audit_file.as_str(),
         config.outputs.bringup_file.as_str(),
+        config.outputs.firmware_handoff_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),

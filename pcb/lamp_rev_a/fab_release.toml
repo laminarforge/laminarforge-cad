@@ -10,8 +10,11 @@ min_kicad_major = 10
 [inputs]
 board = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb"
 schematic = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch"
+contract = "pcb/lamp_rev_a/contract.toml"
 parts = "pcb/lamp_rev_a/parts.toml"
 placement = "pcb/lamp_rev_a/placement.toml"
+pin_nets = "pcb/lamp_rev_a/pin_nets.toml"
+firmware_handoff = "pcb/lamp_rev_a/firmware_handoff.toml"
 
 [outputs]
 root_dir = "pcb/lamp_rev_a/fab_release"
@@ -31,6 +34,7 @@ position_file = "assembly/kicad_position_front.csv"
 step_file = "review/lamp_rev_a_board.step"
 order_audit_file = "review/order_audit.md"
 bringup_file = "review/bringup_checklist.md"
+firmware_handoff_file = "review/firmware_handoff.md"
 bundle_checksums_file = "review/upload_bundle_checksums.sha256"
 manifest_file = "release_manifest.txt"
 fabrication_bundle = "bundles/lamp_rev_a_jlcpcb_fabrication.zip"
@@ -85,6 +89,7 @@ files = [
   "pcb/lamp_rev_a/optical_architecture.toml",
   "pcb/lamp_rev_a/placement.toml",
   "pcb/lamp_rev_a/pin_nets.toml",
+  "pcb/lamp_rev_a/firmware_handoff.toml",
   "pcb/lamp_rev_a/routing_plan.toml",
   "pcb/lamp_rev_a/routing_seed.toml",
   "pcb/lamp_rev_a/copper_zones.toml",
