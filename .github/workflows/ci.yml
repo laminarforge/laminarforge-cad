@@ -41,5 +41,8 @@ jobs:
       - name: LAMP Rev A PCBA contract check
         run: cargo run --release --bin lamp_pcba_check
 
+      - name: LAMP Rev A fab preview export
+        run: cargo run --release --bin lamp_rev_a_fab_preview
+
       - name: cargo test --release
         run: cargo test --release

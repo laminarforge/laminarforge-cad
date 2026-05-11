@@ -60,6 +60,7 @@ Run:
 
 ```bash
 cargo run --release --bin lamp_pcba_check
+cargo run --release --bin lamp_rev_a_fab_preview
 ```
 
 The current schematic is an architecture shell, not a fabrication-ready circuit.
