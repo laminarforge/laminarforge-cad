@@ -3,7 +3,7 @@ name = "lamp_rev_a_routing_seed"
 revision = "Rev A"
 source_stage = "endpoint_via_route_seed"
 source_report = "pcb/lamp_rev_a/reports/drc.json"
-segments = 89
+segments = 101
 
 
 [[segments]]
@@ -845,6 +845,144 @@ end_y_mm = 25.000
 
 via_at_start = false
 via_at_end = false
+
+[[segments]]
+net = "MUX_S0"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = true
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 28.830
+start_y_mm = 25.950
+end_x_mm = 28.830
+end_y_mm = 40.000
+
+[[segments]]
+net = "MUX_S0"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 28.830
+start_y_mm = 40.000
+end_x_mm = 55.900
+end_y_mm = 40.000
+
+[[segments]]
+net = "MUX_S0"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = true
+width_mm = 0.200
+start_x_mm = 55.900
+start_y_mm = 40.000
+end_x_mm = 55.900
+end_y_mm = 63.000
+
+[[segments]]
+net = "MUX_S0"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 55.900
+start_y_mm = 63.000
+end_x_mm = 55.900
+end_y_mm = 61.260
+
+[[segments]]
+net = "MUX_S1"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = true
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 30.100
+start_y_mm = 25.950
+end_x_mm = 30.100
+end_y_mm = 38.000
+
+[[segments]]
+net = "MUX_S1"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 30.100
+start_y_mm = 38.000
+end_x_mm = 57.170
+end_y_mm = 38.000
+
+[[segments]]
+net = "MUX_S1"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = true
+width_mm = 0.200
+start_x_mm = 57.170
+start_y_mm = 38.000
+end_x_mm = 57.170
+end_y_mm = 63.000
+
+[[segments]]
+net = "MUX_S1"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 57.170
+start_y_mm = 63.000
+end_x_mm = 57.170
+end_y_mm = 61.260
+
+[[segments]]
+net = "MUX_S2"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = true
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 31.370
+start_y_mm = 25.950
+end_x_mm = 31.370
+end_y_mm = 36.000
+
+[[segments]]
+net = "MUX_S2"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 31.370
+start_y_mm = 36.000
+end_x_mm = 58.440
+end_y_mm = 36.000
+
+[[segments]]
+net = "MUX_S2"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = true
+width_mm = 0.200
+start_x_mm = 58.440
+start_y_mm = 36.000
+end_x_mm = 58.440
+end_y_mm = 63.000
+
+[[segments]]
+net = "MUX_S2"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 58.440
+start_y_mm = 63.000
+end_x_mm = 58.440
+end_y_mm = 61.260
 
 [[segments]]
 net = "SDA"

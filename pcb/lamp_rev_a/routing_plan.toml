@@ -6,8 +6,8 @@ source_stage = "endpoint_via_route_seed_drc_clean"
 
 [current_state]
 physical_drc_violations = 0
-unconnected_items = 6
-starter_route_segments = 89
+unconnected_items = 3
+starter_route_segments = 101
 copper_zones = 2
 source_report = "pcb/lamp_rev_a/reports/drc.json"
 
