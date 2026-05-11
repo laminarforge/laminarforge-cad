@@ -884,16 +884,16 @@ fn main() {
     d.push('\n');
     d.push_str("    Ch  | Row | Col |   X (mm)  |   Y (mm)\n");
     d.push_str("    ----+-----+-----+-----------+-----------\n");
-    for ri in 0..num_rows {
-        for ci in 0..num_cols {
+    for (ri, &row_y) in row_ys.iter().enumerate().take(num_rows) {
+        for (ci, &col_x) in col_xs.iter().enumerate().take(num_cols) {
             let idx = ri * num_cols + ci;
             d.push_str(&format!(
                 "    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}\n",
                 idx + 1,
                 ri,
                 ci,
-                col_xs[ci],
-                row_ys[ri]
+                col_x,
+                row_y
             ));
         }
     }
@@ -1072,7 +1072,7 @@ fn main() {
         "================================================================================\n",
     );
     d.push('\n');
-    d.push_str(&format!("  SHARED BUS CHANNEL:\n"));
+    d.push_str("  SHARED BUS CHANNEL:\n");
     d.push_str(&format!("    Horizontal at Y = {:.1} mm\n", bus_y));
     d.push_str(&format!(
         "    X range: {:.1} to {:.1} mm (length {:.1} mm)\n",
@@ -1096,7 +1096,7 @@ fn main() {
         ));
     }
     d.push('\n');
-    d.push_str(&format!("  COLLECTOR MANIFOLD:\n"));
+    d.push_str("  COLLECTOR MANIFOLD:\n");
     d.push_str(&format!("    Horizontal at Y = {:.1} mm\n", collector_y));
     d.push_str(&format!(
         "    X range: {:.1} to {:.1} mm (length {:.1} mm)\n",
@@ -1402,11 +1402,9 @@ fn main() {
         "    Electrode B center: chamber_center_X, chamber_center_Y + 3.5mm (outlet side)\n",
     );
     d.push('\n');
-    for ri in 0..num_rows {
-        for ci in 0..num_cols {
+    for (ri, &ry) in row_ys.iter().enumerate().take(num_rows) {
+        for (ci, &cx) in col_xs.iter().enumerate().take(num_cols) {
             let idx = ri * num_cols + ci;
-            let cx = col_xs[ci];
-            let ry = row_ys[ri];
             d.push_str(&format!(
                 "    Ch{:2} [{},{}]: Elec A ({:+7.2}, {:+7.2})  Elec B ({:+7.2}, {:+7.2})\n",
                 idx + 1,
