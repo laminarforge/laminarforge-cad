@@ -80,6 +80,10 @@ cargo build --release --bin lamp_rev_a_materialize_board --bin lamp_rev_a_route_
 LAMP_ROUTE_MAX_ACCEPTS=10 LAMP_ROUTE_MAX_TRIALS=160 target/release/lamp_rev_a_route_greedy
 ```
 
+`main` CI also runs `lamp_rev_a_fab_release` on a KiCad-enabled macOS runner and
+uploads `lamp-rev-a-pcba-fab-release-<commit>` containing the validated fab
+release directory and upload bundles.
+
 The current schematic is an architecture shell, not a fabrication-ready circuit.
 The checker should not report fab-blocking part-selection gaps. The board now
 materializes all selected parts into KiCad with zero physical DRC violations

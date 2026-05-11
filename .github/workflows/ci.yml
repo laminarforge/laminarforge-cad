@@ -10,6 +10,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   rust:
@@ -49,3 +50,55 @@ jobs:
 
       - name: cargo test --release
         run: cargo test --release
+
+  lamp-rev-a-fab-release:
+    name: LAMP Rev A fab release
+    runs-on: macos-latest
+    needs: rust
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo + target
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: laminarforge-cad-fab-release
+
+      - name: Install KiCad CLI
+        shell: bash
+        run: |
+          kicad_cli="/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
+          if [ ! -x "$kicad_cli" ]; then
+            brew install --cask kicad
+          fi
+          if [ ! -x "$kicad_cli" ]; then
+            echo "kicad-cli not found at $kicad_cli after Homebrew install" >&2
+            exit 1
+          fi
+          echo "$(dirname "$kicad_cli")" >> "$GITHUB_PATH"
+          "$kicad_cli" --version
+
+      - name: Generate LAMP Rev A fab release
+        run: cargo run --release --bin lamp_rev_a_fab_release
+
+      - name: Validate LAMP Rev A upload bundles
+        shell: bash
+        run: |
+          release_dir="pcb/lamp_rev_a/fab_release"
+          test -s "$release_dir/release_manifest.txt"
+          test -s "$release_dir/review/upload_bundle_checksums.sha256"
+          test -s "$release_dir/bundles/lamp_rev_a_jlcpcb_fabrication.zip"
+          test -s "$release_dir/bundles/lamp_rev_a_jlcpcb_assembly.zip"
+          test -s "$release_dir/bundles/lamp_rev_a_review_package.zip"
+          test -s "$release_dir/bundles/lamp_rev_a_source_snapshot.zip"
+          (cd "$release_dir" && shasum -a 256 -c review/upload_bundle_checksums.sha256)
+
+      - name: Upload LAMP Rev A fab release
+        uses: actions/upload-artifact@v4
+        with:
+          name: lamp-rev-a-pcba-fab-release-${{ github.sha }}
+          path: pcb/lamp_rev_a/fab_release
+          if-no-files-found: error
