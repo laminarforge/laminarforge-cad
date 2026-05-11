@@ -70,6 +70,18 @@ nets = ["VBUS", "GND", "USB_DP", "USB_DN", "USB_CC1", "USB_CC2"]
 verification = "Confirm CC pull-downs, ESD protection, and D+/D- pair routing before fab."
 
 [[selected_parts]]
+id = "usb_c_cc_resistors"
+module = "usb_programming"
+quantity = 2
+reference_prefix = "R"
+value = "5.1k"
+symbol = "0805W8F5101T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C27834"
+nets = ["USB_CC1", "USB_CC2", "GND"]
+verification = "USB-C sink Rd pull-downs on CC1 and CC2."
+
+[[selected_parts]]
 id = "dc_input_jack"
 module = "power"
 quantity = 1
@@ -226,13 +238,6 @@ nets = ["+12V_RAW", "+12V"]
 verification = "Confirm voltage drop, thermal rise, and whether ideal-diode protection is preferable."
 
 [[selection_gaps]]
-id = "usb_c_cc_resistors"
-module = "usb_programming"
-blocks_fabrication = true
-reason = "USB-C CC pull-down resistors must be locked at the correct sink value with symbol, footprint, and LCSC part."
-resolve_with = "Add a 5.1k resistor part to pcb/lib or pick an existing locked LCSC resistor before schematic capture."
-
-[[selection_gaps]]
 id = "buck_regulator"
 module = "power"
 blocks_fabrication = true
@@ -250,8 +255,8 @@ resolve_with = "Select a regulator with enough ESP32-S3 Wi-Fi current headroom a
 id = "optical_emitters"
 module = "optical_detection"
 blocks_fabrication = true
-reason = "The actual 460 nm emitter package, current target, viewing angle, and LCSC part are not selected."
-resolve_with = "Select an optical emitter based on the LAMP detection geometry, then lock footprint and resistor values."
+reason = "The optical wavelength and emitter package are not locked; current contract says 460 nm, while common LAMP turbidimetry references monitor around 650 nm."
+resolve_with = "Choose the actual detection mode first, then select emitter wavelength, viewing angle, current target, footprint, and LCSC part."
 
 [[selection_gaps]]
 id = "photodiodes"

@@ -58,8 +58,7 @@ The checker deliberately reports the remaining fab-blocking selection gaps:
 
 - 12 V to 5 V buck regulator.
 - 5 V to 3.3 V regulator.
-- USB-C CC pull-down resistor value and locked LCSC part.
-- 460 nm optical emitters.
+- Optical wavelength/mode decision and emitter selection.
 - Photodiodes and analog front-end topology.
 - Heater connector, fuse/current limit, TVS, and thermal cutoff.
 
