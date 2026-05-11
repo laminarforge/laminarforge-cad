@@ -34,17 +34,19 @@ fn main() {
     let motor_pocket_depth = 25.0;
     let eccentric_offset = 5.0;
 
-    let motor_pocket = centered_cylinder(
-        "motor_pocket",
-        motor_pocket_d / 2.0,
-        motor_pocket_depth,
-        32,
-    )
-    .translate(eccentric_offset, 0.0, -(base_z / 2.0) + wall + motor_pocket_depth / 2.0);
+    let motor_pocket =
+        centered_cylinder("motor_pocket", motor_pocket_d / 2.0, motor_pocket_depth, 32).translate(
+            eccentric_offset,
+            0.0,
+            -(base_z / 2.0) + wall + motor_pocket_depth / 2.0,
+        );
 
     // Motor shaft through-hole (extends up through top)
-    let motor_shaft_hole = centered_cylinder("motor_shaft", 5.0 / 2.0, base_z + 2.0, 24)
-        .translate(eccentric_offset, 0.0, 0.0);
+    let motor_shaft_hole = centered_cylinder("motor_shaft", 5.0 / 2.0, base_z + 2.0, 24).translate(
+        eccentric_offset,
+        0.0,
+        0.0,
+    );
 
     // ── Bearing support (608ZZ: 22mm OD, 8mm ID, 7mm thick) ──
     let bearing_od = 22.0;
@@ -84,8 +86,11 @@ fn main() {
         (base_x / 2.0 - foot_inset, -base_y / 2.0 + foot_inset),
         (base_x / 2.0 - foot_inset, base_y / 2.0 - foot_inset),
     ] {
-        let foot = centered_cylinder("foot", foot_d / 2.0, foot_depth, 24)
-            .translate(fx, fy, -(base_z / 2.0) + foot_depth / 2.0);
+        let foot = centered_cylinder("foot", foot_d / 2.0, foot_depth, 24).translate(
+            fx,
+            fy,
+            -(base_z / 2.0) + foot_depth / 2.0,
+        );
         feet = feet + foot;
     }
 
@@ -114,8 +119,11 @@ fn main() {
     let platform_body = centered_cube("platform", platform_x, platform_y, platform_z);
 
     // Rubber pad recess (90x90x1mm on top surface)
-    let pad_recess = centered_cube("pad_recess", 90.0, 90.0, 1.0)
-        .translate(0.0, 0.0, platform_z / 2.0 - 1.0 / 2.0);
+    let pad_recess = centered_cube("pad_recess", 90.0, 90.0, 1.0).translate(
+        0.0,
+        0.0,
+        platform_z / 2.0 - 1.0 / 2.0,
+    );
 
     // Center shaft bore (8mm, through platform for bearing shaft)
     let shaft_bore = centered_cylinder("shaft_bore", 8.0 / 2.0, platform_z + 2.0, 24);
@@ -132,8 +140,11 @@ fn main() {
         (peg_inset, -peg_inset),
         (peg_inset, peg_inset),
     ] {
-        let peg = centered_cylinder("peg", peg_d / 2.0, peg_height, 24)
-            .translate(px, py, platform_z / 2.0 + peg_height / 2.0);
+        let peg = centered_cylinder("peg", peg_d / 2.0, peg_height, 24).translate(
+            px,
+            py,
+            platform_z / 2.0 + peg_height / 2.0,
+        );
         pegs = pegs + peg;
     }
 

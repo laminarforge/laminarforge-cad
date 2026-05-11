@@ -50,16 +50,20 @@ const TOTAL_CHIPS: usize = NUM_SHELVES * CHIPS_PER_SHELF;
 // using a 128.5 mm × 86.2 mm pitch with a 5 mm gutter, i.e. the values
 // implied by chip_stack_rack.rs (pocket_x + gutter_interior, etc).
 const POCKET_PITCH_X_MM: f64 = 128.5 + 5.0; // col spacing
-const POCKET_PITCH_Y_MM: f64 = 86.2 + 5.0;  // row spacing
-const POCKET_ORIGIN_X_MM: f64 = 64.0;       // col=0 center
-const POCKET_ORIGIN_Y_MM: f64 = 42.74;      // row=0 center
+const POCKET_PITCH_Y_MM: f64 = 86.2 + 5.0; // row spacing
+const POCKET_ORIGIN_X_MM: f64 = 64.0; // col=0 center
+const POCKET_ORIGIN_Y_MM: f64 = 42.74; // row=0 center
 
 // ══════════════════════════════════════════════════════════════════
 // CLI
 // ══════════════════════════════════════════════════════════════════
 
 #[derive(Parser, Debug)]
-#[command(name = "doe_plan", version, about = "DOE planner for LaminarForge multi-chip campaigns")]
+#[command(
+    name = "doe_plan",
+    version,
+    about = "DOE planner for LaminarForge multi-chip campaigns"
+)]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,
@@ -242,7 +246,10 @@ fn parse_factors(s: &str) -> Result<Vec<Factor>, String> {
     for spec in s.split(',').filter(|s| !s.trim().is_empty()) {
         let parts: Vec<&str> = spec.split(':').collect();
         if parts.len() < 3 {
-            return Err(format!("factor spec '{}' must be name:level1:level2[:...]", spec));
+            return Err(format!(
+                "factor spec '{}' must be name:level1:level2[:...]",
+                spec
+            ));
         }
         out.push(Factor {
             name: parts[0].trim().to_string(),
@@ -443,7 +450,10 @@ fn write_manifest(path: &Path, rows: &[ManifestRow]) -> Result<(), Box<dyn Error
 // ══════════════════════════════════════════════════════════════════
 
 /// 2^k full factorial. Returns rows of length 2^k * replicates.
-fn design_factorial(factors: &[Factor], replicates: usize) -> Vec<(BTreeMap<String, String>, String)> {
+fn design_factorial(
+    factors: &[Factor],
+    replicates: usize,
+) -> Vec<(BTreeMap<String, String>, String)> {
     let k = factors.len();
     let cells = 1usize << k;
     let mut runs = Vec::with_capacity(cells * replicates);
@@ -521,7 +531,10 @@ fn design_fractional(
                 if f_idx >= k {
                     break;
                 }
-                m.insert(factors[f_idx].name.clone(), factors[f_idx].levels[bit as usize].clone());
+                m.insert(
+                    factors[f_idx].name.clone(),
+                    factors[f_idx].levels[bit as usize].clone(),
+                );
             }
             runs.push((m, format!("R{}", rep + 1)));
         }
@@ -854,8 +867,8 @@ fn run_split_plot(a: &SplitPlotArgs) -> Result<(), Box<dyn Error>> {
     if wholes.len() != 1 || subs.len() != 1 {
         return Err("split-plot requires exactly one whole-plot and one subplot factor".into());
     }
-    let runs = design_split_plot(&wholes[0], &subs[0], a.n_shelves, a.common.seed)
-        .map_err(as_err)?;
+    let runs =
+        design_split_plot(&wholes[0], &subs[0], a.n_shelves, a.common.seed).map_err(as_err)?;
     let rows = emit_manifest_split(runs, a.common.seed).map_err(as_err)?;
     write_manifest(&a.common.output, &rows)?;
     println!(
@@ -957,7 +970,8 @@ fn run_ccd(a: &CcdArgs) -> Result<(), Box<dyn Error>> {
         rows.len(),
         factors.len(),
         a.center,
-        a.alpha.unwrap_or(((1u32 << factors.len()) as f64).powf(0.25)),
+        a.alpha
+            .unwrap_or(((1u32 << factors.len()) as f64).powf(0.25)),
         a.common.output.display()
     );
     Ok(())
@@ -972,14 +986,21 @@ fn run_power(a: &PowerArgs) -> Result<(), Box<dyn Error>> {
     match a.design.as_str() {
         "t" => {
             let n = n_for_power_t(a.effect_size, a.alpha, a.power);
-            println!("two-sample t-test: need n={} per group (total {})", n, 2 * n);
+            println!(
+                "two-sample t-test: need n={} per group (total {})",
+                n,
+                2 * n
+            );
             for r in [2, 4, 6, 8, 10, 12, 16, 20] {
                 let p = power_two_sample_t(a.effect_size, r, a.alpha);
                 println!("  n_per_group={:3}  power={:.3}", r, p);
             }
         }
         "factorial" => {
-            println!("2^{} factorial — main effect (Cohen's f = {}):", a.k, a.effect_size);
+            println!(
+                "2^{} factorial — main effect (Cohen's f = {}):",
+                a.k, a.effect_size
+            );
             for reps in [2, 3, 4, 5, 6, 8] {
                 let p = power_factorial_main(a.effect_size, a.k, reps, a.alpha);
                 let total = (1usize << a.k) * reps;
@@ -988,7 +1009,11 @@ fn run_power(a: &PowerArgs) -> Result<(), Box<dyn Error>> {
                     reps,
                     total,
                     p,
-                    if total <= TOTAL_CHIPS { "" } else { "  [exceeds 100-chip rack]" }
+                    if total <= TOTAL_CHIPS {
+                        ""
+                    } else {
+                        "  [exceeds 100-chip rack]"
+                    }
                 );
             }
         }
@@ -1007,7 +1032,9 @@ fn run_power(a: &PowerArgs) -> Result<(), Box<dyn Error>> {
                 );
             }
         }
-        other => return Err(format!("unknown design '{}' (use t, factorial, split-plot)", other).into()),
+        other => {
+            return Err(format!("unknown design '{}' (use t, factorial, split-plot)", other).into())
+        }
     }
     Ok(())
 }
@@ -1241,10 +1268,7 @@ mod tests {
 
     #[test]
     fn seed_reproducibility() {
-        let factors = vec![
-            f2("dose", "low", "high"),
-            f2("ecm", "matrigel", "collagen"),
-        ];
+        let factors = vec![f2("dose", "low", "high"), f2("ecm", "matrigel", "collagen")];
         let runs1 = design_factorial(&factors, 4);
         let runs2 = design_factorial(&factors, 4);
         let r1 = emit_manifest(runs1, 1234).unwrap();
@@ -1261,7 +1285,10 @@ mod tests {
             .iter()
             .zip(r3.iter())
             .all(|(a, b)| a.treatments == b.treatments);
-        assert!(!same_pattern, "different seeds should produce different layouts");
+        assert!(
+            !same_pattern,
+            "different seeds should produce different layouts"
+        );
     }
 
     #[test]
@@ -1272,8 +1299,15 @@ mod tests {
         let p2 = power_two_sample_t(0.5, 16, 0.05);
         let p3 = power_two_sample_t(0.5, 64, 0.05);
         let p4 = power_two_sample_t(0.5, 128, 0.05);
-        assert!(p1 < p2 && p2 < p3 && p3 < p4, "power should be monotone increasing in n");
-        assert!(p3 > 0.70 && p3 < 0.90, "n=64 d=0.5 should give ≈0.80 power, got {}", p3);
+        assert!(
+            p1 < p2 && p2 < p3 && p3 < p4,
+            "power should be monotone increasing in n"
+        );
+        assert!(
+            p3 > 0.70 && p3 < 0.90,
+            "n=64 d=0.5 should give ≈0.80 power, got {}",
+            p3
+        );
         assert!(p4 > 0.95, "n=128 should give >0.95 power, got {}", p4);
     }
 

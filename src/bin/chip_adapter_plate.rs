@@ -68,13 +68,8 @@ fn main() {
 
     // ── Chip pocket ──
     // Cut from the top face, centered on the plate
-    let pocket = centered_cube(
-        "pocket",
-        pocket_length,
-        pocket_width,
-        pocket_depth + 0.1,
-    )
-    .translate(0.0, 0.0, (plate_thickness - pocket_depth) / 2.0 + 0.05);
+    let pocket = centered_cube("pocket", pocket_length, pocket_width, pocket_depth + 0.1)
+        .translate(0.0, 0.0, (plate_thickness - pocket_depth) / 2.0 + 0.05);
 
     // ── Dowel pin holes ──
     // Press-fit holes drilled into the pocket floor (not through the plate)
@@ -103,9 +98,13 @@ fn main() {
 
     // Dowel holes through the pocket floor into the plate body
     let pocket_floor_z = (plate_thickness / 2.0) - pocket_depth;
-    for (i, (px, py)) in [(p1_x_pos, p1_y_pos), (p2_x_pos, p2_y_pos), (p3_x_pos, p3_y_pos)]
-        .iter()
-        .enumerate()
+    for (i, (px, py)) in [
+        (p1_x_pos, p1_y_pos),
+        (p2_x_pos, p2_y_pos),
+        (p3_x_pos, p3_y_pos),
+    ]
+    .iter()
+    .enumerate()
     {
         let hole = centered_cylinder(
             &format!("dowel_hole_{i}"),
@@ -179,10 +178,22 @@ fn main() {
     let mut mount_holes = Part::empty("mount_holes");
 
     let mount_positions = [
-        (-(plate_length / 2.0 - mount_inset), -(plate_width / 2.0 - mount_inset)),
-        ((plate_length / 2.0 - mount_inset), -(plate_width / 2.0 - mount_inset)),
-        (-(plate_length / 2.0 - mount_inset), (plate_width / 2.0 - mount_inset)),
-        ((plate_length / 2.0 - mount_inset), (plate_width / 2.0 - mount_inset)),
+        (
+            -(plate_length / 2.0 - mount_inset),
+            -(plate_width / 2.0 - mount_inset),
+        ),
+        (
+            (plate_length / 2.0 - mount_inset),
+            -(plate_width / 2.0 - mount_inset),
+        ),
+        (
+            -(plate_length / 2.0 - mount_inset),
+            (plate_width / 2.0 - mount_inset),
+        ),
+        (
+            (plate_length / 2.0 - mount_inset),
+            (plate_width / 2.0 - mount_inset),
+        ),
     ];
 
     for (i, (mx, my)) in mount_positions.iter().enumerate() {
@@ -202,16 +213,12 @@ fn main() {
 
     // ── Export ──
 
-    plate
-        .write_stl("output/chip_adapter_plate.stl")
-        .unwrap();
+    plate.write_stl("output/chip_adapter_plate.stl").unwrap();
 
     println!("Exported: output/chip_adapter_plate.stl");
     println!();
     println!("── Chip Adapter Plate Specs ──");
-    println!(
-        "  Plate:          {plate_length:.1}mm x {plate_width:.1}mm x {plate_thickness:.0}mm"
-    );
+    println!("  Plate:          {plate_length:.1}mm x {plate_width:.1}mm x {plate_thickness:.0}mm");
     println!(
         "  Pocket:         {pocket_length:.1}mm x {pocket_width:.1}mm x {pocket_depth:.0}mm deep"
     );
@@ -226,12 +233,8 @@ fn main() {
     println!(
         "  Dowel pins:     3x {dowel_pin_d:.0}mm (press-fit bore {dowel_hole_d:.1}mm x {dowel_hole_depth:.0}mm)"
     );
-    println!(
-        "  Clamp holes:    4x M3 ({clamp_hole_d:.1}mm) with counterbore"
-    );
-    println!(
-        "  Mount holes:    4x M3 ({mount_hole_d:.1}mm) at {mount_inset:.0}mm from corners"
-    );
+    println!("  Clamp holes:    4x M3 ({clamp_hole_d:.1}mm) with counterbore");
+    println!("  Mount holes:    4x M3 ({mount_hole_d:.1}mm) at {mount_inset:.0}mm from corners");
     println!("  Open corner:    +X/+Y (chamfered for chip insertion)");
     println!("  Material:       PETG");
 }

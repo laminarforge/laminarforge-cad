@@ -53,22 +53,15 @@ fn main() {
 
     // ── Fan recess (from bottom, leave top plate intact) ──
 
-    let fan_recess = centered_cylinder(
-        "fan_recess",
-        fan_recess_d / 2.0,
-        fan_recess_depth,
-        48,
-    )
-    .translate(0.0, 0.0, -(housing_z / 2.0) + fan_recess_depth / 2.0);
+    let fan_recess = centered_cylinder("fan_recess", fan_recess_d / 2.0, fan_recess_depth, 48)
+        .translate(0.0, 0.0, -(housing_z / 2.0) + fan_recess_depth / 2.0);
 
     // Square out the recess for the fan frame corners
-    let fan_square_recess = centered_cube(
-        "fan_square",
-        80.0,
-        80.0,
-        fan_recess_depth,
-    )
-    .translate(0.0, 0.0, -(housing_z / 2.0) + fan_recess_depth / 2.0);
+    let fan_square_recess = centered_cube("fan_square", 80.0, 80.0, fan_recess_depth).translate(
+        0.0,
+        0.0,
+        -(housing_z / 2.0) + fan_recess_depth / 2.0,
+    );
 
     // ── Fan bolt holes (4x M4, through bottom into housing) ──
 
@@ -121,7 +114,11 @@ fn main() {
                 6.0,
                 vent_height + 1.0,
             )
-            .translate(vx, side_y * (housing_y / 2.0 - 1.5), -(housing_z / 2.0) + vent_height / 2.0 + 3.0);
+            .translate(
+                vx,
+                side_y * (housing_y / 2.0 - 1.5),
+                -(housing_z / 2.0) + vent_height / 2.0 + 3.0,
+            );
 
             vent_slots = vent_slots + (slot & wall_mask);
         }
@@ -145,7 +142,11 @@ fn main() {
                 vent_width + 1.0,
                 vent_height + 1.0,
             )
-            .translate(side_x * (housing_x / 2.0 - 1.5), vy, -(housing_z / 2.0) + vent_height / 2.0 + 3.0);
+            .translate(
+                side_x * (housing_x / 2.0 - 1.5),
+                vy,
+                -(housing_z / 2.0) + vent_height / 2.0 + 3.0,
+            );
 
             vent_slots = vent_slots + (slot & wall_mask);
         }
@@ -162,31 +163,19 @@ fn main() {
     ];
 
     for (i, (fx, fy)) in foot_positions.iter().enumerate() {
-        let recess = centered_cylinder(
-            &format!("foot_{i}"),
-            foot_d / 2.0,
-            foot_depth,
-            24,
-        )
-        .translate(*fx, *fy, -(housing_z / 2.0) + foot_depth / 2.0);
+        let recess = centered_cylinder(&format!("foot_{i}"), foot_d / 2.0, foot_depth, 24)
+            .translate(*fx, *fy, -(housing_z / 2.0) + foot_depth / 2.0);
         foot_recesses = foot_recesses + recess;
     }
 
     // ── Assemble ──
 
-    let stirrer = body
-        - fan_recess
-        - fan_square_recess
-        - fan_bolts
-        - pot_hole
-        - vent_slots
-        - foot_recesses;
+    let stirrer =
+        body - fan_recess - fan_square_recess - fan_bolts - pot_hole - vent_slots - foot_recesses;
 
     // ── Export ──
 
-    stirrer
-        .write_stl("output/magnetic_stirrer.stl")
-        .unwrap();
+    stirrer.write_stl("output/magnetic_stirrer.stl").unwrap();
 
     println!("Exported: output/magnetic_stirrer.stl");
     println!();

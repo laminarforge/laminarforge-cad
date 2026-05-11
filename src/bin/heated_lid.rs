@@ -91,22 +91,23 @@ fn build_heated_plate() {
     // ── Thermistor pocket (from front face -Y) ──
 
     let therm_center_y = -(plate_width / 2.0) + therm_depth / 2.0;
-    let therm_pocket = centered_cylinder(
-        "therm_pocket",
-        therm_d / 2.0,
-        therm_depth + 1.0,
-        24,
-    )
-    .rotate(90.0, 0.0, 0.0)
-    .translate(0.0, therm_center_y, therm_z);
+    let therm_pocket = centered_cylinder("therm_pocket", therm_d / 2.0, therm_depth + 1.0, 24)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(0.0, therm_center_y, therm_z);
 
     // ── Magnet recesses (bottom face) ──
 
     let magnet_z = -(plate_height / 2.0) + magnet_depth / 2.0 - 0.1;
-    let magnet_1 = centered_cylinder("magnet_1", magnet_d / 2.0, magnet_depth + 0.2, 32)
-        .translate(-magnet_inset_x, magnet_y, magnet_z);
-    let magnet_2 = centered_cylinder("magnet_2", magnet_d / 2.0, magnet_depth + 0.2, 32)
-        .translate(magnet_inset_x, magnet_y, magnet_z);
+    let magnet_1 = centered_cylinder("magnet_1", magnet_d / 2.0, magnet_depth + 0.2, 32).translate(
+        -magnet_inset_x,
+        magnet_y,
+        magnet_z,
+    );
+    let magnet_2 = centered_cylinder("magnet_2", magnet_d / 2.0, magnet_depth + 0.2, 32).translate(
+        magnet_inset_x,
+        magnet_y,
+        magnet_z,
+    );
 
     // ── Hinge mounting holes (back edge, through-holes) ──
 
@@ -129,7 +130,9 @@ fn build_heated_plate() {
     println!("  Body:            {plate_length:.0}mm × {plate_width:.0}mm × {plate_height:.0}mm");
     println!("  Material:        6061-T6 Aluminum");
     println!("  Heater recess:   {heater_pad_x:.0}mm × {heater_pad_y:.0}mm × {heater_recess_depth:.1}mm (top face, Kapton 12V 15W)");
-    println!("  Thermistor:      {therm_d:.0}mm dia × {therm_depth:.0}mm deep (front face, NTC 10K)");
+    println!(
+        "  Thermistor:      {therm_d:.0}mm dia × {therm_depth:.0}mm deep (front face, NTC 10K)"
+    );
     println!("  Magnets:         2× {magnet_d:.1}mm dia × {magnet_depth:.0}mm deep (bottom face, front edge)");
     println!("  Hinge holes:     2× M3 ({hinge_hole_d:.1}mm) on back edge");
     println!("  Target temp:     105°C (prevents condensation at 65°C LAMP)");

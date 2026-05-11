@@ -36,46 +36,46 @@ use vcad::{centered_cube, centered_cylinder, Part};
 // Rev D design constants (local — promote to lib.rs once frozen)
 // ════════════════════════════════════════════════════════════════════════════
 
-const CHIP_LENGTH: f64 = REVC_CHIP_LENGTH;       // 127.76mm (X, long edge)
-const CHIP_WIDTH: f64 = REVC_CHIP_WIDTH;         // 85.48mm  (Y, short edge)
+const CHIP_LENGTH: f64 = REVC_CHIP_LENGTH; // 127.76mm (X, long edge)
+const CHIP_WIDTH: f64 = REVC_CHIP_WIDTH; // 85.48mm  (Y, short edge)
 const PMMA_THICKNESS: f64 = REVC_PMMA_THICKNESS; // 14.20mm
 const GLASS_THICKNESS: f64 = REVC_GLASS_THICKNESS; // 0.15mm
-const TOTAL_HEIGHT: f64 = REVC_TOTAL_HEIGHT;     // 14.35mm (ANSI/SLAS 2-2004)
-const CORNER_R: f64 = REVC_CORNER_RADIUS;        // 3.18mm
+const TOTAL_HEIGHT: f64 = REVC_TOTAL_HEIGHT; // 14.35mm (ANSI/SLAS 2-2004)
+const CORNER_R: f64 = REVC_CORNER_RADIUS; // 3.18mm
 
 // ── Reservoir wells (Rev D: 5 inlet + 5 outlet per chamber) ──
-const WELL_DIAMETER: f64 = 6.0;   // mm (Rev C: 4.0mm)
-const WELL_DEPTH: f64 = 8.0;      // mm (Rev C: 10.0mm) — leaves 6.2mm floor
+const WELL_DIAMETER: f64 = 6.0; // mm (Rev C: 4.0mm)
+const WELL_DEPTH: f64 = 8.0; // mm (Rev C: 10.0mm) — leaves 6.2mm floor
 const WELL_VOLUME_UL: f64 = std::f64::consts::PI * 3.0 * 3.0 * 8.0; // ≈ 226.2µL
-const WELL_PITCH: f64 = 9.0;      // mm, 96-well grid pitch (LH compatibility)
-const WELLS_PER_SIDE: usize = 5;  // 5 inlet + 5 outlet per chamber
+const WELL_PITCH: f64 = 9.0; // mm, 96-well grid pitch (LH compatibility)
+const WELLS_PER_SIDE: usize = 5; // 5 inlet + 5 outlet per chamber
 
 // ── Chamber + channel geometry ──
 // Fewer, larger chambers to make room for per-chamber TEER + thermistor and
 // to handle the larger reservoir volumes.
-const NUM_CHAMBERS: usize = 4;        // 2×2 grid (Rev C was 4×4 = 16)
+const NUM_CHAMBERS: usize = 4; // 2×2 grid (Rev C was 4×4 = 16)
 const GRID_COLS: usize = 2;
 const GRID_ROWS: usize = 2;
-const CHAMBER_WIDTH: f64 = 6.0;       // mm (X)
-const CHAMBER_LENGTH: f64 = 14.0;     // mm (Y) — longer to accept shear flow
-const CHAMBER_DEPTH: f64 = 0.2;       // 200µm (same as Rev C)
+const CHAMBER_WIDTH: f64 = 6.0; // mm (X)
+const CHAMBER_LENGTH: f64 = 14.0; // mm (Y) — longer to accept shear flow
+const CHAMBER_DEPTH: f64 = 0.2; // 200µm (same as Rev C)
 
-const CHANNEL_WIDTH: f64 = 0.5;       // 500µm
+const CHANNEL_WIDTH: f64 = 0.5; // 500µm
 const CHANNEL_DEPTH_SHALLOW: f64 = 0.15; // 150µm — low port
-const CHANNEL_DEPTH_DEEP: f64 = 0.35;    // 350µm — high port
-// Asymmetric port depths create a "hydraulic diode": paired with 2-axis tilt,
-// the deep port always feeds, the shallow port always drains, regardless of
-// which axis is tilted down. See derivation in the Rev D spec artifact.
+const CHANNEL_DEPTH_DEEP: f64 = 0.35; // 350µm — high port
+                                      // Asymmetric port depths create a "hydraulic diode": paired with 2-axis tilt,
+                                      // the deep port always feeds, the shallow port always drains, regardless of
+                                      // which axis is tilted down. See derivation in the Rev D spec artifact.
 
 const VIA_DIAMETER: f64 = 1.0;
 const VIA_LENGTH: f64 = PMMA_THICKNESS - WELL_DEPTH - 0.2; // ≈ 6.0mm
 
 // ── TEER electrodes ──
-const TEER_PAD_W: f64 = 1.0;       // mm (X) — 1mm × 3mm gold pad
-const TEER_PAD_L: f64 = 3.0;       // mm (Y)
-// TEER_PAD_THICKNESS: 100nm Au over 10nm Ti — deposited by sputter, not machined.
-// We mill a 50µm pocket (TEER_POCKET_DEPTH) so the film sits below surface.
-const TEER_POCKET_DEPTH: f64 = 0.05;    // 50µm recess so Au pad doesn't protrude
+const TEER_PAD_W: f64 = 1.0; // mm (X) — 1mm × 3mm gold pad
+const TEER_PAD_L: f64 = 3.0; // mm (Y)
+                             // TEER_PAD_THICKNESS: 100nm Au over 10nm Ti — deposited by sputter, not machined.
+                             // We mill a 50µm pocket (TEER_POCKET_DEPTH) so the film sits below surface.
+const TEER_POCKET_DEPTH: f64 = 0.05; // 50µm recess so Au pad doesn't protrude
 const TEER_TRACE_WIDTH: f64 = 0.2; // 200µm gold trace to edge pad
 
 // ── Thermistor (Pt-film RTD) ──
@@ -84,24 +84,24 @@ const RTD_SERPENTINE_L: f64 = 10.0; // mm (Y)
 const RTD_POCKET_DEPTH: f64 = 0.03; // 30µm pocket for Ti/Pt film
 
 // ── Edge contact pads (pogo-pin landing) ──
-const EDGE_PAD_W: f64 = 2.0;       // mm
-const EDGE_PAD_L: f64 = 3.0;       // mm
+const EDGE_PAD_W: f64 = 2.0; // mm
+const EDGE_PAD_L: f64 = 3.0; // mm
 const EDGE_PAD_POCKET_DEPTH: f64 = 0.05; // 50µm
-const EDGE_PAD_INSET_X: f64 = 10.0;      // from +X long edge
-const EDGE_PAD_PITCH_Y: f64 = 4.0;       // pad-to-pad Y pitch
+const EDGE_PAD_INSET_X: f64 = 10.0; // from +X long edge
+const EDGE_PAD_PITCH_Y: f64 = 4.0; // pad-to-pad Y pitch
 
 // ── Fluidic vias on the SHORT (±X) edges for chip stacking ──
-const FLUIDIC_VIA_ID: f64 = 1.5;         // mm inner diameter
-const FLUIDIC_VIA_OD_SEAT: f64 = 3.0;    // mm O-ring seat OD
+const FLUIDIC_VIA_ID: f64 = 1.5; // mm inner diameter
+const FLUIDIC_VIA_OD_SEAT: f64 = 3.0; // mm O-ring seat OD
 const FLUIDIC_VIA_SEAT_DEPTH: f64 = 1.0; // mm O-ring groove depth
 const FLUIDIC_VIA_INSET_FROM_EDGE: f64 = 8.0; // from short edge
 
 // ── Alignment + mounting (same as Rev C, keep drop-in rack compatibility) ──
 const ALIGN_DIAMETER: f64 = REVC_ALIGN_DIAMETER; // 1.0mm
-const ALIGN_DEPTH: f64 = REVC_ALIGN_DEPTH;       // 0.5mm
-const ALIGN_INSET: f64 = REVC_ALIGN_INSET;       // 4.0mm
+const ALIGN_DEPTH: f64 = REVC_ALIGN_DEPTH; // 0.5mm
+const ALIGN_INSET: f64 = REVC_ALIGN_INSET; // 4.0mm
 const MOUNT_DIAMETER: f64 = REVC_MOUNT_DIAMETER; // 3.2mm
-const MOUNT_INSET: f64 = REVC_MOUNT_INSET;       // 6.0mm
+const MOUNT_INSET: f64 = REVC_MOUNT_INSET; // 6.0mm
 
 // Chip-centered chamber positions (2×2 grid)
 // X spacing: 54mm (spans wide enough for 5+5 wells per chamber in Y)
@@ -146,13 +146,9 @@ fn outer_body() -> Part {
             sy * (half_w - CORNER_R / 2.0),
             0.0,
         );
-        let corner_cyl = centered_cylinder(
-            &format!("cr_cyl_{}_{}", si.0, si.1),
-            CORNER_R,
-            through,
-            32,
-        )
-        .translate(sx * (half_l - CORNER_R), sy * (half_w - CORNER_R), 0.0);
+        let corner_cyl =
+            centered_cylinder(&format!("cr_cyl_{}_{}", si.0, si.1), CORNER_R, through, 32)
+                .translate(sx * (half_l - CORNER_R), sy * (half_w - CORNER_R), 0.0);
         plate = plate - (corner_sq - corner_cyl);
     }
 
@@ -186,13 +182,8 @@ fn outer_body() -> Part {
     {
         let mx = sx * (half_l - MOUNT_INSET);
         let my = sy * (half_w - MOUNT_INSET);
-        let hole = centered_cylinder(
-            &format!("mount_{i}"),
-            MOUNT_DIAMETER / 2.0,
-            through_h,
-            32,
-        )
-        .translate(mx, my, 0.0);
+        let hole = centered_cylinder(&format!("mount_{i}"), MOUNT_DIAMETER / 2.0, through_h, 32)
+            .translate(mx, my, 0.0);
         plate = plate - hole;
     }
 
@@ -458,11 +449,7 @@ fn subtract_teer_electrodes(mut plate: Part) -> Part {
                         EDGE_PAD_L,
                         EDGE_PAD_POCKET_DEPTH + 0.1,
                     )
-                    .translate(
-                        edge_x,
-                        *py,
-                        bot_pocket_z,
-                    );
+                    .translate(edge_x, *py, bot_pocket_z);
                     plate = plate - pad;
                 }
             }
@@ -482,13 +469,8 @@ fn subtract_thermistor_trace(mut plate: Part) -> Part {
 
     // Main serpentine footprint (simplified as a rectangular pocket — actual
     // serpentine is defined by the sputter shadow mask).
-    let rtd_pocket = centered_cube(
-        "rtd_pocket",
-        RTD_SERPENTINE_W,
-        RTD_SERPENTINE_L,
-        tool_h,
-    )
-    .translate(0.0, 0.0, pocket_z);
+    let rtd_pocket = centered_cube("rtd_pocket", RTD_SERPENTINE_W, RTD_SERPENTINE_L, tool_h)
+        .translate(0.0, 0.0, pocket_z);
     plate = plate - rtd_pocket;
 
     // 4-wire pads near +X edge (drive+, drive-, sense+, sense-)
@@ -508,13 +490,8 @@ fn subtract_thermistor_trace(mut plate: Part) -> Part {
     // Trace from serpentine to pad cluster
     let trace_center_x = (0.0 + pad_x) / 2.0;
     let trace_len = (pad_x - 0.0).abs();
-    let trace = centered_cube(
-        "rtd_trace",
-        trace_len,
-        0.3,
-        tool_h,
-    )
-    .translate(trace_center_x, 0.0, pocket_z);
+    let trace =
+        centered_cube("rtd_trace", trace_len, 0.3, tool_h).translate(trace_center_x, 0.0, pocket_z);
     plate = plate - trace;
 
     plate
@@ -536,16 +513,16 @@ fn subtract_fluidic_vias(mut plate: Part) -> Part {
         for &sy in &[-1.0_f64, 1.0] {
             let via_x = sx * (half_l - FLUIDIC_VIA_INSET_FROM_EDGE);
             let via_y = sy * 25.0; // near but not on the long edge
-            let tag = format!("fv_{}{}", if sx < 0.0 { "n" } else { "p" }, if sy < 0.0 { "n" } else { "p" });
+            let tag = format!(
+                "fv_{}{}",
+                if sx < 0.0 { "n" } else { "p" },
+                if sy < 0.0 { "n" } else { "p" }
+            );
 
             // Through-hole
-            let hole = centered_cylinder(
-                &format!("{tag}_hole"),
-                FLUIDIC_VIA_ID / 2.0,
-                through_h,
-                32,
-            )
-            .translate(via_x, via_y, 0.0);
+            let hole =
+                centered_cylinder(&format!("{tag}_hole"), FLUIDIC_VIA_ID / 2.0, through_h, 32)
+                    .translate(via_x, via_y, 0.0);
             plate = plate - hole;
 
             // O-ring seat (counterbore on top face)
@@ -639,9 +616,14 @@ fn main() {
         let cy = CHAMBER_YS[row];
         println!("    Ch{:>2}: ({cx:+7.2}, {cy:+7.2})  {label}", i + 1);
     }
-    println!("    Chamber dims:     {CHAMBER_WIDTH:.1} × {CHAMBER_LENGTH:.1} × {CHAMBER_DEPTH:.2}mm");
+    println!(
+        "    Chamber dims:     {CHAMBER_WIDTH:.1} × {CHAMBER_LENGTH:.1} × {CHAMBER_DEPTH:.2}mm"
+    );
     println!();
-    println!("  RESERVOIRS (5 inlet + 5 outlet per chamber = {} total):", NUM_CHAMBERS * WELLS_PER_SIDE * 2);
+    println!(
+        "  RESERVOIRS (5 inlet + 5 outlet per chamber = {} total):",
+        NUM_CHAMBERS * WELLS_PER_SIDE * 2
+    );
     println!("    Well diameter:    {WELL_DIAMETER:.1}mm");
     println!("    Well depth:       {WELL_DEPTH:.1}mm");
     println!("    Well volume:      {WELL_VOLUME_UL:.1}µL each");

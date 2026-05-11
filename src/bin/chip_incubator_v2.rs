@@ -47,7 +47,7 @@ fn main() {
     // Shell interior = chamber_outer + insulation gap on all sides
     let shell_inner_x = chamber_outer_x + insulation_gap * 2.0; // 656 − 6 = 650... chamber_outer=606, +50 = 656, inner = 656-6=650
     let _ = shell_inner_x; // used through explicit values below
-    // Per spec: outer shell interior 650×570×600, outer 656×576×606.
+                           // Per spec: outer shell interior 650×570×600, outer 656×576×606.
     let shell_outer_x = chamber_outer_x + (insulation_gap + shell_wall) * 2.0; // 656
     let shell_outer_y = chamber_outer_y + (insulation_gap + shell_wall) * 2.0; // 576
     let shell_outer_z = chamber_outer_z + (insulation_gap + shell_wall) * 2.0; // 606
@@ -69,8 +69,11 @@ fn main() {
     let chamber_inner = centered_cube("chamber_inner", inner_x, inner_y, inner_z);
 
     // Open front face for door (front = −Y)
-    let front_opening = centered_cube("front_opening", inner_x, wall + 2.0, inner_z)
-        .translate(0.0, -(chamber_outer_y / 2.0), 0.0);
+    let front_opening = centered_cube("front_opening", inner_x, wall + 2.0, inner_z).translate(
+        0.0,
+        -(chamber_outer_y / 2.0),
+        0.0,
+    );
 
     // ── Heater port (8mm hole, bottom-rear center) ──
     let heater_port = centered_cylinder("heater_port", 8.0 / 2.0, wall + 2.0, 32)
@@ -83,8 +86,11 @@ fn main() {
         .translate(80.0, chamber_outer_y / 2.0, 0.0);
 
     // ── CO2 sensor pocket (25×35×10mm recess on rear wall, MH-Z19B) ──
-    let co2_pocket = centered_cube("co2_pocket", 25.0, 10.0, 35.0)
-        .translate(-80.0, chamber_outer_y / 2.0 - 5.0, 0.0);
+    let co2_pocket = centered_cube("co2_pocket", 25.0, 10.0, 35.0).translate(
+        -80.0,
+        chamber_outer_y / 2.0 - 5.0,
+        0.0,
+    );
 
     // ── Fan port (80mm hole, right side wall, 120mm fan body through insulation) ──
     let fan_port = centered_cylinder("fan_port", 80.0 / 2.0, wall + 2.0, 64)
@@ -92,36 +98,43 @@ fn main() {
         .translate(chamber_outer_x / 2.0, 0.0, 50.0);
 
     // ── CO2 gas inlet (6mm hole, top-rear) ──
-    let gas_inlet = centered_cylinder("gas_inlet", 6.0 / 2.0, wall + 2.0, 24)
-        .translate(0.0, inner_y / 2.0 - 30.0, chamber_outer_z / 2.0);
+    let gas_inlet = centered_cylinder("gas_inlet", 6.0 / 2.0, wall + 2.0, 24).translate(
+        0.0,
+        inner_y / 2.0 - 30.0,
+        chamber_outer_z / 2.0,
+    );
 
     // ── Rocker wiring grommet (20mm hole, floor-rear) ──
-    let rocker_grommet = centered_cylinder("rocker_grommet", 20.0 / 2.0, wall + 2.0, 48)
-        .translate(120.0, inner_y / 2.0 - 40.0, -(chamber_outer_z / 2.0));
+    let rocker_grommet = centered_cylinder("rocker_grommet", 20.0 / 2.0, wall + 2.0, 48).translate(
+        120.0,
+        inner_y / 2.0 - 40.0,
+        -(chamber_outer_z / 2.0),
+    );
 
     // ── Drain hole (10mm, back corner of floor) ──
-    let drain_hole = centered_cylinder("drain_hole", 10.0 / 2.0, wall + 2.0, 32)
-        .translate(
-            -(inner_x / 2.0) + 30.0,
-            inner_y / 2.0 - 30.0,
-            -(chamber_outer_z / 2.0),
-        );
+    let drain_hole = centered_cylinder("drain_hole", 10.0 / 2.0, wall + 2.0, 32).translate(
+        -(inner_x / 2.0) + 30.0,
+        inner_y / 2.0 - 30.0,
+        -(chamber_outer_z / 2.0),
+    );
 
     // ── Liquid-handler top hatch cutout (350×250 on top face) ──
-    let top_hatch_cutout = centered_cube("top_hatch_cutout", 350.0, 250.0, wall + 2.0)
-        .translate(0.0, 0.0, chamber_outer_z / 2.0);
+    let top_hatch_cutout = centered_cube("top_hatch_cutout", 350.0, 250.0, wall + 2.0).translate(
+        0.0,
+        0.0,
+        chamber_outer_z / 2.0,
+    );
 
     // Gasket lip around the top hatch (3mm raised rim around cutout is implicit in
     // the hatch part; on the chamber we just cut the opening).
 
     // ── Water tray floor pocket (300 × 200 × 3mm deep near back) ──
     // Recessed into the floor: subtract a thin cube at floor level.
-    let water_tray_pocket = centered_cube("water_tray_pocket", 300.0, 200.0, 3.0)
-        .translate(
-            0.0,
-            inner_y / 2.0 - 100.0 - 10.0, // near back, with 10mm clear of back wall
-            -(inner_z / 2.0) + 1.5,
-        );
+    let water_tray_pocket = centered_cube("water_tray_pocket", 300.0, 200.0, 3.0).translate(
+        0.0,
+        inner_y / 2.0 - 100.0 - 10.0, // near back, with 10mm clear of back wall
+        -(inner_z / 2.0) + 1.5,
+    );
 
     // ── Condensation drip channel around perimeter of floor ──
     // 10mm wide × 5mm deep groove just inside the walls.
@@ -219,12 +232,7 @@ fn main() {
     // 2. OUTER SHELL
     // ══════════════════════════════════════════════════════════════
 
-    let shell_outer = centered_cube(
-        "shell_outer",
-        shell_outer_x,
-        shell_outer_y,
-        shell_outer_z,
-    );
+    let shell_outer = centered_cube("shell_outer", shell_outer_x, shell_outer_y, shell_outer_z);
     let shell_cavity = centered_cube(
         "shell_cavity",
         shell_cavity_x,
@@ -317,10 +325,22 @@ fn main() {
     // ── Leveling feet mount pads (4× M6 through-holes in floor corners) ──
     let foot_inset = 30.0;
     let foot_positions = [
-        (-(shell_outer_x / 2.0) + foot_inset, -(shell_outer_y / 2.0) + foot_inset),
-        ((shell_outer_x / 2.0) - foot_inset, -(shell_outer_y / 2.0) + foot_inset),
-        (-(shell_outer_x / 2.0) + foot_inset, (shell_outer_y / 2.0) - foot_inset),
-        ((shell_outer_x / 2.0) - foot_inset, (shell_outer_y / 2.0) - foot_inset),
+        (
+            -(shell_outer_x / 2.0) + foot_inset,
+            -(shell_outer_y / 2.0) + foot_inset,
+        ),
+        (
+            (shell_outer_x / 2.0) - foot_inset,
+            -(shell_outer_y / 2.0) + foot_inset,
+        ),
+        (
+            -(shell_outer_x / 2.0) + foot_inset,
+            (shell_outer_y / 2.0) - foot_inset,
+        ),
+        (
+            (shell_outer_x / 2.0) - foot_inset,
+            (shell_outer_y / 2.0) - foot_inset,
+        ),
     ];
     let mut feet_holes = Part::empty("feet_holes");
     for (i, &(fx, fy)) in foot_positions.iter().enumerate() {
@@ -362,12 +382,8 @@ fn main() {
     let door_body = centered_cube("door_body", door_x, door_thickness, door_z);
 
     // Foam cavity (hollowed from inside, sealed on both faces by PETG skins)
-    let door_foam_cavity = centered_cube(
-        "door_foam_cavity",
-        door_x - 20.0,
-        door_foam,
-        door_z - 20.0,
-    );
+    let door_foam_cavity =
+        centered_cube("door_foam_cavity", door_x - 20.0, door_foam, door_z - 20.0);
 
     // Acrylic window cutout (300×200mm, through the entire door)
     let window_cutout = centered_cube("window_cutout", 300.0, door_thickness + 2.0, 200.0);
@@ -424,17 +440,29 @@ fn main() {
 
     // Magnetic latch holes (2× 8mm neodymium) on right side
     let latch_x = door_x / 2.0 - 15.0;
-    let latch_hole_1 = centered_cylinder("latch_1", 8.0 / 2.0, door_thickness + 2.0, 32)
-        .translate(latch_x, 0.0, door_z / 2.0 - 30.0);
-    let latch_hole_2 = centered_cylinder("latch_2", 8.0 / 2.0, door_thickness + 2.0, 32)
-        .translate(latch_x, 0.0, -(door_z / 2.0) + 30.0);
+    let latch_hole_1 = centered_cylinder("latch_1", 8.0 / 2.0, door_thickness + 2.0, 32).translate(
+        latch_x,
+        0.0,
+        door_z / 2.0 - 30.0,
+    );
+    let latch_hole_2 = centered_cylinder("latch_2", 8.0 / 2.0, door_thickness + 2.0, 32).translate(
+        latch_x,
+        0.0,
+        -(door_z / 2.0) + 30.0,
+    );
 
     // Hinge mount holes on left side (2× 6mm for hinge pins)
     let hinge_x = -(door_x / 2.0) + 15.0;
-    let hinge_hole_1 = centered_cylinder("hinge_1", 6.0 / 2.0, door_thickness + 2.0, 24)
-        .translate(hinge_x, 0.0, door_z / 2.0 - 50.0);
-    let hinge_hole_2 = centered_cylinder("hinge_2", 6.0 / 2.0, door_thickness + 2.0, 24)
-        .translate(hinge_x, 0.0, -(door_z / 2.0) + 50.0);
+    let hinge_hole_1 = centered_cylinder("hinge_1", 6.0 / 2.0, door_thickness + 2.0, 24).translate(
+        hinge_x,
+        0.0,
+        door_z / 2.0 - 50.0,
+    );
+    let hinge_hole_2 = centered_cylinder("hinge_2", 6.0 / 2.0, door_thickness + 2.0, 24).translate(
+        hinge_x,
+        0.0,
+        -(door_z / 2.0) + 50.0,
+    );
 
     let door = door_body
         - door_foam_cavity
@@ -490,10 +518,10 @@ fn main() {
         .translate(hatch_x / 2.0 - 20.0, 0.0, 0.0);
 
     // Finger pulls (2× 30×6mm slots on the top face)
-    let pull_1 = centered_cube("pull_1", 60.0, 10.0, 2.0)
-        .translate(-80.0, 0.0, hatch_thickness / 2.0 - 1.0);
-    let pull_2 = centered_cube("pull_2", 60.0, 10.0, 2.0)
-        .translate(80.0, 0.0, hatch_thickness / 2.0 - 1.0);
+    let pull_1 =
+        centered_cube("pull_1", 60.0, 10.0, 2.0).translate(-80.0, 0.0, hatch_thickness / 2.0 - 1.0);
+    let pull_2 =
+        centered_cube("pull_2", 60.0, 10.0, 2.0).translate(80.0, 0.0, hatch_thickness / 2.0 - 1.0);
 
     let top_hatch = hatch_body - hatch_gasket - hatch_latch_1 - hatch_latch_2 - pull_1 - pull_2;
 
@@ -537,16 +565,21 @@ fn main() {
     let rail_top_h = 8.0;
 
     let rail_base = centered_cube("rail_base", rail_base_w, rail_length, rail_base_h);
-    let rail_top = centered_cube("rail_top", rail_top_w, rail_length, rail_top_h)
-        .translate(0.0, 0.0, (rail_base_h + rail_top_h) / 2.0);
+    let rail_top = centered_cube("rail_top", rail_top_w, rail_length, rail_top_h).translate(
+        0.0,
+        0.0,
+        (rail_base_h + rail_top_h) / 2.0,
+    );
 
     // Roller V-groove down the middle of the top face (5mm wide × 3mm deep)
-    let roller_groove = centered_cube("roller_groove", 5.0, rail_length + 2.0, 3.2)
-        .translate(0.0, 0.0, rail_base_h / 2.0 + rail_top_h - 1.5);
+    let roller_groove = centered_cube("roller_groove", 5.0, rail_length + 2.0, 3.2).translate(
+        0.0,
+        0.0,
+        rail_base_h / 2.0 + rail_top_h - 1.5,
+    );
 
     let rail = (rail_base + rail_top) - roller_groove;
-    rail.write_stl("output/chip_incubator_v2_rail.stl")
-        .unwrap();
+    rail.write_stl("output/chip_incubator_v2_rail.stl").unwrap();
     println!("Exported: output/chip_incubator_v2_rail.stl");
 
     // ══════════════════════════════════════════════════════════════
@@ -576,15 +609,43 @@ fn main() {
     println!(" SHELL SURFACE:    {shell_surface_area_m2:.3} m²  (heat-loss area)");
     println!();
     println!(" PORTS (inner chamber, chamber-centered coords)");
-    println!("   Heater         8 mm Ø    @ (   0,  +{:.0},  {:.0})   bottom-rear", chamber_outer_y / 2.0, -(inner_z / 2.0) + 15.0);
-    println!("   Sensor (SHT40) 10 mm Ø   @ ( +80,  +{:.0},   0)      mid-rear", chamber_outer_y / 2.0);
-    println!("   CO2 sensor     25×35×10  @ ( -80,  +{:.0},   0)      rear pocket (MH-Z19B)", chamber_outer_y / 2.0 - 5.0);
-    println!("   Fan            80 mm Ø   @ (+{:.0},    0,  +50)      right side", chamber_outer_x / 2.0);
-    println!("   Gas inlet      6 mm Ø    @ (   0,  +230, +{:.0})     top-rear 1/8\" fitting", chamber_outer_z / 2.0);
-    println!("   Rocker grommet 20 mm Ø   @ (+120, +220, -{:.0})      floor-rear", chamber_outer_z / 2.0);
-    println!("   Drain          10 mm Ø   @ (-270, +230, -{:.0})      back-left floor corner", chamber_outer_z / 2.0);
-    println!("   Top hatch      350×250   @ (   0,    0, +{:.0})      top face", chamber_outer_z / 2.0);
-    println!("   Water tray     300×200×3 @ (   0, +150, -{:.0})      floor pocket", inner_z / 2.0 - 1.5);
+    println!(
+        "   Heater         8 mm Ø    @ (   0,  +{:.0},  {:.0})   bottom-rear",
+        chamber_outer_y / 2.0,
+        -(inner_z / 2.0) + 15.0
+    );
+    println!(
+        "   Sensor (SHT40) 10 mm Ø   @ ( +80,  +{:.0},   0)      mid-rear",
+        chamber_outer_y / 2.0
+    );
+    println!(
+        "   CO2 sensor     25×35×10  @ ( -80,  +{:.0},   0)      rear pocket (MH-Z19B)",
+        chamber_outer_y / 2.0 - 5.0
+    );
+    println!(
+        "   Fan            80 mm Ø   @ (+{:.0},    0,  +50)      right side",
+        chamber_outer_x / 2.0
+    );
+    println!(
+        "   Gas inlet      6 mm Ø    @ (   0,  +230, +{:.0})     top-rear 1/8\" fitting",
+        chamber_outer_z / 2.0
+    );
+    println!(
+        "   Rocker grommet 20 mm Ø   @ (+120, +220, -{:.0})      floor-rear",
+        chamber_outer_z / 2.0
+    );
+    println!(
+        "   Drain          10 mm Ø   @ (-270, +230, -{:.0})      back-left floor corner",
+        chamber_outer_z / 2.0
+    );
+    println!(
+        "   Top hatch      350×250   @ (   0,    0, +{:.0})      top face",
+        chamber_outer_z / 2.0
+    );
+    println!(
+        "   Water tray     300×200×3 @ (   0, +150, -{:.0})      floor pocket",
+        inner_z / 2.0 - 1.5
+    );
     println!("   Drip channel   10×5 mm   around perimeter of floor → drain");
     println!("   Hatch heat ch. 10×3 mm   around top hatch opening (anti-condensation)");
     println!("   Rail slots     12×3 mm   4 slots at X = -180, -60, +60, +180");
@@ -606,8 +667,14 @@ fn main() {
     println!("   Latch          2× 8 mm Ø neodymium magnets, short ends");
     println!();
     println!(" RAIL (print 4× for 2 pairs)");
-    println!("   Base           12 × {:.0} × 3 mm   (fits 12 mm slot in chamber floor)", rail_length);
-    println!("   Top track      18 × {:.0} × 8 mm   with 5 × 3 mm V-groove for rack rollers", rail_length);
+    println!(
+        "   Base           12 × {:.0} × 3 mm   (fits 12 mm slot in chamber floor)",
+        rail_length
+    );
+    println!(
+        "   Top track      18 × {:.0} × 8 mm   with 5 × 3 mm V-groove for rack rollers",
+        rail_length
+    );
     println!();
     println!(" WATER TRAY");
     println!("   298 × 198 × 25 mm (2.5 mm PETG, ~1.4 L capacity for humidity)");
@@ -616,7 +683,10 @@ fn main() {
     println!("   Operating:      37 °C / 5 % CO2 / ≥90 % RH");
     println!("   Insulation:     25 mm PIR foam (k ≈ 0.022 W/m·K)");
     println!("   Heat loss est:  Q = k·A·ΔT/t = 0.022 × {shell_surface_area_m2:.3} × 15 / 0.025");
-    println!("                   ≈ {:.1} W steady-state @ 37 °C, 22 °C ambient", 0.022 * shell_surface_area_m2 * 15.0 / 0.025);
+    println!(
+        "                   ≈ {:.1} W steady-state @ 37 °C, 22 °C ambient",
+        0.022 * shell_surface_area_m2 * 15.0 / 0.025
+    );
     println!("   Heater budget:  200 W silicone pad (>>4× margin)");
     println!();
     println!(" MATERIALS");

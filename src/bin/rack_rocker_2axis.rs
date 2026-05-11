@@ -119,14 +119,14 @@ use vcad::{centered_cube, centered_cylinder, Part};
 
 // Chip rack (45-chip sub-rack, further reduced from 60-chip per refined
 // interference check — see below). 3 shelves × 3 cols × 5 rows = 45.
-const RACK_X: f64 = 405.0;   // chip long axis (3 × 127.76 + 3× 5 gutter + 5 margin)
-const RACK_Y: f64 = 300.0;   // chip short axis (5 × 85.48 / 3 rows + margins ≈ 300)
-const RACK_Z: f64 = 206.0;   // 3 shelves × 40 mm + 86 mm (base+handle) − 20 mm reduction
+const RACK_X: f64 = 405.0; // chip long axis (3 × 127.76 + 3× 5 gutter + 5 margin)
+const RACK_Y: f64 = 300.0; // chip short axis (5 × 85.48 / 3 rows + margins ≈ 300)
+const RACK_Z: f64 = 206.0; // 3 shelves × 40 mm + 86 mm (base+handle) − 20 mm reduction
 
 // Outer gimbal ring (pitches around X)
 const OUTER_RING_OD: f64 = 460.0; // outer diameter (circumscribes inner plate + ring width)
 const OUTER_RING_ID: f64 = 400.0; // inner opening
-const OUTER_RING_Z:  f64 = 20.0;  // ring thickness (axial)
+const OUTER_RING_Z: f64 = 20.0; // ring thickness (axial)
 const OUTER_RING_WALL: f64 = (OUTER_RING_OD - OUTER_RING_ID) / 2.0; // 30 mm
 
 // Inner platform (rolls around Y)
@@ -137,19 +137,19 @@ const INNER_PLATE_Z: f64 = 10.0;
 // Pivot geometry
 // Outer pitch axis runs along X (chip long axis).
 // Inner roll  axis runs along Y (chip short axis).
-const PIVOT_SHAFT_D: f64 = 12.0;   // stepper shaft / pivot pin diameter
-const BEARING_OD:    f64 = 37.0;   // 6805 OD
-const BEARING_ID:    f64 = 25.0;   // 6805 ID
-const BEARING_W:     f64 = 7.0;
+const PIVOT_SHAFT_D: f64 = 12.0; // stepper shaft / pivot pin diameter
+const BEARING_OD: f64 = 37.0; // 6805 OD
+const BEARING_ID: f64 = 25.0; // 6805 ID
+const BEARING_W: f64 = 7.0;
 const BEARING_SEAT_D: f64 = BEARING_OD + 0.05; // press-fit in PETG
 
 // NEMA17 spec
-const NEMA17_BODY:    f64 = 42.3;
+const NEMA17_BODY: f64 = 42.3;
 const NEMA17_SHAFT_D: f64 = 5.0;
 const NEMA17_BOLT_SP: f64 = 31.0;
-const M3_CLEAR:       f64 = 3.2;
-const M5_CLEAR:       f64 = 5.5;
-const M6_CLEAR:       f64 = 6.6;
+const M3_CLEAR: f64 = 3.2;
+const M5_CLEAR: f64 = 5.5;
+const M6_CLEAR: f64 = 6.6;
 
 // Base frame (fits on incubator floor)
 const BASE_X: f64 = 580.0;
@@ -161,7 +161,7 @@ const STAND_H: f64 = 180.0;
 
 // Cable-carrier envelope
 const CC_SECTION: f64 = 22.0; // 22 × 22 mm outer
-const CC_LENGTH:  f64 = 300.0;
+const CC_LENGTH: f64 = 300.0;
 
 // Container interior (A-86F1ED1D)
 const CONTAINER_X: f64 = 600.0;
@@ -170,7 +170,7 @@ const CONTAINER_Z: f64 = 550.0;
 
 // Motion limits (firmware enforces)
 const PITCH_MAX_DEG: f64 = 15.0;
-const ROLL_MAX_DEG:  f64 = 10.0;
+const ROLL_MAX_DEG: f64 = 10.0;
 
 // ══════════════════════════════════════════════════════════════════════════
 // PARTS
@@ -196,12 +196,22 @@ fn outer_ring() -> Part {
         .translate(boss_cx, 0.0, 0.0);
 
     // Pitch-axis shaft holes (through along X)
-    let pitch_shaft_l = centered_cylinder("pitch_shaft_l", PIVOT_SHAFT_D / 2.0 + 0.2, boss_x_size + 2.0, 48)
-        .rotate(0.0, 90.0, 0.0)
-        .translate(-boss_cx, 0.0, 0.0);
-    let pitch_shaft_r = centered_cylinder("pitch_shaft_r", PIVOT_SHAFT_D / 2.0 + 0.2, boss_x_size + 2.0, 48)
-        .rotate(0.0, 90.0, 0.0)
-        .translate(boss_cx, 0.0, 0.0);
+    let pitch_shaft_l = centered_cylinder(
+        "pitch_shaft_l",
+        PIVOT_SHAFT_D / 2.0 + 0.2,
+        boss_x_size + 2.0,
+        48,
+    )
+    .rotate(0.0, 90.0, 0.0)
+    .translate(-boss_cx, 0.0, 0.0);
+    let pitch_shaft_r = centered_cylinder(
+        "pitch_shaft_r",
+        PIVOT_SHAFT_D / 2.0 + 0.2,
+        boss_x_size + 2.0,
+        48,
+    )
+    .rotate(0.0, 90.0, 0.0)
+    .translate(boss_cx, 0.0, 0.0);
 
     // Inner-axis bearing bosses (±Y). These hold the roll bearings that support
     // the inner platform. Shaft axis = global Y.
@@ -209,10 +219,10 @@ fn outer_ring() -> Part {
     let ibs_y: f64 = 40.0;
     let ibs_z: f64 = OUTER_RING_Z;
     let ibs_cy: f64 = OUTER_RING_ID / 2.0 - ibs_y / 2.0 + 2.0; // merges into ring wall
-    let back_boss = centered_cube("back_roll_boss", ibs_x, ibs_y, ibs_z)
-        .translate(0.0, ibs_cy, 0.0);
-    let front_boss = centered_cube("front_roll_boss", ibs_x, ibs_y, ibs_z)
-        .translate(0.0, -ibs_cy, 0.0);
+    let back_boss =
+        centered_cube("back_roll_boss", ibs_x, ibs_y, ibs_z).translate(0.0, ibs_cy, 0.0);
+    let front_boss =
+        centered_cube("front_roll_boss", ibs_x, ibs_y, ibs_z).translate(0.0, -ibs_cy, 0.0);
 
     // Roll-axis bearing seats (25 mm journal press-fit → bearing OD 37)
     let roll_seat_b = centered_cylinder("roll_seat_b", BEARING_SEAT_D / 2.0, BEARING_W + 0.2, 48)
@@ -238,7 +248,7 @@ fn outer_ring() -> Part {
         let wy = r_path * ang.sin();
         // Skip windows that overlap the ±X pitch bosses / ±Y roll bosses (keep material there)
         let near_pitch = (ang.cos().abs() > 0.85) && (ang.sin().abs() < 0.3);
-        let near_roll  = (ang.sin().abs() > 0.85) && (ang.cos().abs() < 0.3);
+        let near_roll = (ang.sin().abs() > 0.85) && (ang.cos().abs() < 0.3);
         if near_pitch || near_roll {
             continue;
         }
@@ -266,13 +276,13 @@ fn inner_platform() -> Part {
     let pat_y: f64 = 380.0;
     let positions: [(f64, f64); 8] = [
         (-pat_x / 2.0, -pat_y / 2.0),
-        ( pat_x / 2.0, -pat_y / 2.0),
-        (-pat_x / 2.0,  pat_y / 2.0),
-        ( pat_x / 2.0,  pat_y / 2.0),
-        (0.0,          -pat_y / 2.0),
-        (0.0,           pat_y / 2.0),
-        (-pat_x / 2.0,  0.0),
-        ( pat_x / 2.0,  0.0),
+        (pat_x / 2.0, -pat_y / 2.0),
+        (-pat_x / 2.0, pat_y / 2.0),
+        (pat_x / 2.0, pat_y / 2.0),
+        (0.0, -pat_y / 2.0),
+        (0.0, pat_y / 2.0),
+        (-pat_x / 2.0, 0.0),
+        (pat_x / 2.0, 0.0),
     ];
     let mut holes = Part::empty("plate_holes");
     for (i, (hx, hy)) in positions.iter().enumerate() {
@@ -285,8 +295,8 @@ fn inner_platform() -> Part {
     // Each stub is 30 mm long (journals in bearing 7 mm + 15 mm clearance + 8 mm margin).
     let stub_len: f64 = 30.0;
     let stub_r: f64 = BEARING_ID / 2.0 - 0.05; // 12.45 mm press-fit into 25 mm ID bearing
-    // NB: this is 24.9 mm diameter — won't fit inside 25 mm bore ball bearing easily.
-    // Real build: stepped 25 → 12 mm shaft bolted on. For CAD viz we use a 25 mm stub.
+                                               // NB: this is 24.9 mm diameter — won't fit inside 25 mm bore ball bearing easily.
+                                               // Real build: stepped 25 → 12 mm shaft bolted on. For CAD viz we use a 25 mm stub.
     let stub_back = centered_cylinder("stub_back", stub_r, stub_len, 48)
         .rotate(90.0, 0.0, 0.0)
         .translate(0.0, INNER_PLATE_Y / 2.0 + stub_len / 2.0 - 1.0, 0.0);
@@ -312,15 +322,18 @@ fn inner_platform() -> Part {
     let mut tabs = Part::empty("rack_tabs");
     for (i, (tx, ty)) in [
         (-INNER_PLATE_X / 2.0 + inset, -INNER_PLATE_Y / 2.0 + inset),
-        (-INNER_PLATE_X / 2.0 + inset,  INNER_PLATE_Y / 2.0 - inset),
-        ( INNER_PLATE_X / 2.0 - inset, -INNER_PLATE_Y / 2.0 + inset),
-        ( INNER_PLATE_X / 2.0 - inset,  INNER_PLATE_Y / 2.0 - inset),
+        (-INNER_PLATE_X / 2.0 + inset, INNER_PLATE_Y / 2.0 - inset),
+        (INNER_PLATE_X / 2.0 - inset, -INNER_PLATE_Y / 2.0 + inset),
+        (INNER_PLATE_X / 2.0 - inset, INNER_PLATE_Y / 2.0 - inset),
     ]
     .iter()
     .enumerate()
     {
-        let t = centered_cube(&format!("rt_{i}"), tab, tab, tab_z)
-            .translate(*tx, *ty, INNER_PLATE_Z / 2.0 + tab_z / 2.0);
+        let t = centered_cube(&format!("rt_{i}"), tab, tab, tab_z).translate(
+            *tx,
+            *ty,
+            INNER_PLATE_Z / 2.0 + tab_z / 2.0,
+        );
         tabs = tabs + t;
     }
 
@@ -330,7 +343,7 @@ fn inner_platform() -> Part {
 /// Outer pitch stepper mount — bolts to the base stand at -X side.
 /// NEMA17 body faces +X, shaft sticks out +X through to the outer ring pitch boss.
 fn outer_stepper_mount() -> Part {
-    let body_x: f64 = 50.0;  // along X (shaft axis)
+    let body_x: f64 = 50.0; // along X (shaft axis)
     let body_y: f64 = NEMA17_BODY + 20.0;
     let body_z: f64 = NEMA17_BODY + 20.0;
     let body = centered_cube("osm_body", body_x, body_y, body_z);
@@ -346,9 +359,9 @@ fn outer_stepper_mount() -> Part {
     let mut m3s = Part::empty("osm_m3");
     for (i, (dy, dz)) in [
         (-NEMA17_BOLT_SP / 2.0, -NEMA17_BOLT_SP / 2.0),
-        (-NEMA17_BOLT_SP / 2.0,  NEMA17_BOLT_SP / 2.0),
-        ( NEMA17_BOLT_SP / 2.0, -NEMA17_BOLT_SP / 2.0),
-        ( NEMA17_BOLT_SP / 2.0,  NEMA17_BOLT_SP / 2.0),
+        (-NEMA17_BOLT_SP / 2.0, NEMA17_BOLT_SP / 2.0),
+        (NEMA17_BOLT_SP / 2.0, -NEMA17_BOLT_SP / 2.0),
+        (NEMA17_BOLT_SP / 2.0, NEMA17_BOLT_SP / 2.0),
     ]
     .iter()
     .enumerate()
@@ -363,13 +376,19 @@ fn outer_stepper_mount() -> Part {
     let flange_x: f64 = 70.0;
     let flange_y: f64 = body_y + 20.0;
     let flange_z: f64 = 6.0;
-    let flange = centered_cube("osm_flange", flange_x, flange_y, flange_z)
-        .translate(0.0, 0.0, -body_z / 2.0 - flange_z / 2.0);
+    let flange = centered_cube("osm_flange", flange_x, flange_y, flange_z).translate(
+        0.0,
+        0.0,
+        -body_z / 2.0 - flange_z / 2.0,
+    );
     let mut f_bolts = Part::empty("osm_fb");
     for &sx in [-1.0f64, 1.0].iter() {
         for &sy in [-1.0f64, 1.0].iter() {
-            let b = centered_cylinder("osm_fbh", M5_CLEAR / 2.0, flange_z + 2.0, 24)
-                .translate(sx * (flange_x / 2.0 - 15.0), sy * (flange_y / 2.0 - 15.0), -body_z / 2.0 - flange_z / 2.0);
+            let b = centered_cylinder("osm_fbh", M5_CLEAR / 2.0, flange_z + 2.0, 24).translate(
+                sx * (flange_x / 2.0 - 15.0),
+                sy * (flange_y / 2.0 - 15.0),
+                -body_z / 2.0 - flange_z / 2.0,
+            );
             f_bolts = f_bolts + b;
         }
     }
@@ -382,7 +401,7 @@ fn outer_stepper_mount() -> Part {
 /// This mount co-rotates with the outer ring.
 fn inner_stepper_mount() -> Part {
     let body_x: f64 = NEMA17_BODY + 20.0;
-    let body_y: f64 = 50.0;  // along Y (shaft axis)
+    let body_y: f64 = 50.0; // along Y (shaft axis)
     let body_z: f64 = NEMA17_BODY + 20.0;
     let body = centered_cube("ism_body", body_x, body_y, body_z);
 
@@ -397,9 +416,9 @@ fn inner_stepper_mount() -> Part {
     let mut m3s = Part::empty("ism_m3");
     for (i, (dx, dz)) in [
         (-NEMA17_BOLT_SP / 2.0, -NEMA17_BOLT_SP / 2.0),
-        (-NEMA17_BOLT_SP / 2.0,  NEMA17_BOLT_SP / 2.0),
-        ( NEMA17_BOLT_SP / 2.0, -NEMA17_BOLT_SP / 2.0),
-        ( NEMA17_BOLT_SP / 2.0,  NEMA17_BOLT_SP / 2.0),
+        (-NEMA17_BOLT_SP / 2.0, NEMA17_BOLT_SP / 2.0),
+        (NEMA17_BOLT_SP / 2.0, -NEMA17_BOLT_SP / 2.0),
+        (NEMA17_BOLT_SP / 2.0, NEMA17_BOLT_SP / 2.0),
     ]
     .iter()
     .enumerate()
@@ -414,14 +433,21 @@ fn inner_stepper_mount() -> Part {
     let flange_x: f64 = 6.0;
     let flange_y: f64 = body_y + 20.0;
     let flange_z: f64 = body_z + 20.0;
-    let flange = centered_cube("ism_flange", flange_x, flange_y, flange_z)
-        .translate(-body_x / 2.0 - flange_x / 2.0, 0.0, 0.0);
+    let flange = centered_cube("ism_flange", flange_x, flange_y, flange_z).translate(
+        -body_x / 2.0 - flange_x / 2.0,
+        0.0,
+        0.0,
+    );
     let mut f_bolts = Part::empty("ism_fb");
     for &sy in [-1.0f64, 1.0].iter() {
         for &sz in [-1.0f64, 1.0].iter() {
             let b = centered_cylinder("ism_fbh", M5_CLEAR / 2.0, flange_x + 2.0, 24)
                 .rotate(0.0, 90.0, 0.0)
-                .translate(-body_x / 2.0 - flange_x / 2.0, sy * (flange_y / 2.0 - 15.0), sz * (flange_z / 2.0 - 15.0));
+                .translate(
+                    -body_x / 2.0 - flange_x / 2.0,
+                    sy * (flange_y / 2.0 - 15.0),
+                    sz * (flange_z / 2.0 - 15.0),
+                );
             f_bolts = f_bolts + b;
         }
     }
@@ -442,8 +468,7 @@ fn cable_carrier() -> Part {
     let bore_d: f64 = 14.0;
 
     // Segment 1 — base → outer ring (vertical run along Z, hinged at ring pivot)
-    let seg1_outer = centered_cube("cc_seg1_outer", seg_x, seg_x, seg_y)
-        .rotate(90.0, 0.0, 0.0); // orient along Y... then translate
+    let seg1_outer = centered_cube("cc_seg1_outer", seg_x, seg_x, seg_y).rotate(90.0, 0.0, 0.0); // orient along Y... then translate
     let _ = seg1_outer; // placeholder, build as rectangular tube
     let s1o = centered_cube("cc_s1o", seg_x, seg_y, seg_z);
     let s1i = centered_cube("cc_s1i", bore_d, seg_y + 2.0, bore_d);
@@ -455,8 +480,11 @@ fn cable_carrier() -> Part {
     let seg2 = (s2o - s2i).translate(seg_y / 2.0 + seg_x / 2.0, -seg_y / 2.0 + seg_x / 2.0, 0.0);
 
     // Hinge joint — just a sphere-ish cube at the elbow
-    let hinge = centered_cube("cc_hinge", seg_x + 4.0, seg_x + 4.0, seg_z + 4.0)
-        .translate(seg_x / 2.0, -seg_y / 2.0 + seg_x / 2.0, 0.0);
+    let hinge = centered_cube("cc_hinge", seg_x + 4.0, seg_x + 4.0, seg_z + 4.0).translate(
+        seg_x / 2.0,
+        -seg_y / 2.0 + seg_x / 2.0,
+        0.0,
+    );
 
     seg1 + hinge + seg2
 }
@@ -482,8 +510,11 @@ fn bearing_mount() -> Part {
     let mut base_bolts = Part::empty("bm_bb_bolts");
     for &sx in [-1.0f64, 1.0].iter() {
         for &sy in [-1.0f64, 1.0].iter() {
-            let b = centered_cylinder("bm_bb_h", M5_CLEAR / 2.0, body_z + 2.0, 24)
-                .translate(sx * (body_x / 2.0 - 12.0), sy * (body_y / 2.0 - 12.0), 0.0);
+            let b = centered_cylinder("bm_bb_h", M5_CLEAR / 2.0, body_z + 2.0, 24).translate(
+                sx * (body_x / 2.0 - 12.0),
+                sy * (body_y / 2.0 - 12.0),
+                0.0,
+            );
             base_bolts = base_bolts + b;
         }
     }
@@ -503,8 +534,11 @@ fn base_plate() -> Part {
     let xs = [-180.0, -60.0, 60.0, 180.0];
     let mut rails = Part::empty("base2_rails");
     for (i, xo) in xs.iter().enumerate() {
-        let r = centered_cube(&format!("rail_{i}"), rail_w, rail_l, rail_d)
-            .translate(*xo, 0.0, -BASE_Z / 2.0 - rail_d / 2.0);
+        let r = centered_cube(&format!("rail_{i}"), rail_w, rail_l, rail_d).translate(
+            *xo,
+            0.0,
+            -BASE_Z / 2.0 - rail_d / 2.0,
+        );
         rails = rails + r;
     }
     // Bolt holes for stepper mount (-X) and bearing stand (+X)
@@ -513,8 +547,11 @@ fn base_plate() -> Part {
     for &sx in [-1.0f64, 1.0].iter() {
         for &dx in [-25.0f64, 25.0].iter() {
             for &dy in [-25.0f64, 25.0].iter() {
-                let b = centered_cylinder("sb", M5_CLEAR / 2.0, BASE_Z + 2.0, 24)
-                    .translate(sx * stand_x_off + dx, dy, 0.0);
+                let b = centered_cylinder("sb", M5_CLEAR / 2.0, BASE_Z + 2.0, 24).translate(
+                    sx * stand_x_off + dx,
+                    dy,
+                    0.0,
+                );
                 stand_bolts = stand_bolts + b;
             }
         }
@@ -618,12 +655,21 @@ fn swept_halfwidths(sx: f64, sy: f64, sz: f64, pitch_deg: f64, roll_deg: f64) ->
 fn main() {
     // ── 1. Export each part as STL + STEP ──
     let exports: [(&str, fn() -> Part); 6] = [
-        ("output/rack_rocker_2axis_outer_ring.stl",            outer_ring),
-        ("output/rack_rocker_2axis_inner_platform.stl",        inner_platform),
-        ("output/rack_rocker_2axis_outer_stepper_mount.stl",   outer_stepper_mount),
-        ("output/rack_rocker_2axis_inner_stepper_mount.stl",   inner_stepper_mount),
-        ("output/rack_rocker_2axis_cable_carrier.stl",         cable_carrier),
-        ("output/rack_rocker_2axis_bearing_mount.stl",         bearing_mount),
+        ("output/rack_rocker_2axis_outer_ring.stl", outer_ring),
+        (
+            "output/rack_rocker_2axis_inner_platform.stl",
+            inner_platform,
+        ),
+        (
+            "output/rack_rocker_2axis_outer_stepper_mount.stl",
+            outer_stepper_mount,
+        ),
+        (
+            "output/rack_rocker_2axis_inner_stepper_mount.stl",
+            inner_stepper_mount,
+        ),
+        ("output/rack_rocker_2axis_cable_carrier.stl", cable_carrier),
+        ("output/rack_rocker_2axis_bearing_mount.stl", bearing_mount),
     ];
     for (path, ctor) in exports.iter() {
         let part = ctor();
@@ -633,12 +679,14 @@ fn main() {
     }
 
     let asm = assembly_zero();
-    asm.write_stl("output/rack_rocker_2axis_assembly.stl").unwrap();
+    asm.write_stl("output/rack_rocker_2axis_assembly.stl")
+        .unwrap();
     println!("Exported: output/rack_rocker_2axis_assembly.stl");
     laminarforge_cad::stl_to_step("output/rack_rocker_2axis_assembly.stl");
 
     let env = envelope_at_extremes();
-    env.write_stl("output/rack_rocker_2axis_envelope.stl").unwrap();
+    env.write_stl("output/rack_rocker_2axis_envelope.stl")
+        .unwrap();
     println!("Exported: output/rack_rocker_2axis_envelope.stl");
     laminarforge_cad::stl_to_step("output/rack_rocker_2axis_envelope.stl");
 
@@ -658,9 +706,9 @@ fn main() {
     // Effective swept envelope treating the rack's lowest point as `pivot_z - tower_half_z`
     // and highest as `pivot_z + tower_half_z`, where tower goes from pivot to rack top.
     let tower_top = INNER_PLATE_Z / 2.0 + RACK_Z; // rack top above pivot
-    let tower_bot = -INNER_PLATE_Z / 2.0;         // plate bottom
-    // Swept half-extents of rack treating pivot as origin (rack_center offset upward):
-    // Rotate 8 corners of the rack box (with its center at +rack_center_offset_z) around origin.
+    let tower_bot = -INNER_PLATE_Z / 2.0; // plate bottom
+                                          // Swept half-extents of rack treating pivot as origin (rack_center offset upward):
+                                          // Rotate 8 corners of the rack box (with its center at +rack_center_offset_z) around origin.
     let mut max_x = 0.0f64;
     let mut max_y = 0.0f64;
     let mut max_z = 0.0f64;
@@ -727,12 +775,26 @@ fn main() {
     println!();
     println!("── 45-chip Rack + Plate Swept Envelope at (pitch=±{PITCH_MAX_DEG}°, roll=±{ROLL_MAX_DEG}°) ──");
     println!("  half-widths  : {mx:.1} × {my:.1} × {mz:.1} mm");
-    println!("  full envelope: {:.1} × {:.1} × {:.1} mm", 2.0 * mx, 2.0 * my, 2.0 * mz);
-    println!("  vertical span from pivot: {:.1} (below) … {:.1} (above) mm", min_z, max_z);
+    println!(
+        "  full envelope: {:.1} × {:.1} × {:.1} mm",
+        2.0 * mx,
+        2.0 * my,
+        2.0 * mz
+    );
+    println!(
+        "  vertical span from pivot: {:.1} (below) … {:.1} (above) mm",
+        min_z, max_z
+    );
     println!();
     println!("── Container interior: {CONTAINER_X:.0} × {CONTAINER_Y:.0} × {CONTAINER_Z:.0} mm ──");
-    println!("  Chosen pitch-axis Z (from container floor): {:.1} mm", pitch_axis_z_in_container + CONTAINER_Z / 2.0);
-    println!("  Required stand height (base top → pivot)   : {:.1} mm", stand_h_required);
+    println!(
+        "  Chosen pitch-axis Z (from container floor): {:.1} mm",
+        pitch_axis_z_in_container + CONTAINER_Z / 2.0
+    );
+    println!(
+        "  Required stand height (base top → pivot)   : {:.1} mm",
+        stand_h_required
+    );
     let x_clear = CONTAINER_X / 2.0 - mx;
     let y_clear = CONTAINER_Y / 2.0 - my;
     let z_clear_top = CONTAINER_Z / 2.0 - rack_z_top_in_container;
@@ -756,8 +818,11 @@ fn main() {
     // Also verify: does the outer ring itself (not tilted, carried only by pitch)
     // fit inside the container?  Outer ring OD is 530 mm, swept around X at ±15°.
     let (rmx, rmy, rmz) = swept_halfwidths(
-        OUTER_RING_OD, OUTER_RING_OD, OUTER_RING_Z,
-        PITCH_MAX_DEG, 0.0,
+        OUTER_RING_OD,
+        OUTER_RING_OD,
+        OUTER_RING_Z,
+        PITCH_MAX_DEG,
+        0.0,
     );
     println!();
     println!("── Outer Ring (OD {OUTER_RING_OD:.0} mm) Pitched ±{PITCH_MAX_DEG}° ──");
@@ -790,5 +855,11 @@ fn main() {
     println!("                              TOTAL ≈ $199");
 
     // Sanity: Part isn't Clone, so don't try to reuse its values.
-    let _ = (INNER_PLATE_X, INNER_PLATE_Y, INNER_PLATE_Z, OUTER_RING_Z, OUTER_RING_ID);
+    let _ = (
+        INNER_PLATE_X,
+        INNER_PLATE_Y,
+        INNER_PLATE_Z,
+        OUTER_RING_Z,
+        OUTER_RING_ID,
+    );
 }

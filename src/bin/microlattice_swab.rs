@@ -43,20 +43,20 @@ use vcad::{centered_cylinder, Part};
 fn main() {
     // ── Dimensions (validated against literature A-E5A1E1FD) ──
 
-    let head_length = 18.0;          // mm  (literature: 15-20mm, mid-range)
-    let head_tip_diameter = 2.6;     // mm  (tapered for genital anatomy)
-    let head_base_diameter = 3.0;    // mm  (max, fits 12mm OD collector tube)
-    let shaft_diameter = 2.0;        // mm  (literature: 2.0-2.5mm)
-    let total_length = 150.0;        // mm  (literature: >=150mm)
-    let breakpoint_from_tip = 80.0;  // mm  (literature: 70-80mm)
+    let head_length = 18.0; // mm  (literature: 15-20mm, mid-range)
+    let head_tip_diameter = 2.6; // mm  (tapered for genital anatomy)
+    let head_base_diameter = 3.0; // mm  (max, fits 12mm OD collector tube)
+    let shaft_diameter = 2.0; // mm  (literature: 2.0-2.5mm)
+    let total_length = 150.0; // mm  (literature: >=150mm)
+    let breakpoint_from_tip = 80.0; // mm  (literature: 70-80mm)
 
-    let unit_cell = 0.8;            // mm  (literature: 0.5-1.0mm)
-    let strut_diameter = 0.3;       // mm  (literature: 0.2-0.4mm)
+    let unit_cell = 0.8; // mm  (literature: 0.5-1.0mm)
+    let strut_diameter = 0.3; // mm  (literature: 0.2-0.4mm)
     let strut_radius = strut_diameter / 2.0;
 
-    let breakpoint_diameter = 0.8;   // mm  (snap-off neck)
-    let breakpoint_length = 1.0;     // mm
-    let neck_length = 3.0;           // mm  (taper from head to shaft)
+    let breakpoint_diameter = 0.8; // mm  (snap-off neck)
+    let breakpoint_length = 1.0; // mm
+    let neck_length = 3.0; // mm  (taper from head to shaft)
 
     // Derived dimensions
     let head_tip_radius = head_tip_diameter / 2.0;
@@ -169,8 +169,8 @@ fn main() {
     // Taper: 3.0mm base (-Z) to 2.6mm tip (+Z) for genital anatomy.
     let head_envelope = Part::cone(
         "head_envelope",
-        head_base_radius,  // bottom (-Z) = base, wider
-        head_tip_radius,   // top (+Z) = tip, narrower
+        head_base_radius, // bottom (-Z) = base, wider
+        head_tip_radius,  // top (+Z) = tip, narrower
         head_length,
         32,
     );
@@ -181,8 +181,8 @@ fn main() {
     // Transitions from 3.0mm (head base) down to 2.0mm (shaft)
     let neck = Part::cone(
         "neck",
-        shaft_radius,       // bottom (-Z) = shaft side, narrower
-        head_base_radius,   // top (+Z) = head base side, wider
+        shaft_radius,     // bottom (-Z) = shaft side, narrower
+        head_base_radius, // top (+Z) = head base side, wider
         neck_length,
         24,
     )
@@ -191,26 +191,19 @@ fn main() {
     // ── Continuous shaft + tail ──
     // One long cylinder from below neck to swab bottom.
     // The breakpoint notch is subtracted later.
-    let shaft = centered_cylinder(
-        "shaft",
-        shaft_radius,
-        shaft_total,
-        24,
-    )
-    .translate(0.0, 0.0, -(head_length / 2.0 + neck_length + shaft_total / 2.0));
+    let shaft = centered_cylinder("shaft", shaft_radius, shaft_total, 24).translate(
+        0.0,
+        0.0,
+        -(head_length / 2.0 + neck_length + shaft_total / 2.0),
+    );
 
     // ── Breakpoint notch ──
     // Ring subtracted at 80mm from tip to create snap-off neck.
     // break_z = center of notch = tip position minus breakpoint distance
     let break_z = tip_z - breakpoint_from_tip; // 9.0 - 80.0 = -71.0
 
-    let notch_outer = centered_cylinder(
-        "notch_outer",
-        shaft_radius + 0.1,
-        breakpoint_length,
-        24,
-    )
-    .translate(0.0, 0.0, break_z);
+    let notch_outer = centered_cylinder("notch_outer", shaft_radius + 0.1, breakpoint_length, 24)
+        .translate(0.0, 0.0, break_z);
 
     let notch_inner = centered_cylinder(
         "notch_inner",
@@ -261,12 +254,18 @@ fn main() {
     println!("    Neck taper:      {neck_length:.1}mm transition to shaft");
     println!("    Shaft:           {shaft_diameter:.1}mm dia");
     println!("    Breakpoint:      {breakpoint_diameter:.1}mm neck at {breakpoint_from_tip:.0}mm from tip");
-    println!("    Tail:            {:.1}mm below breakpoint", total_length - breakpoint_from_tip - breakpoint_length);
+    println!(
+        "    Tail:            {:.1}mm below breakpoint",
+        total_length - breakpoint_from_tip - breakpoint_length
+    );
     println!();
     println!("  Lattice");
     println!("    Topology:        BCC (body-centered cubic)");
     println!("    Unit cell:       {unit_cell:.1}mm");
-    println!("    Strut diameter:  {strut_diameter:.1}mm ({:.0} layers at 50um)", strut_diameter / 0.05);
+    println!(
+        "    Strut diameter:  {strut_diameter:.1}mm ({:.0} layers at 50um)",
+        strut_diameter / 0.05
+    );
     println!("    Grid:            {cells_x} x {cells_y} x {cells_z} cells");
     println!();
     println!("  Build Plate (Elegoo Saturn 4 Ultra 16K)");

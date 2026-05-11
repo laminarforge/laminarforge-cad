@@ -40,28 +40,41 @@ fn main() {
     // Desk top centered at origin in X/Y, positioned so bottom face
     // is at Z = 0 (legs hang below)
 
-    let top = centered_cube("desk_top", top_width, top_depth, top_thickness)
-        .translate(0.0, 0.0, top_thickness / 2.0);
+    let top = centered_cube("desk_top", top_width, top_depth, top_thickness).translate(
+        0.0,
+        0.0,
+        top_thickness / 2.0,
+    );
 
     // ── Build legs ──
     // Legs extend downward from the desk top bottom face (Z=0 down to Z=-leg_height)
 
     let leg_positions: [(f64, f64); 4] = [
-        (-(top_width / 2.0 - leg_inset_x - leg_width / 2.0), -(top_depth / 2.0 - leg_inset_y - leg_depth / 2.0)),
-        ( (top_width / 2.0 - leg_inset_x - leg_width / 2.0), -(top_depth / 2.0 - leg_inset_y - leg_depth / 2.0)),
-        (-(top_width / 2.0 - leg_inset_x - leg_width / 2.0),  (top_depth / 2.0 - leg_inset_y - leg_depth / 2.0)),
-        ( (top_width / 2.0 - leg_inset_x - leg_width / 2.0),  (top_depth / 2.0 - leg_inset_y - leg_depth / 2.0)),
+        (
+            -(top_width / 2.0 - leg_inset_x - leg_width / 2.0),
+            -(top_depth / 2.0 - leg_inset_y - leg_depth / 2.0),
+        ),
+        (
+            (top_width / 2.0 - leg_inset_x - leg_width / 2.0),
+            -(top_depth / 2.0 - leg_inset_y - leg_depth / 2.0),
+        ),
+        (
+            -(top_width / 2.0 - leg_inset_x - leg_width / 2.0),
+            (top_depth / 2.0 - leg_inset_y - leg_depth / 2.0),
+        ),
+        (
+            (top_width / 2.0 - leg_inset_x - leg_width / 2.0),
+            (top_depth / 2.0 - leg_inset_y - leg_depth / 2.0),
+        ),
     ];
 
     let mut legs = Part::empty("legs");
     for (i, (lx, ly)) in leg_positions.iter().enumerate() {
-        let leg = centered_cube(
-            &format!("leg_{i}"),
-            leg_width,
-            leg_depth,
-            leg_height,
-        )
-        .translate(*lx, *ly, -(leg_height / 2.0));
+        let leg = centered_cube(&format!("leg_{i}"), leg_width, leg_depth, leg_height).translate(
+            *lx,
+            *ly,
+            -(leg_height / 2.0),
+        );
         legs = legs + leg;
     }
 
@@ -72,8 +85,11 @@ fn main() {
     let floor_z = -leg_height;
     let shelf_center_z = floor_z + shelf_z_from_floor;
 
-    let shelf = centered_cube("shelf_rail", shelf_width, shelf_depth, shelf_height)
-        .translate(0.0, -(top_depth / 2.0 - leg_inset_y - leg_depth / 2.0), shelf_center_z);
+    let shelf = centered_cube("shelf_rail", shelf_width, shelf_depth, shelf_height).translate(
+        0.0,
+        -(top_depth / 2.0 - leg_inset_y - leg_depth / 2.0),
+        shelf_center_z,
+    );
 
     // ── Assemble ──
 
@@ -81,9 +97,7 @@ fn main() {
 
     // ── Export ──
 
-    workbench
-        .write_stl("output/workbench.stl")
-        .unwrap();
+    workbench.write_stl("output/workbench.stl").unwrap();
 
     let total_height = leg_height + top_thickness;
 

@@ -63,24 +63,14 @@ fn main() {
 
     // ── Glass tube bore (horizontal, along X) ──
 
-    let glass_bore = centered_cylinder(
-        "glass_bore",
-        glass_bore_d / 2.0,
-        mount_length + 2.0,
-        32,
-    )
-    .rotate(0.0, 90.0, 0.0); // along X axis
+    let glass_bore = centered_cylinder("glass_bore", glass_bore_d / 2.0, mount_length + 2.0, 32)
+        .rotate(0.0, 90.0, 0.0); // along X axis
 
     // ── LED pocket (on -Y face, centered at optical window) ──
 
-    let led_pocket = centered_cylinder(
-        "led_pocket",
-        led_diameter / 2.0,
-        led_depth + 0.1,
-        24,
-    )
-    .rotate(90.0, 0.0, 0.0) // along Y axis
-    .translate(0.0, -(mount_width / 2.0) + led_depth / 2.0, 0.0);
+    let led_pocket = centered_cylinder("led_pocket", led_diameter / 2.0, led_depth + 0.1, 24)
+        .rotate(90.0, 0.0, 0.0) // along Y axis
+        .translate(0.0, -(mount_width / 2.0) + led_depth / 2.0, 0.0);
 
     // ── OPT101P detector pocket (on +Y face) ──
 
@@ -112,48 +102,34 @@ fn main() {
 
     // ── Barb ports at each end (for silicone tubing connection) ──
 
-    let barb_left = centered_cylinder(
-        "barb_left",
-        barb_port_d / 2.0,
-        barb_port_depth + 1.0,
-        24,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(-(mount_length / 2.0) + barb_port_depth / 2.0, 0.0, 0.0);
+    let barb_left = centered_cylinder("barb_left", barb_port_d / 2.0, barb_port_depth + 1.0, 24)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(-(mount_length / 2.0) + barb_port_depth / 2.0, 0.0, 0.0);
 
-    let barb_right = centered_cylinder(
-        "barb_right",
-        barb_port_d / 2.0,
-        barb_port_depth + 1.0,
-        24,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(mount_length / 2.0 - barb_port_depth / 2.0, 0.0, 0.0);
+    let barb_right = centered_cylinder("barb_right", barb_port_d / 2.0, barb_port_depth + 1.0, 24)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(mount_length / 2.0 - barb_port_depth / 2.0, 0.0, 0.0);
 
     // ── Mounting tabs (extending from bottom, 2x with M3 holes) ──
 
     let tab_offset_x = mount_length / 2.0 - 10.0;
     let tab_z = -(mount_height / 2.0) - tab_thickness / 2.0;
 
-    let tab_1 = centered_cube("tab_1", tab_width, mount_width, tab_thickness)
+    let tab_1 = centered_cube("tab_1", tab_width, mount_width, tab_thickness).translate(
+        tab_offset_x,
+        0.0,
+        tab_z,
+    );
+    let tab_hole_1 = centered_cylinder("tab_hole_1", tab_hole_d / 2.0, tab_thickness + 2.0, 24)
         .translate(tab_offset_x, 0.0, tab_z);
-    let tab_hole_1 = centered_cylinder(
-        "tab_hole_1",
-        tab_hole_d / 2.0,
-        tab_thickness + 2.0,
-        24,
-    )
-    .translate(tab_offset_x, 0.0, tab_z);
 
-    let tab_2 = centered_cube("tab_2", tab_width, mount_width, tab_thickness)
+    let tab_2 = centered_cube("tab_2", tab_width, mount_width, tab_thickness).translate(
+        -tab_offset_x,
+        0.0,
+        tab_z,
+    );
+    let tab_hole_2 = centered_cylinder("tab_hole_2", tab_hole_d / 2.0, tab_thickness + 2.0, 24)
         .translate(-tab_offset_x, 0.0, tab_z);
-    let tab_hole_2 = centered_cylinder(
-        "tab_hole_2",
-        tab_hole_d / 2.0,
-        tab_thickness + 2.0,
-        24,
-    )
-    .translate(-tab_offset_x, 0.0, tab_z);
 
     // ── Light-tight walls (block ambient light from optical path) ──
     // The body itself is solid around the glass tube except for the
@@ -184,9 +160,7 @@ fn main() {
 
     // ── Export ──
 
-    mount
-        .write_stl("output/pbmc_flow_cell_mount.stl")
-        .unwrap();
+    mount.write_stl("output/pbmc_flow_cell_mount.stl").unwrap();
 
     println!("Exported: output/pbmc_flow_cell_mount.stl");
     println!();

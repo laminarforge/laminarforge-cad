@@ -197,21 +197,14 @@ fn main() {
 
     let tec_z = -(block_z / 2.0) + tec_recess_depth / 2.0 - 0.5;
 
-    let tec_left = centered_cube(
-        "tec_left",
-        tec_size,
-        tec_size,
-        tec_recess_depth + 1.0,
-    )
-    .translate(-tec_spacing / 2.0, 0.0, tec_z);
+    let tec_left = centered_cube("tec_left", tec_size, tec_size, tec_recess_depth + 1.0).translate(
+        -tec_spacing / 2.0,
+        0.0,
+        tec_z,
+    );
 
-    let tec_right = centered_cube(
-        "tec_right",
-        tec_size,
-        tec_size,
-        tec_recess_depth + 1.0,
-    )
-    .translate(tec_spacing / 2.0, 0.0, tec_z);
+    let tec_right = centered_cube("tec_right", tec_size, tec_size, tec_recess_depth + 1.0)
+        .translate(tec_spacing / 2.0, 0.0, tec_z);
 
     // ═══════════════════════════════════════════════════════
     // ASSEMBLE (subtract all features from body)
@@ -230,8 +223,7 @@ fn main() {
     // ═══════════════════════════════════════════════════════
 
     let thermal_mass = block_z - well_depth_from_top;
-    let block_volume_cm3 =
-        (block_x * block_y * block_z) / 1000.0; // approximate, before subtractions
+    let block_volume_cm3 = (block_x * block_y * block_z) / 1000.0; // approximate, before subtractions
     let block_mass_kg = block_volume_cm3 * 2.7 / 1000.0; // aluminum density 2.7 g/cm3
 
     println!("Exported: output/sample_cold_block.stl");
@@ -252,14 +244,15 @@ fn main() {
     println!("  Diameter:          {well_diameter:.1}mm (PCR well OD ~5.5mm + clearance)");
     println!("  Depth from top:    {well_depth_from_top:.0}mm (embraces full conical portion)");
     println!("  Pitch:             {pitch:.1}mm (ANSI/SLAS standard)");
-    println!("  Grid:              {num_cols} cols x {num_rows} rows = {} wells", num_cols * num_rows);
+    println!(
+        "  Grid:              {num_cols} cols x {num_rows} rows = {} wells",
+        num_cols * num_rows
+    );
     println!("  A1 position:       X={first_col_x:.2}mm, Y={first_row_y:.2}mm (centered coords)");
     println!();
     println!("── Thermal Performance ──");
     println!("  Thermal mass:      {thermal_mass:.0}mm aluminum below wells");
-    println!(
-        "  Pre-chill:         Refrigerate block to 4C, maintains <8C for ~30-45 min on bench"
-    );
+    println!("  Pre-chill:         Refrigerate block to 4C, maintains <8C for ~30-45 min on bench");
     println!("  Active cooling:    Optional dual TEC1-12706 on bottom face");
     println!();
     println!("── Mounting ──");
@@ -286,12 +279,16 @@ fn main() {
     println!("── Fabrication Notes ──");
     println!("  Stock: 140mm x 100mm x 30mm 6061-T6 aluminum plate/bar");
     println!("  Operations:");
-    println!("    1. Face top and bottom, square to {block_x:.1}mm x {block_y:.1}mm x {block_z:.0}mm");
+    println!(
+        "    1. Face top and bottom, square to {block_x:.1}mm x {block_y:.1}mm x {block_z:.0}mm"
+    );
     println!("    2. Mill plate pocket: {pocket_x:.2}mm x {pocket_y:.2}mm, {pocket_depth:.1}mm deep (flat endmill)");
     println!("    3. Drill 96 well pockets: {well_diameter:.1}mm dia, {well_depth_from_top:.0}mm deep (from top face)");
     println!("       Use a {well_diameter:.1}mm endmill or drill bit, 9mm pitch grid");
     println!("       CNC recommended — 96 holes at precise 9mm spacing");
-    println!("    4. Mill 2x TEC recesses on bottom: {tec_size:.1}mm sq x {tec_recess_depth:.1}mm deep");
+    println!(
+        "    4. Mill 2x TEC recesses on bottom: {tec_size:.1}mm sq x {tec_recess_depth:.1}mm deep"
+    );
     println!("    5. Drill thermistor pocket: {therm_diameter:.1}mm dia, {therm_depth:.0}mm deep from front");
     println!("    6. Drill 6x mounting holes: {mount_hole_d:.1}mm through");
     println!("    7. Deburr all edges, especially pocket rim and well bores");

@@ -80,10 +80,10 @@ fn main() {
     // Chamber channel dimensions
     let ch_w = CNC16_CHANNEL_WIDTH; // 0.5mm
     let ch_d = CNC16_CHANNEL_DEPTH; // 0.2mm
-    // OVERRIDE: 3mm instead of CNC16_CHANNEL_LENGTH (5mm) to prevent overlap
-    // between adjacent rows. Row spacing = 18mm, feature span = 3+10+3 = 16mm,
-    // leaving 2mm solid wall between rows. Literature confirms 2mm inter-channel
-    // spacing is standard for CNC-milled PMMA microfluidics.
+                                    // OVERRIDE: 3mm instead of CNC16_CHANNEL_LENGTH (5mm) to prevent overlap
+                                    // between adjacent rows. Row spacing = 18mm, feature span = 3+10+3 = 16mm,
+                                    // leaving 2mm solid wall between rows. Literature confirms 2mm inter-channel
+                                    // spacing is standard for CNC-milled PMMA microfluidics.
     let ch_len = 3.0_f64;
 
     // Grid spacing (from CNC16 constants)
@@ -128,12 +128,8 @@ fn main() {
     // Sensor PCB mounting holes (blind holes on main board, through-holes on cover plate)
     let sensor_mount_dia = 2.2_f64; // M2 clearance
     let sensor_mount_depth = 1.0_f64; // blind holes
-    let sensor_mount_positions: [(f64, f64); 4] = [
-        (-50.0, -35.0),
-        (-50.0, 35.0),
-        (50.0, -35.0),
-        (50.0, 35.0),
-    ];
+    let sensor_mount_positions: [(f64, f64); 4] =
+        [(-50.0, -35.0), (-50.0, 35.0), (50.0, -35.0), (50.0, 35.0)];
 
     // ══════════════════════════════════════════════════════════════
     // DERIVED POSITIONS
@@ -225,12 +221,12 @@ fn main() {
         row: usize,
         col_x: f64,
         _row_y: f64,
-        inlet_endpoint_y: f64,  // bottom of inlet channel = chamber_bottom - ch_len
+        inlet_endpoint_y: f64, // bottom of inlet channel = chamber_bottom - ch_len
         outlet_endpoint_y: f64, // top of outlet channel = chamber_top + ch_len
         valve_out_x: f64,
         valve_ret_x: f64,
-        dist_x: f64,           // distribution channel X offset
-        outlet_route_x: f64,   // outlet routing X offset
+        dist_x: f64,         // distribution channel X offset
+        outlet_route_x: f64, // outlet routing X offset
     }
 
     let mut valve_ports: Vec<ValvePort> = Vec::new();
@@ -239,13 +235,14 @@ fn main() {
     for (ci, &cx) in col_xs.iter().enumerate() {
         for (ri, &ry) in row_ys.iter().enumerate() {
             // Valve pair center: same layout as FCB16
-            let pair_center_x = cx + match ri {
-                0 => 7.5,
-                1 => 2.5,
-                2 => -2.5,
-                3 => -7.5,
-                _ => unreachable!(),
-            };
+            let pair_center_x = cx
+                + match ri {
+                    0 => 7.5,
+                    1 => 2.5,
+                    2 => -2.5,
+                    3 => -7.5,
+                    _ => unreachable!(),
+                };
 
             let out_x = pair_center_x - valve_pair_offset / 2.0; // pair_center - 1.0
             let ret_x = pair_center_x + valve_pair_offset / 2.0; // pair_center + 1.0
@@ -262,17 +259,18 @@ fn main() {
             let dist_x = pair_center_x;
 
             // Outlet routing offsets within column
-            let outlet_route_x = cx + match ri {
-                0 => -1.5,
-                1 => -0.5,
-                2 => 0.5,
-                3 => 1.5,
-                _ => unreachable!(),
-            };
+            let outlet_route_x = cx
+                + match ri {
+                    0 => -1.5,
+                    1 => -0.5,
+                    2 => 0.5,
+                    3 => 1.5,
+                    _ => unreachable!(),
+                };
 
             // Inlet endpoint: bottom of inlet channel (ch_len below chamber bottom edge)
             let inlet_endpoint_y = ry - chamber_l / 2.0 - ch_len; // ry - 5.0 - 3.0 = ry - 8.0
-            // Outlet endpoint: top of outlet channel (ch_len above chamber top edge)
+                                                                  // Outlet endpoint: top of outlet channel (ch_len above chamber top edge)
             let outlet_endpoint_y = ry + chamber_l / 2.0 + ch_len; // ry + 5.0 + 3.0 = ry + 8.0
 
             routes.push(Route {
@@ -320,13 +318,8 @@ fn main() {
             let inlet_end_y = chamber_bottom_y - ch_len;
             let inlet_center_y = (chamber_bottom_y + inlet_end_y) / 2.0;
 
-            let inlet_ch = centered_cube(
-                &format!("inlet_ch_{idx}"),
-                ch_w,
-                ch_len,
-                pocket_tool_h,
-            )
-            .translate(cx, inlet_center_y, pocket_z);
+            let inlet_ch = centered_cube(&format!("inlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h)
+                .translate(cx, inlet_center_y, pocket_z);
             board = board - inlet_ch;
         }
     }
@@ -340,13 +333,8 @@ fn main() {
             let outlet_end_y = chamber_top_y + ch_len;
             let outlet_center_y = (chamber_top_y + outlet_end_y) / 2.0;
 
-            let outlet_ch = centered_cube(
-                &format!("outlet_ch_{idx}"),
-                ch_w,
-                ch_len,
-                pocket_tool_h,
-            )
-            .translate(cx, outlet_center_y, pocket_z);
+            let outlet_ch = centered_cube(&format!("outlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h)
+                .translate(cx, outlet_center_y, pocket_z);
             board = board - outlet_ch;
         }
     }
@@ -358,8 +346,8 @@ fn main() {
     let bus_length = bus_x_end - bus_x_start;
     let bus_center_x = (bus_x_start + bus_x_end) / 2.0;
 
-    let bus_channel = centered_cube("bus", bus_length, bus_w, bus_tool_h)
-        .translate(bus_center_x, bus_y, bus_z);
+    let bus_channel =
+        centered_cube("bus", bus_length, bus_w, bus_tool_h).translate(bus_center_x, bus_y, bus_z);
     board = board - bus_channel;
 
     // ── 5. INPUT FEED CHANNELS (4) ──
@@ -367,13 +355,8 @@ fn main() {
     for (i, &iy) in input_ys.iter().enumerate() {
         let feed_len = (iy - bus_y).abs();
         let feed_center_y = (iy + bus_y) / 2.0;
-        let feed = centered_cube(
-            &format!("input_feed_{i}"),
-            bus_w,
-            feed_len,
-            bus_tool_h,
-        )
-        .translate(input_x, feed_center_y, bus_z);
+        let feed = centered_cube(&format!("input_feed_{i}"), bus_w, feed_len, bus_tool_h)
+            .translate(input_x, feed_center_y, bus_z);
         board = board - feed;
     }
 
@@ -463,7 +446,11 @@ fn main() {
                 out_w,
                 out_tool_h,
             )
-            .translate((r.col_x + r.outlet_route_x) / 2.0, r.outlet_endpoint_y, out_z);
+            .translate(
+                (r.col_x + r.outlet_route_x) / 2.0,
+                r.outlet_endpoint_y,
+                out_z,
+            );
             board = board - h_out;
         }
 
@@ -499,13 +486,9 @@ fn main() {
         let out_feed_len = (oy - collector_y).abs();
         if out_feed_len > 0.01 {
             let out_feed_center_y = (collector_y + oy) / 2.0;
-            let out_feed = centered_cube(
-                &format!("output_feed_{i}"),
-                out_w,
-                out_feed_len,
-                out_tool_h,
-            )
-            .translate(output_x, out_feed_center_y, out_z);
+            let out_feed =
+                centered_cube(&format!("output_feed_{i}"), out_w, out_feed_len, out_tool_h)
+                    .translate(output_x, out_feed_center_y, out_z);
             board = board - out_feed;
         }
     }
@@ -516,45 +499,27 @@ fn main() {
 
     // ── 9a. Input port through-holes (4) ──
     for (i, &iy) in input_ys.iter().enumerate() {
-        let hole = centered_cylinder(
-            &format!("input_port_{i}"),
-            input_dia / 2.0,
-            through_h,
-            32,
-        )
-        .translate(input_x, iy, 0.0);
+        let hole = centered_cylinder(&format!("input_port_{i}"), input_dia / 2.0, through_h, 32)
+            .translate(input_x, iy, 0.0);
         board = board - hole;
     }
 
     // ── 9b. Output port through-holes (2) ──
     for (i, &oy) in output_ys.iter().enumerate() {
-        let hole = centered_cylinder(
-            &format!("output_port_{i}"),
-            port_dia / 2.0,
-            through_h,
-            32,
-        )
-        .translate(output_x, oy, 0.0);
+        let hole = centered_cylinder(&format!("output_port_{i}"), port_dia / 2.0, through_h, 32)
+            .translate(output_x, oy, 0.0);
         board = board - hole;
     }
 
     // ── 9c. Valve port through-holes (32: 16 OUT + 16 RETURN) ──
     for (idx, vp) in valve_ports.iter().enumerate() {
-        let hole_out = centered_cylinder(
-            &format!("valve_out_{idx}"),
-            valve_dia / 2.0,
-            through_h,
-            32,
-        )
-        .translate(vp.out_x, vp.y, 0.0);
+        let hole_out =
+            centered_cylinder(&format!("valve_out_{idx}"), valve_dia / 2.0, through_h, 32)
+                .translate(vp.out_x, vp.y, 0.0);
 
-        let hole_ret = centered_cylinder(
-            &format!("valve_ret_{idx}"),
-            valve_dia / 2.0,
-            through_h,
-            32,
-        )
-        .translate(vp.ret_x, vp.y, 0.0);
+        let hole_ret =
+            centered_cylinder(&format!("valve_ret_{idx}"), valve_dia / 2.0, through_h, 32)
+                .translate(vp.ret_x, vp.y, 0.0);
 
         board = board - hole_out - hole_ret;
     }
@@ -564,20 +529,22 @@ fn main() {
     // Bottom alignment holes at Y = -64 (6mm from board bottom edge)
     // Y separation = 116mm for accurate cover plate registration
     let align_positions = [
-        (-(length / 2.0 - align_inset), -(width / 2.0 - align_inset)),                    // BL: (-84, -64)
-        (-(length / 2.0 - align_inset), width / 2.0 - connector_strip - align_inset),     // TL: (-84, +52)
-        (length / 2.0 - align_inset, -(width / 2.0 - align_inset)),                       // BR: (+84, -64)
-        (length / 2.0 - align_inset, width / 2.0 - connector_strip - align_inset),        // TR: (+84, +52)
+        (-(length / 2.0 - align_inset), -(width / 2.0 - align_inset)), // BL: (-84, -64)
+        (
+            -(length / 2.0 - align_inset),
+            width / 2.0 - connector_strip - align_inset,
+        ), // TL: (-84, +52)
+        (length / 2.0 - align_inset, -(width / 2.0 - align_inset)),    // BR: (+84, -64)
+        (
+            length / 2.0 - align_inset,
+            width / 2.0 - connector_strip - align_inset,
+        ), // TR: (+84, +52)
     ];
 
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
-        let align_hole = centered_cylinder(
-            &format!("align_{i}"),
-            align_dia / 2.0,
-            align_tool_h,
-            24,
-        )
-        .translate(ax, ay, align_z);
+        let align_hole =
+            centered_cylinder(&format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
+                .translate(ax, ay, align_z);
         board = board - align_hole;
     }
 
@@ -638,9 +605,7 @@ fn main() {
     // EXPORT STL FILES
     // ══════════════════════════════════════════════════════════════
 
-    board
-        .write_stl("output/monolithic_board_16ch.stl")
-        .unwrap();
+    board.write_stl("output/monolithic_board_16ch.stl").unwrap();
     cover_plate
         .write_stl("output/monolithic_board_16ch_cover.stl")
         .unwrap();
@@ -679,21 +644,36 @@ fn main() {
 
     // Input feed channels (input ports to bus)
     for &iy in &input_ys {
-        dxf.add_rectangle(bus_w, (iy - bus_y).abs(), input_x + (0.0 - input_x) / 2.0, (iy + bus_y) / 2.0);
+        dxf.add_rectangle(
+            bus_w,
+            (iy - bus_y).abs(),
+            input_x + (0.0 - input_x) / 2.0,
+            (iy + bus_y) / 2.0,
+        );
     }
 
     // Distribution channels (bus to chamber inlets, vertical segments)
     for r in &routes {
         let dist_top = r.inlet_endpoint_y;
         let dist_bot = bus_y;
-        dxf.add_rectangle(dist_w, (dist_top - dist_bot).abs(), r.dist_x, (dist_top + dist_bot) / 2.0);
+        dxf.add_rectangle(
+            dist_w,
+            (dist_top - dist_bot).abs(),
+            r.dist_x,
+            (dist_top + dist_bot) / 2.0,
+        );
     }
 
     // Outlet collection channels (chamber outlets to collector)
     for r in &routes {
         let out_bot = r.outlet_endpoint_y;
         let out_top = collector_y;
-        dxf.add_rectangle(out_w, (out_top - out_bot).abs(), r.outlet_route_x, (out_top + out_bot) / 2.0);
+        dxf.add_rectangle(
+            out_w,
+            (out_top - out_bot).abs(),
+            r.outlet_route_x,
+            (out_top + out_bot) / 2.0,
+        );
     }
 
     // Collector manifold (horizontal)
@@ -746,7 +726,12 @@ fn main() {
     };
 
     vcad::export::export_glb(&board, &pmma_clear, "output/monolithic_board_16ch.glb").unwrap();
-    vcad::export::export_glb(&cover_plate, &pmma_clear, "output/monolithic_board_16ch_cover.glb").unwrap();
+    vcad::export::export_glb(
+        &cover_plate,
+        &pmma_clear,
+        "output/monolithic_board_16ch_cover.glb",
+    )
+    .unwrap();
 
     // ══════════════════════════════════════════════════════════════
     // EXPORT STEP (VIA stltostp -- STL-TO-STEP BREP CONVERSION)
@@ -757,8 +742,14 @@ fn main() {
     let stltostp = std::path::Path::new(env!("HOME")).join(".local/bin/stltostp");
     if stltostp.exists() {
         for (stl, step) in [
-            ("output/monolithic_board_16ch.stl", "output/monolithic_board_16ch.step"),
-            ("output/monolithic_board_16ch_cover.stl", "output/monolithic_board_16ch_cover.step"),
+            (
+                "output/monolithic_board_16ch.stl",
+                "output/monolithic_board_16ch.step",
+            ),
+            (
+                "output/monolithic_board_16ch_cover.stl",
+                "output/monolithic_board_16ch_cover.step",
+            ),
         ] {
             let status = std::process::Command::new(&stltostp)
                 .arg(stl)
@@ -780,11 +771,15 @@ fn main() {
 
     let mut d = String::new();
 
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  TECHNICAL DRAWING -- MONOLITHIC 16-CHAMBER MICROFLUIDIC BOARD\n");
     d.push_str("  AAV Selectivity Screening Platform\n");
     d.push_str("  LaminarForge Nonprofit\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  ***  MONOLITHIC DESIGN -- No separate chip, no O-rings, no clamping  ***\n");
     d.push_str("\n");
@@ -797,9 +792,13 @@ fn main() {
     d.push_str("\n");
 
     // Section 1: Overall Dimensions
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  1. OVERALL DIMENSIONS\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  PART 1 -- MAIN BOARD (all features milled into top face)\n");
     d.push_str(&format!("    Length (X):     {:.0} mm\n", length));
@@ -807,28 +806,48 @@ fn main() {
     d.push_str(&format!("    Thickness (Z):  {:.1} mm\n", thickness));
     d.push_str("    Material:       Cast PMMA (acrylic), optically clear\n");
     d.push_str("    Z range:        -1.5 to +1.5 mm\n");
-    d.push_str("    Features:       Chambers, channels, bus, manifold, through-holes -- all on top face\n");
+    d.push_str(
+        "    Features:       Chambers, channels, bus, manifold, through-holes -- all on top face\n",
+    );
     d.push_str("\n");
     d.push_str("  PART 2 -- COVER PLATE\n");
     d.push_str(&format!("    Length (X):     {:.0} mm\n", length));
-    d.push_str(&format!("    Width  (Y):     {:.0} mm (board is {:.0}mm; {:.0}mm connector strip exposed at top)\n", cover_width, width, connector_strip));
+    d.push_str(&format!(
+        "    Width  (Y):     {:.0} mm (board is {:.0}mm; {:.0}mm connector strip exposed at top)\n",
+        cover_width, width, connector_strip
+    ));
     d.push_str(&format!("    Thickness (Z):  {:.1} mm\n", cover_thickness));
     d.push_str("    Material:       Cast PMMA (acrylic), optically clear\n");
     d.push_str("    Y offset:       Bottom-aligned with board (Y=-70), top edge at Y=+58\n");
-    d.push_str("    Features:       4 alignment pin through-holes + 4 sensor PCB mounting through-holes\n");
+    d.push_str(
+        "    Features:       4 alignment pin through-holes + 4 sensor PCB mounting through-holes\n",
+    );
     d.push_str("\n");
     d.push_str("  ASSEMBLY:\n");
     d.push_str("    1. CNC mill main board (all features on top face)\n");
-    d.push_str("    2. Gold electrode deposition (sputter coat with shadow mask: 10nm Ti + 100nm Au)\n");
-    d.push_str("    3. Bond cover plate via chloroform vapor-assisted thermal bonding (30s exposure)\n");
+    d.push_str(
+        "    2. Gold electrode deposition (sputter coat with shadow mask: 10nm Ti + 100nm Au)\n",
+    );
+    d.push_str(
+        "    3. Bond cover plate via chloroform vapor-assisted thermal bonding (30s exposure)\n",
+    );
     d.push_str("       Simultaneously smooths milling roughness (~153nm -> ~39nm Ra) and bonds\n");
-    d.push_str("       without collapsing the wide shallow chambers (3mm W x 0.2mm D, aspect 15:1).\n");
+    d.push_str(
+        "       without collapsing the wide shallow chambers (3mm W x 0.2mm D, aspect 15:1).\n",
+    );
     d.push_str("       DO NOT use liquid Weld-On 3 -- risk of capillary wicking into chambers.\n");
-    d.push_str("       Cover plate is 12mm shorter (Y) to expose electrode connector pads at top edge.\n");
-    d.push_str("    4. Mount sensor PCB on top of cover plate (M2 nylon screws, 4 mounting points)\n");
+    d.push_str(
+        "       Cover plate is 12mm shorter (Y) to expose electrode connector pads at top edge.\n",
+    );
+    d.push_str(
+        "    4. Mount sensor PCB on top of cover plate (M2 nylon screws, 4 mounting points)\n",
+    );
     d.push_str("    5. Connect sensor PCB to electrode pads via FFC (flat flex cable)\n");
     d.push_str("    Alignment via 4 pin holes (2 bottom corners + 2 near cover plate top edge).\n");
-    d.push_str(&format!("    Total assembled thickness: {:.1} mm (board + cover, excludes sensor PCB)\n", thickness + cover_thickness));
+    d.push_str(&format!(
+        "    Total assembled thickness: {:.1} mm (board + cover, excludes sensor PCB)\n",
+        thickness + cover_thickness
+    ));
     d.push_str("\n");
     d.push_str("  KEY DIFFERENCE FROM OLD DESIGN:\n");
     d.push_str("    This monolithic board replaces both the 16-chamber chip (127.76x85.48x3mm)\n");
@@ -839,13 +858,23 @@ fn main() {
     d.push_str("\n");
 
     // Section 2: Chamber Layout
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  2. CHAMBER LAYOUT -- 4x4 GRID\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  Grid:           4 columns (X) x 4 rows (Y)\n");
-    d.push_str(&format!("  Column spacing: {:.2} mm center-to-center\n", col_spacing));
-    d.push_str(&format!("  Row spacing:    {:.2} mm center-to-center\n", row_spacing));
+    d.push_str(&format!(
+        "  Column spacing: {:.2} mm center-to-center\n",
+        col_spacing
+    ));
+    d.push_str(&format!(
+        "  Row spacing:    {:.2} mm center-to-center\n",
+        row_spacing
+    ));
     d.push_str("\n");
     d.push_str("  Column X centers:  -37.50, -12.50, +12.50, +37.50 mm\n");
     d.push_str("  Row Y centers:     +27.00, +9.00, -9.00, -27.00 mm\n");
@@ -853,7 +882,10 @@ fn main() {
     d.push_str("  Chamber dimensions (each identical):\n");
     d.push_str(&format!("    Width  (X):     {:.2} mm\n", chamber_w));
     d.push_str(&format!("    Length (Y):    {:.2} mm\n", chamber_l));
-    d.push_str(&format!("    Depth  (Z):     {:.2} mm (200 um) -- milled pocket from top face\n", chamber_d));
+    d.push_str(&format!(
+        "    Depth  (Z):     {:.2} mm (200 um) -- milled pocket from top face\n",
+        chamber_d
+    ));
     d.push_str("    Corner radius:  0.50 mm minimum (natural end mill radius)\n");
     d.push_str("\n");
     d.push_str("  Chamber center coordinates:\n");
@@ -863,75 +895,145 @@ fn main() {
     for ri in 0..num_rows {
         for ci in 0..num_cols {
             let idx = ri * num_cols + ci;
-            d.push_str(&format!("    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}\n",
-                idx + 1, ri, ci, col_xs[ci], row_ys[ri]));
+            d.push_str(&format!(
+                "    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}\n",
+                idx + 1,
+                ri,
+                ci,
+                col_xs[ci],
+                row_ys[ri]
+            ));
         }
     }
     d.push_str("\n");
 
     // Section 3: Chamber Allocation Table
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  3. CHAMBER ALLOCATION TABLE\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("    Ch  | Row | Col | Cell Type / Purpose\n");
     d.push_str("    ----+-----+-----+----------------------------------------------\n");
     for (i, label) in CHAMBER_LABELS.iter().enumerate() {
         let ri = i / num_cols;
         let ci = i % num_cols;
-        d.push_str(&format!("    {:2}  |  {}  |  {}  | {}\n", i + 1, ri, ci, label));
+        d.push_str(&format!(
+            "    {:2}  |  {}  |  {}  | {}\n",
+            i + 1,
+            ri,
+            ci,
+            label
+        ));
     }
     d.push_str("\n");
     d.push_str("  Purpose: Expose all 16 chambers simultaneously to the same AAV library\n");
     d.push_str("  to assess which serotype variants preferentially transduce each cell type.\n");
-    d.push_str("  DRG sensory neurons are the primary target; all others are off-target tissues.\n");
+    d.push_str(
+        "  DRG sensory neurons are the primary target; all others are off-target tissues.\n",
+    );
     d.push_str("\n");
 
     // Section 4: Channel Dimensions
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  4. CHANNEL DIMENSIONS\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  All channels milled into top face of main board only.\n");
     d.push_str("  Sealed by bonding cover plate on top.\n");
     d.push_str("\n");
     d.push_str("  Channel Type               Width (mm)   Depth (mm)   Notes\n");
-    d.push_str("  -------------------------  ----------   ----------   -------------------------\n");
-    d.push_str(&format!("  Bus channel                  {:.1}          {:.1}         Shared feed, 500x300 um\n", bus_w, bus_d));
-    d.push_str(&format!("  Input feed channels          {:.1}          {:.1}         Vertical, input port to bus\n", bus_w, bus_d));
-    d.push_str(&format!("  Distribution channels        {:.1}          {:.1}         Bus to valve to inlet\n", dist_w, dist_d));
-    d.push_str(&format!("  Chamber inlet channels       {:.1}          {:.1}         {:.0}mm, Y-direction\n", ch_w, ch_d, ch_len));
-    d.push_str(&format!("  Culture chambers             {:.1}(W)       {:.1}         3mm x 10mm pockets\n", chamber_w, chamber_d));
-    d.push_str(&format!("  Chamber outlet channels      {:.1}          {:.1}         {:.0}mm, Y-direction\n", ch_w, ch_d, ch_len));
+    d.push_str(
+        "  -------------------------  ----------   ----------   -------------------------\n",
+    );
+    d.push_str(&format!(
+        "  Bus channel                  {:.1}          {:.1}         Shared feed, 500x300 um\n",
+        bus_w, bus_d
+    ));
+    d.push_str(&format!(
+        "  Input feed channels          {:.1}          {:.1}         Vertical, input port to bus\n",
+        bus_w, bus_d
+    ));
+    d.push_str(&format!(
+        "  Distribution channels        {:.1}          {:.1}         Bus to valve to inlet\n",
+        dist_w, dist_d
+    ));
+    d.push_str(&format!(
+        "  Chamber inlet channels       {:.1}          {:.1}         {:.0}mm, Y-direction\n",
+        ch_w, ch_d, ch_len
+    ));
+    d.push_str(&format!(
+        "  Culture chambers             {:.1}(W)       {:.1}         3mm x 10mm pockets\n",
+        chamber_w, chamber_d
+    ));
+    d.push_str(&format!(
+        "  Chamber outlet channels      {:.1}          {:.1}         {:.0}mm, Y-direction\n",
+        ch_w, ch_d, ch_len
+    ));
     d.push_str(&format!("  Outlet collection channels   {:.1}          {:.1}         Vertical, outlet to collector\n", out_w, out_d));
-    d.push_str(&format!("  Collector manifold           {:.1}          {:.1}         Horizontal, to output ports\n", out_w, out_d));
-    d.push_str(&format!("  Output feed channels         {:.1}          {:.1}         Collector to output port\n", out_w, out_d));
+    d.push_str(&format!(
+        "  Collector manifold           {:.1}          {:.1}         Horizontal, to output ports\n",
+        out_w, out_d
+    ));
+    d.push_str(&format!(
+        "  Output feed channels         {:.1}          {:.1}         Collector to output port\n",
+        out_w, out_d
+    ));
     d.push_str("\n");
     d.push_str("  Inlet channels (16 total):\n");
-    d.push_str(&format!("    Width: {:.2} mm, Depth: {:.2} mm, Length: {:.2} mm\n", ch_w, ch_d, ch_len));
+    d.push_str(&format!(
+        "    Width: {:.2} mm, Depth: {:.2} mm, Length: {:.2} mm\n",
+        ch_w, ch_d, ch_len
+    ));
     d.push_str("    Route: Straight Y-direction from chamber bottom edge downward\n");
-    d.push_str("    Connects DIRECTLY to distribution channel (channel junction, no through-hole)\n");
+    d.push_str(
+        "    Connects DIRECTLY to distribution channel (channel junction, no through-hole)\n",
+    );
     d.push_str("\n");
     d.push_str("  Outlet channels (16 total):\n");
-    d.push_str(&format!("    Width: {:.2} mm, Depth: {:.2} mm, Length: {:.2} mm\n", ch_w, ch_d, ch_len));
+    d.push_str(&format!(
+        "    Width: {:.2} mm, Depth: {:.2} mm, Length: {:.2} mm\n",
+        ch_w, ch_d, ch_len
+    ));
     d.push_str("    Route: Straight Y-direction from chamber top edge upward\n");
-    d.push_str("    Connects DIRECTLY to outlet collection channel (channel junction, no through-hole)\n");
+    d.push_str(
+        "    Connects DIRECTLY to outlet collection channel (channel junction, no through-hole)\n",
+    );
     d.push_str("\n");
 
     // Section 5: Through-Hole Coordinates
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  5. THROUGH-HOLE COORDINATES (38 total)\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
-    d.push_str(&format!("  All through-holes: {:.2} mm diameter, full thickness ({:.1} mm)\n", port_dia, thickness));
+    d.push_str(&format!(
+        "  All through-holes: {:.2} mm diameter, full thickness ({:.1} mm)\n",
+        port_dia, thickness
+    ));
     d.push_str("  Compatible with 1/16\" OD barb fittings\n");
     d.push_str("\n");
     d.push_str("  INPUT PORTS (4, left edge):\n");
     d.push_str("    Port  |  Label   |    X (mm)   |    Y (mm)\n");
     d.push_str("    ------+----------+-------------+-------------\n");
     for (i, &iy) in input_ys.iter().enumerate() {
-        d.push_str(&format!("      {}   | {:8} |   {:+7.2}   |   {:+7.2}\n",
-            i + 1, input_labels[i], input_x, iy));
+        d.push_str(&format!(
+            "      {}   | {:8} |   {:+7.2}   |   {:+7.2}\n",
+            i + 1,
+            input_labels[i],
+            input_x,
+            iy
+        ));
     }
     d.push_str("\n");
 
@@ -939,8 +1041,13 @@ fn main() {
     d.push_str("    Port  |  Label   |    X (mm)   |    Y (mm)\n");
     d.push_str("    ------+----------+-------------+-------------\n");
     for (i, &oy) in output_ys.iter().enumerate() {
-        d.push_str(&format!("      {}   | {:8} |   {:+7.2}   |   {:+7.2}\n",
-            i + 1, output_labels[i], output_x, oy));
+        d.push_str(&format!(
+            "      {}   | {:8} |   {:+7.2}   |   {:+7.2}\n",
+            i + 1,
+            output_labels[i],
+            output_x,
+            oy
+        ));
     }
     d.push_str("\n");
 
@@ -950,8 +1057,10 @@ fn main() {
     d.push_str("    ----+-----+-----+-----------+-----------\n");
     for (_i, vp) in valve_ports.iter().enumerate() {
         let ch_num = vp.row * num_cols + vp.col + 1; // actual chamber number (row-first)
-        d.push_str(&format!("    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}\n",
-            ch_num, vp.col, vp.row, vp.out_x, vp.ret_x));
+        d.push_str(&format!(
+            "    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}\n",
+            ch_num, vp.col, vp.row, vp.out_x, vp.ret_x
+        ));
     }
     d.push_str("\n");
     d.push_str("  TOTAL THROUGH-HOLES: 38\n");
@@ -963,39 +1072,71 @@ fn main() {
     d.push_str("\n");
 
     // Section 6: Bus and Manifold Layout
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  6. BUS AND MANIFOLD LAYOUT\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str(&format!("  SHARED BUS CHANNEL:\n"));
     d.push_str(&format!("    Horizontal at Y = {:.1} mm\n", bus_y));
-    d.push_str(&format!("    X range: {:.1} to {:.1} mm (length {:.1} mm)\n",
-        bus_x_start, bus_x_end, bus_length));
-    d.push_str(&format!("    Dimensions: {:.1}mm W x {:.1}mm D\n", bus_w, bus_d));
+    d.push_str(&format!(
+        "    X range: {:.1} to {:.1} mm (length {:.1} mm)\n",
+        bus_x_start, bus_x_end, bus_length
+    ));
+    d.push_str(&format!(
+        "    Dimensions: {:.1}mm W x {:.1}mm D\n",
+        bus_w, bus_d
+    ));
     d.push_str("\n");
     d.push_str("  Input feed channels (4 vertical, input port to bus):\n");
     for (i, &iy) in input_ys.iter().enumerate() {
-        d.push_str(&format!("    {} ({}): X = {:.1}, Y = {:.1} to {:.1} (length {:.1}mm)\n",
-            i + 1, input_labels[i], input_x, iy, bus_y, (iy - bus_y).abs()));
+        d.push_str(&format!(
+            "    {} ({}): X = {:.1}, Y = {:.1} to {:.1} (length {:.1}mm)\n",
+            i + 1,
+            input_labels[i],
+            input_x,
+            iy,
+            bus_y,
+            (iy - bus_y).abs()
+        ));
     }
     d.push_str("\n");
     d.push_str(&format!("  COLLECTOR MANIFOLD:\n"));
     d.push_str(&format!("    Horizontal at Y = {:.1} mm\n", collector_y));
-    d.push_str(&format!("    X range: {:.1} to {:.1} mm (length {:.1} mm)\n",
-        collector_x_start, collector_x_end, collector_len));
-    d.push_str(&format!("    Dimensions: {:.1}mm W x {:.1}mm D\n", out_w, out_d));
+    d.push_str(&format!(
+        "    X range: {:.1} to {:.1} mm (length {:.1} mm)\n",
+        collector_x_start, collector_x_end, collector_len
+    ));
+    d.push_str(&format!(
+        "    Dimensions: {:.1}mm W x {:.1}mm D\n",
+        out_w, out_d
+    ));
     d.push_str("\n");
     d.push_str("  Output feed channels (2 vertical, collector to output ports):\n");
     for (i, &oy) in output_ys.iter().enumerate() {
-        d.push_str(&format!("    {} ({}): X = {:.1}, Y = {:.1} to {:.1} (length {:.1}mm)\n",
-            i + 1, output_labels[i], output_x, collector_y, oy, (collector_y - oy).abs()));
+        d.push_str(&format!(
+            "    {} ({}): X = {:.1}, Y = {:.1} to {:.1} (length {:.1}mm)\n",
+            i + 1,
+            output_labels[i],
+            output_x,
+            collector_y,
+            oy,
+            (collector_y - oy).abs()
+        ));
     }
     d.push_str("\n");
 
     // Section 7: Distribution Routing
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  7. DISTRIBUTION ROUTING\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  DISTRIBUTION PATH (per chamber):\n");
     d.push_str("    1. Bus tap: horizontal at bus_y from bus to distribution X offset\n");
@@ -1025,17 +1166,28 @@ fn main() {
     d.push_str("\n");
 
     // Section 8: Alignment Pin Positions
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  8. ALIGNMENT PIN HOLES\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  4 alignment pin holes for cover plate registration.\n");
     d.push_str("  Bottom 2 at Y = -64 (6mm from board bottom edge).\n");
-    d.push_str("  Top 2 at Y = +52 (6mm from cover plate top edge at +58, inside cover plate area).\n");
-    d.push_str("  NOTE: Top holes moved inward from board corners to accommodate 12mm connector strip.\n");
+    d.push_str(
+        "  Top 2 at Y = +52 (6mm from cover plate top edge at +58, inside cover plate area).\n",
+    );
+    d.push_str(
+        "  NOTE: Top holes moved inward from board corners to accommodate 12mm connector strip.\n",
+    );
     d.push_str("\n");
     d.push_str(&format!("  Hole diameter:  {:.2} mm\n", align_dia));
-    d.push_str(&format!("  Hole depth:     {:.2} mm (blind hole, from top face only)\n", align_depth));
+    d.push_str(&format!(
+        "  Hole depth:     {:.2} mm (blind hole, from top face only)\n",
+        align_depth
+    ));
     d.push_str("  Inset:          6.00 mm from nearest edge (board edge for bottom, cover plate edge for top)\n");
     d.push_str("  Pin material:   1.00 mm dia stainless steel dowel pins\n");
     d.push_str("\n");
@@ -1044,14 +1196,23 @@ fn main() {
     d.push_str("    Align |    X (mm)   |    Y (mm)\n");
     d.push_str("    ------+-------------+-------------\n");
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
-        d.push_str(&format!("      {}   |   {:+7.2}   |   {:+7.2}\n", i + 1, ax, ay));
+        d.push_str(&format!(
+            "      {}   |   {:+7.2}   |   {:+7.2}\n",
+            i + 1,
+            ax,
+            ay
+        ));
     }
     d.push_str("\n");
 
     // Section 9: Tolerances
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  9. TOLERANCES\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  Dimension                       Tolerance       Notes\n");
     d.push_str("  ----------------------------    -----------     -------------------------\n");
@@ -1082,9 +1243,13 @@ fn main() {
     d.push_str("\n");
 
     // Section 10: Material Specification
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  10. MATERIAL SPECIFICATION\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  Material:       Cast PMMA (polymethyl methacrylate), also known as acrylic\n");
     d.push_str("  Grade:          Cell culture grade, optically clear\n");
@@ -1103,19 +1268,27 @@ fn main() {
     d.push_str("    - Immediately press cover plate onto board, apply uniform pressure\n");
     d.push_str("    - Bond at 50-60C under 0.5 MPa for 10-15 minutes\n");
     d.push_str("    - Simultaneously smooths milling roughness (~153nm -> ~39nm Ra)\n");
-    d.push_str("    - Preserves channel integrity (no collapse of 3mm wide x 0.2mm deep chambers)\n");
+    d.push_str(
+        "    - Preserves channel integrity (no collapse of 3mm wide x 0.2mm deep chambers)\n",
+    );
     d.push_str("    - DO NOT exceed 30s exposure -- causes channel swelling/distortion\n");
     d.push_str("    - DO NOT use liquid Weld-On 3 -- capillary wicking fills shallow channels\n");
     d.push_str("    - Ref: Ahmed et al., Sci Rep 14:2831 (2024); Ogilvie et al. (2010)\n");
     d.push_str("\n");
 
     // Section 11: Machinist Notes
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  11. MACHINIST NOTES\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  End mills required:\n");
-    d.push_str("    - 0.5 mm flat end mill -- bus, distribution, inlet/outlet, collection channels\n");
+    d.push_str(
+        "    - 0.5 mm flat end mill -- bus, distribution, inlet/outlet, collection channels\n",
+    );
     d.push_str("    - 3.0 mm flat end mill -- chamber pockets (or use 0.5mm in raster)\n");
     d.push_str("    - 1.5 mm drill bit -- all 38 port through-holes\n");
     d.push_str("    - 1.0 mm drill bit -- alignment pin holes (blind, 0.5mm deep)\n");
@@ -1145,7 +1318,9 @@ fn main() {
     d.push_str("    - Use air blast or mist coolant (no flood -- swells PMMA)\n");
     d.push_str("\n");
     d.push_str("  CRITICAL GEOMETRY NOTES:\n");
-    d.push_str("    - Inter-row wall: 2.0mm solid PMMA between adjacent rows' channel endpoints.\n");
+    d.push_str(
+        "    - Inter-row wall: 2.0mm solid PMMA between adjacent rows' channel endpoints.\n",
+    );
     d.push_str("      Row feature span = 3mm inlet + 10mm chamber + 3mm outlet = 16mm.\n");
     d.push_str("      Row spacing = 18mm. Wall = 18 - 16 = 2mm. DO NOT increase channel length.\n");
     d.push_str("    - Outlet collection channels within each column have 0.5mm walls between\n");
@@ -1161,9 +1336,13 @@ fn main() {
     d.push_str("\n");
 
     // Section 12: Key Difference Callout
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  12. MONOLITHIC DESIGN -- KEY DIFFERENCES FROM OLD TWO-PIECE DESIGN\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  OLD DESIGN (separate chip + FCB):\n");
     d.push_str("    - 16-chamber chip: 127.76mm x 85.48mm x 3mm + 1mm cover = 4mm\n");
@@ -1175,14 +1354,20 @@ fn main() {
     d.push_str("    - Total stack height: ~13mm\n");
     d.push_str("\n");
     d.push_str("  NEW DESIGN (monolithic board + integrated sensors):\n");
-    d.push_str(&format!("    - Main board: {:.0}mm x {:.0}mm x {:.0}mm\n", length, width, thickness));
+    d.push_str(&format!(
+        "    - Main board: {:.0}mm x {:.0}mm x {:.0}mm\n",
+        length, width, thickness
+    ));
     d.push_str(&format!("    - Cover plate: {:.0}mm x {:.0}mm x {:.0}mm (12mm shorter for electrode connector strip)\n", length, cover_width, cover_thickness));
     d.push_str("    - Gold electrodes: 32 TEER pads + traces (Ti/Au sputter-coated)\n");
     d.push_str("    - Sensor PCB: impedance + fluorescence, mounts on cover plate\n");
     d.push_str("    - 0 O-ring grooves\n");
     d.push_str("    - 38 through-holes + 8 blind holes (4 align + 4 sensor mount)\n");
     d.push_str("    - 2 PMMA parts + 1 sensor PCB\n");
-    d.push_str(&format!("    - Total stack height: {:.0}mm (board + cover, excl. sensor PCB)\n", thickness + cover_thickness));
+    d.push_str(&format!(
+        "    - Total stack height: {:.0}mm (board + cover, excl. sensor PCB)\n",
+        thickness + cover_thickness
+    ));
     d.push_str("\n");
     d.push_str("  BENEFITS:\n");
     d.push_str("    - 50% fewer through-holes (38 vs 76)\n");
@@ -1194,9 +1379,13 @@ fn main() {
     d.push_str("    - Lower manufacturing cost and faster assembly\n");
     d.push_str("\n");
     // Section 13: Electrode Layout
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  13. GOLD ELECTRODE LAYOUT (TEER / Impedance Sensing)\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  PURPOSE: Measure transepithelial electrical resistance (TEER) and impedance\n");
     d.push_str("  across cell layers in each chamber. Resistance increases as cells grow and\n");
@@ -1208,34 +1397,56 @@ fn main() {
     d.push_str("  NOTE: Gold is unaffected by chloroform vapor bonding step.\n");
     d.push_str("\n");
     d.push_str("  ELECTRODES PER CHAMBER: 2 (one near inlet end, one near outlet end)\n");
-    d.push_str("    Electrode A (inlet):  1.0mm x 2.0mm pad, centered in chamber, 1.5mm from inlet edge\n");
+    d.push_str(
+        "    Electrode A (inlet):  1.0mm x 2.0mm pad, centered in chamber, 1.5mm from inlet edge\n",
+    );
     d.push_str("    Electrode B (outlet): 1.0mm x 2.0mm pad, centered in chamber, 1.5mm from outlet edge\n");
     d.push_str("    Total: 32 electrodes (16 chambers x 2) + 1 common ground = 33 connections\n");
     d.push_str("\n");
     d.push_str("  ELECTRODE POSITIONS (within each chamber):\n");
     d.push_str("    Chamber dimensions: 3.0mm W (X) x 10.0mm L (Y) x 0.2mm D\n");
     d.push_str("    Electrode A center: chamber_center_X, chamber_center_Y - 3.5mm (inlet side)\n");
-    d.push_str("    Electrode B center: chamber_center_X, chamber_center_Y + 3.5mm (outlet side)\n");
+    d.push_str(
+        "    Electrode B center: chamber_center_X, chamber_center_Y + 3.5mm (outlet side)\n",
+    );
     d.push_str("\n");
     for ri in 0..num_rows {
         for ci in 0..num_cols {
             let idx = ri * num_cols + ci;
             let cx = col_xs[ci];
             let ry = row_ys[ri];
-            d.push_str(&format!("    Ch{:2} [{},{}]: Elec A ({:+7.2}, {:+7.2})  Elec B ({:+7.2}, {:+7.2})\n",
-                idx + 1, ri, ci, cx, ry - 3.5, cx, ry + 3.5));
+            d.push_str(&format!(
+                "    Ch{:2} [{},{}]: Elec A ({:+7.2}, {:+7.2})  Elec B ({:+7.2}, {:+7.2})\n",
+                idx + 1,
+                ri,
+                ci,
+                cx,
+                ry - 3.5,
+                cx,
+                ry + 3.5
+            ));
         }
     }
     d.push_str("\n");
     d.push_str("  TRACE ROUTING:\n");
-    d.push_str("    Traces run on the top (milled) face of the main board, between milled features.\n");
-    d.push_str("    Each trace routes NORTH from its chamber to the connector strip (Y = +58 to +70).\n");
-    d.push_str("    Trace width: 200um (0.2mm). Trace spacing: >= 200um between adjacent traces.\n");
+    d.push_str(
+        "    Traces run on the top (milled) face of the main board, between milled features.\n",
+    );
+    d.push_str(
+        "    Each trace routes NORTH from its chamber to the connector strip (Y = +58 to +70).\n",
+    );
+    d.push_str(
+        "    Trace width: 200um (0.2mm). Trace spacing: >= 200um between adjacent traces.\n",
+    );
     d.push_str("    Traces are ~100nm thick (flat on surface, do not affect channel geometry).\n");
     d.push_str("\n");
     d.push_str("  CONNECTOR STRIP (EXPOSED NORTH EDGE):\n");
-    d.push_str(&format!("    Location: Y = +{:.0} to +{:.0} (top {:.0}mm of board, not covered by cover plate)\n",
-        width / 2.0 - connector_strip, width / 2.0, connector_strip));
+    d.push_str(&format!(
+        "    Location: Y = +{:.0} to +{:.0} (top {:.0}mm of board, not covered by cover plate)\n",
+        width / 2.0 - connector_strip,
+        width / 2.0,
+        connector_strip
+    ));
     d.push_str("    33 edge pads at 1.0mm pitch, centered on board X axis\n");
     d.push_str("    Pad dimensions: 1.0mm x 3.0mm each\n");
     d.push_str("    Total connector width: 33mm (centered at X = 0)\n");
@@ -1246,20 +1457,38 @@ fn main() {
     for i in 0..16 {
         let ri = i / num_cols;
         let ci = i % num_cols;
-        d.push_str(&format!("    Pad {:2}: Ch{:2} Electrode A (inlet)   [{},{}]\n", i * 2 + 2, i + 1, ri, ci));
-        d.push_str(&format!("    Pad {:2}: Ch{:2} Electrode B (outlet)  [{},{}]\n", i * 2 + 3, i + 1, ri, ci));
+        d.push_str(&format!(
+            "    Pad {:2}: Ch{:2} Electrode A (inlet)   [{},{}]\n",
+            i * 2 + 2,
+            i + 1,
+            ri,
+            ci
+        ));
+        d.push_str(&format!(
+            "    Pad {:2}: Ch{:2} Electrode B (outlet)  [{},{}]\n",
+            i * 2 + 3,
+            i + 1,
+            ri,
+            ci
+        ));
     }
     d.push_str("\n");
     d.push_str("  SHADOW MASK:\n");
     d.push_str("    Material: Kapton film (0.05mm thick) or laser-cut stainless steel\n");
-    d.push_str("    Must have cutouts for: 32 electrode pads, 32 traces, 33 edge pads, 1 ground plane\n");
+    d.push_str(
+        "    Must have cutouts for: 32 electrode pads, 32 traces, 33 edge pads, 1 ground plane\n",
+    );
     d.push_str("    Registration: Use same 4 alignment pin holes as cover plate\n");
     d.push_str("\n");
 
     // Section 14: Sensor Integration
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  14. SENSOR PCB INTEGRATION\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("\n");
     d.push_str("  SENSOR PCB: Sits on top of cover plate, aligned with chamber grid.\n");
     d.push_str("  Provides impedance sensing (via gold electrodes) and fluorescence detection.\n");
@@ -1268,21 +1497,34 @@ fn main() {
     d.push_str("    4 blind holes on main board (M2, 1.0mm deep) with matching cover plate through-holes\n");
     d.push_str("    Positions (X, Y from board center):\n");
     for (i, &(sx, sy)) in sensor_mount_positions.iter().enumerate() {
-        d.push_str(&format!("      Mount {}: ({:+.1}, {:+.1})\n", i + 1, sx, sy));
+        d.push_str(&format!(
+            "      Mount {}: ({:+.1}, {:+.1})\n",
+            i + 1,
+            sx,
+            sy
+        ));
     }
     d.push_str("    Fasteners: M2 nylon screws (non-conductive, biocompatible)\n");
     d.push_str("\n");
     d.push_str("  IMPEDANCE SENSING:\n");
     d.push_str("    IC: AD5933 impedance network analyzer (~$15, 1kHz-100kHz sweep)\n");
     d.push_str("    Multiplexer: CD74HC4067 16-channel analog MUX (x2 for 32 electrodes)\n");
-    d.push_str("    Connection: FFC cable from sensor PCB to board edge pads (33-pin, 1.0mm pitch)\n");
+    d.push_str(
+        "    Connection: FFC cable from sensor PCB to board edge pads (33-pin, 1.0mm pitch)\n",
+    );
     d.push_str("    Measurement: AC impedance at multiple frequencies per chamber\n");
     d.push_str("    Read rate: All 16 chambers in < 30 seconds\n");
     d.push_str("\n");
     d.push_str("  FLUORESCENCE DETECTION:\n");
-    d.push_str("    Excitation: 16x blue LEDs (470nm) on sensor PCB bottom face, one per chamber\n");
-    d.push_str("    Detection: 16x OPT101P photodiodes on sensor PCB bottom face, one per chamber\n");
-    d.push_str("    Filter: Emission filter film (510nm longpass) between cover plate and sensor PCB\n");
+    d.push_str(
+        "    Excitation: 16x blue LEDs (470nm) on sensor PCB bottom face, one per chamber\n",
+    );
+    d.push_str(
+        "    Detection: 16x OPT101P photodiodes on sensor PCB bottom face, one per chamber\n",
+    );
+    d.push_str(
+        "    Filter: Emission filter film (510nm longpass) between cover plate and sensor PCB\n",
+    );
     d.push_str("    Optical path: LED -> cover plate -> chamber (cells + GFP) -> cover plate -> filter -> photodiode\n");
     d.push_str("    ADC: ADS1115 16-bit ADC (x4 for 16 photodiodes, or MUX + single ADC)\n");
     d.push_str("    NOTE: Both LED and photodiode on SAME side (top), epifluorescence geometry\n");
@@ -1300,9 +1542,13 @@ fn main() {
     d.push_str("    Bottom face: 16 blue LEDs + 16 OPT101P photodiodes (aligned with chambers)\n");
     d.push_str("\n");
 
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
     d.push_str("  END OF DRAWING\n");
-    d.push_str("================================================================================\n");
+    d.push_str(
+        "================================================================================\n",
+    );
 
     std::fs::write("output/monolithic_board_16ch_drawing.txt", &d).unwrap();
 
@@ -1328,7 +1574,10 @@ fn main() {
     s.push_str("═══════════════════════════════════════════════════\n");
     s.push_str("PART 1: MAIN BOARD\n");
     s.push_str("═══════════════════════════════════════════════════\n");
-    s.push_str(&format!("  Stock:       {} x {} x {}mm\n", length, width, thickness));
+    s.push_str(&format!(
+        "  Stock:       {} x {} x {}mm\n",
+        length, width, thickness
+    ));
     s.push_str("  Material:    Cast PMMA (acrylic), optically clear\n");
     s.push_str("               McMaster 8560K265 or equiv. (extruded OK if Ra < 0.4um)\n");
     s.push_str("  Qty:         1\n");
@@ -1338,9 +1587,15 @@ fn main() {
     s.push_str("\n");
 
     s.push_str("FEATURE TABLE:\n");
-    s.push_str("  ┌──────────────────────────┬────────┬────────┬────────┬──────────┬──────────────┐\n");
-    s.push_str("  │ Feature                   │ Width  │ Length │ Depth  │ Qty      │ Type         │\n");
-    s.push_str("  ├──────────────────────────┼────────┼────────┼────────┼──────────┼──────────────┤\n");
+    s.push_str(
+        "  ┌──────────────────────────┬────────┬────────┬────────┬──────────┬──────────────┐\n",
+    );
+    s.push_str(
+        "  │ Feature                   │ Width  │ Length │ Depth  │ Qty      │ Type         │\n",
+    );
+    s.push_str(
+        "  ├──────────────────────────┼────────┼────────┼────────┼──────────┼──────────────┤\n",
+    );
     s.push_str(&format!(
         "  │ Culture chambers           │ {:5.1}mm│ {:5.1}mm│ {:5.2}mm│ 16       │ Blind pocket │\n",
         chamber_w, chamber_l, chamber_d));
@@ -1352,32 +1607,41 @@ fn main() {
         bus_w, (col_xs[num_cols-1] - col_xs[0]) + col_spacing, bus_d));
     s.push_str(&format!(
         "  │ Distribution channels      │ {:5.1}mm│  var   │ {:5.2}mm│ 16       │ Blind pocket │\n",
-        dist_w, dist_d));
+        dist_w, dist_d
+    ));
     s.push_str(&format!(
         "  │ Outlet collection channels │ {:5.1}mm│  var   │ {:5.2}mm│ 16       │ Blind pocket │\n",
-        out_w, out_d));
+        out_w, out_d
+    ));
     s.push_str(&format!(
         "  │ Collector manifold         │ {:5.1}mm│{:5.0}mm │ {:5.2}mm│ 1        │ Blind pocket │\n",
         out_w, collector_len, out_d));
     s.push_str(&format!(
         "  │ Input ports                │ ø{:.1}mm│        │ THRU   │ 4        │ Through-hole │\n",
-        input_dia));
+        input_dia
+    ));
     s.push_str(&format!(
         "  │ Output ports               │ ø{:.1}mm│        │ THRU   │ 2        │ Through-hole │\n",
-        port_dia));
+        port_dia
+    ));
     s.push_str(&format!(
         "  │ Valve ports                │ ø{:.1}mm│        │ THRU   │ 32       │ Through-hole │\n",
-        valve_dia));
+        valve_dia
+    ));
     s.push_str(&format!(
         "  │ Alignment pin holes        │ ø{:.1}mm│        │ {:5.2}mm│ 4        │ Blind hole   │\n",
-        align_dia, align_depth));
+        align_dia, align_depth
+    ));
     s.push_str(&format!(
         "  │ Sensor mount holes         │ ø{:.1}mm│        │ {:5.2}mm│ 4        │ Blind hole   │\n",
-        sensor_mount_dia, sensor_mount_depth));
+        sensor_mount_dia, sensor_mount_depth
+    ));
     s.push_str(&format!(
         "  │ Label engraving            │ {:5.1}mm│ {:5.1}mm│ {:5.2}mm│ 1        │ Blind pocket │\n",
         label_w, label_l, label_d));
-    s.push_str("  └──────────────────────────┴────────┴────────┴────────┴──────────┴──────────────┘\n");
+    s.push_str(
+        "  └──────────────────────────┴────────┴────────┴────────┴──────────┴──────────────┘\n",
+    );
     s.push_str("\n");
 
     s.push_str("TOLERANCES:\n");
@@ -1413,15 +1677,22 @@ fn main() {
     s.push_str("═══════════════════════════════════════════════════\n");
     s.push_str("PART 2: COVER PLATE\n");
     s.push_str("═══════════════════════════════════════════════════\n");
-    s.push_str(&format!("  Stock:       {} x {} x {}mm\n", length, cover_width, cover_thickness));
+    s.push_str(&format!(
+        "  Stock:       {} x {} x {}mm\n",
+        length, cover_width, cover_thickness
+    ));
     s.push_str("  Material:    Cast PMMA (acrylic), optically clear (SAME material as Part 1)\n");
     s.push_str("  Qty:         1\n");
     s.push_str("\n");
     s.push_str("FEATURE TABLE:\n");
     s.push_str(&format!(
-        "  Alignment through-holes:   4x ø{:.1}mm, THRU\n", align_dia));
+        "  Alignment through-holes:   4x ø{:.1}mm, THRU\n",
+        align_dia
+    ));
     s.push_str(&format!(
-        "  Sensor mount through-holes: 4x ø{:.1}mm, THRU\n", sensor_mount_dia));
+        "  Sensor mount through-holes: 4x ø{:.1}mm, THRU\n",
+        sensor_mount_dia
+    ));
     s.push_str("  All other surfaces: flat, no features\n");
     s.push_str("\n");
     s.push_str("  NOTE: Cover plate holes MUST align with Part 1 blind holes.\n");
@@ -1471,7 +1742,9 @@ fn main() {
     println!("    Overall:          {length:.0}mm x {width:.0}mm x {thickness:.0}mm");
     println!("    Material:         Cast PMMA (acrylic), optically clear");
     println!("    Chambers:         16 in 4x4 grid");
-    println!("    Chamber size:     {chamber_w:.0}mm x {chamber_l:.0}mm x {chamber_d:.1}mm (200um)");
+    println!(
+        "    Chamber size:     {chamber_w:.0}mm x {chamber_l:.0}mm x {chamber_d:.1}mm (200um)"
+    );
     println!("    Bus channel:      {bus_w:.1}mm W x {bus_d:.1}mm D (Y = {bus_y:.0})");
     println!("    Distribution ch:  {dist_w:.1}mm W x {dist_d:.1}mm D");
     println!("    Outlet ch:        {out_w:.1}mm W x {out_d:.1}mm D");
@@ -1486,31 +1759,67 @@ fn main() {
     println!("    Features:         4 alignment through-holes + 4 sensor mount through-holes");
     println!();
     println!("  ASSEMBLY:");
-    println!("    1. CNC mill  2. Sputter coat electrodes  3. Bond cover plate  4. Mount sensor PCB");
-    println!("    Total thickness:  {:.1}mm (board + cover, excl. sensor PCB)", thickness + cover_thickness);
+    println!(
+        "    1. CNC mill  2. Sputter coat electrodes  3. Bond cover plate  4. Mount sensor PCB"
+    );
+    println!(
+        "    Total thickness:  {:.1}mm (board + cover, excl. sensor PCB)",
+        thickness + cover_thickness
+    );
     println!();
     println!("  GRID LAYOUT:");
-    println!("    Column X:  {:?}", col_xs.iter().map(|x| format!("{x:+.1}")).collect::<Vec<_>>());
-    println!("    Row Y:     {:?}", row_ys.iter().map(|y| format!("{y:+.1}")).collect::<Vec<_>>());
+    println!(
+        "    Column X:  {:?}",
+        col_xs
+            .iter()
+            .map(|x| format!("{x:+.1}"))
+            .collect::<Vec<_>>()
+    );
+    println!(
+        "    Row Y:     {:?}",
+        row_ys
+            .iter()
+            .map(|y| format!("{y:+.1}"))
+            .collect::<Vec<_>>()
+    );
     println!();
 
     println!("  CHAMBER ALLOCATION:");
     for (i, label) in CHAMBER_LABELS.iter().enumerate() {
         let ri = i / num_cols;
         let ci = i % num_cols;
-        println!("    Ch{:2} [{},{}]: X={:+7.2}, Y={:+7.2}  {label}", i + 1, ri, ci, col_xs[ci], row_ys[ri]);
+        println!(
+            "    Ch{:2} [{},{}]: X={:+7.2}, Y={:+7.2}  {label}",
+            i + 1,
+            ri,
+            ci,
+            col_xs[ci],
+            row_ys[ri]
+        );
     }
     println!();
 
     println!("  INPUT PORTS (left edge, X = {input_x:.1}):");
     for (i, &iy) in input_ys.iter().enumerate() {
-        println!("    {}: {} at ({:.1}, {:.1})", i + 1, input_labels[i], input_x, iy);
+        println!(
+            "    {}: {} at ({:.1}, {:.1})",
+            i + 1,
+            input_labels[i],
+            input_x,
+            iy
+        );
     }
     println!();
 
     println!("  OUTPUT PORTS (right edge, X = {output_x:.1}):");
     for (i, &oy) in output_ys.iter().enumerate() {
-        println!("    {}: {} at ({:.1}, {:.1})", i + 1, output_labels[i], output_x, oy);
+        println!(
+            "    {}: {} at ({:.1}, {:.1})",
+            i + 1,
+            output_labels[i],
+            output_x,
+            oy
+        );
     }
     println!();
 
@@ -1519,8 +1828,10 @@ fn main() {
     println!("    ----+-----+-----+-----------+-----------");
     for (_i, vp) in valve_ports.iter().enumerate() {
         let ch_num = vp.row * num_cols + vp.col + 1; // actual chamber number (row-first)
-        println!("    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}",
-            ch_num, vp.col, vp.row, vp.out_x, vp.ret_x);
+        println!(
+            "    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}",
+            ch_num, vp.col, vp.row, vp.out_x, vp.ret_x
+        );
     }
     println!();
 
@@ -1540,7 +1851,10 @@ fn main() {
 
     println!("  SENSOR PCB MOUNTING HOLES:");
     for (i, &(sx, sy)) in sensor_mount_positions.iter().enumerate() {
-        println!("    Mount {}: ({sx:+7.2}, {sy:+7.2})  M2, {sensor_mount_depth:.1}mm blind", i + 1);
+        println!(
+            "    Mount {}: ({sx:+7.2}, {sy:+7.2})  M2, {sensor_mount_depth:.1}mm blind",
+            i + 1
+        );
     }
     println!();
 

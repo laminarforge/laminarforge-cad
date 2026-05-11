@@ -86,15 +86,39 @@ pub const NET_NAMES: &[&str] = &[
     "MOSFET_GATE", // 14
     "USB_DP",      // 15
     "USB_DN",      // 16
-    "LED_BASE_0", "LED_BASE_1", "LED_BASE_2", "LED_BASE_3",
-    "LED_BASE_4", "LED_BASE_5", "LED_BASE_6", "LED_BASE_7",
-    "MUX_Y0", "MUX_Y1", "MUX_Y2", "MUX_Y3",
-    "MUX_Y4", "MUX_Y5", "MUX_Y6", "MUX_Y7",
-    "LED_COL_0", "LED_COL_1", "LED_COL_2", "LED_COL_3",
-    "LED_COL_4", "LED_COL_5", "LED_COL_6", "LED_COL_7",
-    "VBUS",          // 41
-    "LED_CATH_0", "LED_CATH_1", "LED_CATH_2", "LED_CATH_3",
-    "LED_CATH_4", "LED_CATH_5", "LED_CATH_6", "LED_CATH_7",
+    "LED_BASE_0",
+    "LED_BASE_1",
+    "LED_BASE_2",
+    "LED_BASE_3",
+    "LED_BASE_4",
+    "LED_BASE_5",
+    "LED_BASE_6",
+    "LED_BASE_7",
+    "MUX_Y0",
+    "MUX_Y1",
+    "MUX_Y2",
+    "MUX_Y3",
+    "MUX_Y4",
+    "MUX_Y5",
+    "MUX_Y6",
+    "MUX_Y7",
+    "LED_COL_0",
+    "LED_COL_1",
+    "LED_COL_2",
+    "LED_COL_3",
+    "LED_COL_4",
+    "LED_COL_5",
+    "LED_COL_6",
+    "LED_COL_7",
+    "VBUS", // 41
+    "LED_CATH_0",
+    "LED_CATH_1",
+    "LED_CATH_2",
+    "LED_CATH_3",
+    "LED_CATH_4",
+    "LED_CATH_5",
+    "LED_CATH_6",
+    "LED_CATH_7",
     "ESP_EN",        // 50
     "ESP_GPIO0",     // 51
     "USB_CC1",       // 52

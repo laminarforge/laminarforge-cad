@@ -58,7 +58,11 @@ fn main() {
 
     // Alignment sockets on -X end
     for pin_idx in 0..PINS_PER_JOINT {
-        let z_offset = if pin_idx == 0 { -PIN_OFFSET } else { PIN_OFFSET };
+        let z_offset = if pin_idx == 0 {
+            -PIN_OFFSET
+        } else {
+            PIN_OFFSET
+        };
         let socket = centered_cylinder(
             &format!("socket_l_{pin_idx}"),
             PIN_SOCKET_DIAMETER / 2.0,
@@ -72,7 +76,11 @@ fn main() {
 
     // Alignment pins on +X end
     for pin_idx in 0..PINS_PER_JOINT {
-        let z_offset = if pin_idx == 0 { -PIN_OFFSET } else { PIN_OFFSET };
+        let z_offset = if pin_idx == 0 {
+            -PIN_OFFSET
+        } else {
+            PIN_OFFSET
+        };
         let pin = centered_cylinder(
             &format!("pin_r_{pin_idx}"),
             PIN_DIAMETER / 2.0,
@@ -164,9 +172,7 @@ fn main() {
         - screw_y
         - screw_z;
 
-    corner
-        .write_stl("output/workstation_corner.stl")
-        .unwrap();
+    corner.write_stl("output/workstation_corner.stl").unwrap();
 
     // ── Segment count calculations ──
 
@@ -203,7 +209,9 @@ fn main() {
     println!("  Overall:          {WS_TOTAL_WIDTH:.0}mm x {WS_DEPTH:.0}mm x {WS_HEIGHT:.0}mm");
     println!("  Zone 1 (sterile): {WS_ZONE1_WIDTH:.0}mm wide (arm holes in front panel)");
     println!("  Zone 2 (equip):   {WS_ZONE2_WIDTH:.0}mm wide");
-    println!("  Zone 3 (printer): {WS_ZONE3_WIDTH:.0}mm wide (exhaust: {WS_EXHAUST_DIAMETER:.0}mm port)");
+    println!(
+        "  Zone 3 (printer): {WS_ZONE3_WIDTH:.0}mm wide (exhaust: {WS_EXHAUST_DIAMETER:.0}mm port)"
+    );
     println!("  Partitions:       2x {WS_PARTITION_THICKNESS:.0}mm acrylic dividers");
     println!();
     println!("── Rail Specs ──");
@@ -216,8 +224,14 @@ fn main() {
     println!("── Frame BOM ──");
     println!("  Corner connectors: {total_corners}x ({outer_corners} outer + {partition_corners} partition)");
     println!("  Width segments:    {total_width_segments}x ({outer_width_rails} rails x {width_segs} segs)");
-    println!("  Depth segments:    {total_depth_segments}x ({} rails x {depth_segs} segs)", outer_depth_rails + partition_depth_rails);
-    println!("  Height segments:   {total_height_segments}x ({} rails x {height_segs} segs)", outer_height_rails + partition_height_rails);
+    println!(
+        "  Depth segments:    {total_depth_segments}x ({} rails x {depth_segs} segs)",
+        outer_depth_rails + partition_depth_rails
+    );
+    println!(
+        "  Height segments:   {total_height_segments}x ({} rails x {height_segs} segs)",
+        outer_height_rails + partition_height_rails
+    );
     println!("  Total prints:      {total_segments} segments + {total_corners} corners");
     println!("  Door height:       {WS_DOOR_HEIGHT:.0}mm (clearance: {WS_DOOR_CLEARANCE:.0}mm)");
     println!("  Material:          PETG");

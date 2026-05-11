@@ -71,7 +71,7 @@ const EXT_W: f64 = 45.0; // 45 × 45 mm extrusion
 // Airlock
 const AIRLOCK_W: f64 = 1000.0; // X (wide)
 const AIRLOCK_H: f64 = 2000.0; // Z (tall, full interior)
-const AIRLOCK_D: f64 = 600.0;  // Y (deep into room)
+const AIRLOCK_D: f64 = 600.0; // Y (deep into room)
 
 // Rocker bed footprint
 const BED_X: f64 = 900.0;
@@ -115,23 +115,30 @@ fn frame() -> Part {
     let half_y = EXT_Y / 2.0 - EXT_W / 2.0;
 
     let post_positions: [(f64, f64); 8] = [
-        (-half_x, -half_y), ( half_x, -half_y),
-        (-half_x,  half_y), ( half_x,  half_y),
-        ( 0.0,    -half_y), ( 0.0,     half_y),
-        (-half_x,  0.0   ), ( half_x,  0.0   ),
+        (-half_x, -half_y),
+        (half_x, -half_y),
+        (-half_x, half_y),
+        (half_x, half_y),
+        (0.0, -half_y),
+        (0.0, half_y),
+        (-half_x, 0.0),
+        (half_x, 0.0),
     ];
 
     let mut posts = Part::empty("t3_posts");
     for (i, &(px, py)) in post_positions.iter().enumerate() {
-        let p = centered_cube(&format!("t3_post_{i}"), EXT_W, EXT_W, post_h)
-            .translate(px, py, post_z_center);
+        let p = centered_cube(&format!("t3_post_{i}"), EXT_W, EXT_W, post_h).translate(
+            px,
+            py,
+            post_z_center,
+        );
         posts = posts + p;
     }
 
     // Top + bottom perimeter rails (horizontal beams along the 4 edges)
     // Rails sit inboard of posts, at floor level and ceiling level.
     let top_z = INT_Z + PANEL_T / 2.0; // just under ceiling panel center
-    let bot_z = -PANEL_T / 2.0;        // just above floor panel center
+    let bot_z = -PANEL_T / 2.0; // just above floor panel center
 
     let rail_x_len = EXT_X - EXT_W * 2.0;
     let rail_y_len = EXT_Y - EXT_W * 2.0;
@@ -139,15 +146,12 @@ fn frame() -> Part {
     let mut rails = Part::empty("t3_rails");
     for &z in &[top_z, bot_z] {
         // front and back rails along X
-        let rf = centered_cube("t3_rail_front", rail_x_len, EXT_W, EXT_W)
-            .translate(0.0, -half_y, z);
-        let rb = centered_cube("t3_rail_back", rail_x_len, EXT_W, EXT_W)
-            .translate(0.0,  half_y, z);
+        let rf =
+            centered_cube("t3_rail_front", rail_x_len, EXT_W, EXT_W).translate(0.0, -half_y, z);
+        let rb = centered_cube("t3_rail_back", rail_x_len, EXT_W, EXT_W).translate(0.0, half_y, z);
         // left and right rails along Y
-        let rl = centered_cube("t3_rail_left", EXT_W, rail_y_len, EXT_W)
-            .translate(-half_x, 0.0, z);
-        let rr = centered_cube("t3_rail_right", EXT_W, rail_y_len, EXT_W)
-            .translate( half_x, 0.0, z);
+        let rl = centered_cube("t3_rail_left", EXT_W, rail_y_len, EXT_W).translate(-half_x, 0.0, z);
+        let rr = centered_cube("t3_rail_right", EXT_W, rail_y_len, EXT_W).translate(half_x, 0.0, z);
         rails = rails + rf + rb + rl + rr;
     }
 
@@ -168,7 +172,7 @@ fn frame() -> Part {
         .translate(-half_x, 0.0, post_z_center);
     let right_brace = centered_cube("t3_brace_right", EXT_W, brace_len_y, EXT_W)
         .rotate(brace_angle_x, 0.0, 0.0)
-        .translate( half_x, 0.0, post_z_center);
+        .translate(half_x, 0.0, post_z_center);
 
     posts + rails + back_brace + left_brace + right_brace
 }
@@ -179,11 +183,10 @@ fn frame() -> Part {
 
 fn panels() -> Part {
     // Model as an outer box − interior cavity − openings (front door, windows, service).
-    let outer = centered_cube("t3_pan_outer", EXT_X, EXT_Y, EXT_Z)
-        .translate(0.0, 0.0, INT_Z / 2.0); // centered so interior floor = 0
+    let outer = centered_cube("t3_pan_outer", EXT_X, EXT_Y, EXT_Z).translate(0.0, 0.0, INT_Z / 2.0); // centered so interior floor = 0
 
-    let cavity = centered_cube("t3_pan_cavity", INT_X, INT_Y, INT_Z)
-        .translate(0.0, 0.0, INT_Z / 2.0);
+    let cavity =
+        centered_cube("t3_pan_cavity", INT_X, INT_Y, INT_Z).translate(0.0, 0.0, INT_Z / 2.0);
 
     // Front airlock opening (cut through front wall; the airlock body is separate)
     let front_opening = centered_cube(
@@ -192,32 +195,48 @@ fn panels() -> Part {
         PANEL_T + 4.0,
         AIRLOCK_H + 20.0,
     )
-    .translate(
-        0.0,
-        -(INT_Y / 2.0 + PANEL_T / 2.0),
-        AIRLOCK_H / 2.0,
-    );
+    .translate(0.0, -(INT_Y / 2.0 + PANEL_T / 2.0), AIRLOCK_H / 2.0);
 
     // Window cutouts: 4× 1200 × 800 mm, one per wall, centered at 1200 mm above floor.
     let win_z_center = 1200.0;
-    let win_front = centered_cube("t3_pan_win_f", WIN_X, PANEL_T + 4.0, WIN_Z)
-        .translate(-600.0, -(INT_Y / 2.0 + PANEL_T / 2.0), win_z_center);
+    let win_front = centered_cube("t3_pan_win_f", WIN_X, PANEL_T + 4.0, WIN_Z).translate(
+        -600.0,
+        -(INT_Y / 2.0 + PANEL_T / 2.0),
+        win_z_center,
+    );
     // (front window offset so it doesn't collide with airlock; airlock occupies X = -500..+500)
     // Place front window on LEFT side of front face.
-    let win_back = centered_cube("t3_pan_win_b", WIN_X, PANEL_T + 4.0, WIN_Z)
-        .translate(0.0, INT_Y / 2.0 + PANEL_T / 2.0, win_z_center);
-    let win_left = centered_cube("t3_pan_win_l", PANEL_T + 4.0, WIN_X, WIN_Z)
-        .translate(-(INT_X / 2.0 + PANEL_T / 2.0), 0.0, win_z_center);
-    let win_right = centered_cube("t3_pan_win_r", PANEL_T + 4.0, WIN_X, WIN_Z)
-        .translate(INT_X / 2.0 + PANEL_T / 2.0, 0.0, win_z_center);
+    let win_back = centered_cube("t3_pan_win_b", WIN_X, PANEL_T + 4.0, WIN_Z).translate(
+        0.0,
+        INT_Y / 2.0 + PANEL_T / 2.0,
+        win_z_center,
+    );
+    let win_left = centered_cube("t3_pan_win_l", PANEL_T + 4.0, WIN_X, WIN_Z).translate(
+        -(INT_X / 2.0 + PANEL_T / 2.0),
+        0.0,
+        win_z_center,
+    );
+    let win_right = centered_cube("t3_pan_win_r", PANEL_T + 4.0, WIN_X, WIN_Z).translate(
+        INT_X / 2.0 + PANEL_T / 2.0,
+        0.0,
+        win_z_center,
+    );
 
     // Service panel cutout (right wall, below window height)
-    let svc_cut = centered_cube("t3_pan_svc", SVC_X + 4.0, SVC_Y, SVC_Z)
-        .translate(INT_X / 2.0 + PANEL_T / 2.0, 500.0, 400.0);
+    let svc_cut = centered_cube("t3_pan_svc", SVC_X + 4.0, SVC_Y, SVC_Z).translate(
+        INT_X / 2.0 + PANEL_T / 2.0,
+        500.0,
+        400.0,
+    );
 
     // HEPA plenum access cutout on ceiling (inset from edges, returns handled via floor slots)
-    let plenum_cut = centered_cube("t3_pan_plenum", PLENUM_X - 200.0, PLENUM_Y - 200.0, PANEL_T + 4.0)
-        .translate(0.0, 0.0, INT_Z + PANEL_T / 2.0);
+    let plenum_cut = centered_cube(
+        "t3_pan_plenum",
+        PLENUM_X - 200.0,
+        PLENUM_Y - 200.0,
+        PANEL_T + 4.0,
+    )
+    .translate(0.0, 0.0, INT_Z + PANEL_T / 2.0);
 
     // Floor perimeter return slots (thin slits 30 mm wide inboard of walls)
     let slot_inset = 80.0;
@@ -225,14 +244,26 @@ fn panels() -> Part {
     let slot_len_x = INT_X - slot_inset * 2.0;
     let slot_len_y = INT_Y - slot_inset * 2.0;
     let slot_z = -PANEL_T + slot_w / 2.0;
-    let floor_slot_front = centered_cube("t3_floor_slot_f", slot_len_x, slot_w, slot_w)
-        .translate(0.0, -(INT_Y / 2.0 - slot_inset), slot_z);
-    let floor_slot_back = centered_cube("t3_floor_slot_b", slot_len_x, slot_w, slot_w)
-        .translate(0.0, INT_Y / 2.0 - slot_inset, slot_z);
-    let floor_slot_left = centered_cube("t3_floor_slot_l", slot_w, slot_len_y, slot_w)
-        .translate(-(INT_X / 2.0 - slot_inset), 0.0, slot_z);
-    let floor_slot_right = centered_cube("t3_floor_slot_r", slot_w, slot_len_y, slot_w)
-        .translate(INT_X / 2.0 - slot_inset, 0.0, slot_z);
+    let floor_slot_front = centered_cube("t3_floor_slot_f", slot_len_x, slot_w, slot_w).translate(
+        0.0,
+        -(INT_Y / 2.0 - slot_inset),
+        slot_z,
+    );
+    let floor_slot_back = centered_cube("t3_floor_slot_b", slot_len_x, slot_w, slot_w).translate(
+        0.0,
+        INT_Y / 2.0 - slot_inset,
+        slot_z,
+    );
+    let floor_slot_left = centered_cube("t3_floor_slot_l", slot_w, slot_len_y, slot_w).translate(
+        -(INT_X / 2.0 - slot_inset),
+        0.0,
+        slot_z,
+    );
+    let floor_slot_right = centered_cube("t3_floor_slot_r", slot_w, slot_len_y, slot_w).translate(
+        INT_X / 2.0 - slot_inset,
+        0.0,
+        slot_z,
+    );
 
     (outer - cavity)
         - front_opening
@@ -258,8 +289,11 @@ fn airlock() -> Part {
     let wall_t = 50.0;
 
     // Outer shell (interior of chamber) — vestibule as a box
-    let outer = centered_cube("t3_al_outer", AIRLOCK_W, AIRLOCK_D, AIRLOCK_H)
-        .translate(0.0, -(INT_Y / 2.0) + AIRLOCK_D / 2.0, AIRLOCK_H / 2.0);
+    let outer = centered_cube("t3_al_outer", AIRLOCK_W, AIRLOCK_D, AIRLOCK_H).translate(
+        0.0,
+        -(INT_Y / 2.0) + AIRLOCK_D / 2.0,
+        AIRLOCK_H / 2.0,
+    );
 
     let cavity = centered_cube(
         "t3_al_cavity",
@@ -276,33 +310,38 @@ fn airlock() -> Part {
     // Exterior door (through chamber front wall) — Y = -(INT_Y/2) - PANEL_T
     let door_w = AIRLOCK_W - 200.0;
     let door_h = AIRLOCK_H - 200.0;
-    let ext_door_cut = centered_cube("t3_al_ext_cut", door_w, wall_t + 4.0, door_h)
-        .translate(
-            0.0,
-            -(INT_Y / 2.0) + wall_t / 2.0,
-            door_h / 2.0 + 100.0,
-        );
+    let ext_door_cut = centered_cube("t3_al_ext_cut", door_w, wall_t + 4.0, door_h).translate(
+        0.0,
+        -(INT_Y / 2.0) + wall_t / 2.0,
+        door_h / 2.0 + 100.0,
+    );
 
     // Interior door (into chamber) at Y = -(INT_Y/2) + AIRLOCK_D
-    let int_door_cut = centered_cube("t3_al_int_cut", door_w, wall_t + 4.0, door_h)
-        .translate(
-            0.0,
-            -(INT_Y / 2.0) + AIRLOCK_D - wall_t / 2.0,
-            door_h / 2.0 + 100.0,
-        );
+    let int_door_cut = centered_cube("t3_al_int_cut", door_w, wall_t + 4.0, door_h).translate(
+        0.0,
+        -(INT_Y / 2.0) + AIRLOCK_D - wall_t / 2.0,
+        door_h / 2.0 + 100.0,
+    );
 
     // Gasket channels around each door (3 × 3 mm recessed, simplified as shallow cube)
     let gasket_t = 4.0;
     let gasket_ext = centered_cube("t3_al_gasket_ext", door_w + 20.0, gasket_t, door_h + 20.0)
-        - centered_cube("t3_al_gasket_ext_in", door_w + 10.0, gasket_t + 0.2, door_h + 10.0);
-    let gasket_ext = gasket_ext.translate(
-        0.0,
-        -(INT_Y / 2.0) + gasket_t / 2.0,
-        door_h / 2.0 + 100.0,
-    );
+        - centered_cube(
+            "t3_al_gasket_ext_in",
+            door_w + 10.0,
+            gasket_t + 0.2,
+            door_h + 10.0,
+        );
+    let gasket_ext =
+        gasket_ext.translate(0.0, -(INT_Y / 2.0) + gasket_t / 2.0, door_h / 2.0 + 100.0);
 
     let gasket_int = centered_cube("t3_al_gasket_int", door_w + 20.0, gasket_t, door_h + 20.0)
-        - centered_cube("t3_al_gasket_int_in", door_w + 10.0, gasket_t + 0.2, door_h + 10.0);
+        - centered_cube(
+            "t3_al_gasket_int_in",
+            door_w + 10.0,
+            gasket_t + 0.2,
+            door_h + 10.0,
+        );
     let gasket_int = gasket_int.translate(
         0.0,
         -(INT_Y / 2.0) + AIRLOCK_D - gasket_t / 2.0,
@@ -310,8 +349,11 @@ fn airlock() -> Part {
     );
 
     // Interlock sensor housing (small tab on the side — visual only)
-    let interlock = centered_cube("t3_al_interlock", 60.0, 40.0, 80.0)
-        .translate(AIRLOCK_W / 2.0 - 30.0, -(INT_Y / 2.0) + AIRLOCK_D / 2.0, 1500.0);
+    let interlock = centered_cube("t3_al_interlock", 60.0, 40.0, 80.0).translate(
+        AIRLOCK_W / 2.0 - 30.0,
+        -(INT_Y / 2.0) + AIRLOCK_D / 2.0,
+        1500.0,
+    );
 
     ((outer - cavity) - ext_door_cut - int_door_cut) + gasket_ext + gasket_int + interlock
 }
@@ -338,29 +380,47 @@ fn rocker_bed_station(cx: f64, cy: f64) -> Part {
     ];
     let mut load_cells = Part::empty("t3_bed_lc");
     for (i, &(lcx, lcy)) in lc_positions.iter().enumerate() {
-        let lc = centered_cube(&format!("t3_lc_{i}"), lc_w, lc_w, load_cell_d)
-            .translate(lcx, lcy, load_cell_d / 2.0);
+        let lc = centered_cube(&format!("t3_lc_{i}"), lc_w, lc_w, load_cell_d).translate(
+            lcx,
+            lcy,
+            load_cell_d / 2.0,
+        );
         load_cells = load_cells + lc;
     }
 
     let base_z = 30.0;
-    let base = centered_cube("t3_bed_base", BED_X, BED_Y, base_z)
-        .translate(cx, cy, load_cell_d + base_z / 2.0);
+    let base = centered_cube("t3_bed_base", BED_X, BED_Y, base_z).translate(
+        cx,
+        cy,
+        load_cell_d + base_z / 2.0,
+    );
 
     let pivot_h = 100.0;
-    let pb_left = centered_cube("t3_bed_pb_l", 60.0, 40.0, pivot_h)
-        .translate(cx, cy - BED_Y / 2.0 + 40.0, load_cell_d + base_z + pivot_h / 2.0);
-    let pb_right = centered_cube("t3_bed_pb_r", 60.0, 40.0, pivot_h)
-        .translate(cx, cy + BED_Y / 2.0 - 40.0, load_cell_d + base_z + pivot_h / 2.0);
+    let pb_left = centered_cube("t3_bed_pb_l", 60.0, 40.0, pivot_h).translate(
+        cx,
+        cy - BED_Y / 2.0 + 40.0,
+        load_cell_d + base_z + pivot_h / 2.0,
+    );
+    let pb_right = centered_cube("t3_bed_pb_r", 60.0, 40.0, pivot_h).translate(
+        cx,
+        cy + BED_Y / 2.0 - 40.0,
+        load_cell_d + base_z + pivot_h / 2.0,
+    );
 
     let top_z = 15.0;
-    let top = centered_cube("t3_bed_top", BED_X - 100.0, BED_Y - 70.0, top_z)
-        .translate(cx, cy, load_cell_d + base_z + pivot_h + top_z / 2.0);
+    let top = centered_cube("t3_bed_top", BED_X - 100.0, BED_Y - 70.0, top_z).translate(
+        cx,
+        cy,
+        load_cell_d + base_z + pivot_h + top_z / 2.0,
+    );
 
     // 500-chip rack stand-in (dummy envelope)
     let rack_h = 600.0;
-    let rack = centered_cube("t3_bed_rack", BED_X - 120.0, BED_Y - 90.0, rack_h)
-        .translate(cx, cy, load_cell_d + base_z + pivot_h + top_z + rack_h / 2.0);
+    let rack = centered_cube("t3_bed_rack", BED_X - 120.0, BED_Y - 90.0, rack_h).translate(
+        cx,
+        cy,
+        load_cell_d + base_z + pivot_h + top_z + rack_h / 2.0,
+    );
 
     // Stepper motor housing stub
     let motor = centered_cylinder("t3_bed_motor", 56.4 / 2.0, 70.0, 24)
@@ -400,29 +460,27 @@ fn zone_hvac_unit(cx: f64, cy: f64) -> Part {
     let z_base = 1700.0; // mounted near ceiling, below plenum return
 
     // PTC heater housing
-    let heater = centered_cube("t3_z_heater", 120.0, 120.0, 60.0)
-        .translate(cx - 120.0, cy, z_base);
+    let heater = centered_cube("t3_z_heater", 120.0, 120.0, 60.0).translate(cx - 120.0, cy, z_base);
 
     // Blower
-    let blower = centered_cylinder("t3_z_blower", 200.0 / 2.0, 80.0, 48)
-        .translate(cx + 120.0, cy, z_base);
+    let blower =
+        centered_cylinder("t3_z_blower", 200.0 / 2.0, 80.0, 48).translate(cx + 120.0, cy, z_base);
 
     // ESP32-S3 box
-    let esp = centered_cube("t3_z_esp", 80.0, 60.0, 25.0)
-        .translate(cx, cy + 200.0, z_base);
+    let esp = centered_cube("t3_z_esp", 80.0, 60.0, 25.0).translate(cx, cy + 200.0, z_base);
 
     // 3 sensor trees at Z = 500, 1100, 1700 (low/mid/high)
     let mut sensors = Part::empty("t3_z_sensors");
     for (i, &sz) in [500.0f64, 1100.0, 1700.0].iter().enumerate() {
         // SHT45 + MH-Z19B paired on a small PCB
-        let s_combo = centered_cube(&format!("t3_z_s_{i}"), 40.0, 20.0, 10.0)
-            .translate(cx, cy - 200.0, sz);
+        let s_combo =
+            centered_cube(&format!("t3_z_s_{i}"), 40.0, 20.0, 10.0).translate(cx, cy - 200.0, sz);
         sensors = sensors + s_combo;
     }
 
     // Duct stub from heater/blower down to bed zone
-    let duct = centered_cylinder("t3_z_duct", 100.0 / 2.0, 400.0, 24)
-        .translate(cx, cy, z_base - 250.0);
+    let duct =
+        centered_cylinder("t3_z_duct", 100.0 / 2.0, 400.0, 24).translate(cx, cy, z_base - 250.0);
 
     heater + blower + esp + sensors + duct
 }
@@ -464,17 +522,20 @@ fn hepa_plenum() -> Part {
         .translate(0.0, 0.0, plenum_z);
 
     // 1200 CFM centrifugal blower at one end (EBM-Papst K3G250)
-    let blower = centered_cylinder("t3_plenum_blower", 250.0 / 2.0, 150.0, 48)
-        .translate(-PLENUM_X / 2.0 + 250.0, PLENUM_Y / 2.0 - 200.0, plenum_z);
+    let blower = centered_cylinder("t3_plenum_blower", 250.0 / 2.0, 150.0, 48).translate(
+        -PLENUM_X / 2.0 + 250.0,
+        PLENUM_Y / 2.0 - 200.0,
+        plenum_z,
+    );
 
     // Return ducts down to floor slots (4 corners)
     let duct_h = 400.0;
     let mut ducts = Part::empty("t3_plenum_ducts");
     for (i, &(dx, dy)) in [
         (-PLENUM_X / 2.0 + 100.0, -PLENUM_Y / 2.0 + 100.0),
-        ( PLENUM_X / 2.0 - 100.0, -PLENUM_Y / 2.0 + 100.0),
-        (-PLENUM_X / 2.0 + 100.0,  PLENUM_Y / 2.0 - 100.0),
-        ( PLENUM_X / 2.0 - 100.0,  PLENUM_Y / 2.0 - 100.0),
+        (PLENUM_X / 2.0 - 100.0, -PLENUM_Y / 2.0 + 100.0),
+        (-PLENUM_X / 2.0 + 100.0, PLENUM_Y / 2.0 - 100.0),
+        (PLENUM_X / 2.0 - 100.0, PLENUM_Y / 2.0 - 100.0),
     ]
     .iter()
     .enumerate()
@@ -498,16 +559,19 @@ fn floor_drain() -> Part {
 
     let drain_d = 100.0;
     let drain_depth = 30.0;
-    let drain_grate = centered_cylinder("t3_drain_grate", drain_d / 2.0, 10.0, 48)
-        .translate(0.0, 0.0, 5.0);
+    let drain_grate =
+        centered_cylinder("t3_drain_grate", drain_d / 2.0, 10.0, 48).translate(0.0, 0.0, 5.0);
 
     let drain_body = centered_cylinder("t3_drain_body", drain_d / 2.0 - 5.0, drain_depth, 48)
         .translate(0.0, 0.0, -drain_depth / 2.0 + 5.0);
 
     // P-trap stub (goes below floor panel to exterior)
     let ptrap_h = 200.0;
-    let ptrap = centered_cylinder("t3_drain_ptrap", 50.0 / 2.0, ptrap_h, 24)
-        .translate(0.0, 100.0, -drain_depth - ptrap_h / 2.0);
+    let ptrap = centered_cylinder("t3_drain_ptrap", 50.0 / 2.0, ptrap_h, 24).translate(
+        0.0,
+        100.0,
+        -drain_depth - ptrap_h / 2.0,
+    );
 
     // Perimeter condensate channel — 50 mm wide × 15 mm deep, 100 mm inboard from walls
     let inset = 100.0;
@@ -519,10 +583,10 @@ fn floor_drain() -> Part {
     let inner_y = outer_y - ch_w * 2.0;
     let ch_z = ch_d / 2.0;
 
-    let ch_outer = centered_cube("t3_drain_ch_out", outer_x, outer_y, ch_d)
-        .translate(0.0, 0.0, ch_z);
-    let ch_inner = centered_cube("t3_drain_ch_in", inner_x, inner_y, ch_d + 0.2)
-        .translate(0.0, 0.0, ch_z);
+    let ch_outer =
+        centered_cube("t3_drain_ch_out", outer_x, outer_y, ch_d).translate(0.0, 0.0, ch_z);
+    let ch_inner =
+        centered_cube("t3_drain_ch_in", inner_x, inner_y, ch_d + 0.2).translate(0.0, 0.0, ch_z);
     let channel = ch_outer - ch_inner;
 
     drain_grate + drain_body + ptrap + channel
@@ -545,10 +609,16 @@ fn window_assembly(wall: &str) -> Part {
     let pane = glass + frame;
 
     // ITO heating bus bar strips (visual) — two thin strips at top & bottom edges
-    let bus_top = centered_cube("t3_win_bus_t", WIN_X - 20.0, WIN_T + 2.0, 10.0)
-        .translate(0.0, 0.0, WIN_Z / 2.0 - 15.0);
-    let bus_bot = centered_cube("t3_win_bus_b", WIN_X - 20.0, WIN_T + 2.0, 10.0)
-        .translate(0.0, 0.0, -WIN_Z / 2.0 + 15.0);
+    let bus_top = centered_cube("t3_win_bus_t", WIN_X - 20.0, WIN_T + 2.0, 10.0).translate(
+        0.0,
+        0.0,
+        WIN_Z / 2.0 - 15.0,
+    );
+    let bus_bot = centered_cube("t3_win_bus_b", WIN_X - 20.0, WIN_T + 2.0, 10.0).translate(
+        0.0,
+        0.0,
+        -WIN_Z / 2.0 + 15.0,
+    );
 
     let assembled = pane + bus_top + bus_bot;
 
@@ -556,12 +626,16 @@ fn window_assembly(wall: &str) -> Part {
     match wall {
         "front" => assembled.translate(-600.0, -(INT_Y / 2.0 + PANEL_T / 2.0), win_z_center),
         "back" => assembled.translate(0.0, INT_Y / 2.0 + PANEL_T / 2.0, win_z_center),
-        "left" => assembled
-            .rotate(0.0, 0.0, 90.0)
-            .translate(-(INT_X / 2.0 + PANEL_T / 2.0), 0.0, win_z_center),
-        "right" => assembled
-            .rotate(0.0, 0.0, 90.0)
-            .translate(INT_X / 2.0 + PANEL_T / 2.0, 0.0, win_z_center),
+        "left" => assembled.rotate(0.0, 0.0, 90.0).translate(
+            -(INT_X / 2.0 + PANEL_T / 2.0),
+            0.0,
+            win_z_center,
+        ),
+        "right" => assembled.rotate(0.0, 0.0, 90.0).translate(
+            INT_X / 2.0 + PANEL_T / 2.0,
+            0.0,
+            win_z_center,
+        ),
         _ => assembled,
     }
 }
@@ -661,19 +735,19 @@ fn control_box() -> Part {
     let mut vents = Part::empty("t3_ctrl_vents");
     for i in 0..4 {
         let x = -CTRL_X / 2.0 + 80.0 + (i as f64) * 140.0;
-        let v = centered_cube(&format!("t3_ctrl_vent_{i}"), 100.0, 20.0, 10.0)
-            .translate(x, 0.0, CTRL_Z / 2.0);
+        let v = centered_cube(&format!("t3_ctrl_vent_{i}"), 100.0, 20.0, 10.0).translate(
+            x,
+            0.0,
+            CTRL_Z / 2.0,
+        );
         vents = vents + v;
     }
 
     let box_part = (outer - cavity) - vents;
     // Mount high on right wall exterior
-    box_part.translate(
-        INT_X / 2.0 + PANEL_T + CTRL_Y / 2.0,
-        -400.0,
-        1500.0,
-    )
-    .rotate(0.0, 0.0, 90.0) // rotate so CTRL_X dimension is along Y of chamber
+    box_part
+        .translate(INT_X / 2.0 + PANEL_T + CTRL_Y / 2.0, -400.0, 1500.0)
+        .rotate(0.0, 0.0, 90.0) // rotate so CTRL_X dimension is along Y of chamber
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -716,7 +790,9 @@ fn main() {
     println!("Exported: output/tier3_windows.stl");
 
     let svc_p = service_pass_through();
-    svc_p.write_stl("output/tier3_service_pass_through.stl").unwrap();
+    svc_p
+        .write_stl("output/tier3_service_pass_through.stl")
+        .unwrap();
     println!("Exported: output/tier3_service_pass_through.stl");
 
     let ctrl_p = control_box();

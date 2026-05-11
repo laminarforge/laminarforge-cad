@@ -60,7 +60,7 @@ struct Assumptions {
     // Lot-level campaign reagents (amortized across chips in a campaign)
     antibody_panel_per_campaign: f64,
     rna_kit_per_chip: f64,
-    qpcr_per_chip: f64,       // 20-gene panel, endpoint only
+    qpcr_per_chip: f64,           // 20-gene panel, endpoint only
     media_bulk_per_campaign: f64, // media purchased in bulk per campaign
 }
 
@@ -108,8 +108,8 @@ fn tiers() -> [Tier; 3] {
             id: 1,
             name: "Tier 1 — pilot (100/mo)",
             chips_per_month: 100,
-            capex_usd: 21_000.0,      // all-in turnkey A-B722A1A2
-            amort_years: 3.0,          // aggressive 3-yr for custom systems
+            capex_usd: 21_000.0, // all-in turnkey A-B722A1A2
+            amort_years: 3.0,    // aggressive 3-yr for custom systems
             labor_hours_per_campaign: 40.0,
             footprint_sqft: 200.0,
             assays_per_chip: 20,
@@ -128,8 +128,8 @@ fn tiers() -> [Tier; 3] {
             id: 3,
             name: "Tier 3 — walk-in (2000/mo)",
             chips_per_month: 2_000,
-            capex_usd: 108_000.0,      // walk-in A-A9E1FE1F
-            amort_years: 5.0,           // 5-yr for walk-in chamber
+            capex_usd: 108_000.0, // walk-in A-A9E1FE1F
+            amort_years: 5.0,     // 5-yr for walk-in chamber
             labor_hours_per_campaign: 200.0,
             footprint_sqft: 1_200.0,
             assays_per_chip: 20,
@@ -181,12 +181,10 @@ fn compute(tier: &Tier, a: &Assumptions) -> Breakdown {
     let chips = tier.chips_per_month as f64;
 
     // ── Per-chip direct consumables ───────────────────────────────────────
-    let media_per_chip = a.media_ml_per_change
-        * a.media_changes_per_campaign as f64
-        * a.media_cost_per_ml; // 5 mL × 10 × $0.50 = $25
-    let tips_per_chip = a.tip_events_per_change as f64
-        * a.media_changes_per_campaign as f64
-        * a.tip_cost; // 9 × 10 × $0.10 = $9
+    let media_per_chip =
+        a.media_ml_per_change * a.media_changes_per_campaign as f64 * a.media_cost_per_ml; // 5 mL × 10 × $0.50 = $25
+    let tips_per_chip =
+        a.tip_events_per_change as f64 * a.media_changes_per_campaign as f64 * a.tip_cost; // 9 × 10 × $0.10 = $9
 
     // ── Per-campaign reagents allocated across chips ──────────────────────
     // Assume 1 campaign per month at each tier (the 100/500/2000 chips are
@@ -283,55 +281,118 @@ fn print_breakdown(b: &Breakdown) {
     println!("╠═══════════════════════════════════════════════════════════════════╣");
     println!("║ COST CATEGORY                                    $/CHIP-CAMPAIGN   ║");
     println!("╠═══════════════════════════════════════════════════════════════════╣");
-    println!("║ Chip unit (Rev C CNC)                           {}       ║", usd(b.chip_unit));
-    println!("║ Media consumables                               {}       ║", usd(b.media_per_chip));
-    println!("║ ECM coating (Matrigel)                          {}       ║", usd(b.ecm_per_chip));
-    println!("║ Pipette tips                                    {}       ║", usd(b.tips_per_chip));
-    println!("║ Sterile waste/consumables                       {}       ║", usd(b.sterile_per_chip));
-    println!("║ RNA extraction kit                              {}       ║", usd(b.rna_per_chip));
-    println!("║ qPCR 20-gene panel                              {}       ║", usd(b.qpcr_per_chip));
-    println!("║ Antibody panel IHC (lot/campaign)               {}       ║", usd(b.antibody_allocated_per_chip));
-    println!("║ Media bulk (campaign allocation)                {}       ║", usd(b.media_bulk_allocated_per_chip));
-    println!("║ Labor (fully loaded @ $75/hr)                   {}       ║", usd(b.labor_allocated_per_chip));
-    println!("║ Capex amortization                              {}       ║", usd(b.capex_per_chip));
-    println!("║ Facilities (rent + utilities)                   {}       ║", usd(b.facilities_per_chip));
+    println!(
+        "║ Chip unit (Rev C CNC)                           {}       ║",
+        usd(b.chip_unit)
+    );
+    println!(
+        "║ Media consumables                               {}       ║",
+        usd(b.media_per_chip)
+    );
+    println!(
+        "║ ECM coating (Matrigel)                          {}       ║",
+        usd(b.ecm_per_chip)
+    );
+    println!(
+        "║ Pipette tips                                    {}       ║",
+        usd(b.tips_per_chip)
+    );
+    println!(
+        "║ Sterile waste/consumables                       {}       ║",
+        usd(b.sterile_per_chip)
+    );
+    println!(
+        "║ RNA extraction kit                              {}       ║",
+        usd(b.rna_per_chip)
+    );
+    println!(
+        "║ qPCR 20-gene panel                              {}       ║",
+        usd(b.qpcr_per_chip)
+    );
+    println!(
+        "║ Antibody panel IHC (lot/campaign)               {}       ║",
+        usd(b.antibody_allocated_per_chip)
+    );
+    println!(
+        "║ Media bulk (campaign allocation)                {}       ║",
+        usd(b.media_bulk_allocated_per_chip)
+    );
+    println!(
+        "║ Labor (fully loaded @ $75/hr)                   {}       ║",
+        usd(b.labor_allocated_per_chip)
+    );
+    println!(
+        "║ Capex amortization                              {}       ║",
+        usd(b.capex_per_chip)
+    );
+    println!(
+        "║ Facilities (rent + utilities)                   {}       ║",
+        usd(b.facilities_per_chip)
+    );
     println!("╠═══════════════════════════════════════════════════════════════════╣");
-    println!("║ Direct subtotal                                 {}       ║", usd(b.direct_per_chip));
-    println!("║ Overhead @ 30 %                                 {}       ║", usd(b.overhead_per_chip));
-    println!("║ COGS / chip-campaign                            {}       ║", usd(b.cogs_per_chip));
+    println!(
+        "║ Direct subtotal                                 {}       ║",
+        usd(b.direct_per_chip)
+    );
+    println!(
+        "║ Overhead @ 30 %                                 {}       ║",
+        usd(b.overhead_per_chip)
+    );
+    println!(
+        "║ COGS / chip-campaign                            {}       ║",
+        usd(b.cogs_per_chip)
+    );
     println!("╠═══════════════════════════════════════════════════════════════════╣");
-    println!("║ COGS / assay ({:>2} assays/chip)                  {}       ║", b.assays_per_chip, usd(b.cogs_per_assay));
-    println!("║ Break-even ASP @ 30 % GM target                 {}       ║", usd(b.break_even_price));
-    println!("║ Monthly COGS (full cohort)                      {}       ║", usd(b.cogs_per_campaign_total));
+    println!(
+        "║ COGS / assay ({:>2} assays/chip)                  {}       ║",
+        b.assays_per_chip,
+        usd(b.cogs_per_assay)
+    );
+    println!(
+        "║ Break-even ASP @ 30 % GM target                 {}       ║",
+        usd(b.break_even_price)
+    );
+    println!(
+        "║ Monthly COGS (full cohort)                      {}       ║",
+        usd(b.cogs_per_campaign_total)
+    );
     println!("╚═══════════════════════════════════════════════════════════════════╝");
     println!();
 }
 
 fn print_compare(bs: &[Breakdown]) {
-    println!("╔══════════════════════════════════════════════════════════════════════════════════╗");
-    println!("║ LaminarForge COGS — Tier Comparison                                              ║");
-    println!("╠══════════════════════════════════════════════════════════════════════════════════╣");
+    println!(
+        "╔══════════════════════════════════════════════════════════════════════════════════╗"
+    );
+    println!(
+        "║ LaminarForge COGS — Tier Comparison                                              ║"
+    );
+    println!(
+        "╠══════════════════════════════════════════════════════════════════════════════════╣"
+    );
     println!(
         "║ {:<38}  {:>12}  {:>12}  {:>12} ║",
         "Cost element ($/chip-campaign)", "Tier 1", "Tier 2", "Tier 3"
     );
-    println!("╠══════════════════════════════════════════════════════════════════════════════════╣");
+    println!(
+        "╠══════════════════════════════════════════════════════════════════════════════════╣"
+    );
     let rows: [(&str, fn(&Breakdown) -> f64); 15] = [
-        ("Chip unit",                  |b| b.chip_unit),
-        ("Media",                      |b| b.media_per_chip),
-        ("ECM coating",                |b| b.ecm_per_chip),
-        ("Tips",                       |b| b.tips_per_chip),
-        ("Sterile consumables",        |b| b.sterile_per_chip),
-        ("RNA kit",                    |b| b.rna_per_chip),
-        ("qPCR",                       |b| b.qpcr_per_chip),
-        ("Antibody (alloc)",           |b| b.antibody_allocated_per_chip),
-        ("Media bulk (alloc)",         |b| b.media_bulk_allocated_per_chip),
-        ("Labor",                      |b| b.labor_allocated_per_chip),
-        ("Capex amortization",         |b| b.capex_per_chip),
-        ("Facilities",                 |b| b.facilities_per_chip),
-        ("Direct subtotal",            |b| b.direct_per_chip),
-        ("Overhead (30 %)",            |b| b.overhead_per_chip),
-        ("COGS / chip",                |b| b.cogs_per_chip),
+        ("Chip unit", |b| b.chip_unit),
+        ("Media", |b| b.media_per_chip),
+        ("ECM coating", |b| b.ecm_per_chip),
+        ("Tips", |b| b.tips_per_chip),
+        ("Sterile consumables", |b| b.sterile_per_chip),
+        ("RNA kit", |b| b.rna_per_chip),
+        ("qPCR", |b| b.qpcr_per_chip),
+        ("Antibody (alloc)", |b| b.antibody_allocated_per_chip),
+        ("Media bulk (alloc)", |b| b.media_bulk_allocated_per_chip),
+        ("Labor", |b| b.labor_allocated_per_chip),
+        ("Capex amortization", |b| b.capex_per_chip),
+        ("Facilities", |b| b.facilities_per_chip),
+        ("Direct subtotal", |b| b.direct_per_chip),
+        ("Overhead (30 %)", |b| b.overhead_per_chip),
+        ("COGS / chip", |b| b.cogs_per_chip),
     ];
     for (label, f) in rows.iter() {
         println!(
@@ -342,7 +403,9 @@ fn print_compare(bs: &[Breakdown]) {
             usd(f(&bs[2]))
         );
     }
-    println!("╠══════════════════════════════════════════════════════════════════════════════════╣");
+    println!(
+        "╠══════════════════════════════════════════════════════════════════════════════════╣"
+    );
     println!(
         "║ {:<38} {:>13} {:>13} {:>13} ║",
         "COGS / assay",
@@ -364,11 +427,16 @@ fn print_compare(bs: &[Breakdown]) {
         usd(bs[1].cogs_per_campaign_total),
         usd(bs[2].cogs_per_campaign_total)
     );
-    println!("╚══════════════════════════════════════════════════════════════════════════════════╝");
+    println!(
+        "╚══════════════════════════════════════════════════════════════════════════════════╝"
+    );
     println!();
 
     // ASCII scale curve (log-log): $/chip vs tier chips/month
-    let xs: Vec<f64> = bs.iter().map(|b| (b.chips_per_month as f64).log10()).collect();
+    let xs: Vec<f64> = bs
+        .iter()
+        .map(|b| (b.chips_per_month as f64).log10())
+        .collect();
     let ys: Vec<f64> = bs.iter().map(|b| b.cogs_per_chip.log10()).collect();
     println!("── Scale curve ($/chip vs chips/month, log-log) ──");
     let ymin = ys.iter().cloned().fold(f64::INFINITY, f64::min);
@@ -483,7 +551,9 @@ fn help() {
     eprintln!("USAGE:");
     eprintln!("    cogs_model project     [--tier N]");
     eprintln!("    cogs_model compare");
-    eprintln!("    cogs_model sensitivity [--chip-cost X] [--labor-rate X] [--media X] [--overhead X]");
+    eprintln!(
+        "    cogs_model sensitivity [--chip-cost X] [--labor-rate X] [--media X] [--overhead X]"
+    );
     eprintln!("    cogs_model csv");
     eprintln!();
     eprintln!("EXAMPLES:");
@@ -498,7 +568,10 @@ fn main() {
 
     // When invoked by `cargo run --bin cogs_model` with no args,
     // default to `compare` so running the binary does something useful.
-    let cmd = args.first().cloned().unwrap_or_else(|| "compare".to_string());
+    let cmd = args
+        .first()
+        .cloned()
+        .unwrap_or_else(|| "compare".to_string());
 
     let baseline = Assumptions::baseline();
     let ts = tiers();
@@ -530,10 +603,18 @@ fn main() {
         }
         "sensitivity" => {
             let mut a = baseline.clone();
-            if let Some(v) = parse_f64_flag(&args, "--chip-cost") { a.chip_unit_cost = v; }
-            if let Some(v) = parse_f64_flag(&args, "--labor-rate") { a.labor_rate = v; }
-            if let Some(v) = parse_f64_flag(&args, "--media") { a.media_cost_per_ml = v; }
-            if let Some(v) = parse_f64_flag(&args, "--overhead") { a.overhead_pct = v; }
+            if let Some(v) = parse_f64_flag(&args, "--chip-cost") {
+                a.chip_unit_cost = v;
+            }
+            if let Some(v) = parse_f64_flag(&args, "--labor-rate") {
+                a.labor_rate = v;
+            }
+            if let Some(v) = parse_f64_flag(&args, "--media") {
+                a.media_cost_per_ml = v;
+            }
+            if let Some(v) = parse_f64_flag(&args, "--overhead") {
+                a.overhead_pct = v;
+            }
             println!(
                 "Sensitivity: chip=${:.2}  labor=${:.0}/hr  media=${:.2}/mL  overhead={:.0}%\n",
                 a.chip_unit_cost,

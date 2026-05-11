@@ -44,29 +44,14 @@ fn main() {
     // ── Inner Ring ──
 
     // Main ring body
-    let inner_body = centered_cylinder(
-        "inner_body",
-        ring_od / 2.0,
-        ring_height,
-        64,
-    );
+    let inner_body = centered_cylinder("inner_body", ring_od / 2.0, ring_height, 64);
 
     // Core bore (the arm opening)
-    let inner_bore = centered_cylinder(
-        "inner_bore",
-        arm_hole_id / 2.0,
-        ring_height + 2.0,
-        64,
-    );
+    let inner_bore = centered_cylinder("inner_bore", arm_hole_id / 2.0, ring_height + 2.0, 64);
 
     // Flange at one end (sits against inside face of panel)
-    let inner_flange = centered_cylinder(
-        "inner_flange",
-        flange_od / 2.0,
-        flange_thickness,
-        64,
-    )
-    .translate(0.0, 0.0, -(ring_height / 2.0) + flange_thickness / 2.0);
+    let inner_flange = centered_cylinder("inner_flange", flange_od / 2.0, flange_thickness, 64)
+        .translate(0.0, 0.0, -(ring_height / 2.0) + flange_thickness / 2.0);
 
     // Snap-fit barbs: small protrusions on the outer surface near the tip
     // These click past the panel hole and lock against the outer face
@@ -79,14 +64,9 @@ fn main() {
 
         // Each barb is a small ramp-shaped block
         // Simplified as a cube positioned on the outer surface
-        let barb = centered_cube(
-            &format!("barb_{i}"),
-            barb_width,
-            barb_height,
-            barb_length,
-        )
-        .translate(0.0, barb_radial_pos, barb_z)
-        .rotate(0.0, 0.0, angle);
+        let barb = centered_cube(&format!("barb_{i}"), barb_width, barb_height, barb_length)
+            .translate(0.0, barb_radial_pos, barb_z)
+            .rotate(0.0, 0.0, angle);
 
         barbs = barbs + barb;
     }
@@ -117,20 +97,11 @@ fn main() {
         64,
     );
 
-    let outer_bore = centered_cylinder(
-        "outer_bore",
-        outer_bore_d / 2.0,
-        ring_height + 2.0,
-        64,
-    );
+    let outer_bore = centered_cylinder("outer_bore", outer_bore_d / 2.0, ring_height + 2.0, 64);
 
     // Inner bore for arm clearance (same as inner ring)
-    let outer_arm_bore = centered_cylinder(
-        "outer_arm_bore",
-        arm_hole_id / 2.0,
-        ring_height + 2.0,
-        64,
-    );
+    let outer_arm_bore =
+        centered_cylinder("outer_arm_bore", arm_hole_id / 2.0, ring_height + 2.0, 64);
 
     // The outer ring needs a step/ledge to capture the panel:
     // - First portion: wider bore (outer_bore_d) to slip over inner ring

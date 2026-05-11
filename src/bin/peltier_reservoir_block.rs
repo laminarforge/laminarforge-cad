@@ -151,21 +151,11 @@ fn main() {
     // Two tapped holes on the Y edges for heatsink attachment.
 
     let hs_z_offset = -(block_z / 2.0) + hs_bolt_depth / 2.0 - 0.5;
-    let hs_bolt_1 = centered_cylinder(
-        "hs_bolt_1",
-        hs_bolt_d / 2.0,
-        hs_bolt_depth + 1.0,
-        24,
-    )
-    .translate(hs_bolt_x, -hs_bolt_y_offset, hs_z_offset);
+    let hs_bolt_1 = centered_cylinder("hs_bolt_1", hs_bolt_d / 2.0, hs_bolt_depth + 1.0, 24)
+        .translate(hs_bolt_x, -hs_bolt_y_offset, hs_z_offset);
 
-    let hs_bolt_2 = centered_cylinder(
-        "hs_bolt_2",
-        hs_bolt_d / 2.0,
-        hs_bolt_depth + 1.0,
-        24,
-    )
-    .translate(hs_bolt_x, hs_bolt_y_offset, hs_z_offset);
+    let hs_bolt_2 = centered_cylinder("hs_bolt_2", hs_bolt_d / 2.0, hs_bolt_depth + 1.0, 24)
+        .translate(hs_bolt_x, hs_bolt_y_offset, hs_z_offset);
 
     // ── Assemble (subtract all features from body) ──
 
@@ -184,28 +174,20 @@ fn main() {
     println!("Exported: output/peltier_reservoir_block.stl");
     println!();
     println!("── Peltier Reservoir Block Specs ──");
-    println!(
-        "  Body:              {block_x:.0}mm x {block_y:.0}mm x {block_z:.0}mm"
-    );
+    println!("  Body:              {block_x:.0}mm x {block_y:.0}mm x {block_z:.0}mm");
     println!("  Material:          6061-T6 Aluminum");
     println!(
         "  Tube pocket:       {pocket_diameter:.0}mm dia x {pocket_depth:.0}mm deep (50mL conical tube)"
     );
-    println!(
-        "  Thermal mass:      {thermal_mass:.0}mm floor below pocket (heat distribution)"
-    );
-    println!(
-        "  Min wall thickness: {pocket_wall_min:.0}mm (pocket to outer face)"
-    );
+    println!("  Thermal mass:      {thermal_mass:.0}mm floor below pocket (heat distribution)");
+    println!("  Min wall thickness: {pocket_wall_min:.0}mm (pocket to outer face)");
     println!(
         "  TEC recess:        {tec_recess_x:.1}mm x {tec_recess_y:.1}mm x {tec_recess_depth:.1}mm (bottom face)"
     );
     println!(
         "  Thermistor pocket: {therm_diameter:.1}mm dia x {therm_depth:.0}mm deep (from front face)"
     );
-    println!(
-        "  Thermistor Z:      {therm_z:+.0}mm (mid-pocket height)"
-    );
+    println!("  Thermistor Z:      {therm_z:+.0}mm (mid-pocket height)");
     println!(
         "  Corner mounts:     4x M3 ({mount_hole_d:.1}mm clearance), {mount_hole_inset:.0}mm inset"
     );

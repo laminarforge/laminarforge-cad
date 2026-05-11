@@ -138,31 +138,22 @@ fn main() {
     //
     // This is the beam that slides in Y. Length along X.
 
-    let x_beam_body =
-        centered_cube("x_beam_body", x_beam_len, extr_w, extr_h);
-    let x_beam_rail =
-        centered_cube("x_beam_rail", x_beam_len, mgn12_w, mgn12_h)
-            .translate(0.0, 0.0, extr_h / 2.0 + mgn12_h / 2.0);
+    let x_beam_body = centered_cube("x_beam_body", x_beam_len, extr_w, extr_h);
+    let x_beam_rail = centered_cube("x_beam_rail", x_beam_len, mgn12_w, mgn12_h).translate(
+        0.0,
+        0.0,
+        extr_h / 2.0 + mgn12_h / 2.0,
+    );
 
     // End plates: tie X-beam to the two MGN12 Y-carriages on the Y-rails.
     // Plate dimensions: 40 × 40 × 5 mm, one at each end of X-beam.
     let end_plate_x: f64 = 40.0;
     let end_plate_y: f64 = 40.0;
     let end_plate_t: f64 = 5.0;
-    let end_plate_left = centered_cube(
-        "end_plate_left",
-        end_plate_t,
-        end_plate_y,
-        end_plate_x,
-    )
-    .translate(-x_beam_len / 2.0 - end_plate_t / 2.0, 0.0, 0.0);
-    let end_plate_right = centered_cube(
-        "end_plate_right",
-        end_plate_t,
-        end_plate_y,
-        end_plate_x,
-    )
-    .translate(x_beam_len / 2.0 + end_plate_t / 2.0, 0.0, 0.0);
+    let end_plate_left = centered_cube("end_plate_left", end_plate_t, end_plate_y, end_plate_x)
+        .translate(-x_beam_len / 2.0 - end_plate_t / 2.0, 0.0, 0.0);
+    let end_plate_right = centered_cube("end_plate_right", end_plate_t, end_plate_y, end_plate_x)
+        .translate(x_beam_len / 2.0 + end_plate_t / 2.0, 0.0, 0.0);
 
     let x_beam = x_beam_body + x_beam_rail + end_plate_left + end_plate_right;
     x_beam
@@ -182,8 +173,7 @@ fn main() {
 
     // Drop column attach hole (central, for the head drop rod)
     let drop_rod_d: f64 = 16.0;
-    let drop_hole =
-        centered_cylinder("drop_hole", drop_rod_d / 2.0 + 0.2, carr_z + 2.0, 48);
+    let drop_hole = centered_cylinder("drop_hole", drop_rod_d / 2.0 + 0.2, carr_z + 2.0, 48);
 
     // MGN12 mount pattern (4× M3, 20 × 20 mm spacing)
     let mgn_bolt_d: f64 = 3.3;
@@ -236,64 +226,48 @@ fn main() {
     );
 
     // Optical aperture (bottom face, 40 mm Ø for lens + LED ring)
-    let aperture = centered_cylinder(
-        "aperture",
-        40.0 / 2.0,
-        head_wall + 2.0,
-        48,
-    )
-    .translate(0.0, 0.0, -head_body_h / 2.0 + head_wall / 2.0);
+    let aperture = centered_cylinder("aperture", 40.0 / 2.0, head_wall + 2.0, 48).translate(
+        0.0,
+        0.0,
+        -head_body_h / 2.0 + head_wall / 2.0,
+    );
 
     // Drop-rod socket on top (16 mm bore, captures the drop rod with
     // a cross-pin at 10 mm depth)
-    let drop_socket = centered_cylinder(
-        "drop_socket",
-        drop_rod_d / 2.0 + 0.2,
-        30.0,
-        48,
-    )
-    .translate(0.0, 0.0, head_body_h / 2.0 - 15.0);
+    let drop_socket = centered_cylinder("drop_socket", drop_rod_d / 2.0 + 0.2, 30.0, 48).translate(
+        0.0,
+        0.0,
+        head_body_h / 2.0 - 15.0,
+    );
 
     // Cross-pin hole (M4)
-    let cross_pin = centered_cylinder(
-        "cross_pin",
-        4.2 / 2.0,
-        head_d + 2.0,
-        24,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(0.0, 0.0, head_body_h / 2.0 - 10.0);
+    let cross_pin = centered_cylinder("cross_pin", 4.2 / 2.0, head_d + 2.0, 24)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(0.0, 0.0, head_body_h / 2.0 - 10.0);
 
     // Cable gland cutout (M16 fitting, offset from drop socket)
-    let cable_gland = centered_cylinder(
-        "cable_gland",
-        16.5 / 2.0,
-        head_wall + 2.0,
-        32,
-    )
-    .translate(20.0, 20.0, head_body_h / 2.0 - head_wall / 2.0);
+    let cable_gland = centered_cylinder("cable_gland", 16.5 / 2.0, head_wall + 2.0, 32).translate(
+        20.0,
+        20.0,
+        head_body_h / 2.0 - head_wall / 2.0,
+    );
 
     // Fluorescence excitation window (3× 8 mm Ø ports for 470 nm LEDs,
     // bottom face, at 20 mm radius, 120° apart)
     let mut blue_ports = Part::empty("blue_ports");
     for i in 0..3 {
         let theta = (i as f64) * 120.0_f64.to_radians();
-        let hole = centered_cylinder(
-            &format!("blue_{i}"),
-            8.0 / 2.0,
-            head_wall + 2.0,
-            32,
-        )
-        .translate(
-            20.0 * theta.cos(),
-            20.0 * theta.sin(),
-            -head_body_h / 2.0 + head_wall / 2.0,
-        );
+        let hole = centered_cylinder(&format!("blue_{i}"), 8.0 / 2.0, head_wall + 2.0, 32)
+            .translate(
+                20.0 * theta.cos(),
+                20.0 * theta.sin(),
+                -head_body_h / 2.0 + head_wall / 2.0,
+            );
         blue_ports = blue_ports + hole;
     }
 
-    let head = (head_shell - head_cavity) - aperture - drop_socket - cross_pin
-        - cable_gland - blue_ports;
+    let head =
+        (head_shell - head_cavity) - aperture - drop_socket - cross_pin - cable_gland - blue_ports;
 
     head.write_stl("output/imaging_gantry_head.stl").unwrap();
     println!("Exported: output/imaging_gantry_head.stl");
@@ -317,12 +291,7 @@ fn main() {
     let win_glass_y: f64 = 50.0;
     let win_glass_t: f64 = 1.1;
 
-    let win_frame_body = centered_cube(
-        "win_frame_body",
-        win_frame_x,
-        win_frame_y,
-        win_frame_t,
-    );
+    let win_frame_body = centered_cube("win_frame_body", win_frame_x, win_frame_y, win_frame_t);
     // Pocket for the glass tile (recessed from top face)
     let win_glass_pocket = centered_cube(
         "win_glass_pocket",
@@ -333,8 +302,7 @@ fn main() {
     .translate(0.0, 0.0, win_frame_t / 2.0 - (win_glass_t + 0.1) / 2.0);
 
     // Through-aperture (clear optical path, 42 mm Ø through the frame)
-    let win_aperture =
-        centered_cylinder("win_aperture", 42.0 / 2.0, win_frame_t + 2.0, 64);
+    let win_aperture = centered_cylinder("win_aperture", 42.0 / 2.0, win_frame_t + 2.0, 64);
 
     // 4× M3 mounting holes to the head bottom face (through the frame corners)
     let mut win_mount_holes = Part::empty("win_mount_holes");
@@ -356,17 +324,19 @@ fn main() {
     }
 
     // Two copper-strip slots (along +X edge, 8 × 1.5 mm, 10 mm apart)
-    let strip_1 = centered_cube("strip_1", 12.0, 8.0, 1.5)
-        .translate(win_frame_x / 2.0 - 8.0, 6.0, win_frame_t / 2.0 - 0.75);
-    let strip_2 = centered_cube("strip_2", 12.0, 8.0, 1.5)
-        .translate(win_frame_x / 2.0 - 8.0, -6.0, win_frame_t / 2.0 - 0.75);
+    let strip_1 = centered_cube("strip_1", 12.0, 8.0, 1.5).translate(
+        win_frame_x / 2.0 - 8.0,
+        6.0,
+        win_frame_t / 2.0 - 0.75,
+    );
+    let strip_2 = centered_cube("strip_2", 12.0, 8.0, 1.5).translate(
+        win_frame_x / 2.0 - 8.0,
+        -6.0,
+        win_frame_t / 2.0 - 0.75,
+    );
 
-    let heated_window = win_frame_body
-        - win_glass_pocket
-        - win_aperture
-        - win_mount_holes
-        - strip_1
-        - strip_2;
+    let heated_window =
+        win_frame_body - win_glass_pocket - win_aperture - win_mount_holes - strip_1 - strip_2;
     heated_window
         .write_stl("output/imaging_gantry_heated_window.stl")
         .unwrap();
@@ -385,19 +355,12 @@ fn main() {
     let mnt_h: f64 = 40.0;
     let mnt_t: f64 = 5.0;
 
-    let vertical_leg = centered_cube(
-        "mnt_vert",
-        mnt_x,
-        mnt_t,
-        mnt_h,
+    let vertical_leg = centered_cube("mnt_vert", mnt_x, mnt_t, mnt_h);
+    let horizontal_leg = centered_cube("mnt_horiz", mnt_x, mnt_y, mnt_t).translate(
+        0.0,
+        mnt_y / 2.0 - mnt_t / 2.0,
+        mnt_h / 2.0 - mnt_t / 2.0,
     );
-    let horizontal_leg = centered_cube(
-        "mnt_horiz",
-        mnt_x,
-        mnt_y,
-        mnt_t,
-    )
-    .translate(0.0, mnt_y / 2.0 - mnt_t / 2.0, mnt_h / 2.0 - mnt_t / 2.0);
 
     // Ceiling bolt pattern (4× M5 on 30 × 30 mm in horizontal leg)
     let mut ceil_holes = Part::empty("ceil_holes");
@@ -419,13 +382,11 @@ fn main() {
     }
 
     // Extrusion end bolt (1× M5 central on the vertical leg)
-    let ext_bolt =
-        centered_cylinder("ext_bolt", 5.5 / 2.0, mnt_t + 2.0, 24)
-            .rotate(90.0, 0.0, 0.0)
-            .translate(0.0, 0.0, 0.0);
+    let ext_bolt = centered_cylinder("ext_bolt", 5.5 / 2.0, mnt_t + 2.0, 24)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(0.0, 0.0, 0.0);
 
-    let ceiling_mount =
-        (vertical_leg + horizontal_leg) - ceil_holes - ext_bolt;
+    let ceiling_mount = (vertical_leg + horizontal_leg) - ceil_holes - ext_bolt;
     ceiling_mount
         .write_stl("output/imaging_gantry_ceiling_mount.stl")
         .unwrap();
@@ -445,54 +406,34 @@ fn main() {
         chamber_y + 6.0,
         chamber_z + 6.0,
     );
-    let chamber_inner =
-        centered_cube("asm_chamber_inner", chamber_x, chamber_y, chamber_z);
+    let chamber_inner = centered_cube("asm_chamber_inner", chamber_x, chamber_y, chamber_z);
     asm = asm + (chamber_outer - chamber_inner);
 
     // Rack silhouette: solid bounding box sitting on the floor
-    let rack_silhouette = centered_cube(
-        "asm_rack",
-        rack_x,
-        rack_y,
-        rack_post_height,
-    )
-    .translate(0.0, 0.0, rack_base_top + rack_post_height / 2.0);
+    let rack_silhouette = centered_cube("asm_rack", rack_x, rack_y, rack_post_height).translate(
+        0.0,
+        0.0,
+        rack_base_top + rack_post_height / 2.0,
+    );
     asm = asm + rack_silhouette;
 
     // Y-rails (two of them) at ±y_beam_x, spanning Y
     for (i, &sx) in [-1.0f64, 1.0].iter().enumerate() {
-        let y_rail_extr = centered_cube(
-            &format!("y_rail_extr_{i}"),
-            extr_w,
-            y_beam_len,
-            extr_h,
-        )
-        .translate(sx * y_beam_x, 0.0, beam_center_z);
-        let y_rail_mgn = centered_cube(
-            &format!("y_rail_mgn_{i}"),
-            mgn12_w,
-            y_beam_len,
-            mgn12_h,
-        )
-        .translate(sx * y_beam_x, 0.0, mgn12_center_z);
+        let y_rail_extr = centered_cube(&format!("y_rail_extr_{i}"), extr_w, y_beam_len, extr_h)
+            .translate(sx * y_beam_x, 0.0, beam_center_z);
+        let y_rail_mgn = centered_cube(&format!("y_rail_mgn_{i}"), mgn12_w, y_beam_len, mgn12_h)
+            .translate(sx * y_beam_x, 0.0, mgn12_center_z);
         asm = asm + y_rail_extr + y_rail_mgn;
     }
 
     // X-beam at Y = 0 (center of travel) straddling the two Y-rails
-    let xb_body_asm = centered_cube(
-        "asm_xb_body",
-        x_beam_len,
-        extr_w,
-        extr_h,
-    )
-    .translate(0.0, 0.0, beam_center_z);
-    let xb_rail_asm = centered_cube(
-        "asm_xb_rail",
-        x_beam_len,
-        mgn12_w,
-        mgn12_h,
-    )
-    .translate(0.0, 0.0, mgn12_center_z);
+    let xb_body_asm =
+        centered_cube("asm_xb_body", x_beam_len, extr_w, extr_h).translate(0.0, 0.0, beam_center_z);
+    let xb_rail_asm = centered_cube("asm_xb_rail", x_beam_len, mgn12_w, mgn12_h).translate(
+        0.0,
+        0.0,
+        mgn12_center_z,
+    );
     asm = asm + xb_body_asm + xb_rail_asm;
 
     // Y-carriages at each end of the X-beam (one sits on each Y-rail)
@@ -512,49 +453,38 @@ fn main() {
     }
 
     // X-carriage on the X-beam at X = 0 (center of travel)
-    let xc = centered_cube(
-        "asm_xc",
-        carr_x,
-        carr_y,
-        carr_z,
-    )
-    .translate(0.0, 0.0, mgn12_center_z + mgn12_h / 2.0 + carr_z / 2.0);
+    let xc = centered_cube("asm_xc", carr_x, carr_y, carr_z).translate(
+        0.0,
+        0.0,
+        mgn12_center_z + mgn12_h / 2.0 + carr_z / 2.0,
+    );
     asm = asm + xc;
 
     // Drop column (16 mm round rod, 160 mm long, hanging below X-carriage)
-    let drop_col = centered_cylinder("asm_drop", drop_rod_d / 2.0, head_drop, 32)
-        .translate(
-            0.0,
-            0.0,
-            mgn12_center_z + mgn12_h / 2.0 + carr_z - head_drop / 2.0,
-        );
+    let drop_col = centered_cylinder("asm_drop", drop_rod_d / 2.0, head_drop, 32).translate(
+        0.0,
+        0.0,
+        mgn12_center_z + mgn12_h / 2.0 + carr_z - head_drop / 2.0,
+    );
     asm = asm + drop_col;
 
     // Imaging head (cylinder) at the bottom of the drop column
-    let head_asm = centered_cylinder("asm_head", head_d / 2.0, head_body_h, 48)
-        .translate(0.0, 0.0, head_z);
+    let head_asm =
+        centered_cylinder("asm_head", head_d / 2.0, head_body_h, 48).translate(0.0, 0.0, head_z);
     asm = asm + head_asm;
 
     // Heated window just below the head (frame silhouette)
-    let win_asm = centered_cube(
-        "asm_window",
-        win_frame_x,
-        win_frame_y,
-        win_frame_t,
-    )
-    .translate(0.0, 0.0, head_z - head_body_h / 2.0 - win_frame_t / 2.0);
+    let win_asm = centered_cube("asm_window", win_frame_x, win_frame_y, win_frame_t).translate(
+        0.0,
+        0.0,
+        head_z - head_body_h / 2.0 - win_frame_t / 2.0,
+    );
     asm = asm + win_asm;
 
     // 2× ceiling mounts (bridging Y-beam ends to chamber ceiling)
     for (i, &sx) in [-1.0f64, 1.0].iter().enumerate() {
         for (j, &sy) in [-1.0f64, 1.0].iter().enumerate() {
-            let cm = centered_cube(
-                &format!("asm_cm_{i}_{j}"),
-                mnt_x,
-                mnt_y,
-                mnt_h,
-            )
-            .translate(
+            let cm = centered_cube(&format!("asm_cm_{i}_{j}"), mnt_x, mnt_y, mnt_h).translate(
                 sx * y_beam_x,
                 sy * (y_beam_len / 2.0 - mnt_y / 2.0),
                 beam_top_z + mnt_h / 2.0 - mnt_t,
@@ -563,8 +493,7 @@ fn main() {
         }
     }
 
-    asm.write_stl("output/imaging_gantry_assembly.stl")
-        .unwrap();
+    asm.write_stl("output/imaging_gantry_assembly.stl").unwrap();
     println!("Exported: output/imaging_gantry_assembly.stl");
 
     // ══════════════════════════════════════════════════════════════
@@ -580,10 +509,7 @@ fn main() {
     );
 
     // Check 2: Y-rail extrusion fits under chamber ceiling
-    assert!(
-        beam_top_z < ceiling_z,
-        "Y-rail overlaps chamber ceiling"
-    );
+    assert!(beam_top_z < ceiling_z, "Y-rail overlaps chamber ceiling");
 
     // Check 3: X-beam + Y-travel stays within chamber
     assert!(

@@ -12,12 +12,11 @@ fn main() {
 
     let args: Vec<String> = std::env::args().collect();
     let freeroute = args.iter().any(|a| a == "--freeroute");
-    let from_ses = args.iter().position(|a| a == "--from-ses")
-        .map(|i| {
-            args.get(i + 1)
-                .unwrap_or_else(|| panic!("--from-ses requires a path argument"))
-                .clone()
-        });
+    let from_ses = args.iter().position(|a| a == "--from-ses").map(|i| {
+        args.get(i + 1)
+            .unwrap_or_else(|| panic!("--from-ses requires a path argument"))
+            .clone()
+    });
 
     let mut s = String::with_capacity(512 * 1024);
 
@@ -43,8 +42,12 @@ fn main() {
         let ses_data = pcb::ses::parse_ses(Path::new(ses_path));
         let total_wires: usize = ses_data.routes.iter().map(|r| r.wires.len()).sum();
         let total_vias: usize = ses_data.routes.iter().map(|r| r.vias.len()).sum();
-        println!("\nImporting SES: {} nets, {} wires, {} vias",
-            ses_data.routes.len(), total_wires, total_vias);
+        println!(
+            "\nImporting SES: {} nets, {} wires, {} vias",
+            ses_data.routes.len(),
+            total_wires,
+            total_vias
+        );
         pcb::ses::write_ses_traces(&mut s, &ses_data);
 
         // ── Post-SES fixups ──
@@ -88,10 +91,15 @@ fn main() {
         println!("     /opt/homebrew/opt/openjdk/bin/java -jar tools/freerouting.jar");
         println!("  2. File → Open Design → select {}", dsn_path.display());
         println!("  3. Route → Autorouter (or route manually)");
-        println!("  4. File → Export Specctra Session File → save as {}", output_dir.join("lamp_v1.ses").display());
+        println!(
+            "  4. File → Export Specctra Session File → save as {}",
+            output_dir.join("lamp_v1.ses").display()
+        );
         println!("  5. Import results:");
-        println!("     cargo run --release --bin pcb_layout -- --from-ses {} --validate",
-            output_dir.join("lamp_v1.ses").display());
+        println!(
+            "     cargo run --release --bin pcb_layout -- --from-ses {} --validate",
+            output_dir.join("lamp_v1.ses").display()
+        );
     }
 
     if args.iter().any(|a| a == "--diagnose") {
@@ -122,18 +130,14 @@ fn point_to_segment_dist(px: f64, py: f64, x1: f64, y1: f64, x2: f64, y2: f64) -
 
 /// Post-SES fixups: place GND stitching vias on a grid, avoiding all traces,
 /// existing vias, component pads, mounting holes, and board edges.
-fn write_ses_fixups(
-    pcb: &mut String,
-    ses_data: &pcb::ses::SesData,
-    components: &[pcb::Component],
-) {
+fn write_ses_fixups(pcb: &mut String, ses_data: &pcb::ses::SesData, components: &[pcb::Component]) {
     use laminarforge_cad::pcb::nets::*;
     use laminarforge_cad::pcb::write_via;
     use laminarforge_cad::PCB_LENGTH;
     use laminarforge_cad::PCB_WIDTH;
 
-    let vp = 0.6;   // via pad diameter
-    let vd = 0.3;   // via drill diameter
+    let vp = 0.6; // via pad diameter
+    let vd = 0.3; // via drill diameter
     let vr = vp / 2.0; // via pad radius
 
     let clearance = 0.15; // mm clearance between copper edges (above KiCad 0.127mm rule)
@@ -169,9 +173,7 @@ fn write_ses_fixups(
     }
 
     // Mounting holes
-    let mount_holes: [(f64, f64); 4] = [
-        (5.0, 5.0), (95.0, 5.0), (5.0, 75.0), (95.0, 75.0),
-    ];
+    let mount_holes: [(f64, f64); 4] = [(5.0, 5.0), (95.0, 5.0), (5.0, 75.0), (95.0, 75.0)];
     let mount_keepout = 4.0;
     let edge_keepout = 1.5;
 
@@ -188,33 +190,48 @@ fn write_ses_fixups(
                 let dy = y - my;
                 (dx * dx + dy * dy).sqrt() < mount_keepout
             });
-            if near_mount { y += grid_step; continue; }
+            if near_mount {
+                y += grid_step;
+                continue;
+            }
 
             let too_close_to_trace = segments.iter().any(|&(x1, y1, x2, y2, hw)| {
                 point_to_segment_dist(x, y, x1, y1, x2, y2) < hw + vr + clearance
             });
-            if too_close_to_trace { y += grid_step; continue; }
+            if too_close_to_trace {
+                y += grid_step;
+                continue;
+            }
 
             let too_close_to_via = existing_vias.iter().any(|&(vx, vy)| {
                 let dx = x - vx;
                 let dy = y - vy;
                 (dx * dx + dy * dy).sqrt() < vp + clearance
             });
-            if too_close_to_via { y += grid_step; continue; }
+            if too_close_to_via {
+                y += grid_step;
+                continue;
+            }
 
             let too_close_to_pad = pad_obstacles.iter().any(|&(px, py, pr)| {
                 let dx = x - px;
                 let dy = y - py;
                 (dx * dx + dy * dy).sqrt() < pr + vr + clearance
             });
-            if too_close_to_pad { y += grid_step; continue; }
+            if too_close_to_pad {
+                y += grid_step;
+                continue;
+            }
 
             let too_close_to_stitch = stitch_positions.iter().any(|&(sx, sy)| {
                 let dx = x - sx;
                 let dy = y - sy;
                 (dx * dx + dy * dy).sqrt() < vp + clearance
             });
-            if too_close_to_stitch { y += grid_step; continue; }
+            if too_close_to_stitch {
+                y += grid_step;
+                continue;
+            }
 
             write_via(pcb, x, y, vp, vd, NET_GND);
             stitch_positions.push((x, y));

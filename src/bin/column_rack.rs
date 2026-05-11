@@ -36,18 +36,15 @@ fn main() {
 
     // ── Build base ──
 
-    let base = centered_cube("base", base_x, base_y, base_z)
-        .translate(0.0, 0.0, base_z / 2.0);
+    let base = centered_cube("base", base_x, base_y, base_z).translate(0.0, 0.0, base_z / 2.0);
 
     // ── Tube holes (2 rows of 4, from top of base) ──
 
     let mut holes = Part::empty("holes");
     for row in 0..num_rows {
         for col in 0..num_cols {
-            let hx = -(num_cols as f64 - 1.0) * hole_spacing / 2.0
-                + (col as f64) * hole_spacing;
-            let hy = -(num_rows as f64 - 1.0) * hole_spacing / 2.0
-                + (row as f64) * hole_spacing;
+            let hx = -(num_cols as f64 - 1.0) * hole_spacing / 2.0 + (col as f64) * hole_spacing;
+            let hy = -(num_rows as f64 - 1.0) * hole_spacing / 2.0 + (row as f64) * hole_spacing;
             let hole = centered_cylinder(
                 &format!("hole_{row}_{col}"),
                 hole_d / 2.0,
@@ -61,8 +58,11 @@ fn main() {
 
     // ── Back wall ──
 
-    let back_wall = centered_cube("back_wall", back_wall_x, back_wall_y, back_wall_z)
-        .translate(0.0, base_y / 2.0 - back_wall_y / 2.0, base_z + back_wall_z / 2.0);
+    let back_wall = centered_cube("back_wall", back_wall_x, back_wall_y, back_wall_z).translate(
+        0.0,
+        base_y / 2.0 - back_wall_y / 2.0,
+        base_z + back_wall_z / 2.0,
+    );
 
     // ── Side supports (triangular braces) ──
     // Triangular braces: full rectangle that we cut diagonally.
@@ -73,8 +73,11 @@ fn main() {
     // make a triangle shape.
 
     // Left brace
-    let left_brace_block = centered_cube("left_brace", side_x, side_y, side_z)
-        .translate(-(base_x / 2.0) + side_x / 2.0, 0.0, base_z + side_z / 2.0);
+    let left_brace_block = centered_cube("left_brace", side_x, side_y, side_z).translate(
+        -(base_x / 2.0) + side_x / 2.0,
+        0.0,
+        base_z + side_z / 2.0,
+    );
 
     // Diagonal cut: a large cube rotated to slice from front-top to back-bottom
     // The triangle should be: full height at back (Y = base_y/2), zero at front (Y = -base_y/2)
@@ -83,11 +86,18 @@ fn main() {
     let cut_diag = (side_y * side_y + side_z * side_z).sqrt();
     let left_cut = centered_cube("left_cut", side_x + 2.0, cut_diag * 2.0, cut_diag * 2.0)
         .rotate(cut_angle, 0.0, 0.0)
-        .translate(-(base_x / 2.0) + side_x / 2.0, -side_y / 2.0, base_z + side_z);
+        .translate(
+            -(base_x / 2.0) + side_x / 2.0,
+            -side_y / 2.0,
+            base_z + side_z,
+        );
 
     // Right brace
-    let right_brace_block = centered_cube("right_brace", side_x, side_y, side_z)
-        .translate(base_x / 2.0 - side_x / 2.0, 0.0, base_z + side_z / 2.0);
+    let right_brace_block = centered_cube("right_brace", side_x, side_y, side_z).translate(
+        base_x / 2.0 - side_x / 2.0,
+        0.0,
+        base_z + side_z / 2.0,
+    );
 
     let right_cut = centered_cube("right_cut", side_x + 2.0, cut_diag * 2.0, cut_diag * 2.0)
         .rotate(cut_angle, 0.0, 0.0)

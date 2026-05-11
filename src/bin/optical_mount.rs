@@ -49,7 +49,12 @@ use vcad::{centered_cube, centered_cylinder, Part};
 fn main() {
     // ── Mount body ──
     let mount_length = HEATER_ZONE_LENGTH; // 98mm, matches heating block
-    let body = centered_cube("body", mount_length, OPTICAL_MOUNT_WIDTH, OPTICAL_MOUNT_HEIGHT);
+    let body = centered_cube(
+        "body",
+        mount_length,
+        OPTICAL_MOUNT_WIDTH,
+        OPTICAL_MOUNT_HEIGHT,
+    );
 
     let first_x = first_slot_x(); // -42mm at 12mm spacing
 
@@ -120,7 +125,7 @@ fn main() {
     let wire_z = -OPTICAL_MOUNT_HEIGHT / 2.0 + OPTICAL_WIRE_CHANNEL_WIDTH / 2.0;
     let wire_channel = centered_cube(
         "wire_channel",
-        mount_length - 4.0, // inset from ends
+        mount_length - 4.0,               // inset from ends
         OPTICAL_WIRE_CHANNEL_DEPTH + 1.0, // +1mm to cut through back face
         OPTICAL_WIRE_CHANNEL_WIDTH,
     )
@@ -203,14 +208,18 @@ fn main() {
     println!("  OPT101 divider:    {divider_wall:.1}mm between adjacent recesses");
     println!();
     println!("  Tube channels:     {NUM_SLOTS}x {OPTICAL_TUBE_CHANNEL_WIDTH:.0}mm wide (open top)");
-    println!("  Optical aperture:  {OPTICAL_APERTURE_DIAMETER:.0}mm dia (LED to OPT101 through tube)");
+    println!(
+        "  Optical aperture:  {OPTICAL_APERTURE_DIAMETER:.0}mm dia (LED to OPT101 through tube)"
+    );
     println!("  Wire channel:      {OPTICAL_WIRE_CHANNEL_WIDTH:.0}mm x {OPTICAL_WIRE_CHANNEL_DEPTH:.1}mm groove (bottom back face)");
     println!("  Mounting holes:    2x M3 ({BLOCK_MOUNT_HOLE_DIAMETER:.1}mm) at +/-{BLOCK_MOUNT_HOLE_X:.0}mm");
     println!("  Alignment pins:    2x {align_pin_d:.1}mm holes at +/-20mm");
     println!();
     println!("── Optical Path ──");
     println!("  LED (470nm) -> {OPTICAL_APERTURE_DIAMETER:.0}mm aperture -> PCR tube -> {OPTICAL_APERTURE_DIAMETER:.0}mm aperture -> OPT101P window");
-    println!("  Front wall:  {OPTICAL_LED_WALL:.0}mm (LED {OPTICAL_LED_HOLE_DEPTH:.0}mm + wall 2mm)");
+    println!(
+        "  Front wall:  {OPTICAL_LED_WALL:.0}mm (LED {OPTICAL_LED_HOLE_DEPTH:.0}mm + wall 2mm)"
+    );
     println!("  Tube gap:    {OPTICAL_TUBE_GAP:.0}mm (tube OD {TUBE_OD:.1}mm + clearance)");
     println!("  Detector wall: {OPTICAL_DETECTOR_WALL:.0}mm (OPT101 {OPTICAL_OPT101_RECESS_DEPTH:.0}mm + wall 3mm)");
     println!();

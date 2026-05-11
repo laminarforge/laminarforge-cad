@@ -1,6 +1,6 @@
+use std::fmt::Write;
 use std::fs;
 use std::path::Path;
-use std::fmt::Write;
 
 use super::Component;
 
@@ -80,7 +80,12 @@ fn generate_laminarforge_mod(comp: &Component) -> String {
     writeln!(s, "\t(version 20241229)").unwrap();
     writeln!(s, "\t(generator \"laminarforge_pcb_gen\")").unwrap();
     writeln!(s, "\t(layer \"F.Cu\")").unwrap();
-    writeln!(s, "\t(descr \"LaminarForge auto-generated footprint for {}\")", name).unwrap();
+    writeln!(
+        s,
+        "\t(descr \"LaminarForge auto-generated footprint for {}\")",
+        name
+    )
+    .unwrap();
     writeln!(s, "\t(tags \"laminarforge {}\")", name).unwrap();
 
     // Reference property
@@ -103,18 +108,31 @@ fn generate_laminarforge_mod(comp: &Component) -> String {
             writeln!(
                 s,
                 "\t(pad \"{}\" {} {} (at {} {}) (size {} {}) (drill {}) (layers {}))",
-                pad.number, pad.pad_type, pad.shape,
-                pad.x, pad.y, pad.width, pad.height,
-                drill, pad.layers
-            ).unwrap();
+                pad.number,
+                pad.pad_type,
+                pad.shape,
+                pad.x,
+                pad.y,
+                pad.width,
+                pad.height,
+                drill,
+                pad.layers
+            )
+            .unwrap();
         } else {
             writeln!(
                 s,
                 "\t(pad \"{}\" {} {} (at {} {}) (size {} {}) (layers {}))",
-                pad.number, pad.pad_type, pad.shape,
-                pad.x, pad.y, pad.width, pad.height,
+                pad.number,
+                pad.pad_type,
+                pad.shape,
+                pad.x,
+                pad.y,
+                pad.width,
+                pad.height,
                 pad.layers
-            ).unwrap();
+            )
+            .unwrap();
         }
     }
 
@@ -165,7 +183,8 @@ fn generate_mounting_hole_mod() -> String {
 	)
 	(embedded_fonts no)
 )
-"#.to_string()
+"#
+    .to_string()
 }
 
 /// Write the KiCad project file with DRC rule severities configured.

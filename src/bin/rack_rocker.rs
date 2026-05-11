@@ -81,7 +81,7 @@ fn main() {
 
     // Pivot geometry
     let pivot_axis_z = base_z / 2.0 + pivot_clearance; // above origin
-    let pivot_arm_r: f64 = 60.0;                        // linkage arm radius
+    let pivot_arm_r: f64 = 60.0; // linkage arm radius
 
     // R3 bearing (ABEC-1, shielded): 19 mm OD × 9.525 mm ID × 5 mm thick
     let bearing_od: f64 = 19.0;
@@ -142,15 +142,20 @@ fn main() {
     let mut foot_pockets = Part::empty("foot_pockets");
     for (i, (fx, fy)) in [
         (-base_x / 2.0 + foot_inset, -base_y / 2.0 + foot_inset),
-        (-base_x / 2.0 + foot_inset,  base_y / 2.0 - foot_inset),
-        ( base_x / 2.0 - foot_inset, -base_y / 2.0 + foot_inset),
-        ( base_x / 2.0 - foot_inset,  base_y / 2.0 - foot_inset),
+        (-base_x / 2.0 + foot_inset, base_y / 2.0 - foot_inset),
+        (base_x / 2.0 - foot_inset, -base_y / 2.0 + foot_inset),
+        (base_x / 2.0 - foot_inset, base_y / 2.0 - foot_inset),
     ]
     .iter()
     .enumerate()
     {
-        let pocket = centered_cylinder(&format!("foot_pocket_{i}"), foot_d / 2.0, foot_depth + 0.1, 32)
-            .translate(*fx, *fy, -(base_z / 2.0) + foot_depth / 2.0);
+        let pocket = centered_cylinder(
+            &format!("foot_pocket_{i}"),
+            foot_d / 2.0,
+            foot_depth + 0.1,
+            32,
+        )
+        .translate(*fx, *fy, -(base_z / 2.0) + foot_depth / 2.0);
         foot_pockets = foot_pockets + pocket;
     }
 
@@ -163,27 +168,33 @@ fn main() {
     let boss_cy: f64 = 0.0;
     let boss_cz: f64 = base_z / 2.0 + boss_z / 2.0;
 
-    let stepper_boss = centered_cube("stepper_boss", boss_x, boss_y, boss_z)
-        .translate(boss_cx, boss_cy, boss_cz);
+    let stepper_boss =
+        centered_cube("stepper_boss", boss_x, boss_y, boss_z).translate(boss_cx, boss_cy, boss_cz);
 
     // Clearance cutout for the stepper body (cylindrical ⌀ 56.4 mm)
     // Drilled into +X face of the boss. Shaft points +X.
-    let stepper_body_hole = centered_cylinder("stepper_body_hole", nema23_body / 2.0, boss_x + 2.0, 48)
-        .rotate(0.0, 90.0, 0.0)
-        .translate(boss_cx, boss_cy, boss_cz);
+    let stepper_body_hole =
+        centered_cylinder("stepper_body_hole", nema23_body / 2.0, boss_x + 2.0, 48)
+            .rotate(0.0, 90.0, 0.0)
+            .translate(boss_cx, boss_cy, boss_cz);
 
     // Shaft pass-through (6.35 mm) through the +X face
-    let stepper_shaft_hole = centered_cylinder("stepper_shaft_hole", nema23_shaft_d / 2.0 + 0.5, boss_x + 2.0, 32)
-        .rotate(0.0, 90.0, 0.0)
-        .translate(boss_cx, boss_cy, boss_cz);
+    let stepper_shaft_hole = centered_cylinder(
+        "stepper_shaft_hole",
+        nema23_shaft_d / 2.0 + 0.5,
+        boss_x + 2.0,
+        32,
+    )
+    .rotate(0.0, 90.0, 0.0)
+    .translate(boss_cx, boss_cy, boss_cz);
 
     // 4× M5 mounting holes through the -X (back) face of the boss
     let mut nema_bolts = Part::empty("nema_bolts");
     for (i, (dy, dz)) in [
         (-nema23_bolt_spacing / 2.0, -nema23_bolt_spacing / 2.0),
-        (-nema23_bolt_spacing / 2.0,  nema23_bolt_spacing / 2.0),
-        ( nema23_bolt_spacing / 2.0, -nema23_bolt_spacing / 2.0),
-        ( nema23_bolt_spacing / 2.0,  nema23_bolt_spacing / 2.0),
+        (-nema23_bolt_spacing / 2.0, nema23_bolt_spacing / 2.0),
+        (nema23_bolt_spacing / 2.0, -nema23_bolt_spacing / 2.0),
+        (nema23_bolt_spacing / 2.0, nema23_bolt_spacing / 2.0),
     ]
     .iter()
     .enumerate()
@@ -201,13 +212,16 @@ fn main() {
     let ls_mount_z: f64 = 20.0;
     // Near end: just past stepper boss. Far end: near +X edge of base.
     let ls_mount_near_cx = boss_cx + boss_x / 2.0 + ls_mount_x / 2.0 + 5.0;
-    let ls_mount_far_cx  =  base_x / 2.0 - ls_mount_x / 2.0 - 20.0;
+    let ls_mount_far_cx = base_x / 2.0 - ls_mount_x / 2.0 - 20.0;
     let ls_mount_cz = base_z / 2.0 + ls_mount_z / 2.0;
 
     let ls_mount_near = centered_cube("ls_mount_near", ls_mount_x, ls_mount_y, ls_mount_z)
         .translate(ls_mount_near_cx, 0.0, ls_mount_cz);
-    let ls_mount_far = centered_cube("ls_mount_far", ls_mount_x, ls_mount_y, ls_mount_z)
-        .translate(ls_mount_far_cx, 0.0, ls_mount_cz);
+    let ls_mount_far = centered_cube("ls_mount_far", ls_mount_x, ls_mount_y, ls_mount_z).translate(
+        ls_mount_far_cx,
+        0.0,
+        ls_mount_cz,
+    );
 
     // F688ZZ bores through each upstand (cylinder along X)
     let ls_axis_z = base_z / 2.0 + ls_mount_z / 2.0; // lead screw centre height
@@ -229,12 +243,22 @@ fn main() {
     .translate(ls_mount_far_cx, 0.0, ls_axis_z);
 
     // Through-bore for the 8 mm lead-screw shaft in both mounts
-    let ls_through_near = centered_cylinder("ls_through_near", lead_screw_d / 2.0 + 0.3, ls_mount_x + 2.0, 32)
-        .rotate(0.0, 90.0, 0.0)
-        .translate(ls_mount_near_cx, 0.0, ls_axis_z);
-    let ls_through_far = centered_cylinder("ls_through_far", lead_screw_d / 2.0 + 0.3, ls_mount_x + 2.0, 32)
-        .rotate(0.0, 90.0, 0.0)
-        .translate(ls_mount_far_cx, 0.0, ls_axis_z);
+    let ls_through_near = centered_cylinder(
+        "ls_through_near",
+        lead_screw_d / 2.0 + 0.3,
+        ls_mount_x + 2.0,
+        32,
+    )
+    .rotate(0.0, 90.0, 0.0)
+    .translate(ls_mount_near_cx, 0.0, ls_axis_z);
+    let ls_through_far = centered_cylinder(
+        "ls_through_far",
+        lead_screw_d / 2.0 + 0.3,
+        ls_mount_x + 2.0,
+        32,
+    )
+    .rotate(0.0, 90.0, 0.0)
+    .translate(ls_mount_far_cx, 0.0, ls_axis_z);
 
     // Cable management channel (20 × 10 mm) from stepper boss to rear grommet
     let cable_ch_w: f64 = 20.0;
@@ -289,13 +313,13 @@ fn main() {
     let mut rack_holes = Part::empty("rack_holes");
     let m6_positions: [(f64, f64); 8] = [
         (-rack_pattern_x / 2.0, -rack_pattern_y / 2.0),
-        ( rack_pattern_x / 2.0, -rack_pattern_y / 2.0),
-        (-rack_pattern_x / 2.0,  rack_pattern_y / 2.0),
-        ( rack_pattern_x / 2.0,  rack_pattern_y / 2.0),
-        (0.0,                   -rack_pattern_y / 2.0),
-        (0.0,                    rack_pattern_y / 2.0),
-        (-rack_pattern_x / 2.0,  0.0),
-        ( rack_pattern_x / 2.0,  0.0),
+        (rack_pattern_x / 2.0, -rack_pattern_y / 2.0),
+        (-rack_pattern_x / 2.0, rack_pattern_y / 2.0),
+        (rack_pattern_x / 2.0, rack_pattern_y / 2.0),
+        (0.0, -rack_pattern_y / 2.0),
+        (0.0, rack_pattern_y / 2.0),
+        (-rack_pattern_x / 2.0, 0.0),
+        (rack_pattern_x / 2.0, 0.0),
     ];
     for (i, (hx, hy)) in m6_positions.iter().enumerate() {
         let hole = centered_cylinder(&format!("m6_{i}"), m6_clear / 2.0, top_z + 2.0, 24)
@@ -304,24 +328,22 @@ fn main() {
     }
 
     // Pivot brackets at left + right mid-edges. Shaft bore 8 mm horizontal (X axis).
-    let bracket_x: f64 = 18.0;   // thickness along X
-    let bracket_y: f64 = 40.0;   // depth along Y
-    let bracket_z: f64 = 35.0;   // tall, reaches down to pivot axis
-    // Bracket sits below top plate, on the ±X mid-edges of the top plate
+    let bracket_x: f64 = 18.0; // thickness along X
+    let bracket_y: f64 = 40.0; // depth along Y
+    let bracket_z: f64 = 35.0; // tall, reaches down to pivot axis
+                               // Bracket sits below top plate, on the ±X mid-edges of the top plate
     let bracket_cz = -(top_z / 2.0) - bracket_z / 2.0;
     let top_pivot_axis_z = bracket_cz - bracket_z / 2.0 + 12.0; // shaft 12 mm up from bracket bottom
-    // Top plate is placed (later) so that its own pivot axis aligns with base pivot axis.
-    // For the STL we model the bracket relative to the top plate origin.
+                                                                // Top plate is placed (later) so that its own pivot axis aligns with base pivot axis.
+                                                                // For the STL we model the bracket relative to the top plate origin.
 
     let mut pivot_brackets = Part::empty("pivot_brackets");
     for &sx in [-1.0f64, 1.0].iter() {
-        let bracket = centered_cube(
-            "pivot_bracket",
-            bracket_x,
-            bracket_y,
-            bracket_z,
-        )
-        .translate(sx * (top_x / 2.0 - bracket_x / 2.0), 0.0, bracket_cz);
+        let bracket = centered_cube("pivot_bracket", bracket_x, bracket_y, bracket_z).translate(
+            sx * (top_x / 2.0 - bracket_x / 2.0),
+            0.0,
+            bracket_cz,
+        );
         // Shaft bore 8 mm (press-fit dowel)
         let shaft_bore = centered_cylinder("shaft_bore", shaft_d / 2.0 + 0.1, bracket_x + 4.0, 32)
             .rotate(0.0, 90.0, 0.0)
@@ -336,12 +358,16 @@ fn main() {
     let link_boss_z: f64 = 20.0;
     let link_boss_cy = top_y / 2.0 - link_boss_y / 2.0; // flush with back edge
     let link_boss_cz = -(top_z / 2.0) - link_boss_z / 2.0;
-    let link_boss = centered_cube("link_boss", link_boss_x, link_boss_y, link_boss_z)
-        .translate(0.0, link_boss_cy, link_boss_cz);
+    let link_boss = centered_cube("link_boss", link_boss_x, link_boss_y, link_boss_z).translate(
+        0.0,
+        link_boss_cy,
+        link_boss_cz,
+    );
     // Pivot hole (8 mm, horizontal along X)
-    let link_pivot_hole = centered_cylinder("link_pivot", shaft_d / 2.0 + 0.3, link_boss_x + 4.0, 32)
-        .rotate(0.0, 90.0, 0.0)
-        .translate(0.0, link_boss_cy, link_boss_cz);
+    let link_pivot_hole =
+        centered_cylinder("link_pivot", shaft_d / 2.0 + 0.3, link_boss_x + 4.0, 32)
+            .rotate(0.0, 90.0, 0.0)
+            .translate(0.0, link_boss_cy, link_boss_cz);
 
     // Central reinforcement ribs (3×, 10 mm thick, perpendicular to rocker axis = Y direction)
     // Ribs run along Y, spaced across X.
@@ -352,8 +378,8 @@ fn main() {
     let rib_x_positions = [-120.0, 0.0, 120.0];
     let mut ribs = Part::empty("ribs");
     for (i, rx) in rib_x_positions.iter().enumerate() {
-        let rib = centered_cube(&format!("rib_{i}"), rib_x, rib_y, rib_z)
-            .translate(*rx, 0.0, rib_cz);
+        let rib =
+            centered_cube(&format!("rib_{i}"), rib_x, rib_y, rib_z).translate(*rx, 0.0, rib_cz);
         ribs = ribs + rib;
     }
 
@@ -365,15 +391,18 @@ fn main() {
     let mut retention_tabs = Part::empty("retention_tabs");
     for (i, (tx, ty)) in [
         (-top_x / 2.0 + tab_inset, -top_y / 2.0 + tab_inset),
-        (-top_x / 2.0 + tab_inset,  top_y / 2.0 - tab_inset),
-        ( top_x / 2.0 - tab_inset, -top_y / 2.0 + tab_inset),
-        ( top_x / 2.0 - tab_inset,  top_y / 2.0 - tab_inset),
+        (-top_x / 2.0 + tab_inset, top_y / 2.0 - tab_inset),
+        (top_x / 2.0 - tab_inset, -top_y / 2.0 + tab_inset),
+        (top_x / 2.0 - tab_inset, top_y / 2.0 - tab_inset),
     ]
     .iter()
     .enumerate()
     {
-        let tab = centered_cube(&format!("ret_tab_{i}"), tab_x, tab_y, tab_z)
-            .translate(*tx, *ty, top_z / 2.0 + tab_z / 2.0);
+        let tab = centered_cube(&format!("ret_tab_{i}"), tab_x, tab_y, tab_z).translate(
+            *tx,
+            *ty,
+            top_z / 2.0 + tab_z / 2.0,
+        );
         retention_tabs = retention_tabs + tab;
     }
 
@@ -396,23 +425,15 @@ fn main() {
     let pb_body = centered_cube("pb_body", pb_x, pb_y, pb_z).translate(0.0, 0.0, pb_cz);
 
     // Bearing bore (press-fit R3) — through-bore along X axis, at pivot axis height
-    let pb_bearing_bore = centered_cylinder(
-        "pb_bearing_bore",
-        bearing_bore_d / 2.0,
-        pb_x + 2.0,
-        48,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(0.0, 0.0, pivot_axis_z);
+    let pb_bearing_bore =
+        centered_cylinder("pb_bearing_bore", bearing_bore_d / 2.0, pb_x + 2.0, 48)
+            .rotate(0.0, 90.0, 0.0)
+            .translate(0.0, 0.0, pivot_axis_z);
     // 8 mm through-hole for shaft (in case bearing sits on one side only)
-    let pb_shaft_through = centered_cylinder(
-        "pb_shaft_through",
-        shaft_d / 2.0 + 0.3,
-        pb_x + 4.0,
-        32,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(0.0, 0.0, pivot_axis_z);
+    let pb_shaft_through =
+        centered_cylinder("pb_shaft_through", shaft_d / 2.0 + 0.3, pb_x + 4.0, 32)
+            .rotate(0.0, 90.0, 0.0)
+            .translate(0.0, 0.0, pivot_axis_z);
 
     // 4× M5 mounting holes in the base (downward)
     let mut pb_bolts = Part::empty("pb_bolts");
@@ -427,14 +448,9 @@ fn main() {
     }
 
     // Bearing seat recess (5 mm deep on +X face to seat the bearing flange)
-    let pb_recess = centered_cylinder(
-        "pb_recess",
-        bearing_od / 2.0 + 0.1,
-        bearing_thk + 0.2,
-        48,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(pb_x / 2.0 - (bearing_thk + 0.2) / 2.0, 0.0, pivot_axis_z);
+    let pb_recess = centered_cylinder("pb_recess", bearing_od / 2.0 + 0.1, bearing_thk + 0.2, 48)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(pb_x / 2.0 - (bearing_thk + 0.2) / 2.0, 0.0, pivot_axis_z);
 
     let pivot_block = pb_body - pb_bearing_bore - pb_shaft_through - pb_bolts - pb_recess;
     pivot_block
@@ -452,25 +468,32 @@ fn main() {
     let la_body = centered_cube("la_body", la_x, la_y, la_z);
 
     // Pivot hole at top-plate end (8 mm, at -X side)
-    let la_pivot = centered_cylinder("la_pivot", shaft_d / 2.0 + 0.2, la_z + 2.0, 32)
-        .translate(-la_x / 2.0 + 12.0, 0.0, 0.0);
+    let la_pivot = centered_cylinder("la_pivot", shaft_d / 2.0 + 0.2, la_z + 2.0, 32).translate(
+        -la_x / 2.0 + 12.0,
+        0.0,
+        0.0,
+    );
     // Slotted hole at lead-screw end (8 mm wide × 16 mm long slot
     // to accommodate angular swing). Built as hole + two semicircles.
     let slot_w: f64 = 8.0 + 0.4;
     let slot_l: f64 = 16.0;
     let slot_center_x = la_x / 2.0 - 14.0;
-    let slot_rect = centered_cube("slot_rect", slot_l, slot_w, la_z + 2.0)
-        .translate(slot_center_x, 0.0, 0.0);
-    let slot_cap_a = centered_cylinder("slot_cap_a", slot_w / 2.0, la_z + 2.0, 32)
-        .translate(slot_center_x - slot_l / 2.0, 0.0, 0.0);
-    let slot_cap_b = centered_cylinder("slot_cap_b", slot_w / 2.0, la_z + 2.0, 32)
-        .translate(slot_center_x + slot_l / 2.0, 0.0, 0.0);
+    let slot_rect =
+        centered_cube("slot_rect", slot_l, slot_w, la_z + 2.0).translate(slot_center_x, 0.0, 0.0);
+    let slot_cap_a = centered_cylinder("slot_cap_a", slot_w / 2.0, la_z + 2.0, 32).translate(
+        slot_center_x - slot_l / 2.0,
+        0.0,
+        0.0,
+    );
+    let slot_cap_b = centered_cylinder("slot_cap_b", slot_w / 2.0, la_z + 2.0, 32).translate(
+        slot_center_x + slot_l / 2.0,
+        0.0,
+        0.0,
+    );
     let slot = slot_rect + slot_cap_a + slot_cap_b;
 
     let linkage = la_body - la_pivot - slot;
-    linkage
-        .write_stl("output/rack_rocker_linkage.stl")
-        .unwrap();
+    linkage.write_stl("output/rack_rocker_linkage.stl").unwrap();
     println!("Exported: output/rack_rocker_linkage.stl");
 
     // ══════════════════════════════════════════════════════════════
@@ -524,42 +547,46 @@ fn main() {
     let asm_base_plate = centered_cube("asm_base_plate", base_x, base_y, base_z);
 
     // Stepper boss + cylindrical body stub, for visual identification
-    let asm_stepper_boss =
-        centered_cube("asm_stepper_boss", boss_x, boss_y, boss_z).translate(boss_cx, boss_cy, boss_cz);
-    let asm_stepper_body =
-        centered_cylinder("asm_stepper_body", nema23_body / 2.0, 70.0, 32)
-            .rotate(0.0, 90.0, 0.0)
-            .translate(boss_cx - 70.0 / 2.0, boss_cy, boss_cz);
+    let asm_stepper_boss = centered_cube("asm_stepper_boss", boss_x, boss_y, boss_z)
+        .translate(boss_cx, boss_cy, boss_cz);
+    let asm_stepper_body = centered_cylinder("asm_stepper_body", nema23_body / 2.0, 70.0, 32)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(boss_cx - 70.0 / 2.0, boss_cy, boss_cz);
 
     // Lead screw stand-ins (just the rail between two end mounts)
-    let asm_ls_mount_near =
-        centered_cube("asm_ls_mount_near", ls_mount_x, ls_mount_y, ls_mount_z)
-            .translate(ls_mount_near_cx, 0.0, ls_mount_cz);
-    let asm_ls_mount_far =
-        centered_cube("asm_ls_mount_far", ls_mount_x, ls_mount_y, ls_mount_z)
-            .translate(ls_mount_far_cx, 0.0, ls_mount_cz);
+    let asm_ls_mount_near = centered_cube("asm_ls_mount_near", ls_mount_x, ls_mount_y, ls_mount_z)
+        .translate(ls_mount_near_cx, 0.0, ls_mount_cz);
+    let asm_ls_mount_far = centered_cube("asm_ls_mount_far", ls_mount_x, ls_mount_y, ls_mount_z)
+        .translate(ls_mount_far_cx, 0.0, ls_mount_cz);
     let ls_span = ls_mount_far_cx - ls_mount_near_cx;
-    let asm_lead_screw =
-        centered_cylinder("asm_lead_screw", lead_screw_d / 2.0, ls_span, 24)
-            .rotate(0.0, 90.0, 0.0)
-            .translate((ls_mount_near_cx + ls_mount_far_cx) / 2.0, 0.0, ls_axis_z);
+    let asm_lead_screw = centered_cylinder("asm_lead_screw", lead_screw_d / 2.0, ls_span, 24)
+        .rotate(0.0, 90.0, 0.0)
+        .translate((ls_mount_near_cx + ls_mount_far_cx) / 2.0, 0.0, ls_axis_z);
 
     // Pivot blocks — just two simple cubes on the ±Y edges
     let pb_left_y = -(base_y / 2.0 - pb_y / 2.0 - 20.0);
     let pb_right_y = base_y / 2.0 - pb_y / 2.0 - 20.0;
-    let asm_pb_left = centered_cube("asm_pb_left", pb_x, pb_y, pb_z).translate(0.0, pb_left_y, pb_cz);
-    let asm_pb_right = centered_cube("asm_pb_right", pb_x, pb_y, pb_z).translate(0.0, pb_right_y, pb_cz);
+    let asm_pb_left =
+        centered_cube("asm_pb_left", pb_x, pb_y, pb_z).translate(0.0, pb_left_y, pb_cz);
+    let asm_pb_right =
+        centered_cube("asm_pb_right", pb_x, pb_y, pb_z).translate(0.0, pb_right_y, pb_cz);
 
     // Top tilting plate at 0° tilt: place bottom of plate at pivot_axis_z
-    let asm_top_plate = centered_cube("asm_top_plate", top_x, top_y, top_z)
-        .translate(0.0, 0.0, pivot_axis_z + top_z / 2.0);
+    let asm_top_plate = centered_cube("asm_top_plate", top_x, top_y, top_z).translate(
+        0.0,
+        0.0,
+        pivot_axis_z + top_z / 2.0,
+    );
 
     // Reinforcement rib stubs under the top plate
     let rib_world_cz = pivot_axis_z - rib_z / 2.0;
     let mut asm_ribs = Part::empty("asm_ribs");
     for (i, rx) in rib_x_positions.iter().enumerate() {
-        let rib = centered_cube(&format!("asm_rib_{i}"), rib_x, rib_y, rib_z)
-            .translate(*rx, 0.0, rib_world_cz);
+        let rib = centered_cube(&format!("asm_rib_{i}"), rib_x, rib_y, rib_z).translate(
+            *rx,
+            0.0,
+            rib_world_cz,
+        );
         asm_ribs = asm_ribs + rib;
     }
 
@@ -570,12 +597,11 @@ fn main() {
     let link_world_y = link_boss_cy;
     let link_world_z_world = pivot_axis_z + top_z / 2.0 + link_boss_cz + link_boss_z / 2.0;
     let _ = link_world_z_world;
-    let asm_linkage_bar = centered_cube("asm_linkage_bar", la_z, la_y, la_x)
-        .translate(
-            ls_mid_x,
-            link_world_y / 2.0,
-            (ls_axis_z + pivot_axis_z) / 2.0,
-        );
+    let asm_linkage_bar = centered_cube("asm_linkage_bar", la_z, la_y, la_x).translate(
+        ls_mid_x,
+        link_world_y / 2.0,
+        (ls_axis_z + pivot_axis_z) / 2.0,
+    );
     let asm_nut = centered_cube("asm_nut", nb_x, nb_y, nb_z).translate(ls_mid_x, 0.0, ls_axis_z);
 
     let assembly = asm_base_plate

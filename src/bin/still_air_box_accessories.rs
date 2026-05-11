@@ -62,8 +62,13 @@ fn build_tube_rack() -> Part {
 
     println!("── Tube Rack Specs ──");
     println!("  Block:        {block_length:.0}mm × {block_width:.0}mm × {block_height:.0}mm");
-    println!("  Tubes:        {num_tubes}× {tube_hole_d:.1}mm dia holes, {tube_spacing:.0}mm spacing");
-    println!("  Hole depth:   {hole_depth:.0}mm (blind, {:.0}mm solid base)", block_height - hole_depth);
+    println!(
+        "  Tubes:        {num_tubes}× {tube_hole_d:.1}mm dia holes, {tube_spacing:.0}mm spacing"
+    );
+    println!(
+        "  Hole depth:   {hole_depth:.0}mm (blind, {:.0}mm solid base)",
+        block_height - hole_depth
+    );
     println!("  Material:     PETG");
 
     rack
@@ -118,7 +123,10 @@ fn build_reagent_holder() -> Part {
     println!("── Reagent Holder Specs ──");
     println!("  Block:        {block_length:.0}mm × {block_width:.0}mm × {block_height:.0}mm");
     println!("  Bottles:      {num_bottles}× {bottle_hole_d:.0}mm dia holes, {bottle_spacing:.0}mm spacing");
-    println!("  Hole depth:   {hole_depth:.0}mm (blind, {:.0}mm solid base)", block_height - hole_depth);
+    println!(
+        "  Hole depth:   {hole_depth:.0}mm (blind, {:.0}mm solid base)",
+        block_height - hole_depth
+    );
     println!("  Material:     PETG");
 
     holder
@@ -134,8 +142,8 @@ fn build_swab_receiver() -> Part {
     let tray_height = 15.0;
 
     // V-groove dimensions
-    let groove_width = 14.0;  // wide enough for collector OD (12mm) + clearance
-    let groove_depth = 8.0;   // deep V to cradle the swab
+    let groove_width = 14.0; // wide enough for collector OD (12mm) + clearance
+    let groove_depth = 8.0; // deep V to cradle the swab
 
     let body = centered_cube("tray_body", tray_length, tray_width, tray_height);
 
@@ -144,7 +152,7 @@ fn build_swab_receiver() -> Part {
     let groove_bottom = centered_cube(
         "groove_bottom",
         tray_length + 2.0,
-        groove_width / 3.0,  // narrow bottom
+        groove_width / 3.0, // narrow bottom
         groove_depth + 0.1,
     )
     .translate(0.0, 0.0, (tray_height - groove_depth) / 2.0 + 0.05);
@@ -166,7 +174,11 @@ fn build_swab_receiver() -> Part {
         32,
     )
     .rotate(0.0, 90.0, 0.0)
-    .translate(0.0, 0.0, tray_height / 2.0 - groove_depth + COLLECTOR_OD / 2.0);
+    .translate(
+        0.0,
+        0.0,
+        tray_height / 2.0 - groove_depth + COLLECTOR_OD / 2.0,
+    );
 
     let tray = body - groove_bottom - groove_top - groove_round;
 

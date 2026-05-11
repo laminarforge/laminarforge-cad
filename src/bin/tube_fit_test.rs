@@ -48,19 +48,13 @@ fn main() {
         let x = first_x + (i as f64) * HOLE_SPACING;
 
         // Through-hole
-        let hole = centered_cylinder(
-            &format!("hole_{i}"),
-            diameter / 2.0,
-            BLOCK_HEIGHT + 2.0,
-            32,
-        )
-        .translate(x, 0.0, 0.0);
+        let hole = centered_cylinder(&format!("hole_{i}"), diameter / 2.0, BLOCK_HEIGHT + 2.0, 32)
+            .translate(x, 0.0, 0.0);
         holes = holes + hole;
 
         // Tally marks on front face (-Y side)
         let num_bars = i + 1;
-        let total_marks_width =
-            (num_bars as f64) * MARK_WIDTH + ((num_bars - 1) as f64) * MARK_GAP;
+        let total_marks_width = (num_bars as f64) * MARK_WIDTH + ((num_bars - 1) as f64) * MARK_GAP;
         let mark_start_x = x - total_marks_width / 2.0 + MARK_WIDTH / 2.0;
 
         for b in 0..num_bars {
@@ -107,9 +101,7 @@ fn main() {
         } else {
             "loose"
         };
-        println!(
-            "  {bars:<6} {d:.1}mm     ~{printed:.1}mm          {clearance:+.3}mm ({fit})"
-        );
+        println!("  {bars:<6} {d:.1}mm     ~{printed:.1}mm          {clearance:+.3}mm ({fit})");
     }
     println!();
     println!("  Test each hole with a tube. Pick the best fit,");

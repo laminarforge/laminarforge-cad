@@ -1,7 +1,7 @@
+use super::Component;
+use std::fmt::Write as FmtWrite;
 use std::fs;
 use std::path::Path;
-use std::fmt::Write as FmtWrite;
-use super::Component;
 
 pub fn validate_and_export(pcb_path: &Path, output_dir: &Path) {
     use std::process::Command;
@@ -37,13 +37,27 @@ pub fn validate_and_export(pcb_path: &Path, output_dir: &Path) {
     let drc_path = output_dir.join("drc.json");
     println!("\n── DRC Check ──");
     let drc = Command::new(&kicad)
-        .args(["pcb", "drc", &pcb_path.to_string_lossy(), "-o", &drc_path.to_string_lossy(), "--severity-all", "--all-track-errors"])
+        .args([
+            "pcb",
+            "drc",
+            &pcb_path.to_string_lossy(),
+            "-o",
+            &drc_path.to_string_lossy(),
+            "--severity-all",
+            "--all-track-errors",
+        ])
         .output()
         .expect("failed to run kicad-cli drc");
     let drc_err = String::from_utf8_lossy(&drc.stderr);
-    if !drc_err.is_empty() { eprint!("{}", drc_err); }
+    if !drc_err.is_empty() {
+        eprint!("{}", drc_err);
+    }
     if !drc.status.success() {
-        eprintln!("DRC failed (exit {}). Check {} for details.", drc.status.code().unwrap_or(-1), drc_path.display());
+        eprintln!(
+            "DRC failed (exit {}). Check {} for details.",
+            drc.status.code().unwrap_or(-1),
+            drc_path.display()
+        );
         std::process::exit(2);
     }
 
@@ -53,17 +67,28 @@ pub fn validate_and_export(pcb_path: &Path, output_dir: &Path) {
 
     println!("Found {} violations", real_violations + zone_fragments);
     if zone_fragments > 0 {
-        println!("  ({} isolated copper zone fragments — non-critical)", zone_fragments);
+        println!(
+            "  ({} isolated copper zone fragments — non-critical)",
+            zone_fragments
+        );
     }
-    println!("Found {} unconnected items", real_unconnected + zone_unconnected);
+    println!(
+        "Found {} unconnected items",
+        real_unconnected + zone_unconnected
+    );
     if zone_unconnected > 0 {
-        println!("  ({} zone-to-zone GND on F.Cu — non-critical, B.Cu plane provides connectivity)", zone_unconnected);
+        println!(
+            "  ({} zone-to-zone GND on F.Cu — non-critical, B.Cu plane provides connectivity)",
+            zone_unconnected
+        );
     }
     println!("Saved DRC Report to {}", drc_path.display());
 
     if real_violations > 0 || real_unconnected > 0 {
-        eprintln!("ERROR: {} real violations, {} real unconnected",
-            real_violations, real_unconnected);
+        eprintln!(
+            "ERROR: {} real violations, {} real unconnected",
+            real_violations, real_unconnected
+        );
         std::process::exit(2);
     }
     println!("DRC passed: 0 real violations, 0 real unconnected");
@@ -72,24 +97,48 @@ pub fn validate_and_export(pcb_path: &Path, output_dir: &Path) {
     let gerber_dir = output_dir.join("gerbers");
     println!("\n── Gerber Export ──");
     let gerber = Command::new(&kicad)
-        .args(["pcb", "export", "gerbers", &pcb_path.to_string_lossy(), "-o", &gerber_dir.to_string_lossy().to_string()])
+        .args([
+            "pcb",
+            "export",
+            "gerbers",
+            &pcb_path.to_string_lossy(),
+            "-o",
+            &gerber_dir.to_string_lossy().to_string(),
+        ])
         .output()
         .expect("failed to run kicad-cli gerber export");
     print!("{}", String::from_utf8_lossy(&gerber.stdout));
     if !gerber.status.success() {
-        eprintln!("Gerber export failed: {}", String::from_utf8_lossy(&gerber.stderr));
+        eprintln!(
+            "Gerber export failed: {}",
+            String::from_utf8_lossy(&gerber.stderr)
+        );
         std::process::exit(3);
     }
 
     // Drill
     println!("\n── Drill Export ──");
     let drill = Command::new(&kicad)
-        .args(["pcb", "export", "drill", &pcb_path.to_string_lossy(), "-o", &gerber_dir.to_string_lossy().to_string(), "--format", "excellon", "--excellon-units", "mm"])
+        .args([
+            "pcb",
+            "export",
+            "drill",
+            &pcb_path.to_string_lossy(),
+            "-o",
+            &gerber_dir.to_string_lossy().to_string(),
+            "--format",
+            "excellon",
+            "--excellon-units",
+            "mm",
+        ])
         .output()
         .expect("failed to run kicad-cli drill export");
     print!("{}", String::from_utf8_lossy(&drill.stdout));
     if !drill.status.success() {
-        eprintln!("Drill export failed: {}", String::from_utf8_lossy(&drill.stderr));
+        eprintln!(
+            "Drill export failed: {}",
+            String::from_utf8_lossy(&drill.stderr)
+        );
         std::process::exit(4);
     }
 
@@ -105,13 +154,22 @@ pub fn validate_and_export(pcb_path: &Path, output_dir: &Path) {
     let zip_path = output_dir.join("lamp_v1_gerbers.zip");
     let _ = fs::remove_file(&zip_path);
     let zip = Command::new("zip")
-        .args(["-j", &zip_path.to_string_lossy(), &format!("{}/*", gerber_dir.to_string_lossy())])
+        .args([
+            "-j",
+            &zip_path.to_string_lossy(),
+            &format!("{}/*", gerber_dir.to_string_lossy()),
+        ])
         .output();
     match zip {
         Ok(z) if z.status.success() => println!("Packaged: {}", zip_path.display()),
         _ => {
             let ditto = Command::new("ditto")
-                .args(["-c", "-k", &gerber_dir.to_string_lossy(), &zip_path.to_string_lossy()])
+                .args([
+                    "-c",
+                    "-k",
+                    &gerber_dir.to_string_lossy(),
+                    &zip_path.to_string_lossy(),
+                ])
                 .output();
             match ditto {
                 Ok(d) if d.status.success() => println!("Packaged: {}", zip_path.display()),
@@ -160,7 +218,9 @@ pub fn diagnose_format(pcb_path: &Path) {
         if !ok {
             let preview: String = section.lines().take(20).collect::<Vec<_>>().join("\n");
             println!("  Preview:\n{}", preview);
-            if line_count > 20 { println!("  ... ({} more lines)", line_count - 20); }
+            if line_count > 20 {
+                println!("  ... ({} more lines)", line_count - 20);
+            }
             fs::write("/tmp/pcb_diag_fail.kicad_pcb", &test_content).ok();
             println!("\n  Written: /tmp/pcb_diag_fail.kicad_pcb");
             return;
@@ -180,7 +240,14 @@ fn test_kicad_load(kicad: &str, content: &str) -> bool {
     let tmp = "/tmp/pcb_layout_test.kicad_pcb";
     fs::write(tmp, content).expect("write tmp");
     let out = Command::new(kicad)
-        .args(["pcb", "drc", tmp, "-o", "/tmp/pcb_layout_test_drc.json", "--severity-all"])
+        .args([
+            "pcb",
+            "drc",
+            tmp,
+            "-o",
+            "/tmp/pcb_layout_test_drc.json",
+            "--severity-all",
+        ])
         .output()
         .expect("run kicad-cli");
     out.status.success() || out.status.code() == Some(0)
@@ -191,25 +258,40 @@ fn extract_top_level_sections(content: &str) -> Vec<(String, String)> {
     let inner = content.trim();
     let first_nl = inner.find('\n').unwrap_or(inner.len());
     let inner = &inner[first_nl + 1..];
-    let inner = inner.trim_end().strip_suffix(')').unwrap_or(inner).trim_end();
+    let inner = inner
+        .trim_end()
+        .strip_suffix(')')
+        .unwrap_or(inner)
+        .trim_end();
 
     let mut i = 0;
     let chars: Vec<char> = inner.chars().collect();
     let len = chars.len();
 
     while i < len {
-        while i < len && chars[i].is_whitespace() { i += 1; }
-        if i >= len { break; }
+        while i < len && chars[i].is_whitespace() {
+            i += 1;
+        }
+        if i >= len {
+            break;
+        }
         if chars[i] == ';' {
-            while i < len && chars[i] != '\n' { i += 1; }
+            while i < len && chars[i] != '\n' {
+                i += 1;
+            }
             continue;
         }
-        if chars[i] != '(' { i += 1; continue; }
+        if chars[i] != '(' {
+            i += 1;
+            continue;
+        }
 
         let start = i;
         i += 1;
         let tag_start = i;
-        while i < len && !chars[i].is_whitespace() && chars[i] != ')' { i += 1; }
+        while i < len && !chars[i].is_whitespace() && chars[i] != ')' {
+            i += 1;
+        }
         let tag: String = chars[tag_start..i].iter().collect();
 
         let mut depth = 1;
@@ -217,7 +299,12 @@ fn extract_top_level_sections(content: &str) -> Vec<(String, String)> {
             match chars[i] {
                 '(' => depth += 1,
                 ')' => depth -= 1,
-                '"' => { i += 1; while i < len && chars[i] != '"' { i += 1; } }
+                '"' => {
+                    i += 1;
+                    while i < len && chars[i] != '"' {
+                        i += 1;
+                    }
+                }
                 _ => {}
             }
             i += 1;
@@ -255,46 +342,83 @@ fn parse_drc_report(drc_path: &Path) -> (u32, u32, u32, u32) {
     let mut section = "";
     let mut item_lines: Vec<&str> = Vec::new();
 
-    let classify = |lines: &[&str], section: &str,
-                    rv: &mut u32, zf: &mut u32, ru: &mut u32, zu: &mut u32| {
-        if lines.is_empty() || section.is_empty() { return; }
-        // Only classify blocks that start with a DRC rule tag
-        if !lines[0].starts_with('[') { return; }
-        let _is_zone = lines.iter().any(|l| l.contains("Zone [GND]"));
-        let all_zone = lines.iter().filter(|l| l.trim_start().starts_with("@("))
-            .all(|l| l.contains("Zone ["));
-        match section {
-            "v" => if all_zone { *zf += 1; } else { *rv += 1; },
-            "u" => if all_zone { *zu += 1; } else { *ru += 1; },
-            _ => {}
-        }
-    };
+    let classify =
+        |lines: &[&str], section: &str, rv: &mut u32, zf: &mut u32, ru: &mut u32, zu: &mut u32| {
+            if lines.is_empty() || section.is_empty() {
+                return;
+            }
+            // Only classify blocks that start with a DRC rule tag
+            if !lines[0].starts_with('[') {
+                return;
+            }
+            let _is_zone = lines.iter().any(|l| l.contains("Zone [GND]"));
+            let all_zone = lines
+                .iter()
+                .filter(|l| l.trim_start().starts_with("@("))
+                .all(|l| l.contains("Zone ["));
+            match section {
+                "v" => {
+                    if all_zone {
+                        *zf += 1;
+                    } else {
+                        *rv += 1;
+                    }
+                }
+                "u" => {
+                    if all_zone {
+                        *zu += 1;
+                    } else {
+                        *ru += 1;
+                    }
+                }
+                _ => {}
+            }
+        };
 
     for line in content.lines() {
         if line.starts_with("** Found") {
             // Classify pending item before switching sections
-            classify(&item_lines, section,
-                     &mut real_violations, &mut zone_fragments,
-                     &mut real_unconnected, &mut zone_unconnected);
+            classify(
+                &item_lines,
+                section,
+                &mut real_violations,
+                &mut zone_fragments,
+                &mut real_unconnected,
+                &mut zone_unconnected,
+            );
             item_lines.clear();
 
-            if line.contains("DRC violations") { section = "v"; }
-            else if line.contains("unconnected") { section = "u"; }
-            else { section = ""; }
+            if line.contains("DRC violations") {
+                section = "v";
+            } else if line.contains("unconnected") {
+                section = "u";
+            } else {
+                section = "";
+            }
             continue;
         }
         if line.starts_with("** End of Report") {
-            classify(&item_lines, section,
-                     &mut real_violations, &mut zone_fragments,
-                     &mut real_unconnected, &mut zone_unconnected);
+            classify(
+                &item_lines,
+                section,
+                &mut real_violations,
+                &mut zone_fragments,
+                &mut real_unconnected,
+                &mut zone_unconnected,
+            );
             break;
         }
 
         if line.starts_with('[') {
             // New item — classify the previous one
-            classify(&item_lines, section,
-                     &mut real_violations, &mut zone_fragments,
-                     &mut real_unconnected, &mut zone_unconnected);
+            classify(
+                &item_lines,
+                section,
+                &mut real_violations,
+                &mut zone_fragments,
+                &mut real_unconnected,
+                &mut zone_unconnected,
+            );
             item_lines.clear();
         }
 
@@ -303,7 +427,12 @@ fn parse_drc_report(drc_path: &Path) -> (u32, u32, u32, u32) {
         }
     }
 
-    (real_violations, zone_fragments, real_unconnected, zone_unconnected)
+    (
+        real_violations,
+        zone_fragments,
+        real_unconnected,
+        zone_unconnected,
+    )
 }
 
 fn which_kicad_cli() -> String {
@@ -317,10 +446,16 @@ fn which_kicad_cli() -> String {
 
 pub fn write_bom(path: &Path, components: &[Component]) {
     let mut bom = String::from("Comment,Designator,Footprint,LCSC Part Number\n");
-    let mut groups: std::collections::BTreeMap<(&str, &str), Vec<&str>> = std::collections::BTreeMap::new();
+    let mut groups: std::collections::BTreeMap<(&str, &str), Vec<&str>> =
+        std::collections::BTreeMap::new();
     for comp in components {
-        if comp.lcsc.is_empty() { continue; }
-        groups.entry((comp.value, comp.lcsc)).or_default().push(comp.reference);
+        if comp.lcsc.is_empty() {
+            continue;
+        }
+        groups
+            .entry((comp.value, comp.lcsc))
+            .or_default()
+            .push(comp.reference);
     }
     for ((value, lcsc), refs) in &groups {
         let designators = refs.join(",");
@@ -329,7 +464,12 @@ pub fn write_bom(path: &Path, components: &[Component]) {
             .find(|c| c.value == *value && c.lcsc == *lcsc)
             .map(|c| c.footprint_name)
             .unwrap_or("");
-        writeln!(bom, "\"{}\",\"{}\",\"{}\",\"{}\"", value, designators, footprint, lcsc).unwrap();
+        writeln!(
+            bom,
+            "\"{}\",\"{}\",\"{}\",\"{}\"",
+            value, designators, footprint, lcsc
+        )
+        .unwrap();
     }
     fs::write(path, &bom).expect("write BOM");
     println!("BOM entries: {}", groups.len());
@@ -338,14 +478,20 @@ pub fn write_bom(path: &Path, components: &[Component]) {
 pub fn write_cpl(path: &Path, components: &[Component]) {
     let mut cpl = String::from("Designator,Val,Package,Mid X,Mid Y,Rotation,Layer\n");
     for comp in components {
-        if comp.lcsc.is_empty() { continue; }
-        let layer = if comp.layer == "F.Cu" { "top" } else { "bottom" };
+        if comp.lcsc.is_empty() {
+            continue;
+        }
+        let layer = if comp.layer == "F.Cu" {
+            "top"
+        } else {
+            "bottom"
+        };
         writeln!(
             cpl,
             "\"{}\",\"{}\",\"{}\",{}mm,{}mm,{},{}",
-            comp.reference, comp.value, comp.footprint_name,
-            comp.x, comp.y, comp.rotation, layer
-        ).unwrap();
+            comp.reference, comp.value, comp.footprint_name, comp.x, comp.y, comp.rotation, layer
+        )
+        .unwrap();
     }
     fs::write(path, &cpl).expect("write CPL");
 }

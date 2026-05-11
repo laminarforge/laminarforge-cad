@@ -34,31 +34,16 @@ fn main() {
     // ── Socket cuts (3 perpendicular square channels) ──
 
     // +X socket: rail slides in from +X face
-    let socket_x = centered_cube(
-        "socket_x",
-        socket_depth + 0.1,
-        socket_size,
-        socket_size,
-    )
-    .translate(body_size / 2.0 - socket_depth / 2.0 + 0.05, 0.0, 0.0);
+    let socket_x = centered_cube("socket_x", socket_depth + 0.1, socket_size, socket_size)
+        .translate(body_size / 2.0 - socket_depth / 2.0 + 0.05, 0.0, 0.0);
 
     // +Y socket: rail slides in from +Y face
-    let socket_y = centered_cube(
-        "socket_y",
-        socket_size,
-        socket_depth + 0.1,
-        socket_size,
-    )
-    .translate(0.0, body_size / 2.0 - socket_depth / 2.0 + 0.05, 0.0);
+    let socket_y = centered_cube("socket_y", socket_size, socket_depth + 0.1, socket_size)
+        .translate(0.0, body_size / 2.0 - socket_depth / 2.0 + 0.05, 0.0);
 
     // +Z socket: rail slides in from +Z face
-    let socket_z = centered_cube(
-        "socket_z",
-        socket_size,
-        socket_size,
-        socket_depth + 0.1,
-    )
-    .translate(0.0, 0.0, body_size / 2.0 - socket_depth / 2.0 + 0.05);
+    let socket_z = centered_cube("socket_z", socket_size, socket_size, socket_depth + 0.1)
+        .translate(0.0, 0.0, body_size / 2.0 - socket_depth / 2.0 + 0.05);
 
     // ── Set screw holes ──
     // Each hole enters perpendicular to the rail axis, centered on the socket face.
@@ -67,50 +52,27 @@ fn main() {
     let screw_center = body_size / 2.0 - socket_depth / 2.0; // center of socket along its axis
 
     // Set screw for X socket: enters from +Y face, drills through Y-axis
-    let screw_x = centered_cylinder(
-        "screw_x",
-        set_screw_d / 2.0,
-        set_screw_depth + 2.0,
-        24,
-    )
-    .rotate(90.0, 0.0, 0.0)
-    .translate(screw_center, 0.0, 0.0);
+    let screw_x = centered_cylinder("screw_x", set_screw_d / 2.0, set_screw_depth + 2.0, 24)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(screw_center, 0.0, 0.0);
 
     // Set screw for Y socket: enters from +X face, drills through X-axis
-    let screw_y = centered_cylinder(
-        "screw_y",
-        set_screw_d / 2.0,
-        set_screw_depth + 2.0,
-        24,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(0.0, screw_center, 0.0);
+    let screw_y = centered_cylinder("screw_y", set_screw_d / 2.0, set_screw_depth + 2.0, 24)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(0.0, screw_center, 0.0);
 
     // Set screw for Z socket: enters from +X face, drills through X-axis
-    let screw_z = centered_cylinder(
-        "screw_z",
-        set_screw_d / 2.0,
-        set_screw_depth + 2.0,
-        24,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(0.0, 0.0, screw_center);
+    let screw_z = centered_cylinder("screw_z", set_screw_d / 2.0, set_screw_depth + 2.0, 24)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(0.0, 0.0, screw_center);
 
     // ── Assemble ──
 
-    let corner = body
-        - socket_x
-        - socket_y
-        - socket_z
-        - screw_x
-        - screw_y
-        - screw_z;
+    let corner = body - socket_x - socket_y - socket_z - screw_x - screw_y - screw_z;
 
     // ── Export ──
 
-    corner
-        .write_stl("output/still_air_box_corner.stl")
-        .unwrap();
+    corner.write_stl("output/still_air_box_corner.stl").unwrap();
 
     println!("Exported: output/still_air_box_corner.stl");
     println!();

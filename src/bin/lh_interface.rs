@@ -123,8 +123,12 @@ fn main() {
     // 1. CLAMSHELL HATCH PANEL (print 2 — mirror for second half)
     // ══════════════════════════════════════════════════════════════
 
-    let panel_body =
-        centered_cube("panel_body", hatch_panel_x, hatch_panel_y, hatch_panel_thickness);
+    let panel_body = centered_cube(
+        "panel_body",
+        hatch_panel_x,
+        hatch_panel_y,
+        hatch_panel_thickness,
+    );
 
     // Gasket groove on bottom face (3×3 mm) along 3 edges of the half
     // (excludes the centerline edge where the two halves meet)
@@ -159,14 +163,15 @@ fn main() {
     let knuckle_d = 10.0;
     let knuckle_edge_x = hatch_panel_x / 2.0 - knuckle_d / 2.0 + 4.0;
     let mut knuckles = Part::empty("knuckles");
-    for (i, yo) in [-hatch_panel_y / 3.0, 0.0, hatch_panel_y / 3.0].iter().enumerate() {
-        let k = centered_cube(
-            &format!("knuckle_{i}"),
-            knuckle_d,
-            knuckle_w,
-            knuckle_h,
-        )
-        .translate(knuckle_edge_x, *yo, hatch_panel_thickness / 2.0 + knuckle_h / 2.0 - 1.0);
+    for (i, yo) in [-hatch_panel_y / 3.0, 0.0, hatch_panel_y / 3.0]
+        .iter()
+        .enumerate()
+    {
+        let k = centered_cube(&format!("knuckle_{i}"), knuckle_d, knuckle_w, knuckle_h).translate(
+            knuckle_edge_x,
+            *yo,
+            hatch_panel_thickness / 2.0 + knuckle_h / 2.0 - 1.0,
+        );
         // Drill the hinge hole through it (along Y so the pin runs parallel
         // to the hatch long edge)
         let hole = centered_cylinder(
@@ -176,7 +181,11 @@ fn main() {
             24,
         )
         .rotate(90.0, 0.0, 0.0)
-        .translate(knuckle_edge_x, *yo, hatch_panel_thickness / 2.0 + knuckle_h / 2.0 - 1.0);
+        .translate(
+            knuckle_edge_x,
+            *yo,
+            hatch_panel_thickness / 2.0 + knuckle_h / 2.0 - 1.0,
+        );
         knuckles = knuckles + (k - hole);
     }
 
@@ -224,14 +233,26 @@ fn main() {
     let bolt_dia = 5.5;
     let bolt_inset = 15.0;
     let bolt_positions: [(f64, f64); 8] = [
-        (-frame_outer_x / 2.0 + bolt_inset, -frame_outer_y / 2.0 + bolt_inset),
+        (
+            -frame_outer_x / 2.0 + bolt_inset,
+            -frame_outer_y / 2.0 + bolt_inset,
+        ),
         (0.0, -frame_outer_y / 2.0 + bolt_inset),
-        (frame_outer_x / 2.0 - bolt_inset, -frame_outer_y / 2.0 + bolt_inset),
+        (
+            frame_outer_x / 2.0 - bolt_inset,
+            -frame_outer_y / 2.0 + bolt_inset,
+        ),
         (-frame_outer_x / 2.0 + bolt_inset, 0.0),
         (frame_outer_x / 2.0 - bolt_inset, 0.0),
-        (-frame_outer_x / 2.0 + bolt_inset, frame_outer_y / 2.0 - bolt_inset),
+        (
+            -frame_outer_x / 2.0 + bolt_inset,
+            frame_outer_y / 2.0 - bolt_inset,
+        ),
         (0.0, frame_outer_y / 2.0 - bolt_inset),
-        (frame_outer_x / 2.0 - bolt_inset, frame_outer_y / 2.0 - bolt_inset),
+        (
+            frame_outer_x / 2.0 - bolt_inset,
+            frame_outer_y / 2.0 - bolt_inset,
+        ),
     ];
     for (i, (fx, fy)) in bolt_positions.iter().enumerate() {
         let h = centered_cylinder(&format!("fh_{i}"), bolt_dia / 2.0, frame_thk + 2.0, 24)
@@ -244,15 +265,13 @@ fn main() {
 
     // Hinge pin holes (3 positions along spine)
     let mut spine_holes = Part::empty("spine_holes");
-    for (i, yo) in [-frame_outer_y / 3.0, 0.0, frame_outer_y / 3.0].iter().enumerate() {
-        let h = centered_cylinder(
-            &format!("sh_{i}"),
-            hatch_hinge_dia / 2.0 + 0.1,
-            30.0,
-            24,
-        )
-        .rotate(90.0, 0.0, 0.0)
-        .translate(0.0, *yo, frame_thk / 2.0 + 3.0);
+    for (i, yo) in [-frame_outer_y / 3.0, 0.0, frame_outer_y / 3.0]
+        .iter()
+        .enumerate()
+    {
+        let h = centered_cylinder(&format!("sh_{i}"), hatch_hinge_dia / 2.0 + 0.1, 30.0, 24)
+            .rotate(90.0, 0.0, 0.0)
+            .translate(0.0, *yo, frame_thk / 2.0 + 3.0);
         spine_holes = spine_holes + h;
     }
 
@@ -286,34 +305,23 @@ fn main() {
     .iter()
     .enumerate()
     {
-        let h = centered_cylinder(
-            &format!("orh_{i}"),
-            4.4 / 2.0,
-            rail_height + 2.0,
-            24,
-        )
-        .translate(0.0, *yo, 0.0);
+        let h = centered_cylinder(&format!("orh_{i}"), 4.4 / 2.0, rail_height + 2.0, 24)
+            .translate(0.0, *yo, 0.0);
         outer_holes = outer_holes + h;
     }
     // Detent pockets at home (0 mm) and deployed (+200 mm) positions
-    let detent_home = centered_cylinder(
-        "detent_home",
-        pin_dia / 2.0 + 0.2,
-        rail_wall + 1.0,
-        24,
-    )
-    .translate(0.0, -rail_length / 2.0 + 50.0, rail_height / 2.0 - rail_wall / 2.0);
-    let detent_deployed = centered_cylinder(
-        "detent_deployed",
-        pin_dia / 2.0 + 0.2,
-        rail_wall + 1.0,
-        24,
-    )
-    .translate(
-        0.0,
-        -rail_length / 2.0 + 50.0 + rail_extension,
-        rail_height / 2.0 - rail_wall / 2.0,
-    );
+    let detent_home = centered_cylinder("detent_home", pin_dia / 2.0 + 0.2, rail_wall + 1.0, 24)
+        .translate(
+            0.0,
+            -rail_length / 2.0 + 50.0,
+            rail_height / 2.0 - rail_wall / 2.0,
+        );
+    let detent_deployed =
+        centered_cylinder("detent_deployed", pin_dia / 2.0 + 0.2, rail_wall + 1.0, 24).translate(
+            0.0,
+            -rail_length / 2.0 + 50.0 + rail_extension,
+            rail_height / 2.0 - rail_wall / 2.0,
+        );
 
     let rail_outer = outer_rail - outer_channel - outer_holes - detent_home - detent_deployed;
     rail_outer
@@ -327,8 +335,7 @@ fn main() {
 
     let inner_w = rail_width - rail_wall * 2.0 - 1.0; // 1 mm running clearance
     let inner_h = rail_height - rail_wall - 1.0;
-    let inner_body =
-        centered_cube("inner_body", inner_w, rail_length - 30.0, inner_h);
+    let inner_body = centered_cube("inner_body", inner_w, rail_length - 30.0, inner_h);
     // Ball-bearing recesses (6 total, paired) — simplified as 4 mm Ø
     // pockets 3 mm deep on both side faces
     let mut ball_recesses = Part::empty("ball_recesses");
@@ -341,14 +348,9 @@ fn main() {
     .enumerate()
     {
         for &sx in &[-1.0f64, 1.0] {
-            let r = centered_cylinder(
-                &format!("br_{i}_{}", sx as i32),
-                4.0 / 2.0,
-                3.0,
-                24,
-            )
-            .rotate(0.0, 90.0, 0.0)
-            .translate(sx * (inner_w / 2.0 - 1.5), *yo, 0.0);
+            let r = centered_cylinder(&format!("br_{i}_{}", sx as i32), 4.0 / 2.0, 3.0, 24)
+                .rotate(0.0, 90.0, 0.0)
+                .translate(sx * (inner_w / 2.0 - 1.5), *yo, 0.0);
             ball_recesses = ball_recesses + r;
         }
     }
@@ -363,13 +365,8 @@ fn main() {
     .iter()
     .enumerate()
     {
-        let h = centered_cylinder(
-            &format!("smh_{i}"),
-            4.4 / 2.0,
-            inner_h + 2.0,
-            24,
-        )
-        .translate(0.0, *yo, 0.0);
+        let h = centered_cylinder(&format!("smh_{i}"), 4.4 / 2.0, inner_h + 2.0, 24)
+            .translate(0.0, *yo, 0.0);
         shelf_mount_holes = shelf_mount_holes + h;
     }
 
@@ -385,11 +382,14 @@ fn main() {
 
     let pin_body = centered_cylinder("pin_body", pin_dia / 2.0, pin_len, 24);
     // Conical tip
-    let pin_tip = centered_cylinder("pin_tip", pin_dia / 2.0, 3.0, 24)
-        .translate(0.0, 0.0, pin_len / 2.0 + 1.5);
+    let pin_tip = centered_cylinder("pin_tip", pin_dia / 2.0, 3.0, 24).translate(
+        0.0,
+        0.0,
+        pin_len / 2.0 + 1.5,
+    );
     // Plunger collar
-    let collar = centered_cylinder("collar", 9.0 / 2.0, 3.0, 24)
-        .translate(0.0, 0.0, -pin_len / 2.0 + 1.5);
+    let collar =
+        centered_cylinder("collar", 9.0 / 2.0, 3.0, 24).translate(0.0, 0.0, -pin_len / 2.0 + 1.5);
     let pin = pin_body + pin_tip + collar;
     // Solenoid body stub (so the exported STL shows the envelope)
     let sol_body = centered_cube(
@@ -409,31 +409,34 @@ fn main() {
     // 6. FIDUCIAL L-FRAME (LH camera homing target)
     // ══════════════════════════════════════════════════════════════
 
-    let arm_x = centered_cube("arm_x", fiducial_arm_len, fiducial_arm_thk, fiducial_arm_thk)
-        .translate(fiducial_arm_len / 2.0, 0.0, 0.0);
-    let arm_y = centered_cube("arm_y", fiducial_arm_thk, fiducial_arm_len, fiducial_arm_thk)
-        .translate(0.0, fiducial_arm_len / 2.0, 0.0);
-    let fid_1 = centered_cylinder(
-        "fid_1",
-        fiducial_disc_dia / 2.0,
-        fiducial_disc_thk,
-        32,
+    let arm_x = centered_cube(
+        "arm_x",
+        fiducial_arm_len,
+        fiducial_arm_thk,
+        fiducial_arm_thk,
     )
-    .translate(10.0, 10.0, fiducial_arm_thk / 2.0 + fiducial_disc_thk / 2.0);
-    let fid_2 = centered_cylinder(
-        "fid_2",
-        fiducial_disc_dia / 2.0,
-        fiducial_disc_thk,
-        32,
+    .translate(fiducial_arm_len / 2.0, 0.0, 0.0);
+    let arm_y = centered_cube(
+        "arm_y",
+        fiducial_arm_thk,
+        fiducial_arm_len,
+        fiducial_arm_thk,
     )
-    .translate(fiducial_arm_len - 10.0, 10.0, fiducial_arm_thk / 2.0 + fiducial_disc_thk / 2.0);
-    let fid_3 = centered_cylinder(
-        "fid_3",
-        fiducial_disc_dia / 2.0,
-        fiducial_disc_thk,
-        32,
-    )
-    .translate(10.0, fiducial_arm_len - 10.0, fiducial_arm_thk / 2.0 + fiducial_disc_thk / 2.0);
+    .translate(0.0, fiducial_arm_len / 2.0, 0.0);
+    let fid_1 = centered_cylinder("fid_1", fiducial_disc_dia / 2.0, fiducial_disc_thk, 32)
+        .translate(10.0, 10.0, fiducial_arm_thk / 2.0 + fiducial_disc_thk / 2.0);
+    let fid_2 = centered_cylinder("fid_2", fiducial_disc_dia / 2.0, fiducial_disc_thk, 32)
+        .translate(
+            fiducial_arm_len - 10.0,
+            10.0,
+            fiducial_arm_thk / 2.0 + fiducial_disc_thk / 2.0,
+        );
+    let fid_3 = centered_cylinder("fid_3", fiducial_disc_dia / 2.0, fiducial_disc_thk, 32)
+        .translate(
+            10.0,
+            fiducial_arm_len - 10.0,
+            fiducial_arm_thk / 2.0 + fiducial_disc_thk / 2.0,
+        );
     // Mount hole at corner (M4)
     let fid_hole = centered_cylinder("fid_hole", 4.2 / 2.0, fiducial_arm_thk + 2.0, 24);
     let fid_frame = (arm_x + arm_y + fid_1 + fid_2 + fid_3) - fid_hole;
@@ -460,27 +463,20 @@ fn main() {
         chamber_inner_z,
     );
     // Cut the top hatch opening
-    let top_cut = centered_cube(
-        "top_cut",
-        hatch_open_x,
-        hatch_open_y,
-        10.0,
-    )
-    .translate(0.0, 0.0, chamber_inner_z / 2.0);
+    let top_cut = centered_cube("top_cut", hatch_open_x, hatch_open_y, 10.0).translate(
+        0.0,
+        0.0,
+        chamber_inner_z / 2.0,
+    );
     let chamber_ref = (chamber_shell_outer - chamber_shell_inner) - top_cut;
 
     // Outer rail, fixed to interior ceiling, runs along Y
-    let outer_rail_at_shelf = centered_cube(
-        "outer_rail_at_shelf",
-        rail_width,
-        rail_length,
-        rail_height,
-    )
-    .translate(
-        shelf_x / 4.0,
-        0.0,
-        chamber_inner_z / 2.0 - 40.0 - rail_height / 2.0,
-    );
+    let outer_rail_at_shelf =
+        centered_cube("outer_rail_at_shelf", rail_width, rail_length, rail_height).translate(
+            shelf_x / 4.0,
+            0.0,
+            chamber_inner_z / 2.0 - 40.0 - rail_height / 2.0,
+        );
 
     // Shelf 3 at mid-pitch, extended 200 mm out the front (+Y direction
     // is back; front = −Y in chamber coords, but the hatch opens up (+Z),
@@ -490,13 +486,8 @@ fn main() {
     // through an open hatch-side wall. Here we deploy along +Y for demo.
     let deployed_y = rail_extension; // +200 mm from home
     let shelf_z = 100.0; // arbitrary mid-stack Z for demo
-    let deployed_shelf = centered_cube(
-        "deployed_shelf",
-        shelf_x,
-        shelf_y,
-        shelf_thickness,
-    )
-    .translate(0.0, deployed_y, shelf_z);
+    let deployed_shelf = centered_cube("deployed_shelf", shelf_x, shelf_y, shelf_thickness)
+        .translate(0.0, deployed_y, shelf_z);
 
     // Fiducial L-frame at front-right corner of deployed shelf
     let fid_at_shelf_x = shelf_x / 2.0 - fiducial_arm_len / 2.0;
@@ -522,28 +513,15 @@ fn main() {
     };
 
     // Hatch frame on top of chamber (centered on top face)
-    let hatch_frame_asm = centered_cube(
-        "asm_hatch_frame",
-        frame_outer_x,
-        frame_outer_y,
-        frame_thk,
-    )
-    .translate(
-        0.0,
-        0.0,
-        chamber_inner_z / 2.0 + 3.0 + frame_thk / 2.0,
-    );
+    let hatch_frame_asm = centered_cube("asm_hatch_frame", frame_outer_x, frame_outer_y, frame_thk)
+        .translate(0.0, 0.0, chamber_inner_z / 2.0 + 3.0 + frame_thk / 2.0);
     let hatch_open_asm = centered_cube(
         "asm_hatch_open",
         hatch_open_x,
         hatch_open_y,
         frame_thk + 2.0,
     )
-    .translate(
-        0.0,
-        0.0,
-        chamber_inner_z / 2.0 + 3.0 + frame_thk / 2.0,
-    );
+    .translate(0.0, 0.0, chamber_inner_z / 2.0 + 3.0 + frame_thk / 2.0);
 
     let assembly = chamber_ref
         + outer_rail_at_shelf
@@ -561,7 +539,7 @@ fn main() {
 
     let pitch_x = pocket_x + gutter_interior; // 132.7 mm (chip + gutter)
     let pitch_y = pocket_y + gutter_interior; // 90.48 + 5 = 95.48? no — pocket_y = 86.88, +5 = 91.88
-    // Note: pocket_y = chip_y + 2*0.7 = 86.88 mm; pitch_y = 91.88 mm.
+                                              // Note: pocket_y = chip_y + 2*0.7 = 86.88 mm; pitch_y = 91.88 mm.
 
     println!();
     println!("══════════════════════════════════════════════════════════════");
@@ -576,7 +554,10 @@ fn main() {
         pocket_y, gutter_interior
     );
     println!("  Pitch Z (shelf N+1 − shelf N): {shelf_pitch:.1} mm");
-    println!("  Number of shelves: {num_shelves}     Chips per shelf: {}", cols * rows);
+    println!(
+        "  Number of shelves: {num_shelves}     Chips per shelf: {}",
+        cols * rows
+    );
     println!();
     println!("  Shelf | Row | Col | ΔX (mm) | ΔY (mm) | ΔZ (mm)");
     println!("  ------+-----+-----+---------+---------+--------");
@@ -624,10 +605,8 @@ fn main() {
     let rocker_resume_s = 30.0;
 
     let per_shelf = shelf_extend_s + pipette_time_per_shelf + shelf_retract_s;
-    let total_s = rocker_pause_s
-        + hatch_open_s
-        + (num_shelves as f64) * per_shelf
-        + rocker_resume_s;
+    let total_s =
+        rocker_pause_s + hatch_open_s + (num_shelves as f64) * per_shelf + rocker_resume_s;
 
     println!("══════════════════════════════════════════════════════════════");
     println!(" CYCLE TIME BUDGET — 100-chip 48 h media change");

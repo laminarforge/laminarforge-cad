@@ -1,8 +1,9 @@
-use std::fmt::Write;
 use super::nets::NET_NAMES;
+use std::fmt::Write;
 
 pub fn write_header(pcb: &mut String) {
-    pcb.push_str(r#"(kicad_pcb
+    pcb.push_str(
+        r#"(kicad_pcb
   (version 20240108)
   (generator "laminarforge_pcb_gen")
   (generator_version "1.0")
@@ -33,7 +34,8 @@ pub fn write_header(pcb: &mut String) {
     (48 "B.Fab" user "B.Fabrication")
     (49 "F.Fab" user "F.Fabrication")
   )
-"#);
+"#,
+    );
 }
 
 pub fn write_nets(pcb: &mut String) {
@@ -54,7 +56,8 @@ pub fn write_setup(pcb: &mut String) {
     //   Min via: 0.45mm pad / 0.2mm drill, we use 0.7/0.35mm
     //   Min hole clearance: ~0.15mm, we use 0.2mm
     //   Min solder mask bridge: 0.09mm
-    pcb.push_str(r#"  (setup
+    pcb.push_str(
+        r#"  (setup
     (pad_to_mask_clearance 0)
     (allow_soldermask_bridges_in_footprints yes)
     (pcbplotparams
@@ -104,5 +107,6 @@ pub fn write_setup(pcb: &mut String) {
     (uvia_dia 0.3)
     (uvia_drill 0.1)
   )
-"#);
+"#,
+    );
 }

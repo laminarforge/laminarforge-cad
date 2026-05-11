@@ -32,8 +32,11 @@ fn main() {
     let outer = centered_cube("outer", OUTER_X, OUTER_Y, OUTER_Z);
 
     // Inner cavity (open top)
-    let inner = centered_cube("inner", INNER_X, INNER_Y, WALL_HEIGHT)
-        .translate(0.0, 0.0, ENCLOSURE_FLOOR / 2.0);
+    let inner = centered_cube("inner", INNER_X, INNER_Y, WALL_HEIGHT).translate(
+        0.0,
+        0.0,
+        ENCLOSURE_FLOOR / 2.0,
+    );
 
     let shell = outer - inner;
 
@@ -49,8 +52,11 @@ fn main() {
     let shelf_y = shelf_center_y();
     let pocket_floor_z = floor_z();
 
-    let pocket = centered_cube("pocket", pocket_x, pocket_y, pocket_z)
-        .translate(0.0, shelf_y, pocket_floor_z + pocket_z / 2.0);
+    let pocket = centered_cube("pocket", pocket_x, pocket_y, pocket_z).translate(
+        0.0,
+        shelf_y,
+        pocket_floor_z + pocket_z / 2.0,
+    );
 
     // ── M3 PCB mounting holes in floor (4x, rectangular pattern) ──
 
@@ -64,7 +70,11 @@ fn main() {
     for &dx in &[-mount_spacing_x / 2.0, mount_spacing_x / 2.0] {
         for &dy in &[-mount_spacing_y / 2.0, mount_spacing_y / 2.0] {
             let hole = centered_cylinder(
-                &format!("mount_{}_{}", if dx < 0.0 { "l" } else { "r" }, if dy < 0.0 { "f" } else { "b" }),
+                &format!(
+                    "mount_{}_{}",
+                    if dx < 0.0 { "l" } else { "r" },
+                    if dy < 0.0 { "f" } else { "b" }
+                ),
                 mount_hole_d / 2.0,
                 mount_depth,
                 24,
@@ -147,8 +157,7 @@ fn main() {
 
     // ── Assemble ──
 
-    let enclosure = shell
-        + brim
+    let enclosure = shell + brim
         - pocket
         - mount_holes
         - usb_cutout
@@ -159,9 +168,7 @@ fn main() {
 
     // ── Export ──
 
-    enclosure
-        .write_stl("output/enclosure.stl")
-        .unwrap();
+    enclosure.write_stl("output/enclosure.stl").unwrap();
 
     println!("Exported: output/enclosure.stl");
     println!();
@@ -177,6 +184,8 @@ fn main() {
     println!("  USB cutout:     {usb_width:.0}mm x {usb_height:.0}mm (rear wall)");
     println!("  Barrel jack:    {barrel_d:.0}mm dia (rear wall)");
     println!("  LED holes:      2x {led_d:.0}mm dia (front wall, {led_spacing:.0}mm apart)");
-    println!("  Vents:          {num_vents}x per side ({vent_width:.0}mm x {vent_height:.0}mm slots)");
+    println!(
+        "  Vents:          {num_vents}x per side ({vent_width:.0}mm x {vent_height:.0}mm slots)"
+    );
     println!("  Material:       PETG");
 }

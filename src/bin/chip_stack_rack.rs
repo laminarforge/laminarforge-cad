@@ -69,12 +69,10 @@ fn main() {
     let gutter_interior: f64 = 5.0;
     let edge_margin: f64 = 2.0;
 
-    let shelf_x: f64 = (cols as f64) * pocket_x
-        + ((cols - 1) as f64) * gutter_interior
-        + 2.0 * edge_margin;
-    let shelf_y: f64 = (rows as f64) * pocket_y
-        + ((rows - 1) as f64) * gutter_interior
-        + 2.0 * edge_margin;
+    let shelf_x: f64 =
+        (cols as f64) * pocket_x + ((cols - 1) as f64) * gutter_interior + 2.0 * edge_margin;
+    let shelf_y: f64 =
+        (rows as f64) * pocket_y + ((rows - 1) as f64) * gutter_interior + 2.0 * edge_margin;
     let shelf_thickness: f64 = 3.0; // material thickness (3 mm, 6061 Al or PETG)
 
     // Fallback check: if even this overflows, re-tighten (but we know ok)
@@ -95,8 +93,7 @@ fn main() {
 
     // ── Corner posts (20×20 mm square tube) ──
     let post_side: f64 = 20.0;
-    let post_height: f64 =
-        (num_shelves as f64) * shelf_pitch + 30.0; // top clearance above top shelf
+    let post_height: f64 = (num_shelves as f64) * shelf_pitch + 30.0; // top clearance above top shelf
     let post_flange_side: f64 = 34.0; // keeps flange inside base footprint
     let post_flange_thickness: f64 = 6.0;
 
@@ -247,9 +244,7 @@ fn main() {
     }
     shelf = shelf - corner_notches;
 
-    shelf
-        .write_stl("output/chip_stack_rack_shelf.stl")
-        .unwrap();
+    shelf.write_stl("output/chip_stack_rack_shelf.stl").unwrap();
     println!("Exported: output/chip_stack_rack_shelf.stl");
 
     // ══════════════════════════════════════════════════════════════
@@ -330,8 +325,7 @@ fn main() {
         }
     }
 
-    let post =
-        ((post_outer - post_inner) + flange) - post_notches - flange_holes;
+    let post = ((post_outer - post_inner) + flange) - post_notches - flange_holes;
 
     post.write_stl("output/chip_stack_rack_post.stl").unwrap();
     println!("Exported: output/chip_stack_rack_post.stl");
@@ -414,10 +408,16 @@ fn main() {
     let handle_leg_h: f64 = 60.0; // vertical leg height above post tops
 
     // Two vertical legs + one horizontal top bar (oriented along X).
-    let leg_left = centered_cylinder("leg_left", rod_dia / 2.0, handle_leg_h, 24)
-        .translate(-handle_span_x / 2.0, 0.0, handle_leg_h / 2.0);
-    let leg_right = centered_cylinder("leg_right", rod_dia / 2.0, handle_leg_h, 24)
-        .translate(handle_span_x / 2.0, 0.0, handle_leg_h / 2.0);
+    let leg_left = centered_cylinder("leg_left", rod_dia / 2.0, handle_leg_h, 24).translate(
+        -handle_span_x / 2.0,
+        0.0,
+        handle_leg_h / 2.0,
+    );
+    let leg_right = centered_cylinder("leg_right", rod_dia / 2.0, handle_leg_h, 24).translate(
+        handle_span_x / 2.0,
+        0.0,
+        handle_leg_h / 2.0,
+    );
     let top_bar = centered_cylinder("top_bar", rod_dia / 2.0, handle_span_x, 24)
         .rotate(0.0, 90.0, 0.0)
         .translate(0.0, 0.0, handle_leg_h);
@@ -447,7 +447,10 @@ fn main() {
                             let px = sx * post_cx + fx * flange_bolt_offset;
                             let py = sy * post_cy + fy * flange_bolt_offset;
                             let hole = centered_cylinder(
-                                &format!("abh_{}_{}_{}_{}", sx as i32, sy as i32, fx as i32, fy as i32),
+                                &format!(
+                                    "abh_{}_{}_{}_{}",
+                                    sx as i32, sy as i32, fx as i32, fy as i32
+                                ),
                                 corner_bolt_dia / 2.0,
                                 base_thickness + 2.0,
                                 16,
@@ -469,34 +472,32 @@ fn main() {
     let post_z = base_thickness + post_height / 2.0;
 
     // Rebuild a simpler post for the assembly (avoid giant CSG tree)
-    let asm_post_template =
-        centered_cube("asm_post", post_side, post_side, post_height)
-            + centered_cube(
-                "asm_flange",
-                post_flange_side,
-                post_flange_side,
-                post_flange_thickness,
-            )
-            .translate(0.0, 0.0, -post_height / 2.0 + post_flange_thickness / 2.0);
+    let asm_post_template = centered_cube("asm_post", post_side, post_side, post_height)
+        + centered_cube(
+            "asm_flange",
+            post_flange_side,
+            post_flange_side,
+            post_flange_thickness,
+        )
+        .translate(0.0, 0.0, -post_height / 2.0 + post_flange_thickness / 2.0);
 
     let mut asm = asm_base;
     for (i, &sx) in [-1.0f64, 1.0].iter().enumerate() {
         for (j, &sy) in [-1.0f64, 1.0].iter().enumerate() {
             // Build a fresh copy of the post per corner (vcad Parts
             // aren't Clone-safe to reuse across CSG operations).
-            let p =
-                centered_cube(&format!("ap_o_{i}_{j}"), post_side, post_side, post_height)
-                    + centered_cube(
-                        &format!("ap_f_{i}_{j}"),
-                        post_flange_side,
-                        post_flange_side,
-                        post_flange_thickness,
-                    )
-                    .translate(
-                        0.0,
-                        0.0,
-                        -post_height / 2.0 + post_flange_thickness / 2.0,
-                    );
+            let p = centered_cube(&format!("ap_o_{i}_{j}"), post_side, post_side, post_height)
+                + centered_cube(
+                    &format!("ap_f_{i}_{j}"),
+                    post_flange_side,
+                    post_flange_side,
+                    post_flange_thickness,
+                )
+                .translate(
+                    0.0,
+                    0.0,
+                    -post_height / 2.0 + post_flange_thickness / 2.0,
+                );
             let placed = p.translate(sx * post_cx, sy * post_cy, post_z);
             asm = asm + placed;
         }
@@ -514,12 +515,7 @@ fn main() {
         // Build a simplified shelf for assembly (just outline + corner
         // notches, skip pockets/tabs/labels/cuts to keep tree small)
         let s = {
-            let body = centered_cube(
-                &format!("asm_shelf_{i}"),
-                shelf_x,
-                shelf_y,
-                shelf_thickness,
-            );
+            let body = centered_cube(&format!("asm_shelf_{i}"), shelf_x, shelf_y, shelf_thickness);
             let mut notches = Part::empty(&format!("asm_notches_{i}"));
             for &sx in &[-1.0f64, 1.0] {
                 for &sy in &[-1.0f64, 1.0] {
@@ -544,30 +540,23 @@ fn main() {
     for cx in 0..cols {
         let px = grid_origin_x + (cx as f64) * (pocket_x + gutter_interior);
         let py = grid_origin_y; // row 0
-        let chip = centered_cube(
-            &format!("chip_dummy_{cx}"),
-            chip_x,
-            chip_y,
-            chip_z,
-        )
-        .translate(px, py, dummy_z);
+        let chip = centered_cube(&format!("chip_dummy_{cx}"), chip_x, chip_y, chip_z)
+            .translate(px, py, dummy_z);
         asm = asm + chip;
     }
 
     // Handle at top
     let handle_z_base = base_thickness + post_height; // top of posts
-    let leg_l = centered_cylinder("h_leg_l", rod_dia / 2.0, handle_leg_h, 16)
-        .translate(
-            -handle_span_x / 2.0,
-            0.0,
-            handle_z_base + handle_leg_h / 2.0,
-        );
-    let leg_r = centered_cylinder("h_leg_r", rod_dia / 2.0, handle_leg_h, 16)
-        .translate(
-            handle_span_x / 2.0,
-            0.0,
-            handle_z_base + handle_leg_h / 2.0,
-        );
+    let leg_l = centered_cylinder("h_leg_l", rod_dia / 2.0, handle_leg_h, 16).translate(
+        -handle_span_x / 2.0,
+        0.0,
+        handle_z_base + handle_leg_h / 2.0,
+    );
+    let leg_r = centered_cylinder("h_leg_r", rod_dia / 2.0, handle_leg_h, 16).translate(
+        handle_span_x / 2.0,
+        0.0,
+        handle_z_base + handle_leg_h / 2.0,
+    );
     let bar = centered_cylinder("h_bar", rod_dia / 2.0, handle_span_x, 16)
         .rotate(0.0, 90.0, 0.0)
         .translate(0.0, 0.0, handle_z_base + handle_leg_h);
@@ -586,7 +575,7 @@ fn main() {
     //   Aluminum 6061: 2.70 g/cm³ = 2.70e-3 g/mm³
     //   PETG:          1.27 g/cm³ = 1.27e-3 g/mm³
     let al_density: f64 = 2.70e-3; // g/mm³
-    // Volumes (approximate, ignoring holes/cuts for a conservative upper bound)
+                                   // Volumes (approximate, ignoring holes/cuts for a conservative upper bound)
     let shelf_vol = shelf_x * shelf_y * shelf_thickness;
     // Subtract ~20% for pockets + optical cuts
     let shelf_vol_eff = shelf_vol * 0.80;
@@ -595,13 +584,11 @@ fn main() {
     let post_vol_eff = post_vol_outer * post_wall_frac
         + post_flange_side * post_flange_side * post_flange_thickness;
     let base_vol = base_x * base_y * base_thickness;
-    let handle_vol = std::f64::consts::PI * (rod_dia / 2.0).powi(2)
-        * (handle_span_x + 2.0 * handle_leg_h);
+    let handle_vol =
+        std::f64::consts::PI * (rod_dia / 2.0).powi(2) * (handle_span_x + 2.0 * handle_leg_h);
 
-    let total_vol_mm3 = (shelf_vol_eff * num_shelves as f64)
-        + (post_vol_eff * 4.0)
-        + base_vol
-        + handle_vol;
+    let total_vol_mm3 =
+        (shelf_vol_eff * num_shelves as f64) + (post_vol_eff * 4.0) + base_vol + handle_vol;
     let mass_al = total_vol_mm3 * al_density;
 
     println!();
@@ -614,7 +601,10 @@ fn main() {
     println!("  Chips per shelf:       {}", cols * rows);
     println!("  Shelves:               {num_shelves}");
     println!("  Total chips:           {total_chips}");
-    println!("  Shelf pitch:           {shelf_pitch:.1} mm (chip {chip_z:.2} + {:.2} pipette clearance)", shelf_pitch - chip_z);
+    println!(
+        "  Shelf pitch:           {shelf_pitch:.1} mm (chip {chip_z:.2} + {:.2} pipette clearance)",
+        shelf_pitch - chip_z
+    );
     println!(
         "  Pocket:                {pocket_x:.1} × {pocket_y:.1} × {pocket_depth:.1} mm deep (0.7 mm side clearance)"
     );
@@ -624,7 +614,9 @@ fn main() {
     println!(
         "  Optical cut-through:   {optical_x:.0} × {optical_y:.0} mm per pocket (unobstructed glass)"
     );
-    println!("  Barcode label slot:    {label_x:.0} × {label_y:.0} × {label_depth:.1} mm per pocket");
+    println!(
+        "  Barcode label slot:    {label_x:.0} × {label_y:.0} × {label_depth:.1} mm per pocket"
+    );
     println!(
         "  Corner posts:          4 × {post_side:.0} × {post_side:.0} mm square tube, {post_height:.0} mm tall"
     );
@@ -632,9 +624,7 @@ fn main() {
     println!(
         "  Post flange:           {post_flange_side:.0} × {post_flange_side:.0} × {post_flange_thickness:.0} mm, 4× M5 bolts"
     );
-    println!(
-        "  Base plate:            {base_x:.0} × {base_y:.0} × {base_thickness:.0} mm"
-    );
+    println!("  Base plate:            {base_x:.0} × {base_y:.0} × {base_thickness:.0} mm");
     println!(
         "  Rocker mount:          8× M6 on {rocker_bolt_rect_x:.0} × {rocker_bolt_rect_y:.0} mm rectangle"
     );

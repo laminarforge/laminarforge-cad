@@ -61,30 +61,19 @@ fn main() {
     let cup_height = adapter_15_height - stem_height;
 
     // Cup section (holds the tube)
-    let cup_outer = centered_cylinder(
-        "cup_outer",
-        adapter_15_actual_od / 2.0,
-        cup_height,
-        32,
-    )
-    .translate(0.0, 0.0, stem_height / 2.0);
+    let cup_outer = centered_cylinder("cup_outer", adapter_15_actual_od / 2.0, cup_height, 32)
+        .translate(0.0, 0.0, stem_height / 2.0);
 
-    let cup_bore = centered_cylinder(
-        "cup_bore",
-        adapter_15_id / 2.0,
-        cup_height + 1.0,
-        24,
-    )
-    .translate(0.0, 0.0, stem_height / 2.0);
+    let cup_bore = centered_cylinder("cup_bore", adapter_15_id / 2.0, cup_height + 1.0, 24)
+        .translate(0.0, 0.0, stem_height / 2.0);
 
     // Stem section (fits into rotor)
-    let stem_outer = centered_cylinder(
-        "stem_outer",
-        adapter_15_rotor_stem_d / 2.0,
-        stem_height,
-        32,
-    )
-    .translate(0.0, 0.0, -(cup_height / 2.0));
+    let stem_outer =
+        centered_cylinder("stem_outer", adapter_15_rotor_stem_d / 2.0, stem_height, 32).translate(
+            0.0,
+            0.0,
+            -(cup_height / 2.0),
+        );
 
     // Through-bore in stem (same ID or slightly smaller for tube tip clearance)
     let stem_bore = centered_cylinder(
@@ -113,7 +102,9 @@ fn main() {
     println!("  1.5mL adapter:");
     println!("    Cup:    {adapter_15_actual_od:.0}mm OD x {cup_height:.0}mm");
     println!("    Bore:   {adapter_15_id:.0}mm ID (for 1.5mL tubes)");
-    println!("    Stem:   {adapter_15_rotor_stem_d:.1}mm OD x {stem_height:.0}mm (fits rotor slot)");
+    println!(
+        "    Stem:   {adapter_15_rotor_stem_d:.1}mm OD x {stem_height:.0}mm (fits rotor slot)"
+    );
     println!("    Total:  {adapter_15_height:.0}mm tall");
     println!("  Material: PETG");
 }

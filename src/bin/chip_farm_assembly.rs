@@ -73,8 +73,8 @@ fn main() {
     let pivot_clearance: f64 = 45.0;
     // Pivot axis above the rocker base top face
     let rocker_pivot_axis_z_local = rocker_base_z / 2.0 + pivot_clearance; // 50 mm in rocker-local
-    // Rocker-local origin is the base center. In assembly coords, base sits
-    // on interior floor: base bottom at z=0, base top at z=10.
+                                                                           // Rocker-local origin is the base center. In assembly coords, base sits
+                                                                           // on interior floor: base bottom at z=0, base top at z=10.
     let rocker_origin_z = rocker_base_z / 2.0; // 5 mm (base center in assembly coords)
     let rocker_pivot_axis_z_world = rocker_origin_z + rocker_pivot_axis_z_local;
     // Top tilting plate sits with bottom at pivot axis + small offset.
@@ -115,12 +115,10 @@ fn main() {
     let pocket_y: f64 = chip_y + pocket_clearance * 2.0;
     let gutter_interior: f64 = 5.0;
     let edge_margin: f64 = 2.0;
-    let shelf_x: f64 = (cols as f64) * pocket_x
-        + ((cols - 1) as f64) * gutter_interior
-        + 2.0 * edge_margin;
-    let shelf_y: f64 = (rows as f64) * pocket_y
-        + ((rows - 1) as f64) * gutter_interior
-        + 2.0 * edge_margin;
+    let shelf_x: f64 =
+        (cols as f64) * pocket_x + ((cols - 1) as f64) * gutter_interior + 2.0 * edge_margin;
+    let shelf_y: f64 =
+        (rows as f64) * pocket_y + ((rows - 1) as f64) * gutter_interior + 2.0 * edge_margin;
     let post_side: f64 = 20.0;
     let post_height: f64 = (num_shelves as f64) * shelf_pitch + 30.0; // 230
     let post_spacing_x: f64 = shelf_x - post_side;
@@ -131,7 +129,7 @@ fn main() {
     // Rack origin in assembly: rack base bottom sits on top of rocker top plate.
     // Rocker top plate top face z_world = rocker_top_plate_cz_world + rocker_top_z/2
     let rocker_top_surface_z = rocker_top_plate_cz_world + rocker_top_z / 2.0; // ~63 mm
-    // Place rack base bottom at rocker_top_surface_z.
+                                                                               // Place rack base bottom at rocker_top_surface_z.
     let rack_base_bottom_z = rocker_top_surface_z;
     let rack_base_top_z = rack_base_bottom_z + rack_base_z;
     // Post Z in rack-local: post_z = base_thickness + post_height/2 ≈ 6 + 115 = 121.
@@ -158,8 +156,8 @@ fn main() {
         let outer = centered_cube("inc_outer", shell_outer_x, shell_outer_y, shell_outer_z)
             .translate(0.0, 0.0, chamber_cz);
         // Inner cavity — the interior chamber (600 × 520 × 550)
-        let cavity = centered_cube("inc_cavity", inner_x, inner_y, inner_z)
-            .translate(0.0, 0.0, chamber_cz);
+        let cavity =
+            centered_cube("inc_cavity", inner_x, inner_y, inner_z).translate(0.0, 0.0, chamber_cz);
         let mut result = outer - cavity;
 
         if open_front {
@@ -206,12 +204,15 @@ fn main() {
         boss_cy: f64,
     ) -> Part {
         // Base plate: bottom at z=0, top at z=base_z
-        let base = centered_cube("rk_base", base_x, base_y, base_z)
-            .translate(0.0, 0.0, base_z / 2.0);
+        let base =
+            centered_cube("rk_base", base_x, base_y, base_z).translate(0.0, 0.0, base_z / 2.0);
 
         // Stepper boss on top of base
-        let boss = centered_cube("rk_boss", boss_x, boss_y, boss_z)
-            .translate(boss_cx, boss_cy, base_z + boss_z / 2.0);
+        let boss = centered_cube("rk_boss", boss_x, boss_y, boss_z).translate(
+            boss_cx,
+            boss_cy,
+            base_z + boss_z / 2.0,
+        );
 
         // Stepper body stub (cylinder in -X)
         let stepper_body = centered_cylinder("rk_stepper_body", 56.4 / 2.0, 70.0, 24)
@@ -226,10 +227,16 @@ fn main() {
         let ls_mount_far_cx = base_x / 2.0 - ls_mount_x / 2.0 - 20.0;
         let ls_axis_z = base_z + ls_mount_z / 2.0;
 
-        let ls_near = centered_cube("rk_ls_near", ls_mount_x, ls_mount_y, ls_mount_z)
-            .translate(ls_mount_near_cx, 0.0, base_z + ls_mount_z / 2.0);
-        let ls_far = centered_cube("rk_ls_far", ls_mount_x, ls_mount_y, ls_mount_z)
-            .translate(ls_mount_far_cx, 0.0, base_z + ls_mount_z / 2.0);
+        let ls_near = centered_cube("rk_ls_near", ls_mount_x, ls_mount_y, ls_mount_z).translate(
+            ls_mount_near_cx,
+            0.0,
+            base_z + ls_mount_z / 2.0,
+        );
+        let ls_far = centered_cube("rk_ls_far", ls_mount_x, ls_mount_y, ls_mount_z).translate(
+            ls_mount_far_cx,
+            0.0,
+            base_z + ls_mount_z / 2.0,
+        );
         let ls_span = ls_mount_far_cx - ls_mount_near_cx;
         let lead_screw = centered_cylinder("rk_lead_screw", 8.0 / 2.0, ls_span, 16)
             .rotate(0.0, 90.0, 0.0)
@@ -252,8 +259,11 @@ fn main() {
 
         // Top tilting plate centered in X/Y, at pivot height + top_z/2
         let pivot_axis_z_world = base_z + pivot_clearance;
-        let top_plate = centered_cube("rk_top_plate", top_x, top_y, top_z)
-            .translate(0.0, 0.0, pivot_axis_z_world + top_z / 2.0);
+        let top_plate = centered_cube("rk_top_plate", top_x, top_y, top_z).translate(
+            0.0,
+            0.0,
+            pivot_axis_z_world + top_z / 2.0,
+        );
 
         base + boss + stepper_body + ls_near + ls_far + lead_screw + pb_left + pb_right + top_plate
     }
@@ -290,8 +300,11 @@ fn main() {
         rows: i32,
     ) -> Part {
         // Rack base plate (bottom at base_bottom_z)
-        let base = centered_cube("rack_base", rack_base_x, rack_base_y, rack_base_z)
-            .translate(0.0, 0.0, base_bottom_z + rack_base_z / 2.0);
+        let base = centered_cube("rack_base", rack_base_x, rack_base_y, rack_base_z).translate(
+            0.0,
+            0.0,
+            base_bottom_z + rack_base_z / 2.0,
+        );
 
         // 4 corner posts (simplified — solid square tubes)
         let base_top = base_bottom_z + rack_base_z;
@@ -307,7 +320,11 @@ fn main() {
                     post_side,
                     post_height,
                 )
-                .translate(sx * post_cx, sy * post_cy, base_top + post_height / 2.0);
+                .translate(
+                    sx * post_cx,
+                    sy * post_cy,
+                    base_top + post_height / 2.0,
+                );
                 posts = posts + p;
             }
         }
@@ -337,13 +354,9 @@ fn main() {
                 for ry in 0..rows {
                     let px = grid_origin_x + (cx as f64) * (pocket_x + gutter_interior);
                     let py = grid_origin_y + (ry as f64) * (pocket_y + gutter_interior);
-                    let chip = centered_cube(
-                        &format!("chip_{i}_{cx}_{ry}"),
-                        chip_x,
-                        chip_y,
-                        chip_z,
-                    )
-                    .translate(px, py, chip_cz);
+                    let chip =
+                        centered_cube(&format!("chip_{i}_{cx}_{ry}"), chip_x, chip_y, chip_z)
+                            .translate(px, py, chip_cz);
                     chips = chips + chip;
                 }
             }
@@ -374,17 +387,22 @@ fn main() {
 
     fn build_water_tray() -> Part {
         // 298 × 198 × 25 mm open-top tray; sits on floor, near +Y back
-        let outer = centered_cube("wt_outer", 298.0, 198.0, 25.0)
-            .translate(0.0, 150.0, 25.0 / 2.0);
-        let inner = centered_cube("wt_inner", 293.0, 193.0, 22.5)
-            .translate(0.0, 150.0, 25.0 / 2.0 + 2.5 / 2.0);
+        let outer = centered_cube("wt_outer", 298.0, 198.0, 25.0).translate(0.0, 150.0, 25.0 / 2.0);
+        let inner = centered_cube("wt_inner", 293.0, 193.0, 22.5).translate(
+            0.0,
+            150.0,
+            25.0 / 2.0 + 2.5 / 2.0,
+        );
         outer - inner
     }
 
     fn build_top_hatch(chamber_top_z: f64) -> Part {
         // Rests on top of chamber (z = chamber_top_z + 15/2)
-        centered_cube("top_hatch", 360.0, 260.0, 15.0)
-            .translate(0.0, 0.0, chamber_top_z + 15.0 / 2.0)
+        centered_cube("top_hatch", 360.0, 260.0, 15.0).translate(
+            0.0,
+            0.0,
+            chamber_top_z + 15.0 / 2.0,
+        )
     }
 
     fn build_door(chamber_front_y: f64) -> Part {
@@ -393,13 +411,12 @@ fn main() {
         let door_x = 630.0;
         let door_z = 580.0;
         let door_thickness = 35.0;
-        centered_cube("door_body", door_x, door_thickness, door_z)
-            .translate(
-                0.0,
-                chamber_front_y - door_thickness / 2.0,
-                chamber_front_y.abs().min(0.0).max(0.0) // unused
+        centered_cube("door_body", door_x, door_thickness, door_z).translate(
+            0.0,
+            chamber_front_y - door_thickness / 2.0,
+            chamber_front_y.abs().min(0.0).max(0.0) // unused
                     + 275.0, // chamber center z (interior floor 0 → center 275)
-            )
+        )
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -462,7 +479,8 @@ fn main() {
 
     let water_tray = build_water_tray();
 
-    let top_hatch = build_top_hatch(chamber_cz + chamber_outer_z / 2.0 + insulation_gap + shell_wall);
+    let top_hatch =
+        build_top_hatch(chamber_cz + chamber_outer_z / 2.0 + insulation_gap + shell_wall);
     let _ = top_hatch;
 
     // Front door (closed position): center Y = -interior front - door/2 outside the shell
@@ -530,11 +548,7 @@ fn main() {
         );
         let stepper_body = centered_cylinder("rkt_stepper_body", 56.4 / 2.0, 70.0, 24)
             .rotate(0.0, 90.0, 0.0)
-            .translate(
-                boss_cx - 70.0 / 2.0,
-                boss_cy,
-                rocker_base_z + boss_z / 2.0,
-            );
+            .translate(boss_cx - 70.0 / 2.0, boss_cy, rocker_base_z + boss_z / 2.0);
         let pb_x_ = 60.0;
         let pb_y_ = 40.0;
         let pb_z_ = pivot_clearance;
@@ -551,11 +565,14 @@ fn main() {
         base + boss + stepper_body + pb_left + pb_right
     };
 
-    let top_plate_tilted =
-        centered_cube("rkt_top_plate", rocker_top_x, rocker_top_y, rocker_top_z)
-            .translate(0.0, 0.0, rocker_top_plate_cz_world - rocker_pivot_axis_z_world)
-            .rotate(tilt_deg, 0.0, 0.0)
-            .translate(0.0, 0.0, rocker_pivot_axis_z_world);
+    let top_plate_tilted = centered_cube("rkt_top_plate", rocker_top_x, rocker_top_y, rocker_top_z)
+        .translate(
+            0.0,
+            0.0,
+            rocker_top_plate_cz_world - rocker_pivot_axis_z_world,
+        )
+        .rotate(tilt_deg, 0.0, 0.0)
+        .translate(0.0, 0.0, rocker_pivot_axis_z_world);
 
     let water_tray_t = build_water_tray();
     let incubator_t = build_incubator_hollow(
@@ -569,7 +586,8 @@ fn main() {
         true,
     );
 
-    let assembly_tilted = incubator_t + rocker_no_top + top_plate_tilted + rack_tilted + water_tray_t;
+    let assembly_tilted =
+        incubator_t + rocker_no_top + top_plate_tilted + rack_tilted + water_tray_t;
     assembly_tilted
         .write_stl("output/chip_farm_assembly_tilted.stl")
         .unwrap();
@@ -595,12 +613,11 @@ fn main() {
     );
 
     let door_thickness: f64 = 35.0;
-    let door_exploded = centered_cube("door_e", 630.0, door_thickness, 580.0)
-        .translate(
-            0.0,
-            -shell_outer_y / 2.0 - door_thickness / 2.0 - 300.0,
-            chamber_cz,
-        );
+    let door_exploded = centered_cube("door_e", 630.0, door_thickness, 580.0).translate(
+        0.0,
+        -shell_outer_y / 2.0 - door_thickness / 2.0 - 300.0,
+        chamber_cz,
+    );
 
     let hatch_exploded = centered_cube("hatch_e", 360.0, 260.0, 15.0).translate(
         0.0,
@@ -657,8 +674,12 @@ fn main() {
 
     let water_tray_e = build_water_tray().translate(0.0, 0.0, 150.0); // lift with hatch area
 
-    let assembly_exploded =
-        incubator_e + door_exploded + hatch_exploded + rack_exploded + rocker_exploded + water_tray_e;
+    let assembly_exploded = incubator_e
+        + door_exploded
+        + hatch_exploded
+        + rack_exploded
+        + rocker_exploded
+        + water_tray_e;
     assembly_exploded
         .write_stl("output/chip_farm_assembly_exploded.stl")
         .unwrap();
@@ -837,13 +858,21 @@ fn main() {
     println!("══════════════════════════════════════════════════════════════");
     println!("   Interior stack:");
     println!("     Rocker base:       0 …  {:.0} mm", rocker_base_z);
-    println!("     Rocker top plate:  {:.0} … {:.0} mm",
-             rocker_top_plate_cz_world - rocker_top_z / 2.0,
-             rocker_top_plate_cz_world + rocker_top_z / 2.0);
-    println!("     Rack base:         {:.0} … {:.0} mm", rack_base_bottom_z, rack_base_top_z);
+    println!(
+        "     Rocker top plate:  {:.0} … {:.0} mm",
+        rocker_top_plate_cz_world - rocker_top_z / 2.0,
+        rocker_top_plate_cz_world + rocker_top_z / 2.0
+    );
+    println!(
+        "     Rack base:         {:.0} … {:.0} mm",
+        rack_base_bottom_z, rack_base_top_z
+    );
     println!("     Top of posts:      {:.0} mm", rack_top_z_floor);
     println!("     Handle tip:        {:.0} mm", handle_tip_z);
-    println!("     Interior ceiling:  {:.0} mm  → {:.0} mm headroom", inner_z, headroom);
+    println!(
+        "     Interior ceiling:  {:.0} mm  → {:.0} mm headroom",
+        inner_z, headroom
+    );
     println!("   Outputs:");
     println!("     output/chip_farm_assembly.stl");
     println!("     output/chip_farm_assembly_tilted.stl");

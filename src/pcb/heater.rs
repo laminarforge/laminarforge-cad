@@ -1,7 +1,7 @@
-use std::fmt::Write;
-use crate::*;
-use super::{HeaterStats, next_uuid};
 use super::nets::NET_HEATER_P;
+use super::{next_uuid, HeaterStats};
+use crate::*;
+use std::fmt::Write;
 
 pub fn write_heater_serpentine(pcb: &mut String) -> HeaterStats {
     // Heater zone on B.Cu: serpentine trace
@@ -44,7 +44,11 @@ pub fn write_heater_serpentine(pcb: &mut String) -> HeaterStats {
 
         if i < num_passes - 1 {
             let y_next = y + pitch;
-            let conn_x = if i % 2 == 0 { trace_x_end } else { trace_x_start };
+            let conn_x = if i % 2 == 0 {
+                trace_x_end
+            } else {
+                trace_x_start
+            };
             writeln!(
                 pcb,
                 "  (segment (start {} {}) (end {} {}) (width {}) (layer \"B.Cu\") (net {}) (tstamp \"{}\"))",

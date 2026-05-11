@@ -57,36 +57,27 @@ fn main() {
     let mold_top_z = thickness / 2.0 + ch_depth / 2.0;
 
     // Culture chamber (center of chip)
-    let chamber = centered_cube(
-        "chamber",
-        chamber_length,
-        chamber_width,
-        chamber_depth,
-    )
-    .translate(0.0, 0.0, mold_top_z);
+    let chamber = centered_cube("chamber", chamber_length, chamber_width, chamber_depth)
+        .translate(0.0, 0.0, mold_top_z);
 
     // Inlet channel: from inlet port to chamber left edge
     // Inlet port is at -X end, channel runs along X axis (Y=0)
     let inlet_x_end = -(chamber_length / 2.0); // where channel meets chamber
     let inlet_x_start = inlet_x_end - ch_length; // channel start (port location)
-    let inlet_channel = centered_cube(
-        "inlet_channel",
-        ch_length,
-        ch_width,
-        ch_depth,
-    )
-    .translate(inlet_x_start + ch_length / 2.0, 0.0, mold_top_z);
+    let inlet_channel = centered_cube("inlet_channel", ch_length, ch_width, ch_depth).translate(
+        inlet_x_start + ch_length / 2.0,
+        0.0,
+        mold_top_z,
+    );
 
     // Outlet channel: from chamber right edge to outlet port
     let outlet_x_start = chamber_length / 2.0; // where channel leaves chamber
     let outlet_x_end = outlet_x_start + ch_length;
-    let outlet_channel = centered_cube(
-        "outlet_channel",
-        ch_length,
-        ch_width,
-        ch_depth,
-    )
-    .translate(outlet_x_start + ch_length / 2.0, 0.0, mold_top_z);
+    let outlet_channel = centered_cube("outlet_channel", ch_length, ch_width, ch_depth).translate(
+        outlet_x_start + ch_length / 2.0,
+        0.0,
+        mold_top_z,
+    );
 
     // ── Port holes ──
     // Vertical holes at inlet and outlet positions for tubing insertion.
@@ -98,7 +89,11 @@ fn main() {
         port_depth + ch_depth + 0.1,
         24,
     )
-    .translate(inlet_x_start, 0.0, thickness / 2.0 - port_depth / 2.0 + ch_depth / 2.0);
+    .translate(
+        inlet_x_start,
+        0.0,
+        thickness / 2.0 - port_depth / 2.0 + ch_depth / 2.0,
+    );
 
     let outlet_port = centered_cylinder(
         "outlet_port",
@@ -106,7 +101,11 @@ fn main() {
         port_depth + ch_depth + 0.1,
         24,
     )
-    .translate(outlet_x_end, 0.0, thickness / 2.0 - port_depth / 2.0 + ch_depth / 2.0);
+    .translate(
+        outlet_x_end,
+        0.0,
+        thickness / 2.0 - port_depth / 2.0 + ch_depth / 2.0,
+    );
 
     // ── Alignment marks ──
     // 4 cross marks at corners for layer alignment during bonding.
@@ -117,7 +116,10 @@ fn main() {
     let corner_inset = 3.0; // mm from edge
 
     let corner_positions: [(f64, f64); 4] = [
-        (-(length / 2.0 - corner_inset), -(width / 2.0 - corner_inset)),
+        (
+            -(length / 2.0 - corner_inset),
+            -(width / 2.0 - corner_inset),
+        ),
         ((length / 2.0 - corner_inset), -(width / 2.0 - corner_inset)),
         (-(length / 2.0 - corner_inset), (width / 2.0 - corner_inset)),
         ((length / 2.0 - corner_inset), (width / 2.0 - corner_inset)),
@@ -167,7 +169,9 @@ fn main() {
     println!("  Channel width:  {ch_width:.1}mm (400um)");
     println!("  Channel depth:  {ch_depth:.2}mm (150um, raised on mold)");
     println!("  Inlet channel:  {ch_length:.0}mm long");
-    println!("  Culture chamber: {chamber_length:.0}mm x {chamber_width:.0}mm x {chamber_depth:.2}mm");
+    println!(
+        "  Culture chamber: {chamber_length:.0}mm x {chamber_width:.0}mm x {chamber_depth:.2}mm"
+    );
     println!("  Outlet channel: {ch_length:.0}mm long");
     println!("  Total path:     {total_channel_length:.0}mm (inlet + chamber + outlet)");
     println!("  Port holes:     2x {port_diameter:.1}mm dia x {port_depth:.0}mm deep");

@@ -34,7 +34,11 @@ fn main() {
     // Heater port (8mm dia hole at bottom back wall)
     let heater_port = centered_cylinder("heater_port", 8.0 / 2.0, basin_wall + 2.0, 24)
         .rotate(90.0, 0.0, 0.0)
-        .translate(0.0, basin_outer_y / 2.0, -(basin_outer_z / 2.0) + basin_wall + 15.0);
+        .translate(
+            0.0,
+            basin_outer_y / 2.0,
+            -(basin_outer_z / 2.0) + basin_wall + 15.0,
+        );
 
     // Thermistor port (5mm dia hole at mid-height back wall)
     let thermistor_port = centered_cylinder("thermistor_port", 5.0 / 2.0, basin_wall + 2.0, 24)
@@ -89,8 +93,11 @@ fn main() {
     let lip_y = basin_inner_y - lip_clearance * 2.0;
     let lip_wall = 2.0;
 
-    let lip_outer = centered_cube("lip_outer", lip_x, lip_y, lip_depth)
-        .translate(0.0, 0.0, -(lid_thickness / 2.0) - lip_depth / 2.0);
+    let lip_outer = centered_cube("lip_outer", lip_x, lip_y, lip_depth).translate(
+        0.0,
+        0.0,
+        -(lid_thickness / 2.0) - lip_depth / 2.0,
+    );
     let lip_inner = centered_cube(
         "lip_inner",
         lip_x - lip_wall * 2.0,
@@ -107,13 +114,8 @@ fn main() {
     // that catches condensation and channels it back into the basin
     let drip_groove_width = 3.0;
     let drip_groove_depth = 1.5;
-    let drip_outer_cut = centered_cube(
-        "drip_outer",
-        lid_x - 4.0,
-        lid_y - 4.0,
-        drip_groove_depth,
-    )
-    .translate(0.0, 0.0, -(lid_thickness / 2.0) + drip_groove_depth / 2.0);
+    let drip_outer_cut = centered_cube("drip_outer", lid_x - 4.0, lid_y - 4.0, drip_groove_depth)
+        .translate(0.0, 0.0, -(lid_thickness / 2.0) + drip_groove_depth / 2.0);
 
     let drip_inner_fill = centered_cube(
         "drip_inner",
@@ -145,23 +147,41 @@ fn main() {
     let rack_base_z = 5.0;
 
     // Rack frame: a base plate with vertical walls forming a grid
-    let rack_base = centered_cube("rack_base", rack_x, rack_y, rack_base_z)
-        .translate(0.0, 0.0, -(rack_z / 2.0) + rack_base_z / 2.0);
+    let rack_base = centered_cube("rack_base", rack_x, rack_y, rack_base_z).translate(
+        0.0,
+        0.0,
+        -(rack_z / 2.0) + rack_base_z / 2.0,
+    );
 
     // Top plate with holes
-    let rack_top = centered_cube("rack_top", rack_x, rack_y, rack_base_z)
-        .translate(0.0, 0.0, rack_z / 2.0 - rack_base_z / 2.0);
+    let rack_top = centered_cube("rack_top", rack_x, rack_y, rack_base_z).translate(
+        0.0,
+        0.0,
+        rack_z / 2.0 - rack_base_z / 2.0,
+    );
 
     // Side walls connecting top and bottom
     let side_wall_thick = 2.0;
-    let left_wall = centered_cube("left_wall", side_wall_thick, rack_y, rack_z)
-        .translate(-(rack_x / 2.0) + side_wall_thick / 2.0, 0.0, 0.0);
-    let right_wall = centered_cube("right_wall", side_wall_thick, rack_y, rack_z)
-        .translate(rack_x / 2.0 - side_wall_thick / 2.0, 0.0, 0.0);
-    let front_wall = centered_cube("front_wall", rack_x, side_wall_thick, rack_z)
-        .translate(0.0, -(rack_y / 2.0) + side_wall_thick / 2.0, 0.0);
-    let back_wall = centered_cube("back_wall", rack_x, side_wall_thick, rack_z)
-        .translate(0.0, rack_y / 2.0 - side_wall_thick / 2.0, 0.0);
+    let left_wall = centered_cube("left_wall", side_wall_thick, rack_y, rack_z).translate(
+        -(rack_x / 2.0) + side_wall_thick / 2.0,
+        0.0,
+        0.0,
+    );
+    let right_wall = centered_cube("right_wall", side_wall_thick, rack_y, rack_z).translate(
+        rack_x / 2.0 - side_wall_thick / 2.0,
+        0.0,
+        0.0,
+    );
+    let front_wall = centered_cube("front_wall", rack_x, side_wall_thick, rack_z).translate(
+        0.0,
+        -(rack_y / 2.0) + side_wall_thick / 2.0,
+        0.0,
+    );
+    let back_wall = centered_cube("back_wall", rack_x, side_wall_thick, rack_z).translate(
+        0.0,
+        rack_y / 2.0 - side_wall_thick / 2.0,
+        0.0,
+    );
 
     // Tube holes through top plate
     let mut tube_holes = Part::empty("tube_holes");
@@ -180,8 +200,8 @@ fn main() {
         }
     }
 
-    let rack = (rack_base + rack_top + left_wall + right_wall + front_wall + back_wall)
-        - tube_holes;
+    let rack =
+        (rack_base + rack_top + left_wall + right_wall + front_wall + back_wall) - tube_holes;
 
     rack.write_stl("output/water_bath_rack.stl").unwrap();
 
@@ -191,12 +211,16 @@ fn main() {
 
     println!();
     println!("── Water Bath Specs ──");
-    println!("  Basin interior:  {basin_inner_x:.0}mm x {basin_inner_y:.0}mm x {basin_inner_z:.0}mm");
+    println!(
+        "  Basin interior:  {basin_inner_x:.0}mm x {basin_inner_y:.0}mm x {basin_inner_z:.0}mm"
+    );
     println!("  Basin walls:     {basin_wall:.0}mm PETG (waterproof)");
     println!("  Heater port:     8mm dia (bottom back)");
     println!("  Thermistor port: 5mm dia (mid-height back)");
     println!("  Foam gap:        {foam_gap:.0}mm insulation");
-    println!("  Shell outer:     {shell_outer_x:.0}mm x {shell_outer_y:.0}mm x {shell_outer_z:.0}mm");
+    println!(
+        "  Shell outer:     {shell_outer_x:.0}mm x {shell_outer_y:.0}mm x {shell_outer_z:.0}mm"
+    );
     println!("  Lid:             {lid_x:.0}mm x {lid_y:.0}mm x {lid_thickness:.0}mm");
     println!("  Vent hole:       10mm dia");
     println!("  Drip edge:       {drip_groove_width:.0}mm wide x {drip_groove_depth:.1}mm deep perimeter groove");

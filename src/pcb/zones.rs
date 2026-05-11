@@ -1,10 +1,12 @@
-use std::fmt::Write;
-use crate::*;
 use super::nets::NET_GND;
+use crate::*;
+use std::fmt::Write;
 
 pub fn write_copper_zones(pcb: &mut String) {
     // Zone 1: F.Cu ground pour — full board
-    writeln!(pcb, r#"  (zone
+    writeln!(
+        pcb,
+        r#"  (zone
     (net {})
     (net_name "GND")
     (layer "F.Cu")
@@ -22,14 +24,14 @@ pub fn write_copper_zones(pcb: &mut String) {
       )
     )
   )"#,
-        NET_GND,
-        PCB_LENGTH,
-        PCB_LENGTH, PCB_WIDTH,
-        PCB_WIDTH,
-    ).unwrap();
+        NET_GND, PCB_LENGTH, PCB_LENGTH, PCB_WIDTH, PCB_WIDTH,
+    )
+    .unwrap();
 
     // Zone 2: B.Cu ground pour — full board
-    writeln!(pcb, r#"  (zone
+    writeln!(
+        pcb,
+        r#"  (zone
     (net {})
     (net_name "GND")
     (layer "B.Cu")
@@ -47,11 +49,9 @@ pub fn write_copper_zones(pcb: &mut String) {
       )
     )
   )"#,
-        NET_GND,
-        PCB_LENGTH,
-        PCB_LENGTH, PCB_WIDTH,
-        PCB_WIDTH,
-    ).unwrap();
+        NET_GND, PCB_LENGTH, PCB_LENGTH, PCB_WIDTH, PCB_WIDTH,
+    )
+    .unwrap();
 
     pcb.push('\n');
 }

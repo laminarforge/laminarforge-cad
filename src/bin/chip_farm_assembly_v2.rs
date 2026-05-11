@@ -47,12 +47,7 @@ fn cube(name: &str, sx: f64, sy: f64, sz: f64, cx: f64, cy: f64, cz: f64) -> Par
 /// Tubing segment as a thin cylinder between two points. For convenience we
 /// only support axis-aligned runs (X/Y/Z) plus a few 45° diagonals; bends are
 /// modeled as a sequence of short segments. Each segment name must be unique.
-fn tube_seg(
-    name: &str,
-    radius: f64,
-    from: (f64, f64, f64),
-    to: (f64, f64, f64),
-) -> Part {
+fn tube_seg(name: &str, radius: f64, from: (f64, f64, f64), to: (f64, f64, f64)) -> Part {
     let dx = to.0 - from.0;
     let dy = to.1 - from.1;
     let dz = to.2 - from.2;
@@ -185,12 +180,10 @@ fn main() {
     let pocket_y: f64 = chip_y + pocket_clearance * 2.0;
     let gutter_interior: f64 = 5.0;
     let edge_margin: f64 = 2.0;
-    let shelf_x: f64 = (cols as f64) * pocket_x
-        + ((cols - 1) as f64) * gutter_interior
-        + 2.0 * edge_margin;
-    let shelf_y: f64 = (rows as f64) * pocket_y
-        + ((rows - 1) as f64) * gutter_interior
-        + 2.0 * edge_margin;
+    let shelf_x: f64 =
+        (cols as f64) * pocket_x + ((cols - 1) as f64) * gutter_interior + 2.0 * edge_margin;
+    let shelf_y: f64 =
+        (rows as f64) * pocket_y + ((rows - 1) as f64) * gutter_interior + 2.0 * edge_margin;
     let post_side: f64 = 20.0;
     let post_height: f64 = (num_shelves as f64) * shelf_pitch + 30.0; // 230
     let post_spacing_x: f64 = shelf_x - post_side;
@@ -228,8 +221,8 @@ fn main() {
     let manifold_cx: f64 = shell_outer_x / 2.0 + manifold_plate_y / 2.0 + 10.0; // ~+254
     let manifold_cy: f64 = 0.0;
     let manifold_cz: f64 = chamber_cz + 60.0; // ~335 mm
-    // Plate is wall-mounted on +X wall with its long axis along Z-ish; here we
-    // lay it flat parallel to the wall (plate normal = +X).
+                                              // Plate is wall-mounted on +X wall with its long axis along Z-ish; here we
+                                              // lay it flat parallel to the wall (plate normal = +X).
     let pump_pitch: f64 = 90.0;
 
     // Bulkhead grommet passthrough on right wall
@@ -244,7 +237,7 @@ fn main() {
     let drip_head_y: f64 = 25.0;
     let drip_head_z: f64 = 12.0;
     let drip_head_cy: f64 = -shelf_y / 2.0 - 30.0; // toward -Y (front), outside the rack's Y span
-    // Drip head Z: centered between its shelf's top chip and the shelf above
+                                                   // Drip head Z: centered between its shelf's top chip and the shelf above
     let mut drip_head_cz = [0.0f64; 5];
     for i in 0..num_shelves as usize {
         let this_chip_top = shelf_top_chip_z[i];
@@ -267,11 +260,11 @@ fn main() {
     // Gantry ceiling mount: top face 5 mm below interior ceiling
     let gantry_beam_top_z: f64 = inner_z - 5.0; // 545 mm
     let gantry_beam_center_z: f64 = gantry_beam_top_z - gantry_extr_h / 2.0; // 525 mm
-    // Head drop tuned for the integrated assembly: rocker + rack raises the
-    // top chip to z ≈ 261 mm (vs 499 mm working distance budget imaging_gantry
-    // planned for a floor-mounted rack). Drop 80 mm gives head bottom at
-    // 525 − 80 − 40 = 405 mm → working distance 405 − 261 = 144 mm (within the
-    // 140–300 mm EDOF window).
+                                                                             // Head drop tuned for the integrated assembly: rocker + rack raises the
+                                                                             // top chip to z ≈ 261 mm (vs 499 mm working distance budget imaging_gantry
+                                                                             // planned for a floor-mounted rack). Drop 80 mm gives head bottom at
+                                                                             // 525 − 80 − 40 = 405 mm → working distance 405 − 261 = 144 mm (within the
+                                                                             // 140–300 mm EDOF window).
     let head_drop: f64 = 80.0;
     let head_body_h: f64 = 80.0;
     let head_cz: f64 = gantry_beam_center_z - head_drop - head_body_h / 2.0;
@@ -330,7 +323,15 @@ fn main() {
             0.0,
             chamber_cz,
         );
-        let cavity = cube("inc_cavity", inner_x, inner_y, inner_z, 0.0, 0.0, chamber_cz);
+        let cavity = cube(
+            "inc_cavity",
+            inner_x,
+            inner_y,
+            inner_z,
+            0.0,
+            0.0,
+            chamber_cz,
+        );
         let front_hole = cube(
             "inc_front_hole",
             inner_x + 20.0,
@@ -359,14 +360,9 @@ fn main() {
         .rotate(0.0, 90.0, 0.0)
         .translate(0.0, passthrough_cy, passthrough_cz);
         // Left wall cable grommet (sensor umbilical)
-        let left_bulkhead = centered_cylinder(
-            "inc_left_bulkhead",
-            25.0,
-            shell_outer_x + 10.0,
-            48,
-        )
-        .rotate(0.0, 90.0, 0.0)
-        .translate(0.0, 0.0, chamber_cz + 100.0);
+        let left_bulkhead = centered_cylinder("inc_left_bulkhead", 25.0, shell_outer_x + 10.0, 48)
+            .rotate(0.0, 90.0, 0.0)
+            .translate(0.0, 0.0, chamber_cz + 100.0);
         ((outer - cavity) - front_hole) - top_hatch_hole - right_bulkhead - left_bulkhead
     };
     incubator
@@ -398,11 +394,7 @@ fn main() {
         );
         let stepper = centered_cylinder("rk_stepper", 56.4 / 2.0, 70.0, 24)
             .rotate(0.0, 90.0, 0.0)
-            .translate(
-                boss_cx - 70.0 / 2.0,
-                0.0,
-                rocker_base_z + boss_z / 2.0,
-            );
+            .translate(boss_cx - 70.0 / 2.0, 0.0, rocker_base_z + boss_z / 2.0);
         let pb_left = cube(
             "rk_pb_left",
             60.0,
@@ -432,9 +424,7 @@ fn main() {
         );
         base + boss + stepper + pb_left + pb_right + top_plate
     };
-    rocker
-        .write_stl("output/chip_farm_v2_rocker.stl")
-        .unwrap();
+    rocker.write_stl("output/chip_farm_v2_rocker.stl").unwrap();
     println!("Exported: output/chip_farm_v2_rocker.stl");
 
     // ══════════════════════════════════════════════════════════════
@@ -530,20 +520,14 @@ fn main() {
     // ══════════════════════════════════════════════════════════════
     let reservoir_cluster = {
         // Reservoir body (cylinder)
-        let body = centered_cylinder(
-            "res_body",
-            reservoir_od / 2.0,
-            reservoir_outer_h,
-            64,
-        )
-        .translate(reservoir_cx, reservoir_cy, reservoir_cz);
+        let body = centered_cylinder("res_body", reservoir_od / 2.0, reservoir_outer_h, 64)
+            .translate(reservoir_cx, reservoir_cy, reservoir_cz);
         // Lid (flat disc on top)
-        let lid = centered_cylinder("res_lid", (reservoir_od + 8.0) / 2.0, 8.0, 64)
-            .translate(
-                reservoir_cx,
-                reservoir_cy,
-                reservoir_cz + reservoir_outer_h / 2.0 + 4.0,
-            );
+        let lid = centered_cylinder("res_lid", (reservoir_od + 8.0) / 2.0, 8.0, 64).translate(
+            reservoir_cx,
+            reservoir_cy,
+            reservoir_cz + reservoir_outer_h / 2.0 + 4.0,
+        );
 
         // Pump manifold plate on right wall, flat normal = +X
         // Oriented so manifold_plate_x is along Z, manifold_plate_y is along X
@@ -575,18 +559,9 @@ fn main() {
         }
 
         // Bulkhead flange on right wall
-        let flange = centered_cylinder(
-            "res_flange",
-            passthrough_flange_od / 2.0,
-            10.0,
-            48,
-        )
-        .rotate(0.0, 90.0, 0.0)
-        .translate(
-            passthrough_wall_x + 5.0,
-            passthrough_cy,
-            passthrough_cz,
-        );
+        let flange = centered_cylinder("res_flange", passthrough_flange_od / 2.0, 10.0, 48)
+            .rotate(0.0, 90.0, 0.0)
+            .translate(passthrough_wall_x + 5.0, passthrough_cy, passthrough_cz);
 
         // Drip heads (×5) — inside container, above each shelf
         let mut drip_heads = Part::empty("drip_heads");
@@ -650,21 +625,11 @@ fn main() {
             .translate(0.0, 0.0, head_cz);
 
         // Ceiling bracket (just a thin plate on the ceiling)
-        let bracket = cube(
-            "gantry_bracket",
-            500.0,
-            480.0,
-            4.0,
-            0.0,
-            0.0,
-            inner_z - 2.0,
-        );
+        let bracket = cube("gantry_bracket", 500.0, 480.0, 4.0, 0.0, 0.0, inner_z - 2.0);
 
         y_beam_l + y_beam_r + x_beam + drop_col + head + bracket
     };
-    gantry
-        .write_stl("output/chip_farm_v2_gantry.stl")
-        .unwrap();
+    gantry.write_stl("output/chip_farm_v2_gantry.stl").unwrap();
     println!("Exported: output/chip_farm_v2_gantry.stl");
 
     // ══════════════════════════════════════════════════════════════
@@ -774,11 +739,7 @@ fn main() {
         );
         let estop = centered_cylinder("ctrl_estop", 20.0 / 2.0, 16.0, 24)
             .rotate(0.0, 90.0, 0.0)
-            .translate(
-                ctrl_cx + ctrl_y / 2.0 + 8.0,
-                ctrl_cy - 60.0,
-                ctrl_cz + 30.0,
-            );
+            .translate(ctrl_cx + ctrl_y / 2.0 + 8.0, ctrl_cy - 60.0, ctrl_cz + 30.0);
         // Wall-mount bracket tab
         let bracket = cube(
             "ctrl_bracket",
@@ -869,18 +830,8 @@ fn main() {
             let slack_1 = (bulkhead_out.0 - 20.0, bulkhead_out.1 + 30.0, bulkhead_out.2);
             let slack_2 = (bulkhead_out.0 - 40.0, bulkhead_out.1, bulkhead_out.2);
             bundle = bundle
-                + tube_seg(
-                    &format!("t{i}_c1"),
-                    tube_r,
-                    bulkhead_out,
-                    slack_1,
-                )
-                + tube_seg(
-                    &format!("t{i}_c2"),
-                    tube_r,
-                    slack_1,
-                    slack_2,
-                )
+                + tube_seg(&format!("t{i}_c1"), tube_r, bulkhead_out, slack_1)
+                + tube_seg(&format!("t{i}_c2"), tube_r, slack_1, slack_2)
                 + tube_seg(
                     &format!("t{i}_c3"),
                     tube_r,
@@ -902,9 +853,7 @@ fn main() {
         }
         bundle
     };
-    tubing
-        .write_stl("output/chip_farm_v2_tubing.stl")
-        .unwrap();
+    tubing.write_stl("output/chip_farm_v2_tubing.stl").unwrap();
     println!("Exported: output/chip_farm_v2_tubing.stl");
 
     // ══════════════════════════════════════════════════════════════
@@ -1056,12 +1005,7 @@ fn main() {
                 (heater.0, right_wall_grommet_in.1, heater.2),
                 heater,
             )
-            + tube_seg(
-                "cab_fan",
-                cable_r,
-                right_wall_grommet_in,
-                fan_actuator,
-            )
+            + tube_seg("cab_fan", cable_r, right_wall_grommet_in, fan_actuator)
             + tube_seg(
                 "cab_sol1",
                 cable_r,
@@ -1089,23 +1033,14 @@ fn main() {
 
         bundle
     };
-    cables
-        .write_stl("output/chip_farm_v2_cables.stl")
-        .unwrap();
+    cables.write_stl("output/chip_farm_v2_cables.stl").unwrap();
     println!("Exported: output/chip_farm_v2_cables.stl");
 
     // ══════════════════════════════════════════════════════════════
     // FULL ASSEMBLY
     // ══════════════════════════════════════════════════════════════
-    let assembly = incubator
-        + rocker
-        + rack
-        + reservoir_cluster
-        + gantry
-        + lh
-        + controller
-        + tubing
-        + cables;
+    let assembly =
+        incubator + rocker + rack + reservoir_cluster + gantry + lh + controller + tubing + cables;
     assembly
         .write_stl("output/chip_farm_v2_assembly.stl")
         .unwrap();
@@ -1143,16 +1078,14 @@ fn main() {
 
     // Check 1: Rack fits inside container envelope at 0° tilt.
     let (gx0, gy0, gz0) = aabb_interior.separations(&aabb_rack_upright);
-    println!(
-        "[1] Rack @ 0°: clearance vs interior (X={gx0:+.1}, Y={gy0:+.1}, Z={gz0:+.1} mm)"
-    );
+    println!("[1] Rack @ 0°: clearance vs interior (X={gx0:+.1}, Y={gy0:+.1}, Z={gz0:+.1} mm)");
     // Note: for AABB "contains" we want rack_aabb inside interior_aabb
-    let contains_x = aabb_interior.x.0 <= aabb_rack_upright.x.0
-        && aabb_interior.x.1 >= aabb_rack_upright.x.1;
-    let contains_y = aabb_interior.y.0 <= aabb_rack_upright.y.0
-        && aabb_interior.y.1 >= aabb_rack_upright.y.1;
-    let contains_z = aabb_interior.z.0 <= aabb_rack_upright.z.0
-        && aabb_interior.z.1 >= aabb_rack_upright.z.1;
+    let contains_x =
+        aabb_interior.x.0 <= aabb_rack_upright.x.0 && aabb_interior.x.1 >= aabb_rack_upright.x.1;
+    let contains_y =
+        aabb_interior.y.0 <= aabb_rack_upright.y.0 && aabb_interior.y.1 >= aabb_rack_upright.y.1;
+    let contains_z =
+        aabb_interior.z.0 <= aabb_rack_upright.z.0 && aabb_interior.z.1 >= aabb_rack_upright.z.1;
     if !(contains_x && contains_y && contains_z) {
         violations.push(format!(
             "Rack @ 0° exceeds interior envelope (containsX={contains_x}, Y={contains_y}, Z={contains_z})"
@@ -1170,8 +1103,7 @@ fn main() {
     let rack_half_y = shelf_y / 2.0; // rack side reaches ±shelf_y/2 at rack top (posts)
     let rack_corner_y = rack_half_y;
     let rack_corner_z_above_pivot = rack_top_posts_z - rocker_pivot_axis_z;
-    let corner_y_tilted =
-        rack_corner_y * theta.cos() - rack_corner_z_above_pivot * theta.sin();
+    let corner_y_tilted = rack_corner_y * theta.cos() - rack_corner_z_above_pivot * theta.sin();
     let corner_z_tilted =
         rocker_pivot_axis_z + rack_corner_y * theta.sin() + rack_corner_z_above_pivot * theta.cos();
     let handle_z_tilted = rocker_pivot_axis_z + 0.0 + handle_height_above_pivot * theta.cos();
@@ -1179,9 +1111,7 @@ fn main() {
     println!(
         "[2] Rocker @ +15°: top rack corner → (Y={corner_y_tilted:+.1}, Z={corner_z_tilted:+.1} mm)"
     );
-    println!(
-        "    Handle tip: Y-swing ±{handle_y_swing:.1} mm, Z (max) {handle_z_tilted:.1} mm"
-    );
+    println!("    Handle tip: Y-swing ±{handle_y_swing:.1} mm, Z (max) {handle_z_tilted:.1} mm");
     if corner_z_tilted > inner_z {
         violations.push(format!(
             "Rack top corner hits ceiling at +15° tilt: z={corner_z_tilted:.1} > {inner_z:.0}"
@@ -1225,11 +1155,10 @@ fn main() {
             let th = s * theta;
             let yr = -shelf_y / 2.0; // rack's -Y edge (nearest to drip head)
             let y_tilt = yr * th.cos() - zap * th.sin();
-            let z_tilt =
-                rocker_pivot_axis_z + yr * th.sin() + zap * th.cos();
+            let z_tilt = rocker_pivot_axis_z + yr * th.sin() + zap * th.cos();
             // Y-separation from drip head AABB (drip at more negative Y)
             let y_sep = drip_y_inner_edge - y_tilt; // >0 means rack is on +Y side of drip inner edge
-            // Z-separation (if y_sep > 0 we don't need Z, else we collide if Z overlaps)
+                                                    // Z-separation (if y_sep > 0 we don't need Z, else we collide if Z overlaps)
             let drip_bottom = drip_head_cz[i] - drip_head_z / 2.0;
             let drip_top = drip_head_cz[i] + drip_head_z / 2.0;
             let z_above_drip = z_tilt - drip_top;
@@ -1249,9 +1178,7 @@ fn main() {
             );
         }
     }
-    println!(
-        "[3] Min drip-head-vs-tilted-rack clearance (any-axis sep): {min_drip_clear:+.1} mm"
-    );
+    println!("[3] Min drip-head-vs-tilted-rack clearance (any-axis sep): {min_drip_clear:+.1} mm");
     if min_drip_clear < 5.0 {
         violations.push(format!(
             "Drip head clearance too tight (worst = {min_drip_clear:+.1} mm < 5 mm)"
@@ -1268,8 +1195,7 @@ fn main() {
     for &s in &[1.0f64, -1.0] {
         let th = s * theta;
         for &yr in &[-shelf_y / 2.0, shelf_y / 2.0] {
-            let z_tilt =
-                rocker_pivot_axis_z + yr * th.sin() + zap_top * th.cos();
+            let z_tilt = rocker_pivot_axis_z + yr * th.sin() + zap_top * th.cos();
             if z_tilt > worst_z {
                 worst_z = z_tilt;
             }
@@ -1355,7 +1281,14 @@ fn main() {
 
     // Check 7: Controller box outside envelope — does not collide with anything.
     let aabb_ctrl = Aabb::from_center_size(ctrl_cx, ctrl_cy, ctrl_cz, ctrl_y, ctrl_x, ctrl_z);
-    let aabb_shell = Aabb::from_center_size(0.0, 0.0, chamber_cz, shell_outer_x, shell_outer_y, shell_outer_z);
+    let aabb_shell = Aabb::from_center_size(
+        0.0,
+        0.0,
+        chamber_cz,
+        shell_outer_x,
+        shell_outer_y,
+        shell_outer_z,
+    );
     if aabb_ctrl.interferes(&aabb_shell) {
         violations.push("Controller box AABB overlaps container shell".to_string());
     } else {

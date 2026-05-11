@@ -70,7 +70,10 @@ fn main() {
     println!("  Type:         Simple grip block (no optical features)");
     println!("  Tube holes:   {NUM_SLOTS}x {HOLDER_TUBE_DIAMETER:.2}mm dia through-holes");
     println!("  Slot spacing: {SLOT_SPACING:.1}mm center-to-center");
-    println!("  Screw holes:  2x M3 at X = +/-{:.1}mm", HOLDER_SCREW_SPACING_X / 2.0);
+    println!(
+        "  Screw holes:  2x M3 at X = +/-{:.1}mm",
+        HOLDER_SCREW_SPACING_X / 2.0
+    );
     println!("  Detection:    Vertical fluorescence on PCB below (not in holder)");
     println!("  Material:     PETG (opaque black, heat resistant)");
 }

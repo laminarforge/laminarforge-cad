@@ -186,13 +186,12 @@ fn main() {
             let inlet_port_y = chamber_bottom_y - ch_len; // port center
 
             let inlet_ch_center_y = (chamber_bottom_y + inlet_port_y) / 2.0;
-            let inlet_channel = centered_cube(
-                &format!("inlet_ch_{idx}"),
-                ch_w,
-                ch_len,
-                pocket_tool_h,
-            )
-            .translate(cx, inlet_ch_center_y, pocket_z);
+            let inlet_channel =
+                centered_cube(&format!("inlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h).translate(
+                    cx,
+                    inlet_ch_center_y,
+                    pocket_z,
+                );
             channel_plate = channel_plate - inlet_channel;
 
             // Outlet channel: runs from above chamber to outlet port
@@ -200,33 +199,24 @@ fn main() {
             let outlet_port_y = chamber_top_y + ch_len; // port center
 
             let outlet_ch_center_y = (chamber_top_y + outlet_port_y) / 2.0;
-            let outlet_channel = centered_cube(
-                &format!("outlet_ch_{idx}"),
-                ch_w,
-                ch_len,
-                pocket_tool_h,
-            )
-            .translate(cx, outlet_ch_center_y, pocket_z);
+            let outlet_channel =
+                centered_cube(&format!("outlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h).translate(
+                    cx,
+                    outlet_ch_center_y,
+                    pocket_z,
+                );
             channel_plate = channel_plate - outlet_channel;
 
             // Inlet port (through-hole)
-            let inlet_port = centered_cylinder(
-                &format!("inlet_port_{idx}"),
-                port_dia / 2.0,
-                through_h,
-                32,
-            )
-            .translate(cx, inlet_port_y, 0.0);
+            let inlet_port =
+                centered_cylinder(&format!("inlet_port_{idx}"), port_dia / 2.0, through_h, 32)
+                    .translate(cx, inlet_port_y, 0.0);
             channel_plate = channel_plate - inlet_port;
 
             // Outlet port (through-hole)
-            let outlet_port = centered_cylinder(
-                &format!("outlet_port_{idx}"),
-                port_dia / 2.0,
-                through_h,
-                32,
-            )
-            .translate(cx, outlet_port_y, 0.0);
+            let outlet_port =
+                centered_cylinder(&format!("outlet_port_{idx}"), port_dia / 2.0, through_h, 32)
+                    .translate(cx, outlet_port_y, 0.0);
             channel_plate = channel_plate - outlet_port;
 
             port_positions.push((idx, cx, inlet_port_y, cx, outlet_port_y));
@@ -244,13 +234,9 @@ fn main() {
     ];
 
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
-        let align_hole = centered_cylinder(
-            &format!("align_{i}"),
-            align_dia / 2.0,
-            align_tool_h,
-            24,
-        )
-        .translate(ax, ay, align_z);
+        let align_hole =
+            centered_cylinder(&format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
+                .translate(ax, ay, align_z);
         channel_plate = channel_plate - align_hole;
     }
 
@@ -263,13 +249,8 @@ fn main() {
     ];
 
     for (i, &(mx, my)) in mount_positions.iter().enumerate() {
-        let mount_hole = centered_cylinder(
-            &format!("mount_{i}"),
-            mount_dia / 2.0,
-            through_h,
-            32,
-        )
-        .translate(mx, my, 0.0);
+        let mount_hole = centered_cylinder(&format!("mount_{i}"), mount_dia / 2.0, through_h, 32)
+            .translate(mx, my, 0.0);
         channel_plate = channel_plate - mount_hole;
     }
 
@@ -308,11 +289,7 @@ fn main() {
             corner_through,
             32,
         )
-        .translate(
-            sx * (half_l - corner_r),
-            sy * (half_w - corner_r),
-            0.0,
-        );
+        .translate(sx * (half_l - corner_r), sy * (half_w - corner_r), 0.0);
         let corner_cut = corner_sq - corner_cyl;
         channel_plate = channel_plate - corner_cut;
     }
@@ -398,7 +375,9 @@ fn main() {
     println!("    Footprint:        ANSI/SLAS microplate (127.76 x 85.48mm)");
     println!("    Material:         Cast PMMA (acrylic), optically clear");
     println!("    Chambers:         {chamber_idx} chambers in {num_rows}x{num_cols} grid");
-    println!("    Chamber size:     {chamber_w:.0}mm x {chamber_l:.0}mm x {chamber_d:.1}mm (200um)");
+    println!(
+        "    Chamber size:     {chamber_w:.0}mm x {chamber_l:.0}mm x {chamber_d:.1}mm (200um)"
+    );
     println!("    Channel width:    {ch_w:.1}mm (500um)  +/-50um");
     println!("    Channel depth:    {ch_d:.1}mm (200um)  +/-25um");
     println!("    Channel length:   {ch_len:.1}mm (port to chamber)");
@@ -410,8 +389,10 @@ fn main() {
     println!("    Label area:       {label_l:.0}mm x {label_w:.0}mm x {label_d:.1}mm engraved (chip center)");
     println!();
     println!("  PART 2: Cover Plate");
-    println!("    Overall:          {:.2}mm x {:.2}mm x {:.0}mm",
-        CNC16_CHIP_LENGTH, CNC16_CHIP_WIDTH, CNC16_COVER_THICKNESS);
+    println!(
+        "    Overall:          {:.2}mm x {:.2}mm x {:.0}mm",
+        CNC16_CHIP_LENGTH, CNC16_CHIP_WIDTH, CNC16_COVER_THICKNESS
+    );
     println!("    Material:         Cast PMMA (acrylic), optically clear");
     println!("    Alignment holes:  4x dia{align_dia:.0}mm through (matching channel plate)");
     println!("    Corner radius:    {corner_r:.2}mm (ANSI/SLAS 1-2004 §4.1.2.1)");
@@ -420,8 +401,20 @@ fn main() {
     println!("  End mills: 500um flat (channels), 3mm flat (chambers), 1.6mm drill (ports)");
     println!();
     println!("  GRID LAYOUT (center-to-center: {col_spacing:.0}mm col, {row_spacing:.0}mm row):");
-    println!("    Column X positions: {:?}", col_xs.iter().map(|x| format!("{x:+.1}")).collect::<Vec<_>>());
-    println!("    Row Y positions:    {:?}", row_ys.iter().map(|y| format!("{y:+.1}")).collect::<Vec<_>>());
+    println!(
+        "    Column X positions: {:?}",
+        col_xs
+            .iter()
+            .map(|x| format!("{x:+.1}"))
+            .collect::<Vec<_>>()
+    );
+    println!(
+        "    Row Y positions:    {:?}",
+        row_ys
+            .iter()
+            .map(|y| format!("{y:+.1}"))
+            .collect::<Vec<_>>()
+    );
     println!();
     println!("  CHAMBER ALLOCATION:");
     for (i, label) in CHAMBER_LABELS.iter().enumerate() {
@@ -429,13 +422,20 @@ fn main() {
         let col = i % num_cols;
         let cx = col_xs[col];
         let cy = row_ys[row];
-        println!("    Ch{:2} [{},{}]: X={cx:+7.2}, Y={cy:+7.2}  {label}", i + 1, row, col);
+        println!(
+            "    Ch{:2} [{},{}]: X={cx:+7.2}, Y={cy:+7.2}  {label}",
+            i + 1,
+            row,
+            col
+        );
     }
     println!();
     println!("  PORT COORDINATES (from chip center):");
     for (idx, in_x, in_y, out_x, out_y) in &port_positions {
-        println!("    Ch{:2}: Inlet ({in_x:+7.2}, {in_y:+7.2})  Outlet ({out_x:+7.2}, {out_y:+7.2})",
-            idx + 1);
+        println!(
+            "    Ch{:2}: Inlet ({in_x:+7.2}, {in_y:+7.2})  Outlet ({out_x:+7.2}, {out_y:+7.2})",
+            idx + 1
+        );
     }
     println!();
     println!("  ALIGNMENT HOLES:");

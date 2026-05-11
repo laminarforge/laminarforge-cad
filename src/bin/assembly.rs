@@ -23,8 +23,11 @@ use vcad::{centered_cube, centered_cylinder, Part};
 /// Simplified enclosure: hollow box with floor
 fn build_enclosure() -> Part {
     let outer = centered_cube("enc_outer", OUTER_X, OUTER_Y, OUTER_Z);
-    let inner = centered_cube("enc_inner", INNER_X, INNER_Y, WALL_HEIGHT)
-        .translate(0.0, 0.0, ENCLOSURE_FLOOR / 2.0);
+    let inner = centered_cube("enc_inner", INNER_X, INNER_Y, WALL_HEIGHT).translate(
+        0.0,
+        0.0,
+        ENCLOSURE_FLOOR / 2.0,
+    );
     outer - inner
 }
 
@@ -57,12 +60,7 @@ fn build_heating_block() -> Part {
 
 /// Simplified lid: flat plate with tube holes
 fn build_lid() -> Part {
-    let plate = centered_cube(
-        "lid_plate",
-        OUTER_X,
-        OUTER_Y,
-        LID_THICKNESS,
-    );
+    let plate = centered_cube("lid_plate", OUTER_X, OUTER_Y, LID_THICKNESS);
 
     let first_x = first_slot_x();
     let mut holes = Part::empty("lid_holes");
@@ -98,13 +96,8 @@ fn build_tubes() -> Part {
 
     for i in 0..NUM_SLOTS {
         let x = first_x + (i as f64) * SLOT_SPACING;
-        let tube = centered_cylinder(
-            &format!("tube_{i}"),
-            TUBE_OD / 2.0,
-            tube_length,
-            24,
-        )
-        .translate(x, 0.0, 0.0);
+        let tube = centered_cylinder(&format!("tube_{i}"), TUBE_OD / 2.0, tube_length, 24)
+            .translate(x, 0.0, 0.0);
         tubes = tubes + tube;
     }
     tubes
@@ -118,44 +111,32 @@ fn main() {
 
     // PCB on enclosure floor (spans full enclosure width)
     let pcb_z = floor_z() + PCB_THICKNESS / 2.0;
-    let pcb = build_pcb()
-        .translate(0.0, 0.0, pcb_z);
+    let pcb = build_pcb().translate(0.0, 0.0, pcb_z);
 
     // Aluminum heating block on PCB, centered on shelf
     let block_z = pcb_z + PCB_THICKNESS / 2.0 + BLOCK_HEIGHT / 2.0;
-    let heating_block = build_heating_block()
-        .translate(0.0, shelf_center_y(), block_z);
+    let heating_block = build_heating_block().translate(0.0, shelf_center_y(), block_z);
 
     // Optical mount sits on top of the heating block
     let optical_z = block_z + BLOCK_HEIGHT / 2.0 + OPTICAL_MOUNT_HEIGHT / 2.0;
-    let optical_mount = build_optical_mount()
-        .translate(0.0, shelf_center_y(), optical_z);
+    let optical_mount = build_optical_mount().translate(0.0, shelf_center_y(), optical_z);
 
     // Lid sits on top of the enclosure
     let lid_z = OUTER_Z / 2.0 + LID_THICKNESS / 2.0;
-    let lid = build_lid()
-        .translate(0.0, 0.0, lid_z);
+    let lid = build_lid().translate(0.0, 0.0, lid_z);
 
     // Tubes extend upward from the heating block (through optical mount)
     let tube_visible_length = 20.0;
     let tube_z = block_z + BLOCK_HEIGHT / 2.0 + tube_visible_length / 2.0;
-    let tubes = build_tubes()
-        .translate(0.0, shelf_center_y(), tube_z);
+    let tubes = build_tubes().translate(0.0, shelf_center_y(), tube_z);
 
     // ── Union all parts ──
 
-    let assembly = enclosure
-        + pcb
-        + heating_block
-        + optical_mount
-        + lid
-        + tubes;
+    let assembly = enclosure + pcb + heating_block + optical_mount + lid + tubes;
 
     // ── Export ──
 
-    assembly
-        .write_stl("output/assembly.stl")
-        .unwrap();
+    assembly.write_stl("output/assembly.stl").unwrap();
 
     println!("Exported: output/assembly.stl");
     println!();
@@ -165,17 +146,28 @@ fn main() {
     println!("  ─────────────────────────────────────────────────");
     println!("  Enclosure             (0, 0, 0)");
     println!("  PCB                   (0, 0, {pcb_z:.1})");
-    println!("  Heating block         (0, {:.1}, {block_z:.1})", shelf_center_y());
-    println!("  Optical mount         (0, {:.1}, {optical_z:.1})", shelf_center_y());
+    println!(
+        "  Heating block         (0, {:.1}, {block_z:.1})",
+        shelf_center_y()
+    );
+    println!(
+        "  Optical mount         (0, {:.1}, {optical_z:.1})",
+        shelf_center_y()
+    );
     println!("  Lid                   (0, 0, {lid_z:.1})");
-    println!("  Tubes (8x)            (0, {:.1}, {tube_z:.1})", shelf_center_y());
+    println!(
+        "  Tubes (8x)            (0, {:.1}, {tube_z:.1})",
+        shelf_center_y()
+    );
     println!();
     println!("── Key Dimensions ──");
     println!("  Enclosure:            {OUTER_X:.0}mm x {OUTER_Y:.0}mm x {OUTER_Z:.0}mm");
     println!("  PCB:                  {PCB_LENGTH:.0}mm x {PCB_WIDTH:.0}mm x {PCB_THICKNESS:.1}mm");
     println!("  Heating block:        {BLOCK_LENGTH:.0}mm x {BLOCK_WIDTH:.0}mm x {BLOCK_HEIGHT:.0}mm (aluminum, 8 wells)");
     println!("  Optical mount:        {HEATER_ZONE_LENGTH:.0}mm x {OPTICAL_MOUNT_WIDTH:.0}mm x {OPTICAL_MOUNT_HEIGHT:.0}mm (PETG, LED+OPT101)");
-    println!("  Slot spacing:         {SLOT_SPACING:.0}mm center-to-center (12mm for OPT101P DIP-8)");
+    println!(
+        "  Slot spacing:         {SLOT_SPACING:.0}mm center-to-center (12mm for OPT101P DIP-8)"
+    );
     println!("  Detection:            Horizontal optical path (LED -> tube -> OPT101P)");
     println!("  Purpose:              Visualization only (not for printing)");
 }

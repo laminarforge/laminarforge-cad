@@ -33,8 +33,8 @@ const PINS_PER_JOINT: usize = 2;
 const PIN_OFFSET: f64 = 5.0;
 
 fn build_rail(name: &str, total_length: f64) -> Vec<(String, Part)> {
-    let rail_w = SAB_RAIL_WIDTH;   // 20mm
-    let rail_h = SAB_RAIL_HEIGHT;  // 20mm
+    let rail_w = SAB_RAIL_WIDTH; // 20mm
+    let rail_h = SAB_RAIL_HEIGHT; // 20mm
 
     // Determine number of segments
     let num_segments = (total_length / MAX_SEGMENT_LENGTH).ceil() as usize;
@@ -60,11 +60,7 @@ fn build_rail(name: &str, total_length: f64) -> Vec<(String, Part)> {
             SAB_CHANNEL_DEPTH,
             SAB_CHANNEL_WIDTH,
         )
-        .translate(
-            0.0,
-            rail_w / 2.0 - SAB_CHANNEL_DEPTH / 2.0 + 0.1,
-            0.0,
-        );
+        .translate(0.0, rail_w / 2.0 - SAB_CHANNEL_DEPTH / 2.0 + 0.1, 0.0);
 
         let mut segment = body - channel_cut;
 
@@ -73,7 +69,11 @@ fn build_rail(name: &str, total_length: f64) -> Vec<(String, Part)> {
         // Left end (-X): socket if not the first segment
         if seg_idx > 0 {
             for pin_idx in 0..PINS_PER_JOINT {
-                let z_offset = if pin_idx == 0 { -PIN_OFFSET } else { PIN_OFFSET };
+                let z_offset = if pin_idx == 0 {
+                    -PIN_OFFSET
+                } else {
+                    PIN_OFFSET
+                };
                 let socket = centered_cylinder(
                     &format!("socket_l_{pin_idx}"),
                     PIN_SOCKET_DIAMETER / 2.0,
@@ -81,7 +81,11 @@ fn build_rail(name: &str, total_length: f64) -> Vec<(String, Part)> {
                     24,
                 )
                 .rotate(0.0, 90.0, 0.0) // align along X axis
-                .translate(-segment_length / 2.0 + PIN_DEPTH / 2.0 - 0.25, 0.0, z_offset);
+                .translate(
+                    -segment_length / 2.0 + PIN_DEPTH / 2.0 - 0.25,
+                    0.0,
+                    z_offset,
+                );
 
                 segment = segment - socket;
             }
@@ -90,7 +94,11 @@ fn build_rail(name: &str, total_length: f64) -> Vec<(String, Part)> {
         // Right end (+X): pin if not the last segment
         if seg_idx < num_segments - 1 {
             for pin_idx in 0..PINS_PER_JOINT {
-                let z_offset = if pin_idx == 0 { -PIN_OFFSET } else { PIN_OFFSET };
+                let z_offset = if pin_idx == 0 {
+                    -PIN_OFFSET
+                } else {
+                    PIN_OFFSET
+                };
                 let pin = centered_cylinder(
                     &format!("pin_r_{pin_idx}"),
                     PIN_DIAMETER / 2.0,
@@ -131,8 +139,14 @@ fn main() {
     println!("Exported: output/still_air_box_rail_400.stl");
     println!("  Total length:     {:.0}mm", SAB_INNER_WIDTH);
     println!("  Segments:         {num_400}× {seg_len_400:.0}mm each");
-    println!("  Cross-section:    {:.0}mm × {:.0}mm", SAB_RAIL_WIDTH, SAB_RAIL_HEIGHT);
-    println!("  Panel channel:    {:.1}mm × {:.0}mm slot", SAB_CHANNEL_WIDTH, SAB_CHANNEL_DEPTH);
+    println!(
+        "  Cross-section:    {:.0}mm × {:.0}mm",
+        SAB_RAIL_WIDTH, SAB_RAIL_HEIGHT
+    );
+    println!(
+        "  Panel channel:    {:.1}mm × {:.0}mm slot",
+        SAB_CHANNEL_WIDTH, SAB_CHANNEL_DEPTH
+    );
     println!("  Alignment pins:   {PIN_DIAMETER:.0}mm dia, {PIN_DEPTH:.0}mm deep");
     println!("  Alignment sockets: {PIN_SOCKET_DIAMETER:.1}mm dia (0.3mm clearance)");
     println!("  Pins per joint:   {PINS_PER_JOINT}");
@@ -179,8 +193,17 @@ fn main() {
     // ── Summary ──
     println!("── SAB Frame BOM ──");
     println!("  Corner connectors: 8×");
-    println!("  400mm rails:       4× ({num_400} segments each = {} prints)", num_400 * 4);
-    println!("  300mm depth rails: 4× ({num_300} segments each = {} prints)", num_300 * 4);
-    println!("  300mm vert rails:  4× ({num_vert} segments each = {} prints)", num_vert * 4);
+    println!(
+        "  400mm rails:       4× ({num_400} segments each = {} prints)",
+        num_400 * 4
+    );
+    println!(
+        "  300mm depth rails: 4× ({num_300} segments each = {} prints)",
+        num_300 * 4
+    );
+    println!(
+        "  300mm vert rails:  4× ({num_vert} segments each = {} prints)",
+        num_vert * 4
+    );
     println!("  Material:          PETG");
 }

@@ -55,7 +55,7 @@ fn main() {
 
     // ── Drain ──
     let drain_d = 5.0; // mm — gravity drain to waste bottle
-    // Drain at -X end, through the bottom
+                       // Drain at -X end, through the bottom
     let drain_x = -(body_length / 2.0) + wall + drain_d;
 
     // ── Internal drain channel ──
@@ -84,8 +84,11 @@ fn main() {
     let inner_length = body_length - wall * 2.0;
     let inner_width = body_width - wall * 2.0;
     let inner_height = body_height - floor + rim_height;
-    let cavity = centered_cube("cavity", inner_length, inner_width, inner_height + 0.1)
-        .translate(0.0, 0.0, floor / 2.0 + 0.05);
+    let cavity = centered_cube("cavity", inner_length, inner_width, inner_height + 0.1).translate(
+        0.0,
+        0.0,
+        floor / 2.0 + 0.05,
+    );
 
     // Add floor back (the cavity cut creates open top, floor remains)
     // Actually, centered body minus cavity from top gives us walls + floor.
@@ -125,17 +128,8 @@ fn main() {
         well_bores = well_bores + well_bore;
 
         // Fluid inlet through bottom of well (for peristaltic pump feed)
-        let inlet = centered_cylinder(
-            &format!("well_inlet_{i}"),
-            inlet_d / 2.0,
-            floor + 2.0,
-            24,
-        )
-        .translate(
-            *wx,
-            0.0,
-            -(body_height + rim_height) / 2.0 + floor / 2.0,
-        );
+        let inlet = centered_cylinder(&format!("well_inlet_{i}"), inlet_d / 2.0, floor + 2.0, 24)
+            .translate(*wx, 0.0, -(body_height + rim_height) / 2.0 + floor / 2.0);
         well_bores = well_bores + inlet;
 
         // Overflow port (side hole near top of well, connects to drain channel)
@@ -156,25 +150,19 @@ fn main() {
 
     // ── Blot pad pocket ──
     // Rectangular recess that holds a folded Kimwipe or filter paper
-    let blot_pocket = centered_cube(
-        "blot_pocket",
-        blot_length,
-        blot_width,
-        blot_depth + 0.1,
-    )
-    .translate(
-        blot_x,
-        0.0,
-        -(body_height + rim_height) / 2.0 + floor + blot_depth / 2.0,
-    );
-
-    // Small raised ridge in blot pocket center (ensures tip contact with pad)
-    let blot_ridge = centered_cube("blot_ridge", blot_length - 4.0, 2.0, 1.5)
+    let blot_pocket = centered_cube("blot_pocket", blot_length, blot_width, blot_depth + 0.1)
         .translate(
             blot_x,
             0.0,
-            -(body_height + rim_height) / 2.0 + floor + blot_depth + 1.5 / 2.0 - 0.5,
+            -(body_height + rim_height) / 2.0 + floor + blot_depth / 2.0,
         );
+
+    // Small raised ridge in blot pocket center (ensures tip contact with pad)
+    let blot_ridge = centered_cube("blot_ridge", blot_length - 4.0, 2.0, 1.5).translate(
+        blot_x,
+        0.0,
+        -(body_height + rim_height) / 2.0 + floor + blot_depth + 1.5 / 2.0 - 0.5,
+    );
 
     // ── Internal drain channel ──
     // Trough that collects overflow from both wells and routes to drain port
@@ -188,12 +176,11 @@ fn main() {
 
     // ── Drain port ──
     // Through the bottom at -X end
-    let drain = centered_cylinder("drain", drain_d / 2.0, floor + 4.0, 24)
-        .translate(
-            drain_x,
-            channel_y,
-            -(body_height + rim_height) / 2.0 + floor / 2.0,
-        );
+    let drain = centered_cylinder("drain", drain_d / 2.0, floor + 4.0, 24).translate(
+        drain_x,
+        channel_y,
+        -(body_height + rim_height) / 2.0 + floor / 2.0,
+    );
 
     // ── Mounting holes ──
     let mut mount_holes = Part::empty("mount_holes");
@@ -233,7 +220,10 @@ fn main() {
     println!("Exported: output/wash_station.stl");
     println!();
     println!("── Wash Station Specs ──");
-    println!("  Body:           {body_length:.0}mm x {body_width:.0}mm x {:.0}mm (incl. rim)", body_height + rim_height);
+    println!(
+        "  Body:           {body_length:.0}mm x {body_width:.0}mm x {:.0}mm (incl. rim)",
+        body_height + rim_height
+    );
     println!("  Wall:           {wall:.0}mm, Floor: {floor:.0}mm");
     println!("  Well 1 (bleach): {well_id:.0}mm ID x {well_depth:.0}mm deep at X={well1_x:.0}mm");
     println!("  Well 2 (DI):    {well_id:.0}mm ID x {well_depth:.0}mm deep at X={well2_x:.0}mm");

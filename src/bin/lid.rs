@@ -70,56 +70,36 @@ fn main() {
     let grip_height = LID_THICKNESS + 2.0;
 
     // Front grip (-Y edge)
-    let front_grip = centered_cube(
-        "front_grip",
-        grip_width,
-        grip_depth,
-        grip_height,
-    )
-    .translate(0.0, -(OUTER_Y / 2.0) + grip_depth / 2.0 - 1.0, 0.0);
+    let front_grip = centered_cube("front_grip", grip_width, grip_depth, grip_height).translate(
+        0.0,
+        -(OUTER_Y / 2.0) + grip_depth / 2.0 - 1.0,
+        0.0,
+    );
 
     // Rounded front grip (cylinder for ergonomic shape)
-    let front_grip_round = centered_cylinder(
-        "front_grip_r",
-        grip_depth / 2.0,
-        grip_width,
-        32,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(0.0, -(OUTER_Y / 2.0), 0.0);
+    let front_grip_round = centered_cylinder("front_grip_r", grip_depth / 2.0, grip_width, 32)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(0.0, -(OUTER_Y / 2.0), 0.0);
 
     // Back grip (+Y edge)
-    let back_grip = centered_cube(
-        "back_grip",
-        grip_width,
-        grip_depth,
-        grip_height,
-    )
-    .translate(0.0, OUTER_Y / 2.0 - grip_depth / 2.0 + 1.0, 0.0);
+    let back_grip = centered_cube("back_grip", grip_width, grip_depth, grip_height).translate(
+        0.0,
+        OUTER_Y / 2.0 - grip_depth / 2.0 + 1.0,
+        0.0,
+    );
 
-    let back_grip_round = centered_cylinder(
-        "back_grip_r",
-        grip_depth / 2.0,
-        grip_width,
-        32,
-    )
-    .rotate(0.0, 90.0, 0.0)
-    .translate(0.0, OUTER_Y / 2.0, 0.0);
+    let back_grip_round = centered_cylinder("back_grip_r", grip_depth / 2.0, grip_width, 32)
+        .rotate(0.0, 90.0, 0.0)
+        .translate(0.0, OUTER_Y / 2.0, 0.0);
 
     // ── Assemble ──
 
-    let lid = (plate + lip)
-        - tube_holes
-        - front_grip
-        - front_grip_round
-        - back_grip
-        - back_grip_round;
+    let lid =
+        (plate + lip) - tube_holes - front_grip - front_grip_round - back_grip - back_grip_round;
 
     // ── Export ──
 
-    lid
-        .write_stl("output/lid.stl")
-        .unwrap();
+    lid.write_stl("output/lid.stl").unwrap();
 
     println!("Exported: output/lid.stl");
     println!();
@@ -129,6 +109,9 @@ fn main() {
     println!("  Lip clearance:  {LID_LIP_CLEARANCE:.1}mm per side");
     println!("  Tube holes:     {NUM_SLOTS}x {LID_TUBE_HOLE_DIAMETER:.1}mm dia");
     println!("  Finger grips:   {grip_width:.0}mm x {grip_depth:.0}mm (front + back)");
-    println!("  Total height:   {:.1}mm (plate + lip)", LID_THICKNESS + LID_LIP_DEPTH);
+    println!(
+        "  Total height:   {:.1}mm (plate + lip)",
+        LID_THICKNESS + LID_LIP_DEPTH
+    );
     println!("  Material:       PETG");
 }

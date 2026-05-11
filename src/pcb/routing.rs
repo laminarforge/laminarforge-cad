@@ -1,9 +1,11 @@
-use crate::*;
-use super::{Component, write_trace, write_via, pad_abs_pos, pad_idx};
 use super::nets::*;
+use super::{pad_abs_pos, pad_idx, write_trace, write_via, Component};
+use crate::*;
 
 fn comp<'a>(components: &'a [Component], reference: &str) -> &'a Component {
-    components.iter().find(|c| c.reference == reference)
+    components
+        .iter()
+        .find(|c| c.reference == reference)
         .unwrap_or_else(|| panic!("component {} not found", reference))
 }
 
@@ -26,7 +28,7 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     let u6 = comp(components, "U6");
 
     let sw = SIGNAL_TRACE_WIDTH; // 0.25
-    let pw = POWER_TRACE_WIDTH;  // 0.5
+    let pw = POWER_TRACE_WIDTH; // 0.5
 
     // ═══════════════════════════════════════════════════════════════════
     // USB_DN: J1 A7 (9.25,5) → U1 pin13 (12,23.83)
@@ -34,9 +36,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     // Route DN first (shorter), then DP crosses under via B.Cu hop.
     // ═══════════════════════════════════════════════════════════════════
     {
-        let (jx, jy) = ap(j1, "A7");   // (9.25, 5)
-        let (ex, ey) = ap(u1, "13");    // (12, 23.83)
-        // Jog east to x=9.3 for clearance from SW1 pad2 (right edge x=9.0).
+        let (jx, jy) = ap(j1, "A7"); // (9.25, 5)
+        let (ex, ey) = ap(u1, "13"); // (12, 23.83)
+                                     // Jog east to x=9.3 for clearance from SW1 pad2 (right edge x=9.0).
         write_trace(pcb, jx, jy, 9.3, jy, sw, "F.Cu", NET_USB_DN, "USB_DN");
         write_trace(pcb, 9.3, jy, 9.3, ey, sw, "F.Cu", NET_USB_DN, "USB_DN");
         write_trace(pcb, 9.3, ey, ex, ey, sw, "F.Cu", NET_USB_DN, "USB_DN");
@@ -50,15 +52,17 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     // Via clearance: (10.5-0.35)=10.15 vs DN right=9.425: 0.725mm. OK.
     // ═══════════════════════════════════════════════════════════════════
     {
-        let (jx, jy) = ap(j1, "A6");   // (9.75, 5)
-        let (ex, ey) = ap(u1, "14");    // (12, 25.1)
-        // F.Cu south at x=9.75 to y=22 (before DN horizontal at y=23.83)
+        let (jx, jy) = ap(j1, "A6"); // (9.75, 5)
+        let (ex, ey) = ap(u1, "14"); // (12, 25.1)
+                                     // F.Cu south at x=9.75 to y=22 (before DN horizontal at y=23.83)
         write_trace(pcb, jx, jy, jx, 22.0, sw, "F.Cu", NET_USB_DP, "USB_DP");
         // Jog east to x=10.5 for via clearance from DN at x=9.3
         write_trace(pcb, jx, 22.0, 10.5, 22.0, sw, "F.Cu", NET_USB_DP, "USB_DP");
         // B.Cu hop past DN horizontal
         write_via(pcb, 10.5, 22.0, VIA_PAD, VIA_DRILL, NET_USB_DP);
-        write_trace(pcb, 10.5, 22.0, 10.5, 24.5, sw, "B.Cu", NET_USB_DP, "USB_DP");
+        write_trace(
+            pcb, 10.5, 22.0, 10.5, 24.5, sw, "B.Cu", NET_USB_DP, "USB_DP",
+        );
         write_via(pcb, 10.5, 24.5, VIA_PAD, VIA_DRILL, NET_USB_DP);
         // F.Cu south to pin14 y, then east to pin14
         write_trace(pcb, 10.5, 24.5, 10.5, ey, sw, "F.Cu", NET_USB_DP, "USB_DP");
@@ -76,7 +80,7 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     // SDA → U2: south to y=14, via, B.Cu east to x=53, via, F.Cu south, west to pin.
     // ═══════════════════════════════════════════════════════════════════
     {
-        let (ex, ey) = ap(u1, "16");    // (12, 27.64)
+        let (ex, ey) = ap(u1, "16"); // (12, 27.64)
         let r17 = comp(components, "R17");
         let (r17p2x, _) = ap(r17, "2"); // (45.95, 10)
         let (u2p9x, u2p9y) = ap(u2, "9"); // (51.5, 14.5)
@@ -145,7 +149,7 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     //   C2 pad2(GND) at (52.75,12) left edge=52.375. Trace right edge=52.125. Gap=0.25mm. OK.
     // ═══════════════════════════════════════════════════════════════════
     {
-        let (ex, ey) = ap(u1, "17");    // (12, 28.91)
+        let (ex, ey) = ap(u1, "17"); // (12, 28.91)
         let (u2p10x, u2p10y) = ap(u2, "10"); // (51.5, 14)
 
         // SCL from U1 pin17: F.Cu west to x=8.5 (east of LB0 at x=7.5), via,
@@ -181,7 +185,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
 
         // SCL → U2 pin10: continue south at x=52.0 to y=14, west to pin
         write_trace(pcb, 52.0, 10.0, 52.0, u2p10y, sw, "F.Cu", NET_SCL, "SCL");
-        write_trace(pcb, 52.0, u2p10y, u2p10x, u2p10y, sw, "F.Cu", NET_SCL, "SCL");
+        write_trace(
+            pcb, 52.0, u2p10y, u2p10x, u2p10y, sw, "F.Cu", NET_SCL, "SCL",
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -198,23 +204,93 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     // ═══════════════════════════════════════════════════════════════════
     {
         let (ex, ey) = ap(u1, "15"); // (12, 26.37)
-        let (tx, ty) = ap(u4, "1");  // (69.3, 13.095)
+        let (tx, ty) = ap(u4, "1"); // (69.3, 13.095)
 
         write_via(pcb, ex, ey, VIA_PAD, VIA_DRILL, NET_HEATER_PWM);
-        write_trace(pcb, ex, ey, 10.5, ey, sw, "B.Cu", NET_HEATER_PWM, "HEATER_PWM");
-        write_trace(pcb, 10.5, ey, 10.5, 36.0, sw, "B.Cu", NET_HEATER_PWM, "HEATER_PWM");
-        write_trace(pcb, 10.5, 36.0, 67.0, 36.0, sw, "B.Cu", NET_HEATER_PWM, "HEATER_PWM");
+        write_trace(
+            pcb,
+            ex,
+            ey,
+            10.5,
+            ey,
+            sw,
+            "B.Cu",
+            NET_HEATER_PWM,
+            "HEATER_PWM",
+        );
+        write_trace(
+            pcb,
+            10.5,
+            ey,
+            10.5,
+            36.0,
+            sw,
+            "B.Cu",
+            NET_HEATER_PWM,
+            "HEATER_PWM",
+        );
+        write_trace(
+            pcb,
+            10.5,
+            36.0,
+            67.0,
+            36.0,
+            sw,
+            "B.Cu",
+            NET_HEATER_PWM,
+            "HEATER_PWM",
+        );
         write_via(pcb, 67.0, 36.0, VIA_PAD, VIA_DRILL, NET_HEATER_PWM);
-        write_trace(pcb, 67.0, 36.0, 67.0, ty, sw, "F.Cu", NET_HEATER_PWM, "HEATER_PWM");
-        write_trace(pcb, 67.0, ty, tx, ty, sw, "F.Cu", NET_HEATER_PWM, "HEATER_PWM");
+        write_trace(
+            pcb,
+            67.0,
+            36.0,
+            67.0,
+            ty,
+            sw,
+            "F.Cu",
+            NET_HEATER_PWM,
+            "HEATER_PWM",
+        );
+        write_trace(
+            pcb,
+            67.0,
+            ty,
+            tx,
+            ty,
+            sw,
+            "F.Cu",
+            NET_HEATER_PWM,
+            "HEATER_PWM",
+        );
 
         // Parallel INB (pin7) with INA (pin1): B.Cu stub from pin1 to pin7
         // Pin1 at (69.3, 13.095), Pin7 at (74.7, 14.365)
         // Via at pin1, B.Cu east to pin7 x, north to pin7 y, via
         let (inb_x, inb_y) = ap(u4, "7"); // (74.7, 14.365) INB
         write_via(pcb, tx, ty, VIA_PAD, VIA_DRILL, NET_HEATER_PWM);
-        write_trace(pcb, tx, ty, inb_x, ty, sw, "B.Cu", NET_HEATER_PWM, "HEATER_PWM");
-        write_trace(pcb, inb_x, ty, inb_x, inb_y, sw, "B.Cu", NET_HEATER_PWM, "HEATER_PWM");
+        write_trace(
+            pcb,
+            tx,
+            ty,
+            inb_x,
+            ty,
+            sw,
+            "B.Cu",
+            NET_HEATER_PWM,
+            "HEATER_PWM",
+        );
+        write_trace(
+            pcb,
+            inb_x,
+            ty,
+            inb_x,
+            inb_y,
+            sw,
+            "B.Cu",
+            NET_HEATER_PWM,
+            "HEATER_PWM",
+        );
         write_via(pcb, inb_x, inb_y, VIA_PAD, VIA_DRILL, NET_HEATER_PWM);
     }
 
@@ -232,7 +308,7 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let mux_s: [(&str, &str, u32, &str, f64); 3] = [
             ("18", "11", NET_MUX_S0, "MUX_S0", 58.0),
             ("19", "10", NET_MUX_S1, "MUX_S1", 59.5),
-            ("20", "9",  NET_MUX_S2, "MUX_S2", 61.0),
+            ("20", "9", NET_MUX_S2, "MUX_S2", 61.0),
         ];
         for (ep, mp, net, name, vx) in mux_s {
             let (ex, ey) = ap(u1, ep);
@@ -260,19 +336,69 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     //   y=15.5 west to pin: pin3(GND) gap=0.225mm. pin5 gap=0.225mm. OK.
     // ═══════════════════════════════════════════════════════════════════
     {
-        let (cx, cy) = ap(u3, "3");  // (45.2, 28.095)
-        let (ax, ay) = ap(u2, "4");  // (48.5, 15.5)
+        let (cx, cy) = ap(u3, "3"); // (45.2, 28.095)
+        let (ax, ay) = ap(u2, "4"); // (48.5, 15.5)
 
         // West to x=41, north to y=20. Via. B.Cu east to x=46.5. Via.
         write_trace(pcb, cx, cy, 41.0, cy, sw, "F.Cu", NET_MUX_COM, "MUX_COM");
-        write_trace(pcb, 41.0, cy, 41.0, 20.0, sw, "F.Cu", NET_MUX_COM, "MUX_COM");
+        write_trace(
+            pcb,
+            41.0,
+            cy,
+            41.0,
+            20.0,
+            sw,
+            "F.Cu",
+            NET_MUX_COM,
+            "MUX_COM",
+        );
         write_via(pcb, 41.0, 20.0, VIA_PAD, VIA_DRILL, NET_MUX_COM);
-        write_trace(pcb, 41.0, 20.0, 46.5, 20.0, sw, "B.Cu", NET_MUX_COM, "MUX_COM");
+        write_trace(
+            pcb,
+            41.0,
+            20.0,
+            46.5,
+            20.0,
+            sw,
+            "B.Cu",
+            NET_MUX_COM,
+            "MUX_COM",
+        );
         write_via(pcb, 46.5, 20.0, VIA_PAD, VIA_DRILL, NET_MUX_COM);
         // South past ADC_AIN1 region, east to x=49.5, north to y=15.5, west to pin
-        write_trace(pcb, 46.5, 20.0, 46.5, 16.75, sw, "F.Cu", NET_MUX_COM, "MUX_COM");
-        write_trace(pcb, 46.5, 16.75, 49.5, 16.75, sw, "F.Cu", NET_MUX_COM, "MUX_COM");
-        write_trace(pcb, 49.5, 16.75, 49.5, ay, sw, "F.Cu", NET_MUX_COM, "MUX_COM");
+        write_trace(
+            pcb,
+            46.5,
+            20.0,
+            46.5,
+            16.75,
+            sw,
+            "F.Cu",
+            NET_MUX_COM,
+            "MUX_COM",
+        );
+        write_trace(
+            pcb,
+            46.5,
+            16.75,
+            49.5,
+            16.75,
+            sw,
+            "F.Cu",
+            NET_MUX_COM,
+            "MUX_COM",
+        );
+        write_trace(
+            pcb,
+            49.5,
+            16.75,
+            49.5,
+            ay,
+            sw,
+            "F.Cu",
+            NET_MUX_COM,
+            "MUX_COM",
+        );
         write_trace(pcb, 49.5, ay, ax, ay, sw, "F.Cu", NET_MUX_COM, "MUX_COM");
     }
 
@@ -294,9 +420,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     // ═══════════════════════════════════════════════════════════════════
     {
         let r19 = comp(components, "R19");
-        let (rx, ry) = ap(r19, "2");   // (55.95, 10)
-        let (jx, jy) = ap(j3, "1");    // (60, 8.73)
-        let (ax, ay) = ap(u2, "5");    // (48.5, 16)
+        let (rx, ry) = ap(r19, "2"); // (55.95, 10)
+        let (jx, jy) = ap(j3, "1"); // (60, 8.73)
+        let (ax, ay) = ap(u2, "5"); // (48.5, 16)
 
         // R19 → J3
         write_trace(pcb, rx, ry, jx, ry, sw, "F.Cu", NET_ADC_AIN1, "ADC_AIN1");
@@ -307,9 +433,29 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // +3V3 at x=50.05 edge=49.925. Via at (47,11.5) edge=47.35. Gap=2.575mm. OK.
         write_trace(pcb, rx, ry, rx, 11.5, sw, "F.Cu", NET_ADC_AIN1, "ADC_AIN1");
         write_via(pcb, rx, 11.5, VIA_PAD, VIA_DRILL, NET_ADC_AIN1);
-        write_trace(pcb, rx, 11.5, 47.0, 11.5, sw, "B.Cu", NET_ADC_AIN1, "ADC_AIN1");
+        write_trace(
+            pcb,
+            rx,
+            11.5,
+            47.0,
+            11.5,
+            sw,
+            "B.Cu",
+            NET_ADC_AIN1,
+            "ADC_AIN1",
+        );
         write_via(pcb, 47.0, 11.5, VIA_PAD, VIA_DRILL, NET_ADC_AIN1);
-        write_trace(pcb, 47.0, 11.5, 47.0, ay, sw, "F.Cu", NET_ADC_AIN1, "ADC_AIN1");
+        write_trace(
+            pcb,
+            47.0,
+            11.5,
+            47.0,
+            ay,
+            sw,
+            "F.Cu",
+            NET_ADC_AIN1,
+            "ADC_AIN1",
+        );
         write_trace(pcb, 47.0, ay, ax, ay, sw, "F.Cu", NET_ADC_AIN1, "ADC_AIN1");
     }
 
@@ -322,37 +468,107 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     // Route from pin5 (OUTB, right side) → series resistor → MOSFET gate + pulldown
     // ═══════════════════════════════════════════════════════════════════
     {
-        let (tx, ty) = ap(u4, "5");  // (74.7, 16.905) — OUTB (GATE_DRV)
+        let (tx, ty) = ap(u4, "5"); // (74.7, 16.905) — OUTB (GATE_DRV)
 
         let r34 = comp(components, "R34");
         let r35 = comp(components, "R35");
         let (r34p1x, r34p1y) = ap(r34, "1"); // (79.05, 18) GATE_DRV
         let (r34p2x, r34p2y) = ap(r34, "2"); // (80.95, 18) MOSFET_GATE
         let (r35p1x, r35p1y) = ap(r35, "1"); // (83.05, 20) MOSFET_GATE
-        let (gx, gy) = ap(q1, "1");           // (84.05, 16) MOSFET_GATE
+        let (gx, gy) = ap(q1, "1"); // (84.05, 16) MOSFET_GATE
 
         // U4 pin5 OUTB → R34 pad1: F.Cu east to x=76, south to y=18, via, B.Cu east to R34
         write_trace(pcb, tx, ty, 76.0, ty, sw, "F.Cu", NET_GATE_DRV, "GATE_DRV");
-        write_trace(pcb, 76.0, ty, 76.0, 18.0, sw, "F.Cu", NET_GATE_DRV, "GATE_DRV");
+        write_trace(
+            pcb,
+            76.0,
+            ty,
+            76.0,
+            18.0,
+            sw,
+            "F.Cu",
+            NET_GATE_DRV,
+            "GATE_DRV",
+        );
         write_via(pcb, 76.0, 18.0, VIA_PAD, VIA_DRILL, NET_GATE_DRV);
-        write_trace(pcb, 76.0, 18.0, r34p1x, r34p1y, sw, "B.Cu", NET_GATE_DRV, "GATE_DRV");
+        write_trace(
+            pcb,
+            76.0,
+            18.0,
+            r34p1x,
+            r34p1y,
+            sw,
+            "B.Cu",
+            NET_GATE_DRV,
+            "GATE_DRV",
+        );
         write_via(pcb, r34p1x, r34p1y, VIA_PAD, VIA_DRILL, NET_GATE_DRV);
 
         // Parallel OUTA (pin4) with OUTB (pin5): B.Cu stub under U4 body
         // Pin4 at (69.3, 16.905) left side, Pin5 at (74.7, 16.905) right side — same y
         let (outa_x, outa_y) = ap(u4, "4"); // (69.3, 16.905) OUTA
         write_via(pcb, outa_x, outa_y, VIA_PAD, VIA_DRILL, NET_GATE_DRV);
-        write_trace(pcb, outa_x, outa_y, tx, outa_y, sw, "B.Cu", NET_GATE_DRV, "GATE_DRV");
+        write_trace(
+            pcb,
+            outa_x,
+            outa_y,
+            tx,
+            outa_y,
+            sw,
+            "B.Cu",
+            NET_GATE_DRV,
+            "GATE_DRV",
+        );
         // Pin5 pad is same net, on F.Cu — via connects through pad. No extra via needed.
 
         // R34 pad2 → Q1 gate: F.Cu east to Q1 x, north to Q1 pin1
-        write_trace(pcb, r34p2x, r34p2y, gx, r34p2y, sw, "F.Cu", NET_MOSFET_GATE, "MOSFET_GATE");
-        write_trace(pcb, gx, r34p2y, gx, gy, sw, "F.Cu", NET_MOSFET_GATE, "MOSFET_GATE");
+        write_trace(
+            pcb,
+            r34p2x,
+            r34p2y,
+            gx,
+            r34p2y,
+            sw,
+            "F.Cu",
+            NET_MOSFET_GATE,
+            "MOSFET_GATE",
+        );
+        write_trace(
+            pcb,
+            gx,
+            r34p2y,
+            gx,
+            gy,
+            sw,
+            "F.Cu",
+            NET_MOSFET_GATE,
+            "MOSFET_GATE",
+        );
 
         // R35 pulldown: MOSFET_GATE node at (gx, 18) south to R35 pad1
         // Route from R34p2 (80.95,18) east to R35p1 (83.05,20) via dog-leg
-        write_trace(pcb, r34p2x, r34p2y, r35p1x, r34p2y, sw, "F.Cu", NET_MOSFET_GATE, "MOSFET_GATE");
-        write_trace(pcb, r35p1x, r34p2y, r35p1x, r35p1y, sw, "F.Cu", NET_MOSFET_GATE, "MOSFET_GATE");
+        write_trace(
+            pcb,
+            r34p2x,
+            r34p2y,
+            r35p1x,
+            r34p2y,
+            sw,
+            "F.Cu",
+            NET_MOSFET_GATE,
+            "MOSFET_GATE",
+        );
+        write_trace(
+            pcb,
+            r35p1x,
+            r34p2y,
+            r35p1x,
+            r35p1y,
+            sw,
+            "F.Cu",
+            NET_MOSFET_GATE,
+            "MOSFET_GATE",
+        );
         // R35 pad2 (GND) connects to GND zone fill — no explicit trace needed
     }
 
@@ -363,8 +579,8 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     // J2 pin1 at (90,4)
     // ═══════════════════════════════════════════════════════════════════
     {
-        let (j2x, j2y) = ap(j2, "1");     // (90, 4) — now NET_12V_RAW
-        let (_d10a, d10ay) = ap(d10, "1");  // (88, 14) anode = 12V_RAW
+        let (j2x, j2y) = ap(j2, "1"); // (90, 4) — now NET_12V_RAW
+        let (_d10a, d10ay) = ap(d10, "1"); // (88, 14) anode = 12V_RAW
 
         // J2 → D10 anode: from J2 (90,4) to D10 pad1 (88,14)
         // +5V F.Cu trunk at y=10.5 from x=86.25→97 blocks any F.Cu vertical crossing.
@@ -375,11 +591,41 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // Q1 pad3 (HEATER_P) at (85,14): our trace is at x=88, far east. OK.
         // Via at (88,13): x=87.65-88.35. J2 pad2 GND left=88.75. Gap=0.4mm. OK.
         // +12V B.Cu at y=14 edge=13.75. Via B.Cu pad edge=13.35. Gap=0.4mm>0.2mm. OK.
-        write_trace(pcb, j2x, j2y, 88.0, j2y, pw, "F.Cu", NET_12V_RAW, "+12V_RAW");
+        write_trace(
+            pcb,
+            j2x,
+            j2y,
+            88.0,
+            j2y,
+            pw,
+            "F.Cu",
+            NET_12V_RAW,
+            "+12V_RAW",
+        );
         write_via(pcb, 88.0, j2y, VIA_PAD, VIA_DRILL, NET_12V_RAW);
-        write_trace(pcb, 88.0, j2y, 88.0, 13.0, pw, "B.Cu", NET_12V_RAW, "+12V_RAW");
+        write_trace(
+            pcb,
+            88.0,
+            j2y,
+            88.0,
+            13.0,
+            pw,
+            "B.Cu",
+            NET_12V_RAW,
+            "+12V_RAW",
+        );
         write_via(pcb, 88.0, 13.0, VIA_PAD, VIA_DRILL, NET_12V_RAW);
-        write_trace(pcb, 88.0, 13.0, 88.0, d10ay, pw, "F.Cu", NET_12V_RAW, "+12V_RAW");
+        write_trace(
+            pcb,
+            88.0,
+            13.0,
+            88.0,
+            d10ay,
+            pw,
+            "F.Cu",
+            NET_12V_RAW,
+            "+12V_RAW",
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -394,8 +640,8 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     // ═══════════════════════════════════════════════════════════════════
     {
         let (d10cx, d10cy) = ap(d10, "2"); // (92, 14) = NET_12V
-        let (j4x, j4y) = ap(j4, "1");     // (65, 8.73)
-        let (_dx, dy) = ap(d9, "2");        // (92, 30)
+        let (j4x, j4y) = ap(j4, "1"); // (65, 8.73)
+        let (_dx, dy) = ap(d9, "2"); // (92, 30)
 
         // D10 cathode → J4: B.Cu west at y=14, via at x=63.5, F.Cu north to J4 pin1.
         // Route: B.Cu west at y=14 to (63.5,14), B.Cu north to y=7, via at (63.5,7),
@@ -432,23 +678,53 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     //     and 0.25mm gap to D10 pad1 (88,16, left=87.25). Both > 0.127mm.
     // ═══════════════════════════════════════════════════════════════════
     {
-        let (jx, jy) = ap(j4, "2");   // (65, 11.27)
-        let (qx, qy) = ap(q1, "3");   // (85, 14)
+        let (jx, jy) = ap(j4, "2"); // (65, 11.27)
+        let (qx, qy) = ap(q1, "3"); // (85, 14)
         let (d9x, d9y) = ap(d9, "1"); // (88, 30)
 
         // J4 pin2 is PTH. F.Cu south at x=65 to y=25. Via to B.Cu.
         write_trace(pcb, jx, jy, jx, 25.0, pw, "F.Cu", NET_HEATER_P, "HEATER_P");
         write_via(pcb, jx, 25.0, VIA_PAD, VIA_DRILL, NET_HEATER_P);
         // B.Cu east at y=25 from x=65 to x=88.
-        write_trace(pcb, jx, 25.0, 88.0, 25.0, pw, "B.Cu", NET_HEATER_P, "HEATER_P");
+        write_trace(
+            pcb,
+            jx,
+            25.0,
+            88.0,
+            25.0,
+            pw,
+            "B.Cu",
+            NET_HEATER_P,
+            "HEATER_P",
+        );
 
         // D9: via at (88,25) → F.Cu south to D9 anode (88,30).
         write_via(pcb, 88.0, 25.0, VIA_PAD, VIA_DRILL, NET_HEATER_P);
-        write_trace(pcb, 88.0, 25.0, d9x, d9y, pw, "F.Cu", NET_HEATER_P, "HEATER_P");
+        write_trace(
+            pcb,
+            88.0,
+            25.0,
+            d9x,
+            d9y,
+            pw,
+            "F.Cu",
+            NET_HEATER_P,
+            "HEATER_P",
+        );
 
         // Q1: via at (86.85,25) → F.Cu north at x=86.85 to y=14, west to Q1.
         write_via(pcb, 86.85, 25.0, VIA_PAD, VIA_DRILL, NET_HEATER_P);
-        write_trace(pcb, 86.85, 25.0, 86.85, qy, pw, "F.Cu", NET_HEATER_P, "HEATER_P");
+        write_trace(
+            pcb,
+            86.85,
+            25.0,
+            86.85,
+            qy,
+            pw,
+            "F.Cu",
+            NET_HEATER_P,
+            "HEATER_P",
+        );
         write_trace(pcb, 86.85, qy, qx, qy, pw, "F.Cu", NET_HEATER_P, "HEATER_P");
     }
 
@@ -462,9 +738,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     {
         let c4 = comp(components, "C4");
         let c5 = comp(components, "C5");
-        let (vx, vy) = ap(u4, "6");    // (74.7, 15.635)
-        let (c4x, c4y) = ap(c4, "1");  // (73.25, 12)
-        let (c5x, c5y) = ap(c5, "1");  // (86.25, 12)
+        let (vx, vy) = ap(u4, "6"); // (74.7, 15.635)
+        let (c4x, c4y) = ap(c4, "1"); // (73.25, 12)
+        let (c5x, c5y) = ap(c5, "1"); // (86.25, 12)
 
         write_trace(pcb, vx, vy, c4x, vy, sw, "F.Cu", NET_5V, "+5V");
         write_trace(pcb, c4x, vy, c4x, c4y, pw, "F.Cu", NET_5V, "+5V");
@@ -486,7 +762,10 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         write_trace(pcb, 97.0, 44.5, r9_x, 44.5, pw, "B.Cu", NET_5V, "+5V");
 
         for i in 0..8u32 {
-            let r = comp(components, Box::leak(format!("R{}", i + 9).into_boxed_str()));
+            let r = comp(
+                components,
+                Box::leak(format!("R{}", i + 9).into_boxed_str()),
+            );
             let (rx, ry) = ap(r, "1");
             write_via(pcb, rx, 44.5, VIA_PAD, VIA_DRILL, NET_5V);
             write_trace(pcb, rx, 44.5, rx, ry, sw, "F.Cu", NET_5V, "+5V");
@@ -517,12 +796,12 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let r18 = comp(components, "R18");
         let r19 = comp(components, "R19");
 
-        let (c1x, c1y) = ap(c1, "1");   // (24.25, 8)
+        let (c1x, c1y) = ap(c1, "1"); // (24.25, 8)
         let (r17x, r17y) = ap(r17, "1"); // (44.05, 10)
         let (r18x, r18y) = ap(r18, "1"); // (50.05, 10)
         let (r19x, r19y) = ap(r19, "1"); // (54.05, 10)
-        let (c2x, c2y) = ap(c2, "1");   // (51.25, 12)
-        let (c3x, c3y) = ap(c3, "1");   // (51.25, 27)
+        let (c2x, c2y) = ap(c2, "1"); // (51.25, 12)
+        let (c3x, c3y) = ap(c3, "1"); // (51.25, 27)
         let (u2vx, u2vy) = ap(u2, "8"); // (51.5, 15)
         let (u3vx, u3vy) = ap(u3, "16"); // (54.8, 25.555)
 
@@ -634,14 +913,20 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
             // Via at R28 pad1 (2.55,15): same net (+3V3), landing on pad. OK.
             write_trace(pcb, r28p1x, 9.35, r28p1x, 11.8, sw, "F.Cu", NET_3V3, "+3V3");
             write_via(pcb, r28p1x, 11.8, VIA_PAD, VIA_DRILL, NET_3V3);
-            write_trace(pcb, r28p1x, 11.8, r28p1x, r28p1y, sw, "B.Cu", NET_3V3, "+3V3");
+            write_trace(
+                pcb, r28p1x, 11.8, r28p1x, r28p1y, sw, "B.Cu", NET_3V3, "+3V3",
+            );
             write_via(pcb, r28p1x, r28p1y, VIA_PAD, VIA_DRILL, NET_3V3);
             // Continue south to R29 pad1 (y=18)
-            write_trace(pcb, r29p1x, r28p1y, r29p1x, r29p1y, sw, "F.Cu", NET_3V3, "+3V3");
+            write_trace(
+                pcb, r29p1x, r28p1y, r29p1x, r29p1y, sw, "F.Cu", NET_3V3, "+3V3",
+            );
             // South from R29, jog east to x=3.25 to avoid SW1 pad1 at (1.75,22)
             // which extends to x=2.5. At x=3.25: left edge 3.125, gap=0.625mm. OK.
             // SW2 pad1 at (1.75,26) extends to x=2.5: gap same. OK.
-            write_trace(pcb, r29p1x, r29p1y, 3.25, r29p1y, sw, "F.Cu", NET_3V3, "+3V3");
+            write_trace(
+                pcb, r29p1x, r29p1y, 3.25, r29p1y, sw, "F.Cu", NET_3V3, "+3V3",
+            );
             write_trace(pcb, 3.25, r29p1y, 3.25, 24.0, sw, "F.Cu", NET_3V3, "+3V3");
             // J5 pin1 (+3V3) at (3.5, 26.19): route south at x=3.25 to J5 pin1.
             // At x=3.25 from y=24: J5 pin1 PTH extends x=2.65-4.35, same net. OK.
@@ -663,7 +948,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
             write_via(pcb, 2.25, 33.15, VIA_PAD, VIA_DRILL, NET_3V3);
             write_trace(pcb, 2.25, 33.15, 2.25, r32p1y, sw, "B.Cu", NET_3V3, "+3V3");
             write_via(pcb, 2.25, r32p1y, VIA_PAD, VIA_DRILL, NET_3V3);
-            write_trace(pcb, 2.25, r32p1y, r32p1x, r32p1y, sw, "F.Cu", NET_3V3, "+3V3");
+            write_trace(
+                pcb, 2.25, r32p1y, r32p1x, r32p1y, sw, "F.Cu", NET_3V3, "+3V3",
+            );
         }
 
         // Hop to east section: via at (44.5,7.5), B.Cu east, via drops
@@ -747,13 +1034,19 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let lb_pins: [u32; 8] = [21, 22, 23, 24, 25, 26, 30, 28];
         for i in 0..8u32 {
             let ps: &str = Box::leak(format!("{}", lb_pins[i as usize]).into_boxed_str());
-            let (ex, ey) = ap(u1, ps);  // x=28, y varies
+            let (ex, ey) = ap(u1, ps); // x=28, y varies
             let net = NET_LED_BASE_0 + i;
             let nn: &str = Box::leak(format!("LED_BASE_{}", i).into_boxed_str());
-            let r = comp(components, Box::leak(format!("R{}", i + 1).into_boxed_str()));
-            let (rx, ry) = ap(r, "1");  // y=38
-            let q = comp(components, Box::leak(format!("Q{}", i + 2).into_boxed_str()));
-            let (qx, qy) = ap(q, "1");  // y=43
+            let r = comp(
+                components,
+                Box::leak(format!("R{}", i + 1).into_boxed_str()),
+            );
+            let (rx, ry) = ap(r, "1"); // y=38
+            let q = comp(
+                components,
+                Box::leak(format!("Q{}", i + 2).into_boxed_str()),
+            );
+            let (qx, qy) = ap(q, "1"); // y=43
 
             match i {
                 // LB0-2: F.Cu east to x=31, via, B.Cu west to corridor
@@ -919,9 +1212,15 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         for i in 0..8u32 {
             let net = NET_LED_COL_0 + i;
             let nn: &str = Box::leak(format!("LED_COL_{}", i).into_boxed_str());
-            let d = comp(components, Box::leak(format!("D{}", i + 1).into_boxed_str()));
+            let d = comp(
+                components,
+                Box::leak(format!("D{}", i + 1).into_boxed_str()),
+            );
             let (dx, dy) = ap(d, "1"); // LED pad1 (anode) — LED_COL net
-            let r = comp(components, Box::leak(format!("R{}", i + 9).into_boxed_str()));
+            let r = comp(
+                components,
+                Box::leak(format!("R{}", i + 9).into_boxed_str()),
+            );
             let (rx, ry) = ap(r, "2"); // R pad2 — LED_COL net
 
             let jog_x = dx + 2.0;
@@ -973,10 +1272,16 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         for i in 0..8u32 {
             let cath_net = NET_LED_CATH_0 + i;
             let cath_nn: &str = Box::leak(format!("LED_CATH_{}", i).into_boxed_str());
-            let d = comp(components, Box::leak(format!("D{}", i + 1).into_boxed_str()));
+            let d = comp(
+                components,
+                Box::leak(format!("D{}", i + 1).into_boxed_str()),
+            );
             let (d2x, d2y) = ap(d, "2"); // LED pad2 (cathode) at (LED_x, 60.05)
-            let q = comp(components, Box::leak(format!("Q{}", i + 2).into_boxed_str()));
-            let (qx, qy) = ap(q, "3");   // Q pad3 (collector) at (Q_x, 41)
+            let q = comp(
+                components,
+                Box::leak(format!("Q{}", i + 2).into_boxed_str()),
+            );
+            let (qx, qy) = ap(q, "3"); // Q pad3 (collector) at (Q_x, 41)
 
             // 1) F.Cu north at LED_x from cathode to y=57
             write_trace(pcb, d2x, d2y, d2x, 57.0, sw, "F.Cu", cath_net, cath_nn);
@@ -1086,11 +1391,17 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         write_trace(pcb, px, py, 57.0, py, sw, "F.Cu", NET_MUX_Y4, "MUX_Y4");
         write_trace(pcb, 57.0, py, 57.0, 48.3, sw, "F.Cu", NET_MUX_Y4, "MUX_Y4");
         write_via(pcb, 57.0, 48.3, VIA_PAD, VIA_DRILL, NET_MUX_Y4);
-        write_trace(pcb, 57.0, 48.3, 38.0, 48.3, sw, "B.Cu", NET_MUX_Y4, "MUX_Y4");
+        write_trace(
+            pcb, 57.0, 48.3, 38.0, 48.3, sw, "B.Cu", NET_MUX_Y4, "MUX_Y4",
+        );
         write_via(pcb, 38.0, 48.3, VIA_PAD, VIA_DRILL, NET_MUX_Y4);
-        write_trace(pcb, 38.0, 48.3, 38.0, 25.0, sw, "F.Cu", NET_MUX_Y4, "MUX_Y4");
+        write_trace(
+            pcb, 38.0, 48.3, 38.0, 25.0, sw, "F.Cu", NET_MUX_Y4, "MUX_Y4",
+        );
         write_via(pcb, 38.0, 25.0, VIA_PAD, VIA_DRILL, NET_MUX_Y4);
-        write_trace(pcb, 38.0, 25.0, 43.0, 25.0, sw, "B.Cu", NET_MUX_Y4, "MUX_Y4");
+        write_trace(
+            pcb, 38.0, 25.0, 43.0, 25.0, sw, "B.Cu", NET_MUX_Y4, "MUX_Y4",
+        );
         write_via(pcb, 43.0, 25.0, VIA_PAD, VIA_DRILL, NET_MUX_Y4);
         write_trace(pcb, 43.0, 25.0, 43.0, my, sw, "F.Cu", NET_MUX_Y4, "MUX_Y4");
         write_trace(pcb, 43.0, my, mx, my, sw, "F.Cu", NET_MUX_Y4, "MUX_Y4");
@@ -1109,7 +1420,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         write_trace(pcb, px, py, 66.0, py, sw, "F.Cu", NET_MUX_Y5, "MUX_Y5");
         write_trace(pcb, 66.0, py, 66.0, 34.0, sw, "F.Cu", NET_MUX_Y5, "MUX_Y5");
         write_via(pcb, 66.0, 34.0, VIA_PAD, VIA_DRILL, NET_MUX_Y5);
-        write_trace(pcb, 66.0, 34.0, 43.0, 34.0, sw, "B.Cu", NET_MUX_Y5, "MUX_Y5");
+        write_trace(
+            pcb, 66.0, 34.0, 43.0, 34.0, sw, "B.Cu", NET_MUX_Y5, "MUX_Y5",
+        );
         write_via(pcb, 43.0, 34.0, VIA_PAD, VIA_DRILL, NET_MUX_Y5);
         write_trace(pcb, 43.0, 34.0, 43.0, my, sw, "F.Cu", NET_MUX_Y5, "MUX_Y5");
         write_trace(pcb, 43.0, my, mx, my, sw, "F.Cu", NET_MUX_Y5, "MUX_Y5");
@@ -1127,7 +1440,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         write_trace(pcb, px, py, 76.0, py, sw, "F.Cu", NET_MUX_Y6, "MUX_Y6");
         write_trace(pcb, 76.0, py, 76.0, 26.0, sw, "F.Cu", NET_MUX_Y6, "MUX_Y6");
         write_via(pcb, 76.0, 26.0, VIA_PAD, VIA_DRILL, NET_MUX_Y6);
-        write_trace(pcb, 76.0, 26.0, 42.0, 26.0, sw, "B.Cu", NET_MUX_Y6, "MUX_Y6");
+        write_trace(
+            pcb, 76.0, 26.0, 42.0, 26.0, sw, "B.Cu", NET_MUX_Y6, "MUX_Y6",
+        );
         write_via(pcb, 42.0, 26.0, VIA_PAD, VIA_DRILL, NET_MUX_Y6);
         write_trace(pcb, 42.0, 26.0, 42.0, my, sw, "F.Cu", NET_MUX_Y6, "MUX_Y6");
         write_trace(pcb, 42.0, my, mx, my, sw, "F.Cu", NET_MUX_Y6, "MUX_Y6");
@@ -1146,7 +1461,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         write_trace(pcb, px, py, 87.0, py, sw, "F.Cu", NET_MUX_Y7, "MUX_Y7");
         write_trace(pcb, 87.0, py, 87.0, 35.0, sw, "F.Cu", NET_MUX_Y7, "MUX_Y7");
         write_via(pcb, 87.0, 35.0, VIA_PAD, VIA_DRILL, NET_MUX_Y7);
-        write_trace(pcb, 87.0, 35.0, 42.0, 35.0, sw, "B.Cu", NET_MUX_Y7, "MUX_Y7");
+        write_trace(
+            pcb, 87.0, 35.0, 42.0, 35.0, sw, "B.Cu", NET_MUX_Y7, "MUX_Y7",
+        );
         write_via(pcb, 42.0, 35.0, VIA_PAD, VIA_DRILL, NET_MUX_Y7);
         write_trace(pcb, 42.0, 35.0, 42.0, my, sw, "F.Cu", NET_MUX_Y7, "MUX_Y7");
         write_trace(pcb, 42.0, my, mx, my, sw, "F.Cu", NET_MUX_Y7, "MUX_Y7");
@@ -1199,11 +1516,15 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         write_via(pcb, c7p1x, 2.25, VIA_PAD, VIA_DRILL, NET_5V);
         write_trace(pcb, c7p1x, 2.25, u6_vin_x, 2.25, pw, "B.Cu", NET_5V, "+5V");
         write_via(pcb, u6_vin_x, 2.25, VIA_PAD, VIA_DRILL, NET_5V);
-        write_trace(pcb, u6_vin_x, 2.25, u6_vin_x, u6_vin_y, pw, "F.Cu", NET_5V, "+5V");
+        write_trace(
+            pcb, u6_vin_x, 2.25, u6_vin_x, u6_vin_y, pw, "F.Cu", NET_5V, "+5V",
+        );
 
         // ── C8 (5V input cap) ──
         // From U6 Vin east to x=38, south to y=6.5, B.Cu west to C8
-        write_trace(pcb, u6_vin_x, u6_vin_y, 38.0, u6_vin_y, pw, "F.Cu", NET_5V, "+5V");
+        write_trace(
+            pcb, u6_vin_x, u6_vin_y, 38.0, u6_vin_y, pw, "F.Cu", NET_5V, "+5V",
+        );
         write_trace(pcb, 38.0, u6_vin_y, 38.0, 6.5, pw, "F.Cu", NET_5V, "+5V");
         write_via(pcb, 38.0, 6.5, VIA_PAD, VIA_DRILL, NET_5V);
         write_trace(pcb, 38.0, 6.5, c8p1x, 6.5, pw, "B.Cu", NET_5V, "+5V");
@@ -1213,17 +1534,23 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // ── U6 Vout (3.3V) → C9 ──
         // Route south from Vout (35,5) to y=7.5, east to C9 pad1, north.
         // Avoids +5V pin at (37.3,5) which blocks direct east route.
-        write_trace(pcb, u6_vout_x, u6_vout_y, u6_vout_x, 7.5, pw, "F.Cu", NET_3V3, "+3V3");
+        write_trace(
+            pcb, u6_vout_x, u6_vout_y, u6_vout_x, 7.5, pw, "F.Cu", NET_3V3, "+3V3",
+        );
         write_trace(pcb, u6_vout_x, 7.5, c9p1x, 7.5, pw, "F.Cu", NET_3V3, "+3V3");
         write_trace(pcb, c9p1x, 7.5, c9p1x, c9p1y, pw, "F.Cu", NET_3V3, "+3V3");
 
         // ── Connect U6 Vout/Tab to +3V3 bus ──
         // Direct F.Cu from tab (35,2.5) to Vout pin (35,5). Both F.Cu pads, same net.
         let (u6_tab_x, u6_tab_y) = ap(u6, "4");
-        write_trace(pcb, u6_tab_x, u6_tab_y, u6_vout_x, u6_vout_y, pw, "F.Cu", NET_3V3, "+3V3");
+        write_trace(
+            pcb, u6_tab_x, u6_tab_y, u6_vout_x, u6_vout_y, pw, "F.Cu", NET_3V3, "+3V3",
+        );
 
         // U6 Vout south to y=9 for +3V3 bus connection
-        write_trace(pcb, u6_vout_x, u6_vout_y, u6_vout_x, 9.0, pw, "F.Cu", NET_3V3, "+3V3");
+        write_trace(
+            pcb, u6_vout_x, u6_vout_y, u6_vout_x, 9.0, pw, "F.Cu", NET_3V3, "+3V3",
+        );
 
         // ── Connect +5V to bus trunk ──
         // C7 pad1 south to y=12, B.Cu east to C5 area at (86.25,12)
@@ -1234,7 +1561,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // ── C10 (12V bulk cap near D10) ──
         // Connect from D10 cathode east to C10 (both at y=16)
         let (d10cx, d10cy) = ap(d10, "2"); // (92, 16) = NET_12V
-        write_trace(pcb, d10cx, d10cy, c10p1x, c10p1y, pw, "F.Cu", NET_12V, "+12V");
+        write_trace(
+            pcb, d10cx, d10cy, c10p1x, c10p1y, pw, "F.Cu", NET_12V, "+12V",
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -1292,8 +1621,14 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         for i in 0..8u32 {
             let net = NET_MUX_Y0 + i;
             let nn: &str = Box::leak(format!("MUX_Y{}", i).into_boxed_str());
-            let r = comp(components, Box::leak(format!("R{}", i + 20).into_boxed_str()));
-            let pd = comp(components, Box::leak(format!("PD{}", i + 1).into_boxed_str()));
+            let r = comp(
+                components,
+                Box::leak(format!("R{}", i + 20).into_boxed_str()),
+            );
+            let pd = comp(
+                components,
+                Box::leak(format!("PD{}", i + 1).into_boxed_str()),
+            );
             let (rp1x, rp1y) = ap(r, "1"); // MUX_Y pad
             let (pdp1x, pdp1y) = ap(pd, "1"); // PD anode (MUX_Y)
 
@@ -1315,14 +1650,44 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let r30 = comp(components, "R30");
         let r31 = comp(components, "R31");
         let (cc1_jx, cc1_jy) = ap(j1, "A5"); // USB CC1 pad (10.25, 5)
-        let (r30p1x, r30p1y) = ap(r30, "1");  // CC1 at (11.0, 8.75)
+        let (r30p1x, r30p1y) = ap(r30, "1"); // CC1 at (11.0, 8.75)
 
         // CC1: F.Cu from A5 south to y=6, east to R30 pad1 x (now at x=11), south to pad.
         // DP at x=9.75 right edge 9.875. CC1 at x=10.25 left edge 10.125. Gap=0.25mm. OK.
         // R30 now at x=11: pad1 CC1 at (11, 6.25).
-        write_trace(pcb, cc1_jx, cc1_jy, cc1_jx, 6.0, sw, "F.Cu", NET_USB_CC1, "USB_CC1");
-        write_trace(pcb, cc1_jx, 6.0, r30p1x, 6.0, sw, "F.Cu", NET_USB_CC1, "USB_CC1");
-        write_trace(pcb, r30p1x, 6.0, r30p1x, r30p1y, sw, "F.Cu", NET_USB_CC1, "USB_CC1");
+        write_trace(
+            pcb,
+            cc1_jx,
+            cc1_jy,
+            cc1_jx,
+            6.0,
+            sw,
+            "F.Cu",
+            NET_USB_CC1,
+            "USB_CC1",
+        );
+        write_trace(
+            pcb,
+            cc1_jx,
+            6.0,
+            r30p1x,
+            6.0,
+            sw,
+            "F.Cu",
+            NET_USB_CC1,
+            "USB_CC1",
+        );
+        write_trace(
+            pcb,
+            r30p1x,
+            6.0,
+            r30p1x,
+            r30p1y,
+            sw,
+            "F.Cu",
+            NET_USB_CC1,
+            "USB_CC1",
+        );
 
         let (cc2_jx, cc2_jy) = ap(j1, "B5"); // USB CC2 pad (9.5, 3.8)
         let (r31p1x, r31p1y) = ap(r31, "1"); // CC2 at (14.0, 10.25)
@@ -1333,8 +1698,28 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // Fix: route CC2 north first to y=4.3 (gap to VBUS=4.3-3.5-0.25=0.55mm),
         // then east, then south to pad.
         // Route CC2 east at pad y (3.8) to avoid DP pad A6 at y=4.5-5.5.
-        write_trace(pcb, cc2_jx, cc2_jy, r31p1x, cc2_jy, sw, "F.Cu", NET_USB_CC2, "USB_CC2");
-        write_trace(pcb, r31p1x, cc2_jy, r31p1x, r31p1y, sw, "F.Cu", NET_USB_CC2, "USB_CC2");
+        write_trace(
+            pcb,
+            cc2_jx,
+            cc2_jy,
+            r31p1x,
+            cc2_jy,
+            sw,
+            "F.Cu",
+            NET_USB_CC2,
+            "USB_CC2",
+        );
+        write_trace(
+            pcb,
+            r31p1x,
+            cc2_jy,
+            r31p1x,
+            r31p1y,
+            sw,
+            "F.Cu",
+            NET_USB_CC2,
+            "USB_CC2",
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -1362,27 +1747,41 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let (_sw2p1x, sw2p1y) = ap(sw2, "1"); // ESP_EN pad1 at (1.75, 26)
 
         // F.Cu west from pin3 to x=10.5 (east of GPIO0 at x=11.5, safe gap)
-        write_trace(pcb, u1_en_x, u1_en_y, 10.5, u1_en_y, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
+        write_trace(
+            pcb, u1_en_x, u1_en_y, 10.5, u1_en_y, sw, "F.Cu", NET_ESP_EN, "ESP_EN",
+        );
         write_via(pcb, 10.5, u1_en_y, VIA_PAD, VIA_DRILL, NET_ESP_EN);
         // B.Cu south from y=11.27 to y=11, then west at y=11 to x=3.5
-        write_trace(pcb, 10.5, u1_en_y, 10.5, 11.0, sw, "B.Cu", NET_ESP_EN, "ESP_EN");
+        write_trace(
+            pcb, 10.5, u1_en_y, 10.5, 11.0, sw, "B.Cu", NET_ESP_EN, "ESP_EN",
+        );
         write_trace(pcb, 10.5, 11.0, 3.5, 11.0, sw, "B.Cu", NET_ESP_EN, "ESP_EN");
         write_via(pcb, 3.5, 11.0, VIA_PAD, VIA_DRILL, NET_ESP_EN);
 
         // F.Cu south at x=3.5 to C11 area (passes between C11 pads at y=13)
-        write_trace(pcb, 3.5, 11.0, 3.5, c11p1y, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
+        write_trace(
+            pcb, 3.5, 11.0, 3.5, c11p1y, sw, "F.Cu", NET_ESP_EN, "ESP_EN",
+        );
         // Stub west to C11 pad1 (2.75, 13)
-        write_trace(pcb, 3.5, c11p1y, c11p1x, c11p1y, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
+        write_trace(
+            pcb, 3.5, c11p1y, c11p1x, c11p1y, sw, "F.Cu", NET_ESP_EN, "ESP_EN",
+        );
 
         // Continue south to R28 pad2 (4.45, 15)
-        write_trace(pcb, 3.5, c11p1y, 3.5, r28p2y, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
-        write_trace(pcb, 3.5, r28p2y, r28p2x, r28p2y, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
+        write_trace(
+            pcb, 3.5, c11p1y, 3.5, r28p2y, sw, "F.Cu", NET_ESP_EN, "ESP_EN",
+        );
+        write_trace(
+            pcb, 3.5, r28p2y, r28p2x, r28p2y, sw, "F.Cu", NET_ESP_EN, "ESP_EN",
+        );
 
         // R28 pad2 → SW2: F.Cu south at x=3.5 past R28 pad1, then B.Cu hop west.
         // R28 pad1 extends x=2.05-3.05, y=14.4-15.6. At x=3.5 gap=3.375-3.05=0.325mm. OK.
         // Continue south to y=16.5 (below R28), via, B.Cu west to x=1.75, via, F.Cu south to SW2.
         // +3V3 B.Cu at x=2.55 from y=11.8-15: at y=16.5 it's below. No conflict.
-        write_trace(pcb, 3.5, r28p2y, 3.5, 16.5, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
+        write_trace(
+            pcb, 3.5, r28p2y, 3.5, 16.5, sw, "F.Cu", NET_ESP_EN, "ESP_EN",
+        );
         write_via(pcb, 3.5, 16.5, VIA_PAD, VIA_DRILL, NET_ESP_EN);
         write_trace(pcb, 3.5, 16.5, 1.75, 16.5, sw, "B.Cu", NET_ESP_EN, "ESP_EN");
         write_via(pcb, 1.75, 16.5, VIA_PAD, VIA_DRILL, NET_ESP_EN);
@@ -1390,11 +1789,15 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // (1.75, 22) which extends x=1.0-2.5, y=21.5-22.5.
         // Via at (1.75, 20.5), F.Cu west to x=0.5 (west of pad left edge 1.0),
         // south past pad, east back to x=1.75, via, continue south.
-        write_trace(pcb, 1.75, 16.5, 1.75, 20.5, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
+        write_trace(
+            pcb, 1.75, 16.5, 1.75, 20.5, sw, "F.Cu", NET_ESP_EN, "ESP_EN",
+        );
         write_trace(pcb, 1.75, 20.5, 0.5, 20.5, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
         write_trace(pcb, 0.5, 20.5, 0.5, 23.5, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
         write_trace(pcb, 0.5, 23.5, 1.75, 23.5, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
-        write_trace(pcb, 1.75, 23.5, 1.75, sw2p1y, sw, "F.Cu", NET_ESP_EN, "ESP_EN");
+        write_trace(
+            pcb, 1.75, 23.5, 1.75, sw2p1y, sw, "F.Cu", NET_ESP_EN, "ESP_EN",
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -1420,43 +1823,170 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let (sw1p1x, sw1p1y) = ap(sw1, "1"); // ESP_GPIO0 at (0.25, 22)
 
         // Pin27 (28,17.62) → via → B.Cu west to x=11.5 at y=17.62
-        write_via(pcb, u1_gpio0_x, u1_gpio0_y, VIA_PAD, VIA_DRILL, NET_ESP_GPIO0);
-        write_trace(pcb, u1_gpio0_x, u1_gpio0_y, 11.5, u1_gpio0_y, sw, "B.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
+        write_via(
+            pcb,
+            u1_gpio0_x,
+            u1_gpio0_y,
+            VIA_PAD,
+            VIA_DRILL,
+            NET_ESP_GPIO0,
+        );
+        write_trace(
+            pcb,
+            u1_gpio0_x,
+            u1_gpio0_y,
+            11.5,
+            u1_gpio0_y,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
 
         // B.Cu south at x=11.5 from y=17.62 to y=12 (above U1 pad2/pad3 zone),
         // then west to x=10.5, then south to y=10.5 to avoid U1 pads at x=11.25+.
         // U1 pad3 (ESP_EN) at (12,11.27): extends x=11.25-12.75, y=10.82-11.72.
         // U1 pad2 (+3V3) at (12,10): extends x=11.25-12.75, y=9.55-10.45.
         // At y=12: above both pads. At x=10.5: west of pads.
-        write_trace(pcb, 11.5, u1_gpio0_y, 11.5, 12.0, sw, "B.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
+        write_trace(
+            pcb,
+            11.5,
+            u1_gpio0_y,
+            11.5,
+            12.0,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
         // B.Cu south at x=11.5 to y=10.5, then west to x=5. Avoids x=10.5 which
         // overlaps ESP_EN via at (10.5,11.27). At y=10.5 passing x=10.5: trace top
         // edge 10.625, ESP_EN via bottom 10.92, gap=0.295mm. OK.
         // B.Cu horizontal moved to y=10.61 to clear LB0 via at (7.5, 10):
         // LB0 via pad top=10.35, GPIO0 bottom=10.485, gap=0.135mm>0.127mm. OK.
         // ESP_EN B.Cu at y=11 bottom=10.875, GPIO0 top=10.735, gap=0.14mm>0.127mm. OK.
-        write_trace(pcb, 11.5, 12.0, 11.5, 10.61, sw, "B.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
-        write_trace(pcb, 11.5, 10.61, 5.0, 10.61, sw, "B.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
-        write_trace(pcb, 5.0, 10.61, 5.0, 10.0, sw, "B.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
+        write_trace(
+            pcb,
+            11.5,
+            12.0,
+            11.5,
+            10.61,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
+        write_trace(
+            pcb,
+            11.5,
+            10.61,
+            5.0,
+            10.61,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
+        write_trace(
+            pcb,
+            5.0,
+            10.61,
+            5.0,
+            10.0,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
         write_via(pcb, 5.0, 10.0, VIA_PAD, VIA_DRILL, NET_ESP_GPIO0);
 
         // F.Cu south at x=5.0 from y=10.0, stay west of LB0 F.Cu at x=7.5.
         // Via to B.Cu at y=12 to hop past R28 pad (F.Cu, x=3.95-4.95, y=14.4-15.6).
         // ESP_EN B.Cu at y=11 from x=3.5-10.5: F.Cu crosses it safely (different layer).
-        write_trace(pcb, 5.0, 10.0, 4.5, 10.0, sw, "F.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
-        write_trace(pcb, 4.5, 10.0, 4.5, 12.0, sw, "F.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
+        write_trace(
+            pcb,
+            5.0,
+            10.0,
+            4.5,
+            10.0,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
+        write_trace(
+            pcb,
+            4.5,
+            10.0,
+            4.5,
+            12.0,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
         write_via(pcb, 4.5, 12.0, VIA_PAD, VIA_DRILL, NET_ESP_GPIO0);
         // B.Cu south past R28 pad (F.Cu only, B.Cu clear)
-        write_trace(pcb, 4.5, 12.0, 4.5, 16.5, sw, "B.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
+        write_trace(
+            pcb,
+            4.5,
+            12.0,
+            4.5,
+            16.5,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
         write_via(pcb, 4.5, 16.5, VIA_PAD, VIA_DRILL, NET_ESP_GPIO0);
         // F.Cu south to R29 pad2 (4.45, 18)
-        write_trace(pcb, 4.5, 16.5, 4.5, r29p2y, sw, "F.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
-        write_trace(pcb, 4.5, r29p2y, r29p2x, r29p2y, sw, "F.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
+        write_trace(
+            pcb,
+            4.5,
+            16.5,
+            4.5,
+            r29p2y,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
+        write_trace(
+            pcb,
+            4.5,
+            r29p2y,
+            r29p2x,
+            r29p2y,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
 
         // R29 pad2 → SW1: F.Cu south to y=22, via, B.Cu west to SW1
-        write_trace(pcb, r29p2x, r29p2y, r29p2x, sw1p1y, sw, "F.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
+        write_trace(
+            pcb,
+            r29p2x,
+            r29p2y,
+            r29p2x,
+            sw1p1y,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
         write_via(pcb, r29p2x, sw1p1y, VIA_PAD, VIA_DRILL, NET_ESP_GPIO0);
-        write_trace(pcb, r29p2x, sw1p1y, sw1p1x, sw1p1y, sw, "B.Cu", NET_ESP_GPIO0, "ESP_GPIO0");
+        write_trace(
+            pcb,
+            r29p2x,
+            sw1p1y,
+            sw1p1x,
+            sw1p1y,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO0,
+            "ESP_GPIO0",
+        );
         write_via(pcb, sw1p1x, sw1p1y, VIA_PAD, VIA_DRILL, NET_ESP_GPIO0);
     }
 
@@ -1476,42 +2006,202 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let j5 = comp(components, "J5");
         let (u1_rx_x, u1_rx_y) = ap(u1, "36"); // UART_RX at (28, 29.05)
         let (u1_tx_x, u1_tx_y) = ap(u1, "37"); // UART_TX at (28, 30.32)
-        let (j5p2x, j5p2y) = ap(j5, "2");  // UART_TX
-        let (j5p3x, j5p3y) = ap(j5, "3");  // UART_RX
+        let (j5p2x, j5p2y) = ap(j5, "2"); // UART_TX
+        let (j5p3x, j5p3y) = ap(j5, "3"); // UART_RX
 
         // TX: pin37 (28, 30.32) → J5 pin2 (3.5, 28.73)
         // Fan-out: F.Cu east to x=28.5, south to y=34.
         // Via. B.Cu west at y=34. Then hop HEATER_PWM and reach J5.
-        write_trace(pcb, u1_tx_x, u1_tx_y, 28.5, u1_tx_y, sw, "F.Cu", NET_UART_TX, "UART_TX");
-        write_trace(pcb, 28.5, u1_tx_y, 28.5, 34.0, sw, "F.Cu", NET_UART_TX, "UART_TX");
+        write_trace(
+            pcb,
+            u1_tx_x,
+            u1_tx_y,
+            28.5,
+            u1_tx_y,
+            sw,
+            "F.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
+        write_trace(
+            pcb,
+            28.5,
+            u1_tx_y,
+            28.5,
+            34.0,
+            sw,
+            "F.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
         write_via(pcb, 28.5, 34.0, VIA_PAD, VIA_DRILL, NET_UART_TX);
-        write_trace(pcb, 28.5, 34.0, 12.0, 34.0, sw, "B.Cu", NET_UART_TX, "UART_TX");
+        write_trace(
+            pcb,
+            28.5,
+            34.0,
+            12.0,
+            34.0,
+            sw,
+            "B.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
         write_via(pcb, 12.0, 34.0, VIA_PAD, VIA_DRILL, NET_UART_TX);
-        write_trace(pcb, 12.0, 34.0, 9.0, 34.0, sw, "F.Cu", NET_UART_TX, "UART_TX");
+        write_trace(
+            pcb,
+            12.0,
+            34.0,
+            9.0,
+            34.0,
+            sw,
+            "F.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
         write_via(pcb, 9.0, 34.0, VIA_PAD, VIA_DRILL, NET_UART_TX);
-        write_trace(pcb, 9.0, 34.0, 6.0, 34.0, sw, "B.Cu", NET_UART_TX, "UART_TX");
+        write_trace(
+            pcb,
+            9.0,
+            34.0,
+            6.0,
+            34.0,
+            sw,
+            "B.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
         write_via(pcb, 6.0, 34.0, VIA_PAD, VIA_DRILL, NET_UART_TX);
         // B.Cu hop around UART_RX F.Cu horizontal at y=31.27 (x=3.5→7).
-        write_trace(pcb, 6.0, 34.0, 6.0, 32.0, sw, "F.Cu", NET_UART_TX, "UART_TX");
+        write_trace(
+            pcb,
+            6.0,
+            34.0,
+            6.0,
+            32.0,
+            sw,
+            "F.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
         write_via(pcb, 6.0, 32.0, VIA_PAD, VIA_DRILL, NET_UART_TX);
-        write_trace(pcb, 6.0, 32.0, 6.0, 30.65, sw, "B.Cu", NET_UART_TX, "UART_TX");
+        write_trace(
+            pcb,
+            6.0,
+            32.0,
+            6.0,
+            30.65,
+            sw,
+            "B.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
         write_via(pcb, 6.0, 30.65, VIA_PAD, VIA_DRILL, NET_UART_TX);
-        write_trace(pcb, 6.0, 30.65, 6.0, j5p2y, sw, "F.Cu", NET_UART_TX, "UART_TX");
-        write_trace(pcb, 6.0, j5p2y, j5p2x, j5p2y, sw, "F.Cu", NET_UART_TX, "UART_TX");
+        write_trace(
+            pcb,
+            6.0,
+            30.65,
+            6.0,
+            j5p2y,
+            sw,
+            "F.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
+        write_trace(
+            pcb,
+            6.0,
+            j5p2y,
+            j5p2x,
+            j5p2y,
+            sw,
+            "F.Cu",
+            NET_UART_TX,
+            "UART_TX",
+        );
 
         // RX: pin36 (28, 29.05) → J5 pin3 (3.5, 31.27)
         // Fan-out: F.Cu east to x=29.25 (west of LB2 at x=30.05), south to y=35.
-        write_trace(pcb, u1_rx_x, u1_rx_y, 29.25, u1_rx_y, sw, "F.Cu", NET_UART_RX, "UART_RX");
-        write_trace(pcb, 29.25, u1_rx_y, 29.25, 35.0, sw, "F.Cu", NET_UART_RX, "UART_RX");
+        write_trace(
+            pcb,
+            u1_rx_x,
+            u1_rx_y,
+            29.25,
+            u1_rx_y,
+            sw,
+            "F.Cu",
+            NET_UART_RX,
+            "UART_RX",
+        );
+        write_trace(
+            pcb,
+            29.25,
+            u1_rx_y,
+            29.25,
+            35.0,
+            sw,
+            "F.Cu",
+            NET_UART_RX,
+            "UART_RX",
+        );
         write_via(pcb, 29.25, 35.0, VIA_PAD, VIA_DRILL, NET_UART_RX);
-        write_trace(pcb, 29.25, 35.0, 12.0, 35.0, sw, "B.Cu", NET_UART_RX, "UART_RX");
+        write_trace(
+            pcb,
+            29.25,
+            35.0,
+            12.0,
+            35.0,
+            sw,
+            "B.Cu",
+            NET_UART_RX,
+            "UART_RX",
+        );
         write_via(pcb, 12.0, 35.0, VIA_PAD, VIA_DRILL, NET_UART_RX);
-        write_trace(pcb, 12.0, 35.0, 9.0, 35.0, sw, "F.Cu", NET_UART_RX, "UART_RX");
+        write_trace(
+            pcb,
+            12.0,
+            35.0,
+            9.0,
+            35.0,
+            sw,
+            "F.Cu",
+            NET_UART_RX,
+            "UART_RX",
+        );
         write_via(pcb, 9.0, 35.0, VIA_PAD, VIA_DRILL, NET_UART_RX);
-        write_trace(pcb, 9.0, 35.0, 6.75, 35.0, sw, "B.Cu", NET_UART_RX, "UART_RX");
+        write_trace(
+            pcb,
+            9.0,
+            35.0,
+            6.75,
+            35.0,
+            sw,
+            "B.Cu",
+            NET_UART_RX,
+            "UART_RX",
+        );
         write_via(pcb, 6.75, 35.0, VIA_PAD, VIA_DRILL, NET_UART_RX);
-        write_trace(pcb, 6.75, 35.0, 6.75, j5p3y, sw, "F.Cu", NET_UART_RX, "UART_RX");
-        write_trace(pcb, 6.75, j5p3y, j5p3x, j5p3y, sw, "F.Cu", NET_UART_RX, "UART_RX");
+        write_trace(
+            pcb,
+            6.75,
+            35.0,
+            6.75,
+            j5p3y,
+            sw,
+            "F.Cu",
+            NET_UART_RX,
+            "UART_RX",
+        );
+        write_trace(
+            pcb,
+            6.75,
+            j5p3y,
+            j5p3x,
+            j5p3y,
+            sw,
+            "F.Cu",
+            NET_UART_RX,
+            "UART_RX",
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -1532,14 +2222,22 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // Connect U7 pin1 (DP) to USB_DP vertical at x=9.75 via B.Cu hop.
         // F.Cu stops at x=13 to avoid R30 pads, then B.Cu west to via on DP vertical.
         // SDA B.Cu at x=9 gap to via at (9.75,8): 9.4-9.125=0.275mm>0.127mm. OK.
-        write_trace(pcb, u7_dp1_x, u7_dp1_y, 13.0, u7_dp1_y, sw, "F.Cu", NET_USB_DP, "USB_DP");
+        write_trace(
+            pcb, u7_dp1_x, u7_dp1_y, 13.0, u7_dp1_y, sw, "F.Cu", NET_USB_DP, "USB_DP",
+        );
         write_via(pcb, 13.0, u7_dp1_y, VIA_PAD, VIA_DRILL, NET_USB_DP);
-        write_trace(pcb, 13.0, u7_dp1_y, 10.0, u7_dp1_y, sw, "B.Cu", NET_USB_DP, "USB_DP");
+        write_trace(
+            pcb, 13.0, u7_dp1_y, 10.0, u7_dp1_y, sw, "B.Cu", NET_USB_DP, "USB_DP",
+        );
         write_via(pcb, 10.0, u7_dp1_y, VIA_PAD, VIA_DRILL, NET_USB_DP);
-        write_trace(pcb, 10.0, u7_dp1_y, 9.75, u7_dp1_y, sw, "F.Cu", NET_USB_DP, "USB_DP");
+        write_trace(
+            pcb, 10.0, u7_dp1_y, 9.75, u7_dp1_y, sw, "F.Cu", NET_USB_DP, "USB_DP",
+        );
 
         // Connect U7 pin6 (DP) to pin1 — simple F.Cu vertical
-        write_trace(pcb, u7_dp1_x, u7_dp1_y, u7_dp6_x, u7_dp6_y, sw, "F.Cu", NET_USB_DP, "USB_DP");
+        write_trace(
+            pcb, u7_dp1_x, u7_dp1_y, u7_dp6_x, u7_dp6_y, sw, "F.Cu", NET_USB_DP, "USB_DP",
+        );
 
         // Connect U7 pin3 (DN) to USB_DN vertical at x=9.25.
         // Use B.Cu at y=6.5 to avoid SDA B.Cu at x=9 (y=3-8.5) overlap.
@@ -1625,29 +2323,49 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // Fix: jog west to x=16 before going south past U1 GND pad zone.
         // Via moved from y=8.5 to y=8.15 to clear +3V3 F.Cu at y=9
         // (pad top=8.5, +3V3 edge=8.875, gap=0.375mm). OK.
-        write_trace(pcb, u7_dn3_x, u7_dn3_y, u7_dn3_x, 8.15, sw, "F.Cu", NET_USB_DN, "USB_DN");
+        write_trace(
+            pcb, u7_dn3_x, u7_dn3_y, u7_dn3_x, 8.15, sw, "F.Cu", NET_USB_DN, "USB_DN",
+        );
         write_via(pcb, u7_dn3_x, 8.15, VIA_PAD, VIA_DRILL, NET_USB_DN);
-        write_trace(pcb, u7_dn3_x, 8.15, u7_dn3_x, 9.75, sw, "B.Cu", NET_USB_DN, "USB_DN");
+        write_trace(
+            pcb, u7_dn3_x, 8.15, u7_dn3_x, 9.75, sw, "B.Cu", NET_USB_DN, "USB_DN",
+        );
         write_via(pcb, u7_dn3_x, 9.75, VIA_PAD, VIA_DRILL, NET_USB_DN);
         // F.Cu south to y=16, west to x=16 (west of U1 GND pad), south to U1 pin13
         // Pin 13 = GPIO19 = USB_D- at (12, 23.83)
-        write_trace(pcb, u7_dn3_x, 9.75, u7_dn3_x, 16.0, sw, "F.Cu", NET_USB_DN, "USB_DN");
-        write_trace(pcb, u7_dn3_x, 16.0, 16.0, 16.0, sw, "F.Cu", NET_USB_DN, "USB_DN");
-        write_trace(pcb, 16.0, 16.0, 16.0, 23.83, sw, "F.Cu", NET_USB_DN, "USB_DN");
-        write_trace(pcb, 16.0, 23.83, 12.0, 23.83, sw, "F.Cu", NET_USB_DN, "USB_DN");
+        write_trace(
+            pcb, u7_dn3_x, 9.75, u7_dn3_x, 16.0, sw, "F.Cu", NET_USB_DN, "USB_DN",
+        );
+        write_trace(
+            pcb, u7_dn3_x, 16.0, 16.0, 16.0, sw, "F.Cu", NET_USB_DN, "USB_DN",
+        );
+        write_trace(
+            pcb, 16.0, 16.0, 16.0, 23.83, sw, "F.Cu", NET_USB_DN, "USB_DN",
+        );
+        write_trace(
+            pcb, 16.0, 23.83, 12.0, 23.83, sw, "F.Cu", NET_USB_DN, "USB_DN",
+        );
 
         // Connect U7 pin4 (DN) to pin3 — simple F.Cu vertical
-        write_trace(pcb, u7_dn3_x, u7_dn3_y, u7_dn4_x, u7_dn4_y, sw, "F.Cu", NET_USB_DN, "USB_DN");
+        write_trace(
+            pcb, u7_dn3_x, u7_dn3_y, u7_dn4_x, u7_dn4_y, sw, "F.Cu", NET_USB_DN, "USB_DN",
+        );
 
         // Connect U7 pin5 (VBUS) to J1 A4 (10.75, 5) via B.Cu to avoid CC2 crossing.
         // Via at pin5, B.Cu south to y=5, west to x=11.5. Via. F.Cu west to A4 pad.
         // B.Cu at y=5: SDA B.Cu at x=9 gap=11.5-9.125=2.375mm. OK.
         let (j1_vbus_x, j1_vbus_y) = ap(j1, "A4"); // VBUS at (10.75, 5)
         write_via(pcb, u7_vbus_x, u7_vbus_y, VIA_PAD, VIA_DRILL, NET_VBUS);
-        write_trace(pcb, u7_vbus_x, u7_vbus_y, u7_vbus_x, j1_vbus_y, sw, "B.Cu", NET_VBUS, "VBUS");
-        write_trace(pcb, u7_vbus_x, j1_vbus_y, 11.5, j1_vbus_y, sw, "B.Cu", NET_VBUS, "VBUS");
+        write_trace(
+            pcb, u7_vbus_x, u7_vbus_y, u7_vbus_x, j1_vbus_y, sw, "B.Cu", NET_VBUS, "VBUS",
+        );
+        write_trace(
+            pcb, u7_vbus_x, j1_vbus_y, 11.5, j1_vbus_y, sw, "B.Cu", NET_VBUS, "VBUS",
+        );
         write_via(pcb, 11.5, j1_vbus_y, VIA_PAD, VIA_DRILL, NET_VBUS);
-        write_trace(pcb, 11.5, j1_vbus_y, j1_vbus_x, j1_vbus_y, sw, "F.Cu", NET_VBUS, "VBUS");
+        write_trace(
+            pcb, 11.5, j1_vbus_y, j1_vbus_x, j1_vbus_y, sw, "F.Cu", NET_VBUS, "VBUS",
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -1674,15 +2392,75 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // J5 pin4 at (3.5, 33.81): top edge 32.96. Our y=32.5: gap=0.375mm. OK.
         // SCL F.Cu at x=1.0: our B.Cu on different layer. OK.
         write_via(pcb, r32p2x, r32p2y, VIA_PAD, VIA_DRILL, NET_LED_PWR_ANODE);
-        write_trace(pcb, r32p2x, r32p2y, r32p2x, 32.5, sw, "B.Cu", NET_LED_PWR_ANODE, "LED_PWR_ANODE");
-        write_trace(pcb, r32p2x, 32.5, 1.5, 32.5, sw, "B.Cu", NET_LED_PWR_ANODE, "LED_PWR_ANODE");
+        write_trace(
+            pcb,
+            r32p2x,
+            r32p2y,
+            r32p2x,
+            32.5,
+            sw,
+            "B.Cu",
+            NET_LED_PWR_ANODE,
+            "LED_PWR_ANODE",
+        );
+        write_trace(
+            pcb,
+            r32p2x,
+            32.5,
+            1.5,
+            32.5,
+            sw,
+            "B.Cu",
+            NET_LED_PWR_ANODE,
+            "LED_PWR_ANODE",
+        );
         // F.Cu hop around LED_ACT B.Cu horizontal at y=39.05 (x=0.5→5).
-        write_trace(pcb, 1.5, 32.5, 1.5, 38.25, sw, "B.Cu", NET_LED_PWR_ANODE, "LED_PWR_ANODE");
+        write_trace(
+            pcb,
+            1.5,
+            32.5,
+            1.5,
+            38.25,
+            sw,
+            "B.Cu",
+            NET_LED_PWR_ANODE,
+            "LED_PWR_ANODE",
+        );
         write_via(pcb, 1.5, 38.25, VIA_PAD, VIA_DRILL, NET_LED_PWR_ANODE);
-        write_trace(pcb, 1.5, 38.25, 1.5, 39.85, sw, "F.Cu", NET_LED_PWR_ANODE, "LED_PWR_ANODE");
+        write_trace(
+            pcb,
+            1.5,
+            38.25,
+            1.5,
+            39.85,
+            sw,
+            "F.Cu",
+            NET_LED_PWR_ANODE,
+            "LED_PWR_ANODE",
+        );
         write_via(pcb, 1.5, 39.85, VIA_PAD, VIA_DRILL, NET_LED_PWR_ANODE);
-        write_trace(pcb, 1.5, 39.85, 1.5, d11p1y, sw, "B.Cu", NET_LED_PWR_ANODE, "LED_PWR_ANODE");
-        write_trace(pcb, 1.5, d11p1y, d11p1x, d11p1y, sw, "B.Cu", NET_LED_PWR_ANODE, "LED_PWR_ANODE");
+        write_trace(
+            pcb,
+            1.5,
+            39.85,
+            1.5,
+            d11p1y,
+            sw,
+            "B.Cu",
+            NET_LED_PWR_ANODE,
+            "LED_PWR_ANODE",
+        );
+        write_trace(
+            pcb,
+            1.5,
+            d11p1y,
+            d11p1x,
+            d11p1y,
+            sw,
+            "B.Cu",
+            NET_LED_PWR_ANODE,
+            "LED_PWR_ANODE",
+        );
         write_via(pcb, d11p1x, d11p1y, VIA_PAD, VIA_DRILL, NET_LED_PWR_ANODE);
 
         let r33 = comp(components, "R33");
@@ -1696,9 +2474,39 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // Board edge clearance: 0.5-0.125=0.375mm > 0.25mm. OK.
         // LED_PWR at x=1.5: gap=1.5-0.5-0.125-0.125=0.75mm. OK.
         write_via(pcb, r33p2x, r33p2y, VIA_PAD, VIA_DRILL, NET_LED_ACT_ANODE);
-        write_trace(pcb, r33p2x, r33p2y, 0.5, r33p2y, sw, "B.Cu", NET_LED_ACT_ANODE, "LED_ACT_ANODE");
-        write_trace(pcb, 0.5, r33p2y, 0.5, d12p1y, sw, "B.Cu", NET_LED_ACT_ANODE, "LED_ACT_ANODE");
-        write_trace(pcb, 0.5, d12p1y, d12p1x, d12p1y, sw, "B.Cu", NET_LED_ACT_ANODE, "LED_ACT_ANODE");
+        write_trace(
+            pcb,
+            r33p2x,
+            r33p2y,
+            0.5,
+            r33p2y,
+            sw,
+            "B.Cu",
+            NET_LED_ACT_ANODE,
+            "LED_ACT_ANODE",
+        );
+        write_trace(
+            pcb,
+            0.5,
+            r33p2y,
+            0.5,
+            d12p1y,
+            sw,
+            "B.Cu",
+            NET_LED_ACT_ANODE,
+            "LED_ACT_ANODE",
+        );
+        write_trace(
+            pcb,
+            0.5,
+            d12p1y,
+            d12p1x,
+            d12p1y,
+            sw,
+            "B.Cu",
+            NET_LED_ACT_ANODE,
+            "LED_ACT_ANODE",
+        );
         write_via(pcb, d12p1x, d12p1y, VIA_PAD, VIA_DRILL, NET_LED_ACT_ANODE);
 
         // Activity LED GPIO: U1 pin35 → R33 pad1
@@ -1709,18 +2517,88 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         // Fan-out: F.Cu west to x=27.0 (west of U1 pad edge at x=27.55),
         // F.Cu south to y=37.0 (clear of all east-routed signals from U1),
         // via, B.Cu west to x=12.
-        write_trace(pcb, u1_act_x, u1_act_y, 26.75, u1_act_y, sw, "F.Cu", NET_ESP_GPIO_ACT, "ESP_GPIO_ACT");
-        write_trace(pcb, 26.75, u1_act_y, 26.75, 37.0, sw, "F.Cu", NET_ESP_GPIO_ACT, "ESP_GPIO_ACT");
+        write_trace(
+            pcb,
+            u1_act_x,
+            u1_act_y,
+            26.75,
+            u1_act_y,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO_ACT,
+            "ESP_GPIO_ACT",
+        );
+        write_trace(
+            pcb,
+            26.75,
+            u1_act_y,
+            26.75,
+            37.0,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO_ACT,
+            "ESP_GPIO_ACT",
+        );
         write_via(pcb, 26.75, 37.0, VIA_PAD, VIA_DRILL, NET_ESP_GPIO_ACT);
-        write_trace(pcb, 26.75, 37.0, 12.0, 37.0, sw, "B.Cu", NET_ESP_GPIO_ACT, "ESP_GPIO_ACT");
+        write_trace(
+            pcb,
+            26.75,
+            37.0,
+            12.0,
+            37.0,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO_ACT,
+            "ESP_GPIO_ACT",
+        );
         write_via(pcb, 12.0, 37.0, VIA_PAD, VIA_DRILL, NET_ESP_GPIO_ACT);
-        write_trace(pcb, 12.0, 37.0, 9.0, 37.0, sw, "F.Cu", NET_ESP_GPIO_ACT, "ESP_GPIO_ACT");
+        write_trace(
+            pcb,
+            12.0,
+            37.0,
+            9.0,
+            37.0,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO_ACT,
+            "ESP_GPIO_ACT",
+        );
         write_via(pcb, 9.0, 37.0, VIA_PAD, VIA_DRILL, NET_ESP_GPIO_ACT);
-        write_trace(pcb, 9.0, 37.0, 3.0, 37.0, sw, "B.Cu", NET_ESP_GPIO_ACT, "ESP_GPIO_ACT");
+        write_trace(
+            pcb,
+            9.0,
+            37.0,
+            3.0,
+            37.0,
+            sw,
+            "B.Cu",
+            NET_ESP_GPIO_ACT,
+            "ESP_GPIO_ACT",
+        );
         write_via(pcb, 3.0, 37.0, VIA_PAD, VIA_DRILL, NET_ESP_GPIO_ACT);
         // F.Cu south at x=3.0 to R33 pad1 (5, 40.95)
-        write_trace(pcb, 3.0, 37.0, 3.0, r33p1y, sw, "F.Cu", NET_ESP_GPIO_ACT, "ESP_GPIO_ACT");
-        write_trace(pcb, 3.0, r33p1y, r33p1x, r33p1y, sw, "F.Cu", NET_ESP_GPIO_ACT, "ESP_GPIO_ACT");
+        write_trace(
+            pcb,
+            3.0,
+            37.0,
+            3.0,
+            r33p1y,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO_ACT,
+            "ESP_GPIO_ACT",
+        );
+        write_trace(
+            pcb,
+            3.0,
+            r33p1y,
+            r33p1x,
+            r33p1y,
+            sw,
+            "F.Cu",
+            NET_ESP_GPIO_ACT,
+            "ESP_GPIO_ACT",
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -1746,9 +2624,15 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let r23 = comp(components, "R23");
         let (r23p1x, r23p1y) = ap(r23, "1"); // (48.05, 58)
 
-        write_trace(pcb, u3p12x, u3p12y, 48.0, u3p12y, sw, "F.Cu", NET_MUX_Y3, "MUX_Y3");
-        write_trace(pcb, 48.0, u3p12y, 48.0, r23p1y, sw, "F.Cu", NET_MUX_Y3, "MUX_Y3");
-        write_trace(pcb, 48.0, r23p1y, r23p1x, r23p1y, sw, "F.Cu", NET_MUX_Y3, "MUX_Y3");
+        write_trace(
+            pcb, u3p12x, u3p12y, 48.0, u3p12y, sw, "F.Cu", NET_MUX_Y3, "MUX_Y3",
+        );
+        write_trace(
+            pcb, 48.0, u3p12y, 48.0, r23p1y, sw, "F.Cu", NET_MUX_Y3, "MUX_Y3",
+        );
+        write_trace(
+            pcb, 48.0, r23p1y, r23p1x, r23p1y, sw, "F.Cu", NET_MUX_Y3, "MUX_Y3",
+        );
     }
 
     // ESP_GPIO0 already routed at primary route section (U1→R29 pad2). No manual route needed.
@@ -1762,7 +2646,9 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let (u7p4x, u7p4y) = ap(u7, "4"); // (17.95, 6)
         let (u7p3x, u7p3y) = ap(u7, "3"); // (17.95, 8)
 
-        write_trace(pcb, u7p4x, u7p4y, u7p3x, u7p3y, sw, "F.Cu", NET_USB_DN, "USB_DN");
+        write_trace(
+            pcb, u7p4x, u7p4y, u7p3x, u7p3y, sw, "F.Cu", NET_USB_DN, "USB_DN",
+        );
     }
 
     // USB_DP U7→J1: REMOVED — U7 already connected to DP vertical via pin1 B.Cu hop
@@ -1779,7 +2665,17 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let (q4p3x, q4p3y) = ap(q4, "3"); // (31.0, 41)
         let (d3p2x, d3p2y) = ap(d3, "2"); // (31.0, 60.05)
 
-        write_trace(pcb, q4p3x, q4p3y, d3p2x, d3p2y, sw, "F.Cu", NET_LED_CATH_2, "LED_CATH_2");
+        write_trace(
+            pcb,
+            q4p3x,
+            q4p3y,
+            d3p2x,
+            d3p2y,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_2,
+            "LED_CATH_2",
+        );
     }
 
     // ── 7. LED_CATH_3: Q5 pin3 (40.5,41) → D4 pad2 (41.0,60.05) ──
@@ -1796,11 +2692,61 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let (q5p3x, q5p3y) = ap(q5, "3"); // (40.5, 41)
         let (d4p2x, d4p2y) = ap(d4, "2"); // (41.0, 60.05)
 
-        write_trace(pcb, q5p3x, q5p3y, q5p3x, 48.0, sw, "F.Cu", NET_LED_CATH_3, "LED_CATH_3");
-        write_trace(pcb, q5p3x, 48.0, 39.5, 48.0, sw, "F.Cu", NET_LED_CATH_3, "LED_CATH_3");
-        write_trace(pcb, 39.5, 48.0, 39.5, 49.5, sw, "F.Cu", NET_LED_CATH_3, "LED_CATH_3");
-        write_trace(pcb, 39.5, 49.5, d4p2x, 49.5, sw, "F.Cu", NET_LED_CATH_3, "LED_CATH_3");
-        write_trace(pcb, d4p2x, 49.5, d4p2x, d4p2y, sw, "F.Cu", NET_LED_CATH_3, "LED_CATH_3");
+        write_trace(
+            pcb,
+            q5p3x,
+            q5p3y,
+            q5p3x,
+            48.0,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_3,
+            "LED_CATH_3",
+        );
+        write_trace(
+            pcb,
+            q5p3x,
+            48.0,
+            39.5,
+            48.0,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_3,
+            "LED_CATH_3",
+        );
+        write_trace(
+            pcb,
+            39.5,
+            48.0,
+            39.5,
+            49.5,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_3,
+            "LED_CATH_3",
+        );
+        write_trace(
+            pcb,
+            39.5,
+            49.5,
+            d4p2x,
+            49.5,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_3,
+            "LED_CATH_3",
+        );
+        write_trace(
+            pcb,
+            d4p2x,
+            49.5,
+            d4p2x,
+            d4p2y,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_3,
+            "LED_CATH_3",
+        );
     }
 
     // ── 8. LED_CATH_4: Q6 pin3 (50.0,41) → D5 pad2 (51.0,60.05) ──
@@ -1816,11 +2762,61 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
         let (q6p3x, q6p3y) = ap(q6, "3"); // (50.0, 41)
         let (d5p2x, d5p2y) = ap(d5, "2"); // (51.0, 60.05)
 
-        write_trace(pcb, q6p3x, q6p3y, q6p3x, 48.0, sw, "F.Cu", NET_LED_CATH_4, "LED_CATH_4");
-        write_trace(pcb, q6p3x, 48.0, 51.5, 48.0, sw, "F.Cu", NET_LED_CATH_4, "LED_CATH_4");
-        write_trace(pcb, 51.5, 48.0, 51.5, 49.5, sw, "F.Cu", NET_LED_CATH_4, "LED_CATH_4");
-        write_trace(pcb, 51.5, 49.5, d5p2x, 49.5, sw, "F.Cu", NET_LED_CATH_4, "LED_CATH_4");
-        write_trace(pcb, d5p2x, 49.5, d5p2x, d5p2y, sw, "F.Cu", NET_LED_CATH_4, "LED_CATH_4");
+        write_trace(
+            pcb,
+            q6p3x,
+            q6p3y,
+            q6p3x,
+            48.0,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_4,
+            "LED_CATH_4",
+        );
+        write_trace(
+            pcb,
+            q6p3x,
+            48.0,
+            51.5,
+            48.0,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_4,
+            "LED_CATH_4",
+        );
+        write_trace(
+            pcb,
+            51.5,
+            48.0,
+            51.5,
+            49.5,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_4,
+            "LED_CATH_4",
+        );
+        write_trace(
+            pcb,
+            51.5,
+            49.5,
+            d5p2x,
+            49.5,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_4,
+            "LED_CATH_4",
+        );
+        write_trace(
+            pcb,
+            d5p2x,
+            49.5,
+            d5p2x,
+            d5p2y,
+            sw,
+            "F.Cu",
+            NET_LED_CATH_4,
+            "LED_CATH_4",
+        );
     }
 
     // LED_COL_7 handled by LED_COL loop (jog_x=83) — no manual route needed.
@@ -1855,9 +2851,13 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
     {
         let gnd_stitch_locations: &[(f64, f64)] = &[
             // Corner vias to prevent isolated GND islands near board edges
-            (2.0, 2.0), (98.0, 2.0), (2.0, 78.0), (98.0, 78.0),
+            (2.0, 2.0),
+            (98.0, 2.0),
+            (2.0, 78.0),
+            (98.0, 78.0),
             // Top edge row: (83,2) east of +5V B.Cu and VBUS, (97,2) at far east
-            (83.0, 2.0), (97.0, 2.0),
+            (83.0, 2.0),
+            (97.0, 2.0),
             // Island R2: LDO area (x=18-44, y=1-9) — zone fill creates
             // an isolated F.Cu GND region here with no vias to B.Cu.
             // U6 GND pad at (32.7, 5), C8/C9 caps. Need stitching via.
@@ -1876,15 +2876,23 @@ pub fn write_signal_traces(pcb: &mut String, components: &[Component]) {
             (93.0, 20.0),
             // y=45 row — below D12 at y=46, above R/Q pads at y=38-43.
             // Moved to (1.5,48) to avoid LED_ACT B.Cu at x=0.5 from y=39-47.
-            (1.5, 48.0), (93.0, 46.0),
+            (1.5, 48.0),
+            (93.0, 46.0),
             // y=47 row
-            (93.0, 47.0), (97.0, 47.0),
+            (93.0, 47.0),
+            (97.0, 47.0),
             // Former heater zone — B.Cu now available for GND stitching
             // Avoid LED_CATH verticals at Q_x, LED_COL at jog_x, MUX_Y B.Cu
-            (7.0, 55.0), (46.0, 55.0), (95.0, 55.0),
-            (7.0, 65.0), (46.0, 65.0), (95.0, 65.0),
+            (7.0, 55.0),
+            (46.0, 55.0),
+            (95.0, 55.0),
+            (7.0, 65.0),
+            (46.0, 65.0),
+            (95.0, 65.0),
             // y=74 row
-            (3.0, 74.0), (50.0, 74.0), (97.0, 74.0),
+            (3.0, 74.0),
+            (50.0, 74.0),
+            (97.0, 74.0),
             // Bottom edge (y=78)
             (50.0, 78.0),
         ];

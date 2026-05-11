@@ -103,10 +103,7 @@ fn main() {
         .rect(length, width);
     outline.fillet(corner_r);
 
-    let mut plate: Shape = outline
-        .to_face()
-        .extrude(dvec3(0.0, 0.0, thickness))
-        .into();
+    let mut plate: Shape = outline.to_face().extrude(dvec3(0.0, 0.0, thickness)).into();
 
     // ── Chambers + channels + ports ──
     let pocket_z = chip_top - ch_d / 2.0; // center Z of shallow pockets
@@ -148,7 +145,13 @@ fn main() {
     ];
 
     for &(ax, ay) in &align_positions {
-        let hole = cyl_at(ax, ay, chip_top - align_depth, align_dia / 2.0, align_depth + 0.1);
+        let hole = cyl_at(
+            ax,
+            ay,
+            chip_top - align_depth,
+            align_dia / 2.0,
+            align_depth + 0.1,
+        );
         plate = plate.subtract(&hole).into();
     }
 
@@ -166,7 +169,14 @@ fn main() {
     }
 
     // ── Label pocket (center of chip) ──
-    let label = centered_box(0.0, 0.0, chip_top - label_d / 2.0, label_l, label_w, label_d);
+    let label = centered_box(
+        0.0,
+        0.0,
+        chip_top - label_d / 2.0,
+        label_l,
+        label_w,
+        label_d,
+    );
     plate = plate.subtract(&label).into();
 
     // ════════════════════════════════════════════════════

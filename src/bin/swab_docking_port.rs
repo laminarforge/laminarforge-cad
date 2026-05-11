@@ -47,19 +47,9 @@ fn main() {
 
     // ── Build port tube ──
 
-    let port_body = centered_cylinder(
-        "port_body",
-        port_od / 2.0,
-        port_depth,
-        48,
-    );
+    let port_body = centered_cylinder("port_body", port_od / 2.0, port_depth, 48);
 
-    let port_bore = centered_cylinder(
-        "port_bore",
-        port_id / 2.0,
-        port_depth + 2.0,
-        48,
-    );
+    let port_bore = centered_cylinder("port_bore", port_id / 2.0, port_depth + 2.0, 48);
 
     // ── O-ring groove ──
     // Annular groove on the inner wall of the port tube
@@ -79,21 +69,14 @@ fn main() {
 
     // ── Flange ──
 
-    let flange = centered_cylinder(
-        "flange",
-        flange_od / 2.0,
-        flange_thickness,
-        48,
-    )
-    .translate(0.0, 0.0, port_depth / 2.0 + flange_thickness / 2.0);
+    let flange = centered_cylinder("flange", flange_od / 2.0, flange_thickness, 48).translate(
+        0.0,
+        0.0,
+        port_depth / 2.0 + flange_thickness / 2.0,
+    );
 
-    let flange_bore = centered_cylinder(
-        "flange_bore",
-        port_id / 2.0,
-        flange_thickness + 2.0,
-        48,
-    )
-    .translate(0.0, 0.0, port_depth / 2.0 + flange_thickness / 2.0);
+    let flange_bore = centered_cylinder("flange_bore", port_id / 2.0, flange_thickness + 2.0, 48)
+        .translate(0.0, 0.0, port_depth / 2.0 + flange_thickness / 2.0);
 
     // Mounting holes through flange
     let mount_hole_1 = centered_cylinder(
@@ -124,21 +107,14 @@ fn main() {
     // A ring that sits inside the panel cutout, preventing the port from
     // being pushed through. Located just behind the flange.
 
-    let adapter = centered_cylinder(
-        "adapter",
-        adapter_od / 2.0,
-        adapter_depth,
-        48,
-    )
-    .translate(0.0, 0.0, port_depth / 2.0 - adapter_depth / 2.0);
+    let adapter = centered_cylinder("adapter", adapter_od / 2.0, adapter_depth, 48).translate(
+        0.0,
+        0.0,
+        port_depth / 2.0 - adapter_depth / 2.0,
+    );
 
-    let adapter_bore = centered_cylinder(
-        "adapter_bore",
-        port_id / 2.0,
-        adapter_depth + 2.0,
-        48,
-    )
-    .translate(0.0, 0.0, port_depth / 2.0 - adapter_depth / 2.0);
+    let adapter_bore = centered_cylinder("adapter_bore", port_id / 2.0, adapter_depth + 2.0, 48)
+        .translate(0.0, 0.0, port_depth / 2.0 - adapter_depth / 2.0);
 
     // ── Assemble ──
 
@@ -164,7 +140,11 @@ fn main() {
     println!("  Mounting holes: 2x M3 ({mount_hole_d:.1}mm) at {mount_hole_spacing:.0}mm spacing");
     println!("  O-ring groove:  {oring_width:.1}mm wide x {oring_depth:.1}mm deep at {oring_z_from_flange:.0}mm from flange");
     println!("  Panel adapter:  {adapter_od:.1}mm OD x {adapter_depth:.1}mm (for {panel_thickness:.0}mm acrylic)");
-    println!("  Collector fit:  {:.1}mm OD collector into {port_id:.1}mm bore ({:.1}mm clearance)", COLLECTOR_OD, port_id - COLLECTOR_OD);
+    println!(
+        "  Collector fit:  {:.1}mm OD collector into {port_id:.1}mm bore ({:.1}mm clearance)",
+        COLLECTOR_OD,
+        port_id - COLLECTOR_OD
+    );
     println!("  Quantity:       {} per SAB", SAB_NUM_PORTS);
     println!("  Material:       PETG");
 }

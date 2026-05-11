@@ -1,10 +1,10 @@
-use std::fmt::Write;
-use crate::*;
 use super::next_uuid;
+use crate::*;
+use std::fmt::Write;
 
 pub fn write_board_outline(pcb: &mut String) {
     let w = PCB_LENGTH; // 100mm
-    let h = PCB_WIDTH;  // 80mm
+    let h = PCB_WIDTH; // 80mm
 
     // M3 mounting holes — 5mm inset so 6.35mm pad clears board edge
     let hole_inset = 5.0;

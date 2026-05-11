@@ -159,7 +159,7 @@ fn main() {
         outlet_y: f64,
         valve_out_x: f64,
         valve_ret_x: f64,
-        dist_x: f64, // X offset for distribution channel
+        dist_x: f64,         // X offset for distribution channel
         outlet_route_x: f64, // X offset for outlet routing
     }
 
@@ -169,13 +169,14 @@ fn main() {
         for (ri, &ry) in row_ys.iter().enumerate() {
             // Valve pair center: row 3 at -7.5, row 2 at -2.5, row 1 at +2.5, row 0 at +7.5
             // Using index mapping: row 0 → +7.5, row 1 → +2.5, row 2 → -2.5, row 3 → -7.5
-            let pair_center_x = cx + match ri {
-                0 => 7.5,
-                1 => 2.5,
-                2 => -2.5,
-                3 => -7.5,
-                _ => unreachable!(),
-            };
+            let pair_center_x = cx
+                + match ri {
+                    0 => 7.5,
+                    1 => 2.5,
+                    2 => -2.5,
+                    3 => -7.5,
+                    _ => unreachable!(),
+                };
 
             let out_x = pair_center_x - valve_pair_offset / 2.0; // pair_center - 1.0
             let ret_x = pair_center_x + valve_pair_offset / 2.0; // pair_center + 1.0
@@ -196,13 +197,14 @@ fn main() {
             // Row 1 at col_x - 0.5
             // Row 2 at col_x + 0.5
             // Row 3 at col_x + 1.5
-            let outlet_route_x = cx + match ri {
-                0 => -1.5,
-                1 => -0.5,
-                2 => 0.5,
-                3 => 1.5,
-                _ => unreachable!(),
-            };
+            let outlet_route_x = cx
+                + match ri {
+                    0 => -1.5,
+                    1 => -0.5,
+                    2 => 0.5,
+                    3 => 1.5,
+                    _ => unreachable!(),
+                };
 
             let inlet_y_pos = fcb16_inlet_y(ry);
             let outlet_y_pos = fcb16_outlet_y(ry);
@@ -226,8 +228,8 @@ fn main() {
     // BOTTOM PLATE — channels milled into top face
     // ════════════════════════════════════════════════════════════════
 
-    let mut bottom_plate = centered_cube("fcb16_bottom", length, width, plate_t)
-        .translate(0.0, 0.0, -plate_t / 2.0); // Z: -3 to 0
+    let mut bottom_plate =
+        centered_cube("fcb16_bottom", length, width, plate_t).translate(0.0, 0.0, -plate_t / 2.0); // Z: -3 to 0
 
     // ── Shared bus channel ──
     // Horizontal bus at Y = -47, from input_x (-85) to rightmost column (+37.5)
@@ -236,21 +238,16 @@ fn main() {
     let bus_length = bus_x_end - bus_x_start;
     let bus_center_x = (bus_x_start + bus_x_end) / 2.0;
 
-    let bus_channel = centered_cube("bus", bus_length, bus_w, bus_tool_h)
-        .translate(bus_center_x, bus_y, bus_z);
+    let bus_channel =
+        centered_cube("bus", bus_length, bus_w, bus_tool_h).translate(bus_center_x, bus_y, bus_z);
     bottom_plate = bottom_plate - bus_channel;
 
     // ── Input feed channels (from input ports vertically down to bus) ──
     for (i, &iy) in input_ys.iter().enumerate() {
         let feed_len = (iy - bus_y).abs();
         let feed_center_y = (iy + bus_y) / 2.0;
-        let feed = centered_cube(
-            &format!("input_feed_{i}"),
-            bus_w,
-            feed_len,
-            bus_tool_h,
-        )
-        .translate(input_x, feed_center_y, bus_z);
+        let feed = centered_cube(&format!("input_feed_{i}"), bus_w, feed_len, bus_tool_h)
+            .translate(input_x, feed_center_y, bus_z);
         bottom_plate = bottom_plate - feed;
     }
 
@@ -383,13 +380,9 @@ fn main() {
         let out_feed_len = (oy - collector_y).abs();
         if out_feed_len > 0.01 {
             let out_feed_center_y = (collector_y + oy) / 2.0;
-            let out_feed = centered_cube(
-                &format!("output_feed_{i}"),
-                out_w,
-                out_feed_len,
-                out_tool_h,
-            )
-            .translate(output_x, out_feed_center_y, out_z);
+            let out_feed =
+                centered_cube(&format!("output_feed_{i}"), out_w, out_feed_len, out_tool_h)
+                    .translate(output_x, out_feed_center_y, out_z);
             bottom_plate = bottom_plate - out_feed;
         }
     }
@@ -488,10 +481,10 @@ fn main() {
 
     // Baseplate mounting holes (4) — 6mm from FCB edges
     let base_mount_positions = [
-        (left + base_inset, bottom + base_inset),   // (-84, -64)
-        (left + base_inset, top - base_inset),      // (-84, +64)
-        (right - base_inset, bottom + base_inset),  // (+84, -64)
-        (right - base_inset, top - base_inset),     // (+84, +64)
+        (left + base_inset, bottom + base_inset),  // (-84, -64)
+        (left + base_inset, top - base_inset),     // (-84, +64)
+        (right - base_inset, bottom + base_inset), // (+84, -64)
+        (right - base_inset, top - base_inset),    // (+84, +64)
     ];
 
     for (i, &(mx, my)) in base_mount_positions.iter().enumerate() {
@@ -509,8 +502,8 @@ fn main() {
     // TOP PLATE — through-holes + O-ring grooves
     // ════════════════════════════════════════════════════════════════
 
-    let mut top_plate = centered_cube("fcb16_top", length, width, plate_t)
-        .translate(0.0, 0.0, plate_t / 2.0); // Z: 0 to +3
+    let mut top_plate =
+        centered_cube("fcb16_top", length, width, plate_t).translate(0.0, 0.0, plate_t / 2.0); // Z: 0 to +3
 
     // ── Chip interface through-holes + O-ring grooves (32 ports) ──
     for (idx, r) in routes.iter().enumerate() {
@@ -664,11 +657,15 @@ fn main() {
     // ════════════════════════════════════════════════════════════════
 
     let mut drawing = String::new();
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  TECHNICAL DRAWING -- FLUIDIC CIRCUIT BOARD (FCB16)\n");
     drawing.push_str("  16-Chamber AAV Selectivity Screening Platform\n");
     drawing.push_str("  LaminarForge Nonprofit\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
     drawing.push_str("  Drawing Rev:    A (initial release)\n");
     drawing.push_str("  Date:           2026-02-26\n");
@@ -679,11 +676,18 @@ fn main() {
     drawing.push_str("\n");
 
     // Section 1: Overall Dimensions
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  1. OVERALL DIMENSIONS\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
-    drawing.push_str(&format!("  FCB Overall:      {:.0}mm x {:.0}mm x {:.0}mm (two bonded {:.0}mm plates)\n", length, width, FCB16_TOTAL_THICKNESS, plate_t));
+    drawing.push_str(&format!(
+        "  FCB Overall:      {:.0}mm x {:.0}mm x {:.0}mm (two bonded {:.0}mm plates)\n",
+        length, width, FCB16_TOTAL_THICKNESS, plate_t
+    ));
     drawing.push_str("\n");
     drawing.push_str("  PART 1 -- BOTTOM PLATE (channel plate)\n");
     drawing.push_str(&format!("    Length (X):     {:.0} mm\n", length));
@@ -705,7 +709,10 @@ fn main() {
     drawing.push_str(&format!("    Length (X):     {:.2} mm\n", clamp_length));
     drawing.push_str(&format!("    Width  (Y):     {:.2} mm\n", clamp_width_dim));
     drawing.push_str(&format!("    Thickness (Z):  {:.1} mm\n", clamp_thickness));
-    drawing.push_str(&format!("    Window cutout:  {:.2}mm x {:.2}mm (optical access)\n", window_x, window_y));
+    drawing.push_str(&format!(
+        "    Window cutout:  {:.2}mm x {:.2}mm (optical access)\n",
+        window_x, window_y
+    ));
     drawing.push_str("    Material:       Cast PMMA (acrylic)\n");
     drawing.push_str("\n");
     drawing.push_str("  ASSEMBLY:\n");
@@ -715,11 +722,18 @@ fn main() {
     drawing.push_str("\n");
 
     // Section 2: Port Coordinates
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  2. PORT COORDINATES (all 68 through-holes)\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
-    drawing.push_str(&format!("  Port diameter:    {:.2} mm (all ports)\n", port_dia));
+    drawing.push_str(&format!(
+        "  Port diameter:    {:.2} mm (all ports)\n",
+        port_dia
+    ));
     drawing.push_str("  Port type:        Through-hole, both plates\n");
     drawing.push_str("\n");
 
@@ -728,7 +742,13 @@ fn main() {
     drawing.push_str("    Port  |  Label   |    X (mm)   |    Y (mm)\n");
     drawing.push_str("    ------+----------+-------------+-------------\n");
     for (i, &iy) in input_ys.iter().enumerate() {
-        drawing.push_str(&format!("      {}   | {:8} |   {:+7.2}   |   {:+7.2}\n", i + 1, input_labels[i], input_x, iy));
+        drawing.push_str(&format!(
+            "      {}   | {:8} |   {:+7.2}   |   {:+7.2}\n",
+            i + 1,
+            input_labels[i],
+            input_x,
+            iy
+        ));
     }
     drawing.push_str("\n");
 
@@ -737,7 +757,13 @@ fn main() {
     drawing.push_str("    Port  |  Label   |    X (mm)   |    Y (mm)\n");
     drawing.push_str("    ------+----------+-------------+-------------\n");
     for (i, &oy) in output_ys.iter().enumerate() {
-        drawing.push_str(&format!("      {}   | {:8} |   {:+7.2}   |   {:+7.2}\n", i + 1, output_labels[i], output_x, oy));
+        drawing.push_str(&format!(
+            "      {}   | {:8} |   {:+7.2}   |   {:+7.2}\n",
+            i + 1,
+            output_labels[i],
+            output_x,
+            oy
+        ));
     }
     drawing.push_str("\n");
 
@@ -747,8 +773,10 @@ fn main() {
     drawing.push_str("    ----+-----+-----+-----------+-----------+-----------+-----------\n");
     let mut ch_num = 1;
     for r in routes.iter() {
-        drawing.push_str(&format!("    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}  |  {:+7.2}  |  {:+7.2}\n",
-            ch_num, r.col, r.row, r.col_x, r.inlet_y, r.col_x, r.outlet_y));
+        drawing.push_str(&format!(
+            "    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}  |  {:+7.2}  |  {:+7.2}\n",
+            ch_num, r.col, r.row, r.col_x, r.inlet_y, r.col_x, r.outlet_y
+        ));
         ch_num += 1;
     }
     drawing.push_str("\n");
@@ -760,8 +788,10 @@ fn main() {
     drawing.push_str("    ----+-----+-----+-----------+-----------\n");
     ch_num = 1;
     for vp in valve_ports.iter() {
-        drawing.push_str(&format!("    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}\n",
-            ch_num, vp.col, vp.row, vp.out_x, vp.ret_x));
+        drawing.push_str(&format!(
+            "    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}\n",
+            ch_num, vp.col, vp.row, vp.out_x, vp.ret_x
+        ));
         ch_num += 1;
     }
     drawing.push_str("\n");
@@ -774,16 +804,29 @@ fn main() {
     drawing.push_str("\n");
 
     // Section 3: Channel Dimensions and Routing
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  3. CHANNEL DIMENSIONS AND ROUTING\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
     drawing.push_str("  All channels milled into TOP face of bottom plate only.\n");
     drawing.push_str("  Sealed by bonding top plate on top.\n");
     drawing.push_str("\n");
-    drawing.push_str(&format!("  Bus channel:          {:.1}mm W x {:.1}mm D (500um x 300um)\n", bus_w, bus_d));
-    drawing.push_str(&format!("  Distribution ch:      {:.1}mm W x {:.1}mm D (500um x 200um)\n", dist_w, dist_d));
-    drawing.push_str(&format!("  Outlet collection ch: {:.1}mm W x {:.1}mm D (500um x 200um)\n", out_w, out_d));
+    drawing.push_str(&format!(
+        "  Bus channel:          {:.1}mm W x {:.1}mm D (500um x 300um)\n",
+        bus_w, bus_d
+    ));
+    drawing.push_str(&format!(
+        "  Distribution ch:      {:.1}mm W x {:.1}mm D (500um x 200um)\n",
+        dist_w, dist_d
+    ));
+    drawing.push_str(&format!(
+        "  Outlet collection ch: {:.1}mm W x {:.1}mm D (500um x 200um)\n",
+        out_w, out_d
+    ));
     drawing.push_str("\n");
     drawing.push_str("  DISTRIBUTION ROUTING (per chamber):\n");
     drawing.push_str("    1. Bus tap: horizontal at bus_y from bus to distribution X offset\n");
@@ -810,75 +853,138 @@ fn main() {
     drawing.push_str("\n");
 
     // Section 4: Bus Layout
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  4. BUS LAYOUT\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
     drawing.push_str(&format!("  Horizontal shared bus at Y = {:.1} mm\n", bus_y));
-    drawing.push_str(&format!("  Runs from X = {:.1} (input port) to X = {:.1} (rightmost column)\n", bus_x_start, bus_x_end));
+    drawing.push_str(&format!(
+        "  Runs from X = {:.1} (input port) to X = {:.1} (rightmost column)\n",
+        bus_x_start, bus_x_end
+    ));
     drawing.push_str(&format!("  Bus length:         {:.1} mm\n", bus_length));
-    drawing.push_str(&format!("  Bus dimensions:     {:.1}mm W x {:.1}mm D\n", bus_w, bus_d));
+    drawing.push_str(&format!(
+        "  Bus dimensions:     {:.1}mm W x {:.1}mm D\n",
+        bus_w, bus_d
+    ));
     drawing.push_str("\n");
     drawing.push_str("  Input feed channels: 4 vertical channels from input ports down to bus\n");
     for (i, &iy) in input_ys.iter().enumerate() {
-        drawing.push_str(&format!("    {} ({}): X = {:.1}, Y = {:.1} to {:.1} (length {:.1}mm)\n",
-            i + 1, input_labels[i], input_x, iy, bus_y, (iy - bus_y).abs()));
+        drawing.push_str(&format!(
+            "    {} ({}): X = {:.1}, Y = {:.1} to {:.1} (length {:.1}mm)\n",
+            i + 1,
+            input_labels[i],
+            input_x,
+            iy,
+            bus_y,
+            (iy - bus_y).abs()
+        ));
     }
     drawing.push_str("\n");
-    drawing.push_str(&format!("  Collector manifold at Y = {:.1} mm\n", collector_y));
-    drawing.push_str(&format!("  Runs from X = {:.1} to X = {:.1} (output ports)\n",
-        *col_xs.first().unwrap(), output_x));
+    drawing.push_str(&format!(
+        "  Collector manifold at Y = {:.1} mm\n",
+        collector_y
+    ));
+    drawing.push_str(&format!(
+        "  Runs from X = {:.1} to X = {:.1} (output ports)\n",
+        *col_xs.first().unwrap(),
+        output_x
+    ));
     drawing.push_str(&format!("  Collector length:   {:.1} mm\n", collector_len));
     drawing.push_str("\n");
 
     // Section 5: O-ring Groove Specs
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  5. O-RING GROOVE SPECIFICATIONS\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
-    drawing.push_str("  Location:         Top face of top plate, around each chip interface port\n");
+    drawing
+        .push_str("  Location:         Top face of top plate, around each chip interface port\n");
     drawing.push_str("  Number:           32 grooves (16 inlet + 16 outlet)\n");
     drawing.push_str(&format!("  Groove OD:        {:.1} mm\n", oring_od));
     drawing.push_str(&format!("  Groove ID:        {:.1} mm\n", oring_id));
-    drawing.push_str(&format!("  Groove width:     {:.2} mm (annular)\n", oring_w));
-    drawing.push_str(&format!("  Groove depth:     {:.1} mm (from top face)\n", oring_depth));
+    drawing.push_str(&format!(
+        "  Groove width:     {:.2} mm (annular)\n",
+        oring_w
+    ));
+    drawing.push_str(&format!(
+        "  Groove depth:     {:.1} mm (from top face)\n",
+        oring_depth
+    ));
     drawing.push_str("  O-ring spec:      AS568-003 or custom (1.78mm CS, ~2mm ID)\n");
     drawing.push_str("  Material:         FKM (Viton) or silicone, Shore 70A\n");
     drawing.push_str("\n");
 
     // Section 6: Mounting Hole Positions
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  6. MOUNTING HOLE POSITIONS\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
-    drawing.push_str(&format!("  Hole diameter:    {:.1} mm (M3 clearance, ISO 273)\n", mount_dia));
+    drawing.push_str(&format!(
+        "  Hole diameter:    {:.1} mm (M3 clearance, ISO 273)\n",
+        mount_dia
+    ));
     drawing.push_str("  Hole type:        Through-hole, both plates\n");
     drawing.push_str("\n");
     drawing.push_str("  CHIP CLAMP HOLES (4) -- secure chip + clamp plate:\n");
-    drawing.push_str(&format!("    Positioned {:.0}mm outside chip footprint edges\n", chip_clamp_inset));
+    drawing.push_str(&format!(
+        "    Positioned {:.0}mm outside chip footprint edges\n",
+        chip_clamp_inset
+    ));
     drawing.push_str("    Mount |    X (mm)   |    Y (mm)\n");
     drawing.push_str("    ------+-------------+-------------\n");
     for (i, &(mx, my)) in chip_clamp_positions.iter().enumerate() {
-        drawing.push_str(&format!("      {}   |   {:+7.2}   |   {:+7.2}\n", i + 1, mx, my));
+        drawing.push_str(&format!(
+            "      {}   |   {:+7.2}   |   {:+7.2}\n",
+            i + 1,
+            mx,
+            my
+        ));
     }
     drawing.push_str("\n");
     drawing.push_str("  BASEPLATE HOLES (4) -- secure FCB to baseplate:\n");
-    drawing.push_str(&format!("    Positioned {:.0}mm from FCB edges\n", base_inset));
+    drawing.push_str(&format!(
+        "    Positioned {:.0}mm from FCB edges\n",
+        base_inset
+    ));
     drawing.push_str("    Mount |    X (mm)   |    Y (mm)\n");
     drawing.push_str("    ------+-------------+-------------\n");
     for (i, &(mx, my)) in base_mount_positions.iter().enumerate() {
-        drawing.push_str(&format!("      {}   |   {:+7.2}   |   {:+7.2}\n", i + 1, mx, my));
+        drawing.push_str(&format!(
+            "      {}   |   {:+7.2}   |   {:+7.2}\n",
+            i + 1,
+            mx,
+            my
+        ));
     }
     drawing.push_str("\n");
 
     // Section 7: Material Spec
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  7. MATERIAL SPECIFICATION\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
-    drawing.push_str("  Material:       Cast PMMA (polymethyl methacrylate), also known as acrylic\n");
+    drawing
+        .push_str("  Material:       Cast PMMA (polymethyl methacrylate), also known as acrylic\n");
     drawing.push_str("  Grade:          Cell culture grade, optically clear\n");
-    drawing.push_str("  Suppliers:      McMaster-Carr 8589K11, Goodfellow AC341300, or equivalent\n");
+    drawing
+        .push_str("  Suppliers:      McMaster-Carr 8589K11, Goodfellow AC341300, or equivalent\n");
     drawing.push_str("  Requirements:\n");
     drawing.push_str("    - Cast (NOT extruded) -- required for solvent bonding with Weld-On 3\n");
     drawing.push_str("    - Optically clear -- required for fluorescence microscopy\n");
@@ -896,14 +1002,20 @@ fn main() {
     drawing.push_str("\n");
 
     // Section 8: Tolerances
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  8. TOLERANCES\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
     drawing.push_str("  Dimension                       Tolerance       Notes\n");
-    drawing.push_str("  ----------------------------    -----------     -------------------------\n");
+    drawing
+        .push_str("  ----------------------------    -----------     -------------------------\n");
     drawing.push_str("  Plate length / width            +/- 0.10 mm     CNC edge profile\n");
-    drawing.push_str("  Plate thickness                 +/- 0.05 mm     Stock PMMA sheet tolerance\n");
+    drawing
+        .push_str("  Plate thickness                 +/- 0.05 mm     Stock PMMA sheet tolerance\n");
     drawing.push_str("  Bus channel width               +/- 0.05 mm     500 um channel\n");
     drawing.push_str("  Bus channel depth               +/- 0.025 mm    Critical for flow\n");
     drawing.push_str("  Distribution ch width           +/- 0.05 mm     500 um channel\n");
@@ -924,9 +1036,13 @@ fn main() {
     drawing.push_str("\n");
 
     // Section 9: Machinist Notes
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  9. MACHINIST NOTES\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("\n");
     drawing.push_str("  End mills required:\n");
     drawing.push_str("    - 0.5 mm flat end mill -- bus + distribution + outlet channels\n");
@@ -965,9 +1081,13 @@ fn main() {
     drawing.push_str("    - Clean with IPA after machining (no acetone -- dissolves PMMA)\n");
     drawing.push_str("    - Handle with gloves after cleaning to prevent oil contamination\n");
     drawing.push_str("\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
     drawing.push_str("  END OF DRAWING\n");
-    drawing.push_str("================================================================================\n");
+    drawing.push_str(
+        "================================================================================\n",
+    );
 
     std::fs::write("output/fcb16_board_drawing.txt", &drawing).unwrap();
 
@@ -996,7 +1116,9 @@ fn main() {
     println!("    Overall:          {length:.0}mm x {width:.0}mm x {plate_t:.0}mm");
     println!("    Material:         Cast PMMA (acrylic), optically clear");
     println!("    Chip ports:       32x dia{port_dia:.1}mm through-holes + O-ring grooves");
-    println!("    O-ring groove:    OD={oring_od:.1}mm, ID={oring_id:.1}mm, depth={oring_depth:.1}mm");
+    println!(
+        "    O-ring groove:    OD={oring_od:.1}mm, ID={oring_id:.1}mm, depth={oring_depth:.1}mm"
+    );
     println!();
     println!("  PART 3: Clamp Plate (optional accessory)");
     println!("    Overall:          {clamp_length:.2}mm x {clamp_width_dim:.2}mm x {clamp_thickness:.0}mm");
@@ -1005,11 +1127,23 @@ fn main() {
     println!("  PORT SUMMARY:");
     println!("    Input ports:      {num_inputs} (left edge, {input_spacing:.0}mm spacing)");
     for (i, &iy) in input_ys.iter().enumerate() {
-        println!("      {}: {} at ({:.1}, {:.1})", i + 1, input_labels[i], input_x, iy);
+        println!(
+            "      {}: {} at ({:.1}, {:.1})",
+            i + 1,
+            input_labels[i],
+            input_x,
+            iy
+        );
     }
     println!("    Output ports:     {num_outputs} (right edge, {output_spacing:.0}mm spacing)");
     for (i, &oy) in output_ys.iter().enumerate() {
-        println!("      {}: {} at ({:.1}, {:.1})", i + 1, output_labels[i], output_x, oy);
+        println!(
+            "      {}: {} at ({:.1}, {:.1})",
+            i + 1,
+            output_labels[i],
+            output_x,
+            oy
+        );
     }
     println!("    Valve port pairs: 16 (bottom edge at Y = {valve_y:.0})");
     println!("    Chip interface:   32 (16 inlet + 16 outlet, with O-ring grooves)");
@@ -1022,8 +1156,10 @@ fn main() {
     println!("    ----+-----+-----+------------------------+------------------------");
     let mut ch_n = 1;
     for r in routes.iter() {
-        println!("    {:2}  |  {}  |  {}  |  ({:+7.2}, {:+7.2})  |  ({:+7.2}, {:+7.2})",
-            ch_n, r.col, r.row, r.col_x, r.inlet_y, r.col_x, r.outlet_y);
+        println!(
+            "    {:2}  |  {}  |  {}  |  ({:+7.2}, {:+7.2})  |  ({:+7.2}, {:+7.2})",
+            ch_n, r.col, r.row, r.col_x, r.inlet_y, r.col_x, r.outlet_y
+        );
         ch_n += 1;
     }
     println!();
@@ -1033,8 +1169,10 @@ fn main() {
     println!("    ----+-----+-----+------------+------------");
     ch_n = 1;
     for vp in valve_ports.iter() {
-        println!("    {:2}  |  {}  |  {}  |  {:+7.2}    |  {:+7.2}",
-            ch_n, vp.col, vp.row, vp.out_x, vp.ret_x);
+        println!(
+            "    {:2}  |  {}  |  {}  |  {:+7.2}    |  {:+7.2}",
+            ch_n, vp.col, vp.row, vp.out_x, vp.ret_x
+        );
         ch_n += 1;
     }
     println!();

@@ -76,24 +76,48 @@ const HEPA_Y: f64 = 450.0;
 const HEPA_Z: f64 = 80.0; // plenum height including filter
 
 // Derived chamber outer
-fn chamber_outer_x() -> f64 { INNER_X + WALL * 2.0 }
-fn chamber_outer_y() -> f64 { INNER_Y + WALL * 2.0 }
-fn chamber_outer_z() -> f64 { INNER_Z + WALL * 2.0 }
+fn chamber_outer_x() -> f64 {
+    INNER_X + WALL * 2.0
+}
+fn chamber_outer_y() -> f64 {
+    INNER_Y + WALL * 2.0
+}
+fn chamber_outer_z() -> f64 {
+    INNER_Z + WALL * 2.0
+}
 
 // Shell cavity (chamber_outer + insulation on all sides)
-fn shell_cavity_x() -> f64 { chamber_outer_x() + INSULATION * 2.0 }
-fn shell_cavity_y() -> f64 { chamber_outer_y() + INSULATION * 2.0 }
-fn shell_cavity_z() -> f64 { chamber_outer_z() + INSULATION * 2.0 }
+fn shell_cavity_x() -> f64 {
+    chamber_outer_x() + INSULATION * 2.0
+}
+fn shell_cavity_y() -> f64 {
+    chamber_outer_y() + INSULATION * 2.0
+}
+fn shell_cavity_z() -> f64 {
+    chamber_outer_z() + INSULATION * 2.0
+}
 
 // Shell outer
-fn shell_outer_x() -> f64 { shell_cavity_x() + SHELL_WALL * 2.0 }
-fn shell_outer_y() -> f64 { shell_cavity_y() + SHELL_WALL * 2.0 }
-fn shell_outer_z() -> f64 { shell_cavity_z() + SHELL_WALL * 2.0 }
+fn shell_outer_x() -> f64 {
+    shell_cavity_x() + SHELL_WALL * 2.0
+}
+fn shell_outer_y() -> f64 {
+    shell_cavity_y() + SHELL_WALL * 2.0
+}
+fn shell_outer_z() -> f64 {
+    shell_cavity_z() + SHELL_WALL * 2.0
+}
 
 // Frame outer (extrusion goes around the shell, 10mm standoff to allow panels)
-fn frame_outer_x() -> f64 { shell_outer_x() + FRAME_EXT * 2.0 + 20.0 }
-fn frame_outer_y() -> f64 { shell_outer_y() + FRAME_EXT * 2.0 + 20.0 }
-fn frame_outer_z() -> f64 { shell_outer_z() + FRAME_EXT * 2.0 + 20.0 }
+fn frame_outer_x() -> f64 {
+    shell_outer_x() + FRAME_EXT * 2.0 + 20.0
+}
+fn frame_outer_y() -> f64 {
+    shell_outer_y() + FRAME_EXT * 2.0 + 20.0
+}
+fn frame_outer_z() -> f64 {
+    shell_outer_z() + FRAME_EXT * 2.0 + 20.0
+}
 
 // ─── wall_panels(): inner chamber with all ports cut ────────────────────
 fn wall_panels() -> Part {
@@ -109,12 +133,18 @@ fn wall_panels() -> Part {
         .translate(0.0, -(cy / 2.0), 0.0);
 
     // LH top-access hatch cutout (top face)
-    let lh_cutout = centered_cube("lh_hatch_cut", LH_HATCH_X, LH_HATCH_Y, WALL + 2.0)
-        .translate(0.0, 0.0, cz / 2.0);
+    let lh_cutout = centered_cube("lh_hatch_cut", LH_HATCH_X, LH_HATCH_Y, WALL + 2.0).translate(
+        0.0,
+        0.0,
+        cz / 2.0,
+    );
 
     // HEPA plenum opening in top (offset from LH hatch)
-    let hepa_opening = centered_cube("hepa_opening", HEPA_X, HEPA_Y, WALL + 2.0)
-        .translate(0.0, -(INNER_Y / 2.0) + HEPA_Y / 2.0 + 10.0, cz / 2.0);
+    let hepa_opening = centered_cube("hepa_opening", HEPA_X, HEPA_Y, WALL + 2.0).translate(
+        0.0,
+        -(INNER_Y / 2.0) + HEPA_Y / 2.0 + 10.0,
+        cz / 2.0,
+    );
 
     // CO2 injection port (upper rear, 10mm)
     let co2_port = centered_cylinder("co2_port", 10.0 / 2.0, WALL + 2.0, 32)
@@ -132,8 +162,8 @@ fn wall_panels() -> Part {
         .translate(100.0, cy / 2.0, 0.0);
 
     // CO2 sensor pocket (rear recess for MH-Z19B)
-    let co2_sensor_pocket = centered_cube("co2_sensor_pocket", 25.0, 10.0, 35.0)
-        .translate(-100.0, cy / 2.0 - 5.0, 0.0);
+    let co2_sensor_pocket =
+        centered_cube("co2_sensor_pocket", 25.0, 10.0, 35.0).translate(-100.0, cy / 2.0 - 5.0, 0.0);
 
     // Bulkhead grommets on right wall — media IN (30mm), media OUT (30mm),
     // power (25mm), sensor cable (20mm)
@@ -170,8 +200,11 @@ fn wall_panels() -> Part {
         .translate(cx / 2.0, -150.0, -150.0);
 
     // Drain hole at floor center (connects to sloped drain pan)
-    let drain_hole = centered_cylinder("drain_hole", 20.0 / 2.0, WALL + 2.0, 32)
-        .translate(0.0, 0.0, -(cz / 2.0));
+    let drain_hole = centered_cylinder("drain_hole", 20.0 / 2.0, WALL + 2.0, 32).translate(
+        0.0,
+        0.0,
+        -(cz / 2.0),
+    );
 
     (outer - inner)
         - front_opening
@@ -201,8 +234,11 @@ fn frame() -> Part {
     let post_half_y = (fy / 2.0) - (FRAME_EXT / 2.0);
     let mut frame_asm = Part::empty("frame");
     for (dx, dy) in &[(-1.0, -1.0), (1.0, -1.0), (-1.0, 1.0), (1.0, 1.0)] {
-        let post = centered_cube("post", FRAME_EXT, FRAME_EXT, fz)
-            .translate(dx * post_half, dy * post_half_y, 0.0);
+        let post = centered_cube("post", FRAME_EXT, FRAME_EXT, fz).translate(
+            dx * post_half,
+            dy * post_half_y,
+            0.0,
+        );
         frame_asm = frame_asm + post;
     }
 
@@ -213,13 +249,13 @@ fn frame() -> Part {
     let bot_z = -fz / 2.0 + FRAME_EXT / 2.0;
     for &z in &[top_z, bot_z] {
         for &y in &[-post_half_y, post_half_y] {
-            let beam = centered_cube("beam_x", beam_len_x, FRAME_EXT, FRAME_EXT)
-                .translate(0.0, y, z);
+            let beam =
+                centered_cube("beam_x", beam_len_x, FRAME_EXT, FRAME_EXT).translate(0.0, y, z);
             frame_asm = frame_asm + beam;
         }
         for &x in &[-post_half, post_half] {
-            let beam = centered_cube("beam_y", FRAME_EXT, beam_len_y, FRAME_EXT)
-                .translate(x, 0.0, z);
+            let beam =
+                centered_cube("beam_y", FRAME_EXT, beam_len_y, FRAME_EXT).translate(x, 0.0, z);
             frame_asm = frame_asm + beam;
         }
     }
@@ -243,12 +279,7 @@ fn door() -> Part {
     let body = centered_cube("door_body", door_x, door_thick, door_z);
 
     // Foam cavity (sandwich core)
-    let foam_cavity = centered_cube(
-        "door_foam",
-        door_x - 20.0,
-        door_foam,
-        door_z - 20.0,
-    );
+    let foam_cavity = centered_cube("door_foam", door_x - 20.0, door_foam, door_z - 20.0);
 
     // Window cutout (400×300mm, full-thickness)
     let window_cut = centered_cube("window_cut", WINDOW_X, door_thick + 2.0, WINDOW_Z);
@@ -277,8 +308,7 @@ fn door() -> Part {
         (door_x / 2.0 - cam_inset, -(door_z / 2.0 - cam_inset)),
         (-(door_x / 2.0 - cam_inset), 0.0),
     ] {
-        let p = centered_cube("cam_pocket", 30.0, door_thick + 2.0, 20.0)
-            .translate(*x, 0.0, *z);
+        let p = centered_cube("cam_pocket", 30.0, door_thick + 2.0, 20.0).translate(*x, 0.0, *z);
         cam_latches = cam_latches + p;
     }
 
@@ -286,8 +316,8 @@ fn door() -> Part {
     let hinge_x = -(door_x / 2.0) + 15.0;
     let mut hinges = Part::empty("hinges");
     for z in &[door_z / 2.0 - 60.0, 0.0, -(door_z / 2.0 - 60.0)] {
-        let h = centered_cylinder("hinge", 8.0 / 2.0, door_thick + 2.0, 24)
-            .translate(hinge_x, 0.0, *z);
+        let h =
+            centered_cylinder("hinge", 8.0 / 2.0, door_thick + 2.0, 24).translate(hinge_x, 0.0, *z);
         hinges = hinges + h;
     }
 
@@ -316,8 +346,7 @@ fn lh_hatch() -> Part {
     // Servo mount pockets on top (2× for linear actuator mount points)
     let mut servo_mounts = Part::empty("servo_mounts");
     for &xo in &[-(hx / 2.0) + 40.0, hx / 2.0 - 40.0] {
-        let m = centered_cube("servo_mount", 40.0, 40.0, 2.0)
-            .translate(xo, 0.0, ht / 2.0 - 1.0);
+        let m = centered_cube("servo_mount", 40.0, 40.0, 2.0).translate(xo, 0.0, ht / 2.0 - 1.0);
         servo_mounts = servo_mounts + m;
     }
 
@@ -351,8 +380,11 @@ fn drain_pan() -> Part {
     .translate(0.0, 0.0, pan_wall / 2.0);
 
     // Center drain cone (20mm dia)
-    let drain_cone = centered_cylinder("pan_drain", 20.0 / 2.0, pan_wall + 2.0, 32)
-        .translate(0.0, 0.0, -(pz / 2.0));
+    let drain_cone = centered_cylinder("pan_drain", 20.0 / 2.0, pan_wall + 2.0, 32).translate(
+        0.0,
+        0.0,
+        -(pz / 2.0),
+    );
 
     outer - inner - drain_cone
 }
@@ -360,12 +392,9 @@ fn drain_pan() -> Part {
 // ─── co2_port(): CO2 injection manifold ────────────────────────────────
 fn co2_port() -> Part {
     // Tube-in-bulkhead: 15mm OD flange, 10mm ID tube, 30mm long
-    let flange = centered_cylinder("co2_flange", 20.0 / 2.0, 6.0, 48)
-        .rotate(90.0, 0.0, 0.0);
-    let tube = centered_cylinder("co2_tube", 15.0 / 2.0, 30.0, 48)
-        .rotate(90.0, 0.0, 0.0);
-    let bore = centered_cylinder("co2_bore", 10.0 / 2.0, 40.0, 48)
-        .rotate(90.0, 0.0, 0.0);
+    let flange = centered_cylinder("co2_flange", 20.0 / 2.0, 6.0, 48).rotate(90.0, 0.0, 0.0);
+    let tube = centered_cylinder("co2_tube", 15.0 / 2.0, 30.0, 48).rotate(90.0, 0.0, 0.0);
+    let bore = centered_cylinder("co2_bore", 10.0 / 2.0, 40.0, 48).rotate(90.0, 0.0, 0.0);
 
     (flange + tube) - bore
 }
@@ -383,8 +412,11 @@ fn hepa_plenum() -> Part {
         HEPA_Z - plenum_wall * 2.0,
     );
     // Filter slot (top face, 420×420mm)
-    let filter_slot = centered_cube("filter_slot", 420.0, 420.0, plenum_wall + 2.0)
-        .translate(0.0, 0.0, HEPA_Z / 2.0);
+    let filter_slot = centered_cube("filter_slot", 420.0, 420.0, plenum_wall + 2.0).translate(
+        0.0,
+        0.0,
+        HEPA_Z / 2.0,
+    );
     // Return duct (160mm from side to blower intake)
     let return_duct = centered_cylinder("return_duct", 160.0 / 2.0, plenum_wall + 2.0, 64)
         .rotate(0.0, 90.0, 0.0)
@@ -397,10 +429,8 @@ fn hepa_plenum() -> Part {
 fn passthrough_grommets() -> Part {
     // 30mm OD flanged silicone/EPDM grommet, 20mm ID, 40mm flange
     let flange = centered_cylinder("gr_flange", 40.0 / 2.0, 4.0, 48);
-    let tube = centered_cylinder("gr_tube", 30.0 / 2.0, 20.0, 48)
-        .translate(0.0, 0.0, 12.0);
-    let bore = centered_cylinder("gr_bore", 20.0 / 2.0, 30.0, 48)
-        .translate(0.0, 0.0, 10.0);
+    let tube = centered_cylinder("gr_tube", 30.0 / 2.0, 20.0, 48).translate(0.0, 0.0, 12.0);
+    let bore = centered_cylinder("gr_bore", 20.0 / 2.0, 30.0, 48).translate(0.0, 0.0, 10.0);
 
     (flange + tube) - bore
 }
@@ -503,7 +533,9 @@ fn main() {
 
     // ── Export parts ─────────────────────────────────────────────
     let chamber = wall_panels();
-    chamber.write_stl("output/chip_incubator_v3_chamber.stl").unwrap();
+    chamber
+        .write_stl("output/chip_incubator_v3_chamber.stl")
+        .unwrap();
     println!("Exported: output/chip_incubator_v3_chamber.stl");
 
     let d = door();
@@ -515,19 +547,23 @@ fn main() {
     println!("Exported: output/chip_incubator_v3_window.stl");
 
     let lh = lh_hatch();
-    lh.write_stl("output/chip_incubator_v3_lh_hatch.stl").unwrap();
+    lh.write_stl("output/chip_incubator_v3_lh_hatch.stl")
+        .unwrap();
     println!("Exported: output/chip_incubator_v3_lh_hatch.stl");
 
     let dp = drain_pan();
-    dp.write_stl("output/chip_incubator_v3_drain_pan.stl").unwrap();
+    dp.write_stl("output/chip_incubator_v3_drain_pan.stl")
+        .unwrap();
     println!("Exported: output/chip_incubator_v3_drain_pan.stl");
 
     let co2 = co2_port();
-    co2.write_stl("output/chip_incubator_v3_co2_port.stl").unwrap();
+    co2.write_stl("output/chip_incubator_v3_co2_port.stl")
+        .unwrap();
     println!("Exported: output/chip_incubator_v3_co2_port.stl");
 
     let hp = hepa_plenum();
-    hp.write_stl("output/chip_incubator_v3_hepa_plenum.stl").unwrap();
+    hp.write_stl("output/chip_incubator_v3_hepa_plenum.stl")
+        .unwrap();
     println!("Exported: output/chip_incubator_v3_hepa_plenum.stl");
 
     let g = passthrough_grommets();
@@ -570,13 +606,7 @@ fn main() {
     let caster_inset = 50.0;
     let mut casters = Part::empty("casters");
     for (dx, dy) in &[(-1.0, -1.0), (1.0, -1.0), (-1.0, 1.0), (1.0, 1.0)] {
-        let hole = centered_cylinder(
-            "caster_hole",
-            8.5 / 2.0,
-            SHELL_WALL + 4.0,
-            24,
-        )
-        .translate(
+        let hole = centered_cylinder("caster_hole", 8.5 / 2.0, SHELL_WALL + 4.0, 24).translate(
             dx * (sx / 2.0 - caster_inset),
             dy * (sy / 2.0 - caster_inset),
             -(sz / 2.0) + SHELL_WALL / 2.0,
@@ -584,23 +614,24 @@ fn main() {
         casters = casters + hole;
     }
 
-    let shell = (shell_outer_box - shell_cav)
-        - shell_front_op
-        - shell_lh_cut
-        - shell_hepa_cut
-        - casters;
-    shell.write_stl("output/chip_incubator_v3_shell.stl").unwrap();
+    let shell =
+        (shell_outer_box - shell_cav) - shell_front_op - shell_lh_cut - shell_hepa_cut - casters;
+    shell
+        .write_stl("output/chip_incubator_v3_shell.stl")
+        .unwrap();
     println!("Exported: output/chip_incubator_v3_shell.stl");
 
     // Frame post (one post; manufactured 4× at length from Bosch Rexroth stock)
     let fz = frame_outer_z();
     let post = centered_cube("frame_post", FRAME_EXT, FRAME_EXT, fz);
-    post.write_stl("output/chip_incubator_v3_frame_post.stl").unwrap();
+    post.write_stl("output/chip_incubator_v3_frame_post.stl")
+        .unwrap();
     println!("Exported: output/chip_incubator_v3_frame_post.stl");
 
     // Assembly visualization
     let asm = assembly();
-    asm.write_stl("output/chip_incubator_v3_assembly.stl").unwrap();
+    asm.write_stl("output/chip_incubator_v3_assembly.stl")
+        .unwrap();
     println!("Exported: output/chip_incubator_v3_assembly.stl");
 
     // ── Specs report ─────────────────────────────────────────────
@@ -630,16 +661,32 @@ fn main() {
     println!();
     println!(" DIMENSIONS");
     println!("   Interior chamber:  {INNER_X:.0} × {INNER_Y:.0} × {INNER_Z:.0} mm");
-    println!("   Chamber outer:     {:.0} × {:.0} × {:.0} mm (3 mm PETG)",
-        chamber_outer_x(), chamber_outer_y(), chamber_outer_z());
-    println!("   Shell cavity:      {:.0} × {:.0} × {:.0} mm", cav_x, cav_y, cav_z);
-    println!("   Shell outer:       {:.0} × {:.0} × {:.0} mm (3 mm PETG)", sx, sy, sz);
-    println!("   Frame outer:       {:.0} × {:.0} × {:.0} mm (45×45 Rexroth)",
-        frame_outer_x(), frame_outer_y(), frame_outer_z());
+    println!(
+        "   Chamber outer:     {:.0} × {:.0} × {:.0} mm (3 mm PETG)",
+        chamber_outer_x(),
+        chamber_outer_y(),
+        chamber_outer_z()
+    );
+    println!(
+        "   Shell cavity:      {:.0} × {:.0} × {:.0} mm",
+        cav_x, cav_y, cav_z
+    );
+    println!(
+        "   Shell outer:       {:.0} × {:.0} × {:.0} mm (3 mm PETG)",
+        sx, sy, sz
+    );
+    println!(
+        "   Frame outer:       {:.0} × {:.0} × {:.0} mm (45×45 Rexroth)",
+        frame_outer_x(),
+        frame_outer_y(),
+        frame_outer_z()
+    );
     println!("   Insulation:        {INSULATION:.0} mm PIR foam (all 6 sides)");
     println!();
-    println!(" INTERIOR VOLUME:  {interior_vol_l:.1} L   (v2: 172 L, v3/v2 ratio = {:.2}×)",
-        interior_vol_l / 172.0);
+    println!(
+        " INTERIOR VOLUME:  {interior_vol_l:.1} L   (v2: 172 L, v3/v2 ratio = {:.2}×)",
+        interior_vol_l / 172.0
+    );
     println!(" SHELL SURFACE:    {shell_surf_m2:.3} m²");
     println!();
     println!(" THERMAL");
@@ -647,7 +694,10 @@ fn main() {
     println!("   ΔT (setpoint):     15 K (22°C ambient → 37°C chamber)");
     println!("   Steady-state loss: Q = k·A·ΔT/t = 0.022 × {shell_surf_m2:.3} × 15 / 0.025");
     println!("                      ≈ {q_loss:.1} W");
-    println!("   Heater budget:     400 W silicone pad (>{:.1}× steady-state margin,", 400.0 / q_loss);
+    println!(
+        "   Heater budget:     400 W silicone pad (>{:.1}× steady-state margin,",
+        400.0 / q_loss
+    );
     println!("                      ~same time-to-setpoint as v2)");
     println!("   Alternative:       300 W with ~33% longer ramp (15 → 20 min)");
     println!();
@@ -747,7 +797,10 @@ fn main() {
          For in-lab moves: roll on casters. For cross-facility:\n\
          forklift slots under outer frame extrusion (200mm clearance).\n\
          \n",
-        frame_outer_y(), sy, INNER_Y, INNER_X,
+        frame_outer_y(),
+        sy,
+        INNER_Y,
+        INNER_X,
         cyh = chamber_outer_y() / 2.0,
         cxh = chamber_outer_x() / 2.0,
         czh = chamber_outer_z() / 2.0,

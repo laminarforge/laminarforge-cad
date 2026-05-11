@@ -1,17 +1,17 @@
-pub mod nets;
-pub mod header;
-pub mod outline;
-pub mod heater;
-pub mod zones;
-pub mod components;
-pub mod footprints;
-pub mod routing;
 pub mod autorouter;
-pub mod silkscreen;
-pub mod export;
-pub mod libraries;
+pub mod components;
 pub mod dsn;
+pub mod export;
+pub mod footprints;
+pub mod header;
+pub mod heater;
+pub mod libraries;
+pub mod nets;
+pub mod outline;
+pub mod routing;
 pub mod ses;
+pub mod silkscreen;
+pub mod zones;
 
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -66,7 +66,10 @@ pub fn pad_abs_pos(comp: &Component, pad_idx: usize) -> (f64, f64) {
     let (sin, cos) = theta.sin_cos();
     let ax = comp.x + pad.x * cos - pad.y * sin;
     let ay = comp.y + pad.x * sin + pad.y * cos;
-    ((ax * 10000.0).round() / 10000.0, (ay * 10000.0).round() / 10000.0)
+    (
+        (ax * 10000.0).round() / 10000.0,
+        (ay * 10000.0).round() / 10000.0,
+    )
 }
 
 /// Find pad index by its number string; panics if not found.
@@ -86,15 +89,29 @@ pub struct HeaterStats {
 /// Write a single trace segment
 pub fn write_trace(
     pcb: &mut String,
-    x1: f64, y1: f64, x2: f64, y2: f64,
-    width: f64, layer: &str, net: u32, _net_name: &str,
+    x1: f64,
+    y1: f64,
+    x2: f64,
+    y2: f64,
+    width: f64,
+    layer: &str,
+    net: u32,
+    _net_name: &str,
 ) {
     use std::fmt::Write;
     writeln!(
         pcb,
         "  (segment (start {} {}) (end {} {}) (width {}) (layer \"{}\") (net {}) (tstamp \"{}\"))",
-        x1, y1, x2, y2, width, layer, net, next_uuid()
-    ).unwrap();
+        x1,
+        y1,
+        x2,
+        y2,
+        width,
+        layer,
+        net,
+        next_uuid()
+    )
+    .unwrap();
 }
 
 /// Write a via

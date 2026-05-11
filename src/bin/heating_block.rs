@@ -68,8 +68,8 @@ fn main() {
     // Drilled from the left end (x = -BLOCK_LENGTH/2), 78mm deep.
 
     let heater_z = -(BLOCK_HEIGHT / 2.0) + HEATER_BORE_Z_OFFSET; // -7.5mm
-    // Cylinder along X axis: rotate 90° around Y
-    // Position so the bore starts at the left face and extends rightward
+                                                                 // Cylinder along X axis: rotate 90° around Y
+                                                                 // Position so the bore starts at the left face and extends rightward
     let heater_center_x = -(BLOCK_LENGTH / 2.0) + HEATER_BORE_DEPTH / 2.0; // bore center in X
     let heater_bore = centered_cylinder(
         "heater_bore",
@@ -102,9 +102,9 @@ fn main() {
 
     let mount_positions: [(f64, f64); 4] = [
         (-BLOCK_MOUNT_HOLE_X, -BLOCK_MOUNT_HOLE_Y),
-        ( BLOCK_MOUNT_HOLE_X, -BLOCK_MOUNT_HOLE_Y),
-        (-BLOCK_MOUNT_HOLE_X,  BLOCK_MOUNT_HOLE_Y),
-        ( BLOCK_MOUNT_HOLE_X,  BLOCK_MOUNT_HOLE_Y),
+        (BLOCK_MOUNT_HOLE_X, -BLOCK_MOUNT_HOLE_Y),
+        (-BLOCK_MOUNT_HOLE_X, BLOCK_MOUNT_HOLE_Y),
+        (BLOCK_MOUNT_HOLE_X, BLOCK_MOUNT_HOLE_Y),
     ];
 
     let mut mounts = Part::empty("mounts");

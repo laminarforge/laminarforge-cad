@@ -52,39 +52,39 @@ use vcad::{centered_cube, centered_cylinder};
 fn main() {
     // ── Dimensions from lib.rs ──
 
-    let length = REVC_CHIP_LENGTH;       // 127.76mm
-    let width = REVC_CHIP_WIDTH;         // 85.48mm
+    let length = REVC_CHIP_LENGTH; // 127.76mm
+    let width = REVC_CHIP_WIDTH; // 85.48mm
     let thickness = REVC_PMMA_THICKNESS; // 14.20mm
-    let glass_t = REVC_GLASS_THICKNESS;  // 0.15mm
-    let corner_r = REVC_CORNER_RADIUS;   // 3.18mm
+    let glass_t = REVC_GLASS_THICKNESS; // 0.15mm
+    let corner_r = REVC_CORNER_RADIUS; // 3.18mm
 
-    let well_dia = REVC_WELL_DIAMETER;   // 4.0mm
-    let well_depth = REVC_WELL_DEPTH;    // 10.0mm
+    let well_dia = REVC_WELL_DIAMETER; // 4.0mm
+    let well_depth = REVC_WELL_DEPTH; // 10.0mm
 
-    let via_dia = REVC_VIA_DIAMETER;     // 1.0mm
-    let via_len = REVC_VIA_LENGTH;       // 4.0mm
+    let via_dia = REVC_VIA_DIAMETER; // 1.0mm
+    let via_len = REVC_VIA_LENGTH; // 4.0mm
 
-    let chamber_w = REVC_CHAMBER_WIDTH;  // 3.0mm
+    let chamber_w = REVC_CHAMBER_WIDTH; // 3.0mm
     let chamber_l = REVC_CHAMBER_LENGTH; // 7.0mm
-    let chamber_d = REVC_CHAMBER_DEPTH;  // 0.2mm
+    let chamber_d = REVC_CHAMBER_DEPTH; // 0.2mm
 
-    let ch_w = REVC_CHANNEL_WIDTH;       // 0.5mm
-    let ch_d = REVC_CHANNEL_DEPTH;       // 0.2mm
-    let ch_len = REVC_CHANNEL_LENGTH;    // 1.0mm
+    let ch_w = REVC_CHANNEL_WIDTH; // 0.5mm
+    let ch_d = REVC_CHANNEL_DEPTH; // 0.2mm
+    let ch_len = REVC_CHANNEL_LENGTH; // 1.0mm
 
-    let num_cols = REVC_GRID_COLS;       // 4
-    let _num_rows = REVC_GRID_ROWS;      // 4
+    let num_cols = REVC_GRID_COLS; // 4
+    let _num_rows = REVC_GRID_ROWS; // 4
 
     let align_dia = REVC_ALIGN_DIAMETER; // 1.0mm
-    let align_depth = REVC_ALIGN_DEPTH;  // 0.5mm
-    let align_inset = REVC_ALIGN_INSET;  // 4.0mm
+    let align_depth = REVC_ALIGN_DEPTH; // 0.5mm
+    let align_inset = REVC_ALIGN_INSET; // 4.0mm
 
     let mount_dia = REVC_MOUNT_DIAMETER; // 3.2mm
-    let mount_inset = REVC_MOUNT_INSET;  // 6.0mm
+    let mount_inset = REVC_MOUNT_INSET; // 6.0mm
 
-    let label_l = REVC_LABEL_LENGTH;     // 20.0mm
-    let label_w = REVC_LABEL_WIDTH;      // 5.0mm
-    let label_d = REVC_LABEL_DEPTH;      // 0.1mm
+    let label_l = REVC_LABEL_LENGTH; // 20.0mm
+    let label_w = REVC_LABEL_WIDTH; // 5.0mm
+    let label_d = REVC_LABEL_DEPTH; // 0.1mm
 
     // ── Coordinate system ──
     // Chip centered at origin. Z=0 is chip center.
@@ -92,21 +92,21 @@ fn main() {
     // Bottom face at Z = -thickness/2 = -7.10mm
     // Glass sits below bottom face (separate part).
 
-    let chip_top = thickness / 2.0;      // +7.10mm
-    let chip_bot = -thickness / 2.0;     // -7.10mm
+    let chip_top = thickness / 2.0; // +7.10mm
+    let chip_bot = -thickness / 2.0; // -7.10mm
 
     // Column X positions (chip-centered coordinates from lib.rs)
-    let col_xs = REVC_COL_XS_CENTERED;  // [-40.50, -13.50, 13.50, 40.50]
+    let col_xs = REVC_COL_XS_CENTERED; // [-40.50, -13.50, 13.50, 40.50]
 
     // Chamber center Y positions (chip-centered)
     let chamber_ys = REVC_CHAMBER_CENTER_YS; // [-27.00, -9.00, 9.00, 27.00]
 
     // Inlet/outlet well Y positions (chip-centered)
-    let inlet_ys = REVC_INLET_YS;       // [-31.50, -13.50, 4.50, 22.50]
-    let outlet_ys = REVC_OUTLET_YS;     // [-22.50, -4.50, 13.50, 31.50]
+    let inlet_ys = REVC_INLET_YS; // [-31.50, -13.50, 4.50, 22.50]
+    let outlet_ys = REVC_OUTLET_YS; // [-22.50, -4.50, 13.50, 31.50]
 
     // ── Cutting tool oversizes (for clean CSG subtraction) ──
-    let well_tool_h = well_depth + 0.2;  // slightly taller than well
+    let well_tool_h = well_depth + 0.2; // slightly taller than well
     let well_z = chip_top - well_depth / 2.0 + 0.1; // center Z for well cutter
 
     let via_tool_h = via_len + 0.2;
@@ -156,11 +156,7 @@ fn main() {
             corner_through,
             32,
         )
-        .translate(
-            sx * (half_l - corner_r),
-            sy * (half_w - corner_r),
-            0.0,
-        );
+        .translate(sx * (half_l - corner_r), sy * (half_w - corner_r), 0.0);
         plate = plate - (corner_sq - corner_cyl);
     }
 
@@ -197,23 +193,15 @@ fn main() {
             plate = plate - outlet_well;
 
             // ── Inlet via (from well bottom down to bottom face) ──
-            let inlet_via = centered_cylinder(
-                &format!("inlet_via_{idx}"),
-                via_dia / 2.0,
-                via_tool_h,
-                24,
-            )
-            .translate(cx, inlet_y, via_z);
+            let inlet_via =
+                centered_cylinder(&format!("inlet_via_{idx}"), via_dia / 2.0, via_tool_h, 24)
+                    .translate(cx, inlet_y, via_z);
             plate = plate - inlet_via;
 
             // ── Outlet via (from well bottom down to bottom face) ──
-            let outlet_via = centered_cylinder(
-                &format!("outlet_via_{idx}"),
-                via_dia / 2.0,
-                via_tool_h,
-                24,
-            )
-            .translate(cx, outlet_y, via_z);
+            let outlet_via =
+                centered_cylinder(&format!("outlet_via_{idx}"), via_dia / 2.0, via_tool_h, 24)
+                    .translate(cx, outlet_y, via_z);
             plate = plate - outlet_via;
 
             // ── BOTTOM FACE: Chamber ──
@@ -265,13 +253,9 @@ fn main() {
     ];
 
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
-        let align_hole = centered_cylinder(
-            &format!("align_{i}"),
-            align_dia / 2.0,
-            align_tool_h,
-            24,
-        )
-        .translate(ax, ay, align_z);
+        let align_hole =
+            centered_cylinder(&format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
+                .translate(ax, ay, align_z);
         plate = plate - align_hole;
     }
 
@@ -284,19 +268,14 @@ fn main() {
     ];
 
     for (i, &(mx, my)) in mount_positions.iter().enumerate() {
-        let mount_hole = centered_cylinder(
-            &format!("mount_{i}"),
-            mount_dia / 2.0,
-            through_h,
-            32,
-        )
-        .translate(mx, my, 0.0);
+        let mount_hole = centered_cylinder(&format!("mount_{i}"), mount_dia / 2.0, through_h, 32)
+            .translate(mx, my, 0.0);
         plate = plate - mount_hole;
     }
 
     // ── Label area (shallow engraving on BOTTOM face) ──
-    let label_pocket = centered_cube("label_area", label_l, label_w, label_tool_h)
-        .translate(0.0, 0.0, label_z);
+    let label_pocket =
+        centered_cube("label_area", label_l, label_w, label_tool_h).translate(0.0, 0.0, label_z);
     plate = plate - label_pocket;
 
     // ════════════════════════════════════════════════════
@@ -325,11 +304,7 @@ fn main() {
             glass_t + 0.1,
             32,
         )
-        .translate(
-            sx * (half_l - corner_r),
-            sy * (half_w - corner_r),
-            0.0,
-        );
+        .translate(sx * (half_l - corner_r), sy * (half_w - corner_r), 0.0);
         glass = glass - (gsq - gcyl);
     }
 
@@ -360,14 +335,21 @@ fn main() {
     println!("    Overall:          {length:.2}mm x {width:.2}mm x {thickness:.2}mm");
     println!("    Footprint:        ANSI/SLAS microplate (127.76 x 85.48mm)");
     println!("    Material:         Cast PMMA (acrylic), optically clear");
-    println!("    Total height:     {:.2}mm (PMMA) + {:.2}mm (glass) = {:.2}mm (SLAS 2-2004)",
-        thickness, glass_t, REVC_TOTAL_HEIGHT);
+    println!(
+        "    Total height:     {:.2}mm (PMMA) + {:.2}mm (glass) = {:.2}mm (SLAS 2-2004)",
+        thickness, glass_t, REVC_TOTAL_HEIGHT
+    );
     println!("    Corner radius:    {corner_r:.2}mm (ANSI/SLAS 1-2004 §4.1.2.1)");
     println!();
     println!("  TOP FACE (Op 1):");
     println!("    Wells:            32x dia{well_dia:.0}mm x {well_depth:.0}mm deep (open-top)");
-    println!("    Well volume:      ~{:.0}μL each (π×r²×h)", REVC_WELL_VOLUME_UL);
-    println!("    Vias:             32x dia{via_dia:.0}mm x {via_len:.0}mm (well bottom → channel)");
+    println!(
+        "    Well volume:      ~{:.0}μL each (π×r²×h)",
+        REVC_WELL_VOLUME_UL
+    );
+    println!(
+        "    Vias:             32x dia{via_dia:.0}mm x {via_len:.0}mm (well bottom → channel)"
+    );
     println!("    Via aspect ratio: {:.1}:1", via_len / via_dia);
     println!("    Alignment holes:  4x dia{align_dia:.0}mm x {align_depth:.1}mm deep (blind)");
     println!("    Mounting holes:   4x dia{mount_dia:.1}mm through (M3 clearance)");
@@ -392,8 +374,10 @@ fn main() {
         let cx = col_xs[col];
         let cy = chamber_ys[row];
         let (inlet_pos, outlet_pos) = REVC_WELL_POSITIONS[i];
-        println!("    Ch{:2} [{inlet_pos},{outlet_pos}]: X={cx:+7.2}, Y={cy:+7.2}  {label}",
-            i + 1);
+        println!(
+            "    Ch{:2} [{inlet_pos},{outlet_pos}]: X={cx:+7.2}, Y={cy:+7.2}  {label}",
+            i + 1
+        );
     }
 
     println!();

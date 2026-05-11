@@ -278,11 +278,7 @@ fn publish_and_wait_ack(
     Ok(())
 }
 
-fn run_cycle(
-    cycle: u32,
-    pipette_dwell: Duration,
-    log: &mut BufWriter<File>,
-) -> CycleResult {
+fn run_cycle(cycle: u32, pipette_dwell: Duration, log: &mut BufWriter<File>) -> CycleResult {
     let start = std::time::Instant::now();
     for cmd in cycle_sequence() {
         if let Err(reason) = publish_and_wait_ack(cmd, cycle, log) {
@@ -309,10 +305,7 @@ fn run_cycle(
             // the skeleton so the harness finishes in under a second per
             // cycle during development. The real Phase-6 run should use
             // --pipette-dwell-secs 115.
-            std::thread::sleep(std::cmp::min(
-                pipette_dwell,
-                Duration::from_millis(5),
-            ));
+            std::thread::sleep(std::cmp::min(pipette_dwell, Duration::from_millis(5)));
         }
     }
     CycleResult {
@@ -415,7 +408,10 @@ fn main() -> ExitCode {
     .ok();
     let _ = log.flush();
 
-    println!("\nresult: {passed} passed, {failed} failed (of {})", cfg.cycles);
+    println!(
+        "\nresult: {passed} passed, {failed} failed (of {})",
+        cfg.cycles
+    );
 
     if failed == 0 {
         ExitCode::from(0)

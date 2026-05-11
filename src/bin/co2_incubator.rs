@@ -37,13 +37,11 @@ fn main() {
     let chamber_inner = centered_cube("chamber_inner", inner_x, inner_y, inner_z);
 
     // Open the front face (remove front wall for door opening)
-    let front_opening = centered_cube(
-        "front_opening",
-        inner_x,
-        wall + 2.0,
-        inner_z,
-    )
-    .translate(0.0, -(outer_y / 2.0), 0.0);
+    let front_opening = centered_cube("front_opening", inner_x, wall + 2.0, inner_z).translate(
+        0.0,
+        -(outer_y / 2.0),
+        0.0,
+    );
 
     // ── Shelf rail grooves (2 pairs at 80mm and 160mm from bottom) ──
     let rail_width = 5.0;
@@ -56,19 +54,28 @@ fn main() {
         let rail_z = -(inner_z / 2.0) + h;
 
         // Left rail (groove into left inner wall)
-        let left_rail = centered_cube("left_rail", rail_depth, inner_y, rail_width)
-            .translate(-(inner_x / 2.0) + rail_depth / 2.0, 0.0, rail_z);
+        let left_rail = centered_cube("left_rail", rail_depth, inner_y, rail_width).translate(
+            -(inner_x / 2.0) + rail_depth / 2.0,
+            0.0,
+            rail_z,
+        );
 
         // Right rail (groove into right inner wall)
-        let right_rail = centered_cube("right_rail", rail_depth, inner_y, rail_width)
-            .translate(inner_x / 2.0 - rail_depth / 2.0, 0.0, rail_z);
+        let right_rail = centered_cube("right_rail", rail_depth, inner_y, rail_width).translate(
+            inner_x / 2.0 - rail_depth / 2.0,
+            0.0,
+            rail_z,
+        );
 
         shelf_rails = shelf_rails + left_rail + right_rail;
     }
 
     // ── Sensor pocket (MH-Z19B: 33x20x7mm recess on inside back wall) ──
-    let sensor_pocket = centered_cube("sensor_pocket", 33.0, 7.0, 20.0)
-        .translate(0.0, inner_y / 2.0 - 7.0 / 2.0, 20.0);
+    let sensor_pocket = centered_cube("sensor_pocket", 33.0, 7.0, 20.0).translate(
+        0.0,
+        inner_y / 2.0 - 7.0 / 2.0,
+        20.0,
+    );
 
     // ── Heater port (6.2mm hole, bottom back) ──
     let heater_port = centered_cylinder("heater_port", 6.2 / 2.0, wall + 2.0, 24)
@@ -86,8 +93,11 @@ fn main() {
         .translate(outer_x / 2.0, 0.0, 20.0);
 
     // ── Gas inlet port (6mm hole, top wall) ──
-    let gas_inlet = centered_cylinder("gas_inlet", 6.0 / 2.0, wall + 2.0, 24)
-        .translate(0.0, 30.0, outer_z / 2.0);
+    let gas_inlet = centered_cylinder("gas_inlet", 6.0 / 2.0, wall + 2.0, 24).translate(
+        0.0,
+        30.0,
+        outer_z / 2.0,
+    );
 
     // ── Power/sensor cable grommet hole (10mm, bottom back) ──
     let grommet_hole = centered_cylinder("grommet_hole", 10.0 / 2.0, wall + 2.0, 24)
@@ -141,9 +151,7 @@ fn main() {
 
     let shell = (shell_outer - shell_inner) - shell_front_opening;
 
-    shell
-        .write_stl("output/co2_incubator_shell.stl")
-        .unwrap();
+    shell.write_stl("output/co2_incubator_shell.stl").unwrap();
 
     println!("Exported: output/co2_incubator_shell.stl");
 
@@ -167,13 +175,12 @@ fn main() {
     let gasket_inner_x = gasket_outer_x - gasket_width * 2.0;
     let gasket_inner_z = gasket_outer_z - gasket_width * 2.0;
 
-    let gasket_outer_cut = centered_cube(
-        "gasket_outer",
-        gasket_outer_x,
-        gasket_depth,
-        gasket_outer_z,
-    )
-    .translate(0.0, -(door_thickness / 2.0) + gasket_depth / 2.0, 0.0);
+    let gasket_outer_cut =
+        centered_cube("gasket_outer", gasket_outer_x, gasket_depth, gasket_outer_z).translate(
+            0.0,
+            -(door_thickness / 2.0) + gasket_depth / 2.0,
+            0.0,
+        );
 
     let gasket_inner_fill = centered_cube(
         "gasket_inner",
@@ -184,22 +191,23 @@ fn main() {
     .translate(0.0, -(door_thickness / 2.0) + gasket_depth / 2.0, 0.0);
 
     // Acrylic window cutout (100x80mm, through door)
-    let window_cutout = centered_cube(
-        "window_cutout",
-        100.0,
-        door_thickness + 2.0,
-        80.0,
-    );
+    let window_cutout = centered_cube("window_cutout", 100.0, door_thickness + 2.0, 80.0);
 
     // Magnetic latch holes (2x 6mm dia, near top corners)
     let latch_offset_x = door_x / 2.0 - 15.0;
     let latch_z = door_z / 2.0 - 15.0;
 
-    let latch_hole_1 = centered_cylinder("latch_1", 6.0 / 2.0, door_thickness + 2.0, 24)
-        .translate(-latch_offset_x, 0.0, latch_z);
+    let latch_hole_1 = centered_cylinder("latch_1", 6.0 / 2.0, door_thickness + 2.0, 24).translate(
+        -latch_offset_x,
+        0.0,
+        latch_z,
+    );
 
-    let latch_hole_2 = centered_cylinder("latch_2", 6.0 / 2.0, door_thickness + 2.0, 24)
-        .translate(latch_offset_x, 0.0, latch_z);
+    let latch_hole_2 = centered_cylinder("latch_2", 6.0 / 2.0, door_thickness + 2.0, 24).translate(
+        latch_offset_x,
+        0.0,
+        latch_z,
+    );
 
     let door = (door_body - gasket_outer_cut + gasket_inner_fill)
         - window_cutout
@@ -225,10 +233,16 @@ fn main() {
     // Side tabs that slide into rail grooves (3mm deep x 5mm tall)
     let tab_depth = 3.0 - 0.3; // slightly less than groove for fit
     let tab_height = 5.0 - 0.3;
-    let left_tab = centered_cube("left_tab", tab_depth, shelf_y, tab_height)
-        .translate(-(shelf_x / 2.0) - tab_depth / 2.0, 0.0, 0.0);
-    let right_tab = centered_cube("right_tab", tab_depth, shelf_y, tab_height)
-        .translate(shelf_x / 2.0 + tab_depth / 2.0, 0.0, 0.0);
+    let left_tab = centered_cube("left_tab", tab_depth, shelf_y, tab_height).translate(
+        -(shelf_x / 2.0) - tab_depth / 2.0,
+        0.0,
+        0.0,
+    );
+    let right_tab = centered_cube("right_tab", tab_depth, shelf_y, tab_height).translate(
+        shelf_x / 2.0 + tab_depth / 2.0,
+        0.0,
+        0.0,
+    );
 
     // Ventilation holes: grid of 5mm holes
     let hole_spacing_x = 15.0;
@@ -240,10 +254,10 @@ fn main() {
     let mut vent_holes = Part::empty("vent_holes");
     for ix in 0..num_holes_x {
         for iy in 0..num_holes_y {
-            let hx = -(num_holes_x as f64 - 1.0) * hole_spacing_x / 2.0
-                + (ix as f64) * hole_spacing_x;
-            let hy = -(num_holes_y as f64 - 1.0) * hole_spacing_y / 2.0
-                + (iy as f64) * hole_spacing_y;
+            let hx =
+                -(num_holes_x as f64 - 1.0) * hole_spacing_x / 2.0 + (ix as f64) * hole_spacing_x;
+            let hy =
+                -(num_holes_y as f64 - 1.0) * hole_spacing_y / 2.0 + (iy as f64) * hole_spacing_y;
             let hole = centered_cylinder(
                 &format!("vent_{ix}_{iy}"),
                 hole_d / 2.0,
@@ -257,9 +271,7 @@ fn main() {
 
     let shelf = (shelf_body + left_tab + right_tab) - vent_holes;
 
-    shelf
-        .write_stl("output/co2_incubator_shelf.stl")
-        .unwrap();
+    shelf.write_stl("output/co2_incubator_shelf.stl").unwrap();
 
     println!("Exported: output/co2_incubator_shelf.stl");
 
@@ -303,7 +315,9 @@ fn main() {
     println!("  Gas inlet:       6mm dia (top)");
     println!("  Cable grommet:   10mm dia (bottom back)");
     println!("  Insulation gap:  {insulation_gap:.0}mm");
-    println!("  Shell outer:     {shell_outer_x:.0}mm x {shell_outer_y:.0}mm x {shell_outer_z:.0}mm");
+    println!(
+        "  Shell outer:     {shell_outer_x:.0}mm x {shell_outer_y:.0}mm x {shell_outer_z:.0}mm"
+    );
     println!("  Door:            {door_x:.0}mm x {door_z:.0}mm x {door_thickness:.0}mm");
     println!("  Gasket channel:  {gasket_width:.0}mm wide x {gasket_depth:.0}mm deep");
     println!("  Window cutout:   100mm x 80mm (acrylic)");

@@ -305,8 +305,11 @@ fn enclosure_body() -> Part {
         (EAR_OFFSET_X, -(BOX_OUTER_Z / 2.0) + EAR_Z / 2.0),
     ];
     for (i, &(ex, ez)) in ear_positions.iter().enumerate() {
-        let ear = centered_cube(&format!("ear_{i}"), EAR_X, EAR_Y, EAR_Z)
-            .translate(ex, -(BOX_OUTER_Y / 2.0) - EAR_Y / 2.0, ez);
+        let ear = centered_cube(&format!("ear_{i}"), EAR_X, EAR_Y, EAR_Z).translate(
+            ex,
+            -(BOX_OUTER_Y / 2.0) - EAR_Y / 2.0,
+            ez,
+        );
         let hole = centered_cylinder(
             &format!("ear_hole_{i}"),
             EAR_HOLE_DIA / 2.0,
@@ -438,7 +441,11 @@ fn enclosure_body() -> Part {
             BOX_WALL + 2.0,
             24,
         )
-        .translate(hs_center_x + sx, hs_center_y, -(BOX_OUTER_Z / 2.0) + BOX_WALL / 2.0);
+        .translate(
+            hs_center_x + sx,
+            hs_center_y,
+            -(BOX_OUTER_Z / 2.0) + BOX_WALL / 2.0,
+        );
         body = body - hole;
     }
 
@@ -457,14 +464,27 @@ fn front_panel() -> Part {
     // ── Display cutout (rectangle + 4× M3 mount holes) ──
     let display_x = -80.0; // left-of-center, above power rocker
     let display_z = 20.0;
-    let display_cut =
-        centered_cube("display_cut", DISPLAY_W, FRONT_PANEL_THICKNESS + 2.0, DISPLAY_H)
-            .translate(display_x, 0.0, display_z);
+    let display_cut = centered_cube(
+        "display_cut",
+        DISPLAY_W,
+        FRONT_PANEL_THICKNESS + 2.0,
+        DISPLAY_H,
+    )
+    .translate(display_x, 0.0, display_z);
     panel = panel - display_cut;
     let display_screw_offsets = [
-        (-DISPLAY_SCREW_SPACING_X / 2.0, -DISPLAY_SCREW_SPACING_Y / 2.0),
-        (DISPLAY_SCREW_SPACING_X / 2.0, -DISPLAY_SCREW_SPACING_Y / 2.0),
-        (-DISPLAY_SCREW_SPACING_X / 2.0, DISPLAY_SCREW_SPACING_Y / 2.0),
+        (
+            -DISPLAY_SCREW_SPACING_X / 2.0,
+            -DISPLAY_SCREW_SPACING_Y / 2.0,
+        ),
+        (
+            DISPLAY_SCREW_SPACING_X / 2.0,
+            -DISPLAY_SCREW_SPACING_Y / 2.0,
+        ),
+        (
+            -DISPLAY_SCREW_SPACING_X / 2.0,
+            DISPLAY_SCREW_SPACING_Y / 2.0,
+        ),
         (DISPLAY_SCREW_SPACING_X / 2.0, DISPLAY_SCREW_SPACING_Y / 2.0),
     ];
     for (i, &(dx, dz)) in display_screw_offsets.iter().enumerate() {
@@ -627,20 +647,12 @@ fn back_panel_with_glands() -> Part {
     }
 
     // ── USB-C bulkhead (upper-left, 16 × 10 mm rectangle) ──
-    let usbc_cut = centered_cube(
-        "usbc_cut",
-        USBC_W,
-        BACK_PANEL_THICKNESS + 2.0,
-        USBC_H,
-    )
-    .translate(-100.0, 0.0, 55.0);
+    let usbc_cut = centered_cube("usbc_cut", USBC_W, BACK_PANEL_THICKNESS + 2.0, USBC_H)
+        .translate(-100.0, 0.0, 55.0);
     panel = panel - usbc_cut;
-    for (i, &(ux, uz)) in [
-        (-100.0 - 11.0, 55.0),
-        (-100.0 + 11.0, 55.0),
-    ]
-    .iter()
-    .enumerate()
+    for (i, &(ux, uz)) in [(-100.0 - 11.0, 55.0), (-100.0 + 11.0, 55.0)]
+        .iter()
+        .enumerate()
     {
         let hole = centered_cylinder(
             &format!("usbc_screw_{i}"),
@@ -654,20 +666,12 @@ fn back_panel_with_glands() -> Part {
     }
 
     // ── RJ45 bulkhead (upper-right, 19.5 × 16.5 mm rectangle) ──
-    let rj_cut = centered_cube(
-        "rj45_cut",
-        RJ45_W,
-        BACK_PANEL_THICKNESS + 2.0,
-        RJ45_H,
-    )
-    .translate(100.0, 0.0, 55.0);
+    let rj_cut = centered_cube("rj45_cut", RJ45_W, BACK_PANEL_THICKNESS + 2.0, RJ45_H)
+        .translate(100.0, 0.0, 55.0);
     panel = panel - rj_cut;
-    for (i, &(rx, rz)) in [
-        (100.0 - 15.0, 55.0),
-        (100.0 + 15.0, 55.0),
-    ]
-    .iter()
-    .enumerate()
+    for (i, &(rx, rz)) in [(100.0 - 15.0, 55.0), (100.0 + 15.0, 55.0)]
+        .iter()
+        .enumerate()
     {
         let hole = centered_cylinder(
             &format!("rj45_screw_{i}"),
@@ -843,7 +847,12 @@ fn ssr_heatsink() -> Part {
 
 /// Reference volume for the display cutout (for drawing/BOM docs).
 fn display_cutout() -> Part {
-    centered_cube("display_cutout", DISPLAY_W, FRONT_PANEL_THICKNESS, DISPLAY_H)
+    centered_cube(
+        "display_cutout",
+        DISPLAY_W,
+        FRONT_PANEL_THICKNESS,
+        DISPLAY_H,
+    )
 }
 
 /// Reference volume for the E-stop cutout.
@@ -864,9 +873,11 @@ fn assembly() -> Part {
     );
 
     // DIN rail on right wall interior, vertical
-    let rail = din_rail_segment()
-        .rotate(0.0, 90.0, 0.0)
-        .translate(BOX_INNER_X / 2.0 - DIN_RAIL_H / 2.0 - 2.0, 30.0, 0.0);
+    let rail = din_rail_segment().rotate(0.0, 90.0, 0.0).translate(
+        BOX_INNER_X / 2.0 - DIN_RAIL_H / 2.0 - 2.0,
+        30.0,
+        0.0,
+    );
 
     // SSR heat-spreader on floor
     let hs = ssr_heatsink().translate(

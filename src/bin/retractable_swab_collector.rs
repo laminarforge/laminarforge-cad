@@ -53,19 +53,9 @@ fn main() {
 
     // ── Build outer tube ──
 
-    let outer_body = centered_cylinder(
-        "outer_body",
-        outer_od / 2.0,
-        outer_length,
-        48,
-    );
+    let outer_body = centered_cylinder("outer_body", outer_od / 2.0, outer_length, 48);
 
-    let outer_bore = centered_cylinder(
-        "outer_bore",
-        outer_id / 2.0,
-        outer_length + 2.0,
-        48,
-    );
+    let outer_bore = centered_cylinder("outer_bore", outer_id / 2.0, outer_length + 2.0, 48);
 
     // Bayonet slots: L-shaped cuts through the tube wall
     // Slot 1 at 0 degrees, slot 2 at 180 degrees
@@ -73,59 +63,41 @@ fn main() {
 
     // Approximate the L-slot with rectangular cuts through the wall
     // Axial portion: vertical slot
-    let slot1_axial = centered_cube(
-        "slot1_axial",
-        slot_width,
-        slot_depth,
-        slot_axial,
-    )
-    .translate(0.0, outer_od / 2.0, slot_z_start - slot_axial / 2.0);
+    let slot1_axial = centered_cube("slot1_axial", slot_width, slot_depth, slot_axial).translate(
+        0.0,
+        outer_od / 2.0,
+        slot_z_start - slot_axial / 2.0,
+    );
 
     // Rotational portion: horizontal slot perpendicular to axial
     // Rotational arc approximated as a rectangular cut rotated around Z
-    let slot1_rot = centered_cube(
-        "slot1_rot",
-        slot_rotational,
-        slot_depth,
-        slot_width,
-    )
-    .translate(slot_rotational / 2.0, outer_od / 2.0, slot_z_start - slot_axial);
+    let slot1_rot = centered_cube("slot1_rot", slot_rotational, slot_depth, slot_width).translate(
+        slot_rotational / 2.0,
+        outer_od / 2.0,
+        slot_z_start - slot_axial,
+    );
 
     // Slot 2: 180 degrees opposite
-    let slot2_axial = centered_cube(
-        "slot2_axial",
-        slot_width,
-        slot_depth,
-        slot_axial,
-    )
-    .translate(0.0, -(outer_od / 2.0), slot_z_start - slot_axial / 2.0);
+    let slot2_axial = centered_cube("slot2_axial", slot_width, slot_depth, slot_axial).translate(
+        0.0,
+        -(outer_od / 2.0),
+        slot_z_start - slot_axial / 2.0,
+    );
 
-    let slot2_rot = centered_cube(
-        "slot2_rot",
-        slot_rotational,
-        slot_depth,
-        slot_width,
-    )
-    .translate(-(slot_rotational / 2.0), -(outer_od / 2.0), slot_z_start - slot_axial);
+    let slot2_rot = centered_cube("slot2_rot", slot_rotational, slot_depth, slot_width).translate(
+        -(slot_rotational / 2.0),
+        -(outer_od / 2.0),
+        slot_z_start - slot_axial,
+    );
 
     // Closed bottom end (the tube is open at +Z, closed at -Z by default
     // since it's a hollow cylinder — leave as is)
 
-    let outer_tube = outer_body
-        - outer_bore
-        - slot1_axial
-        - slot1_rot
-        - slot2_axial
-        - slot2_rot;
+    let outer_tube = outer_body - outer_bore - slot1_axial - slot1_rot - slot2_axial - slot2_rot;
 
     // ── Build inner slider ──
 
-    let slider_body = centered_cylinder(
-        "slider_body",
-        slider_od / 2.0,
-        slider_length,
-        48,
-    );
+    let slider_body = centered_cylinder("slider_body", slider_od / 2.0, slider_length, 48);
 
     let slider_bore = centered_cylinder(
         "slider_bore",
@@ -136,35 +108,28 @@ fn main() {
 
     // Bayonet pins: small protrusions on the outside
     // Pin 1 at 0 degrees (+Y face)
-    let pin1 = centered_cube(
-        "pin1",
-        pin_width,
-        pin_height,
-        pin_thickness,
-    )
-    .translate(0.0, slider_od / 2.0 + pin_height / 2.0, pin_z);
+    let pin1 = centered_cube("pin1", pin_width, pin_height, pin_thickness).translate(
+        0.0,
+        slider_od / 2.0 + pin_height / 2.0,
+        pin_z,
+    );
 
     // Pin 2 at 180 degrees (-Y face)
-    let pin2 = centered_cube(
-        "pin2",
-        pin_width,
-        pin_height,
-        pin_thickness,
-    )
-    .translate(0.0, -(slider_od / 2.0 + pin_height / 2.0), pin_z);
+    let pin2 = centered_cube("pin2", pin_width, pin_height, pin_thickness).translate(
+        0.0,
+        -(slider_od / 2.0 + pin_height / 2.0),
+        pin_z,
+    );
 
     // Swab retention: small internal lip at the bottom to prevent swab from falling out
-    let retention_ring = centered_cylinder(
-        "retention_ring",
-        slider_od / 2.0 - slider_wall,
-        1.5,
-        48,
-    ) - centered_cylinder(
-        "retention_hole",
-        1.5, // small hole for swab shaft (2mm shaft fits through 3mm hole)
-        2.0,
-        24,
-    );
+    let retention_ring =
+        centered_cylinder("retention_ring", slider_od / 2.0 - slider_wall, 1.5, 48)
+            - centered_cylinder(
+                "retention_hole",
+                1.5, // small hole for swab shaft (2mm shaft fits through 3mm hole)
+                2.0,
+                24,
+            );
 
     let retention = retention_ring.translate(0.0, 0.0, -(slider_length / 2.0) + 1.0);
 

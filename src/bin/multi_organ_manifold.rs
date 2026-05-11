@@ -38,85 +38,85 @@ use vcad::{centered_cube, centered_cylinder, Part};
 use laminarforge_cad::{REVC_CHIP_LENGTH, REVC_CHIP_WIDTH, REVC_TOTAL_HEIGHT};
 
 // ── Chip envelope (from Rev D = Rev C ANSI/SLAS footprint) ──
-const CHIP_X: f64 = REVC_CHIP_LENGTH;        // 127.76
-const CHIP_Y: f64 = REVC_CHIP_WIDTH;         // 85.48
-const CHIP_Z: f64 = REVC_TOTAL_HEIGHT;       // 14.35
+const CHIP_X: f64 = REVC_CHIP_LENGTH; // 127.76
+const CHIP_Y: f64 = REVC_CHIP_WIDTH; // 85.48
+const CHIP_Z: f64 = REVC_TOTAL_HEIGHT; // 14.35
 
 // ── Number of chips in this manifold build (parametric: 3–5 supported) ──
-const NUM_CHIPS: usize = 5;                  // build the 5-chip variant
+const NUM_CHIPS: usize = 5; // build the 5-chip variant
 const NUM_CHIPS_MIN: usize = 3;
 const NUM_CHIPS_MAX: usize = 5;
 
 // ── Pocket & chip registration tolerances ──
 // Tolerance note: chip XY pockets +0.05/−0, chip Z pocket +0/−0.02.
 // Realized here as a nominal pocket that is larger than chip by 2× clearance.
-const POCKET_XY_CLEAR: f64 = 0.05;           // per side, tight press
-const POCKET_Z_DEPTH_CLEAR: f64 = 0.02;      // chip seats 0.02 mm below top face
+const POCKET_XY_CLEAR: f64 = 0.05; // per side, tight press
+const POCKET_Z_DEPTH_CLEAR: f64 = 0.02; // chip seats 0.02 mm below top face
 const POCKET_DEPTH: f64 = CHIP_Z - POCKET_Z_DEPTH_CLEAR; // 14.33
-const POCKET_X: f64 = CHIP_X + 2.0 * POCKET_XY_CLEAR;     // 127.86
-const POCKET_Y: f64 = CHIP_Y + 2.0 * POCKET_XY_CLEAR;     // 85.58
+const POCKET_X: f64 = CHIP_X + 2.0 * POCKET_XY_CLEAR; // 127.86
+const POCKET_Y: f64 = CHIP_Y + 2.0 * POCKET_XY_CLEAR; // 85.58
 
 // ── Dowel pin registration (Ø3 mm hardened steel, 2 per chip location) ──
 const DOWEL_DIA: f64 = 3.0;
-const DOWEL_CLEAR: f64 = 0.02;               // H7 slip fit in frame
+const DOWEL_CLEAR: f64 = 0.02; // H7 slip fit in frame
 const DOWEL_HOLE_DIA: f64 = DOWEL_DIA + DOWEL_CLEAR;
-const DOWEL_HOLE_DEPTH: f64 = 5.0;           // blind, below pocket floor
-const DOWEL_INSET_X: f64 = 12.0;             // from pocket edge along stack axis
-const DOWEL_INSET_Y: f64 = 6.0;              // from pocket center along Y
+const DOWEL_HOLE_DEPTH: f64 = 5.0; // blind, below pocket floor
+const DOWEL_INSET_X: f64 = 12.0; // from pocket edge along stack axis
+const DOWEL_INSET_Y: f64 = 6.0; // from pocket center along Y
 
 // ── Gap between adjacent chips = plunger + O-ring + via mating gap ──
 // Each fluidic via: chip O-ring seat 3 mm OD × 1 mm deep on top face.
 // Adjacent chip short-edge abuts the same O-ring family, so the two seats
 // sandwich a single 2 mm ID × 3 mm OD FKM O-ring compressed to ~0.8 mm
 // thickness. Mating interchip gap allows for 0.3 mm Z alignment tolerance.
-const INTERCHIP_GAP_X: f64 = 0.5;            // nominal X gap (stack axis)
+const INTERCHIP_GAP_X: f64 = 0.5; // nominal X gap (stack axis)
 const CHIP_PITCH_X: f64 = CHIP_X + INTERCHIP_GAP_X;
 
 // ── Fluidic via interface geometry (mates with A-2DFA1907) ──
-const VIA_ID: f64 = 1.5;                     // chip via inner diameter
-const VIA_ORING_SEAT_OD: f64 = 3.0;          // chip O-ring seat OD
-const VIA_ORING_ID: f64 = 2.0;               // FKM 2×3×0.8 O-ring ID
-const VIA_ORING_OD: f64 = 3.0;               // matches seat
-const VIA_ORING_FREE_CS: f64 = 1.0;          // free cross-section
-const VIA_ORING_COMPRESSED_CS: f64 = 0.8;    // after 1 mm plunger travel
+const VIA_ID: f64 = 1.5; // chip via inner diameter
+const VIA_ORING_SEAT_OD: f64 = 3.0; // chip O-ring seat OD
+const VIA_ORING_ID: f64 = 2.0; // FKM 2×3×0.8 O-ring ID
+const VIA_ORING_OD: f64 = 3.0; // matches seat
+const VIA_ORING_FREE_CS: f64 = 1.0; // free cross-section
+const VIA_ORING_COMPRESSED_CS: f64 = 0.8; // after 1 mm plunger travel
 
 // Fluidic vias on chip short edge: 2 per edge, inset 8 mm from short edge,
 // ±25 mm from chip Y centerline (per microfluidic_chip_revd.rs).
 // For chaining, the via at +X edge of chip N mates with the via at −X edge
 // of chip N+1. So on the manifold, each chip-to-chip boundary has 2 vias
 // top + 2 vias bottom through a *shared plunger block*.
-const VIA_INSET_FROM_SHORT_EDGE: f64 = 8.0;  // must match Rev D chip
-const VIA_Y_OFFSET: f64 = 25.0;              // ± from chip Y centerline
-const VIAS_PER_INTERFACE: usize = 2;         // 2 vias per chip–chip boundary
+const VIA_INSET_FROM_SHORT_EDGE: f64 = 8.0; // must match Rev D chip
+const VIA_Y_OFFSET: f64 = 25.0; // ± from chip Y centerline
+const VIAS_PER_INTERFACE: usize = 2; // 2 vias per chip–chip boundary
 
 // ── Plunger (M3 × 20 shoulder bolt, 316 SS) ──
-const PLUNGER_SHOULDER_DIA: f64 = 4.0;       // M3 SHCS shoulder 4 mm
-const PLUNGER_SHOULDER_LEN: f64 = 12.0;      // sliding length
+const PLUNGER_SHOULDER_DIA: f64 = 4.0; // M3 SHCS shoulder 4 mm
+const PLUNGER_SHOULDER_LEN: f64 = 12.0; // sliding length
 const PLUNGER_HEAD_DIA: f64 = 6.0;
 const PLUNGER_HEAD_H: f64 = 3.0;
-const PLUNGER_TIP_DIA: f64 = 3.5;            // seals onto chip O-ring top
+const PLUNGER_TIP_DIA: f64 = 3.5; // seals onto chip O-ring top
 const PLUNGER_TIP_H: f64 = 2.0;
 const PLUNGER_THREAD_DIA: f64 = 3.0;
 const PLUNGER_THREAD_LEN: f64 = 5.0;
 
 // ── Compression spring (PTFE-coated, K = 10 N/mm, free 5 mm) ──
-const SPRING_K: f64 = 10.0;                  // N/mm
-const SPRING_FREE_LEN: f64 = 5.0;            // mm
-const SPRING_COMPRESSION: f64 = 1.0;         // mm at assembled state
+const SPRING_K: f64 = 10.0; // N/mm
+const SPRING_FREE_LEN: f64 = 5.0; // mm
+const SPRING_COMPRESSION: f64 = 1.0; // mm at assembled state
 const SPRING_FORCE: f64 = SPRING_K * SPRING_COMPRESSION; // 10 N — target
 const SPRING_OD: f64 = 5.0;
 const SPRING_ID: f64 = 3.2;
 
 // ── Plunger pocket in top bar (holds head+spring stack) ──
-const PLUNGER_POCKET_DIA: f64 = SPRING_OD + 0.3;      // 5.3 mm, slip
+const PLUNGER_POCKET_DIA: f64 = SPRING_OD + 0.3; // 5.3 mm, slip
 const PLUNGER_POCKET_DEPTH: f64 = PLUNGER_HEAD_H + SPRING_FREE_LEN + 2.0; // 10 mm
 const PLUNGER_GUIDE_BORE_DIA: f64 = PLUNGER_SHOULDER_DIA + 0.08; // 4.08 mm slip
-const PLUNGER_GUIDE_BORE_LEN: f64 = 8.0;     // through top bar floor
+const PLUNGER_GUIDE_BORE_LEN: f64 = 8.0; // through top bar floor
 
 // ── Frame (hard-anodized 6061-T6) ──
 const FRAME_WALL_XY: f64 = 8.0;
-const FRAME_FLOOR_Z: f64 = 10.0;             // below pocket floor
-const FRAME_TOP_LIP_Z: f64 = 5.0;            // pocket shoulder around chip top
+const FRAME_FLOOR_Z: f64 = 10.0; // below pocket floor
+const FRAME_TOP_LIP_Z: f64 = 5.0; // pocket shoulder around chip top
 
 fn frame_outer_x() -> f64 {
     // Chips butt short-edge to short-edge with INTERCHIP_GAP_X between each
@@ -138,10 +138,10 @@ fn frame_outer_z() -> f64 {
 
 // ── Top bar (carries plungers + cam lever) ──
 const TOP_BAR_Z: f64 = 12.0;
-const TOP_BAR_Y: f64 = 40.0;                 // spans across short edge
+const TOP_BAR_Y: f64 = 40.0; // spans across short edge
 const CAM_AXLE_DIA: f64 = 6.0;
 const CAM_BASE_RADIUS: f64 = 10.0;
-const CAM_OFFSET_E: f64 = 1.5;               // offset of cam center → axle
+const CAM_OFFSET_E: f64 = 1.5; // offset of cam center → axle
 const LEVER_ARM_LEN: f64 = 80.0;
 const LEVER_ARM_W: f64 = 12.0;
 const LEVER_ARM_T: f64 = 6.0;
@@ -153,8 +153,8 @@ const LEVER_ARM_T: f64 = 6.0;
 // profile cam center shifted by CAM_OFFSET_EFF and disc radius increased
 // along the stroke axis. 10° of lever rotation → 3 mm Z at assembled
 // state using a nonlinear cam cut (simplified here as a large-offset disc).
-const CAM_OFFSET_EFF: f64 = 8.62;            // mm, for 10°→3 mm stroke
-const CAM_DISC_R: f64 = 14.0;                // outer profile radius
+const CAM_OFFSET_EFF: f64 = 8.62; // mm, for 10°→3 mm stroke
+const CAM_DISC_R: f64 = 14.0; // outer profile radius
 
 // ── Latch (hand-released flip latch) ──
 const LATCH_HOOK_W: f64 = 8.0;
@@ -206,7 +206,7 @@ fn interface_plunger_xys() -> Vec<(f64, f64)> {
 /// 2 per end, same Y offsets.
 fn end_plunger_xys() -> Vec<(f64, f64)> {
     let xs = chip_centers_x();
-    let first_x = xs[0] - CHIP_X / 2.0 - 4.0;       // 4 mm beyond chip short edge
+    let first_x = xs[0] - CHIP_X / 2.0 - 4.0; // 4 mm beyond chip short edge
     let last_x = xs[NUM_CHIPS - 1] + CHIP_X / 2.0 + 4.0;
     let mut out = Vec::new();
     for sy in [-1.0_f64, 1.0] {
@@ -286,8 +286,7 @@ fn frame() -> Part {
         for &sy in &[-1.0_f64, 1.0] {
             let mx = sx * (fx / 2.0 - 10.0);
             let my = sy * (fy / 2.0 - 10.0);
-            let m = centered_cylinder("frame_mount", 1.8, mount_tool_h, 24)
-                .translate(mx, my, 0.0);
+            let m = centered_cylinder("frame_mount", 1.8, mount_tool_h, 24).translate(mx, my, 0.0);
             body = body - m;
         }
     }
@@ -295,13 +294,8 @@ fn frame() -> Part {
     for (idx, cx) in xs.iter().enumerate() {
         for sy in [-1.0_f64, 1.0] {
             let my = sy * (fy / 2.0 - 10.0);
-            let m = centered_cylinder(
-                &format!("frame_mid_mount_{idx}"),
-                1.8,
-                mount_tool_h,
-                24,
-            )
-            .translate(*cx, my, 0.0);
+            let m = centered_cylinder(&format!("frame_mid_mount_{idx}"), 1.8, mount_tool_h, 24)
+                .translate(*cx, my, 0.0);
             body = body - m;
         }
     }
@@ -331,13 +325,11 @@ fn plunger_assembly() -> Part {
     // We approximate the spring as a solid annulus (outer - inner hollowing)
     // which at STL resolution renders as a thin tube.
 
-    let tip = centered_cylinder(
-        "plunger_tip",
-        PLUNGER_TIP_DIA / 2.0,
-        PLUNGER_TIP_H,
-        32,
-    )
-    .translate(0.0, 0.0, PLUNGER_TIP_H / 2.0);
+    let tip = centered_cylinder("plunger_tip", PLUNGER_TIP_DIA / 2.0, PLUNGER_TIP_H, 32).translate(
+        0.0,
+        0.0,
+        PLUNGER_TIP_H / 2.0,
+    );
 
     let shoulder = centered_cylinder(
         "plunger_shoulder",
@@ -361,18 +353,28 @@ fn plunger_assembly() -> Part {
 
     // Spring as annular tube (hint only — the actual wound spring is a BOM
     // item). Placed above the shoulder shoulder-step.
-    let spring_z = PLUNGER_TIP_H + PLUNGER_SHOULDER_LEN + PLUNGER_THREAD_LEN + SPRING_FREE_LEN / 2.0;
+    let spring_z =
+        PLUNGER_TIP_H + PLUNGER_SHOULDER_LEN + PLUNGER_THREAD_LEN + SPRING_FREE_LEN / 2.0;
     let spring_outer = centered_cylinder("plunger_spring_o", SPRING_OD / 2.0, SPRING_FREE_LEN, 32)
         .translate(0.0, 0.0, spring_z);
-    let spring_inner = centered_cylinder("plunger_spring_i", SPRING_ID / 2.0, SPRING_FREE_LEN + 0.2, 32)
-        .translate(0.0, 0.0, spring_z);
+    let spring_inner = centered_cylinder(
+        "plunger_spring_i",
+        SPRING_ID / 2.0,
+        SPRING_FREE_LEN + 0.2,
+        32,
+    )
+    .translate(0.0, 0.0, spring_z);
     let spring = spring_outer - spring_inner;
 
     let head = centered_cylinder("plunger_head", PLUNGER_HEAD_DIA / 2.0, PLUNGER_HEAD_H, 32)
         .translate(
             0.0,
             0.0,
-            PLUNGER_TIP_H + PLUNGER_SHOULDER_LEN + PLUNGER_THREAD_LEN + SPRING_FREE_LEN + PLUNGER_HEAD_H / 2.0,
+            PLUNGER_TIP_H
+                + PLUNGER_SHOULDER_LEN
+                + PLUNGER_THREAD_LEN
+                + SPRING_FREE_LEN
+                + PLUNGER_HEAD_H / 2.0,
         );
 
     tip + shoulder + thread + spring + head
@@ -382,11 +384,14 @@ fn plunger_assembly() -> Part {
 fn o_ring() -> Part {
     let cs = ORING_FREE_CS;
     let mean_r = (ORING_OD + ORING_ID) / 4.0; // mean radius
-    // Approximate a torus as two concentric cylinders with height = cs.
-    let outer = centered_cylinder("oring_outer", ORING_OD / 2.0, cs, 48)
-        .translate(0.0, 0.0, cs / 2.0);
-    let inner = centered_cylinder("oring_inner", ORING_ID / 2.0, cs + 0.2, 48)
-        .translate(0.0, 0.0, cs / 2.0);
+                                              // Approximate a torus as two concentric cylinders with height = cs.
+    let outer =
+        centered_cylinder("oring_outer", ORING_OD / 2.0, cs, 48).translate(0.0, 0.0, cs / 2.0);
+    let inner = centered_cylinder("oring_inner", ORING_ID / 2.0, cs + 0.2, 48).translate(
+        0.0,
+        0.0,
+        cs / 2.0,
+    );
     // Round off the outside by subtracting a larger cutter ring (crude torus)
     let _ = mean_r; // retained for reference in docs
     outer - inner
@@ -435,13 +440,11 @@ fn top_bar() -> Part {
     // rotating — vcad's centered_cylinder is Z-aligned, so instead cut an
     // equivalent slot.
     let axle_slot_top = TOP_BAR_Z / 2.0 - CAM_AXLE_DIA / 4.0;
-    let axle = centered_cube(
-        "cam_axle_slot",
-        CAM_AXLE_DIA,
-        axle_len,
-        CAM_AXLE_DIA,
-    )
-    .translate(0.0, 0.0, axle_slot_top);
+    let axle = centered_cube("cam_axle_slot", CAM_AXLE_DIA, axle_len, CAM_AXLE_DIA).translate(
+        0.0,
+        0.0,
+        axle_slot_top,
+    );
     bar = bar - axle;
 
     bar
@@ -457,34 +460,30 @@ fn cam_lever() -> Part {
     //   2. An arm (LEVER_ARM_LEN × LEVER_ARM_W × LEVER_ARM_T).
     // Cam offset (eccentricity) is baked into the disc centerline position.
 
-    let disc = centered_cylinder("cam_disc", CAM_DISC_R, 8.0, 64)
-        .translate(0.0, 0.0, 0.0);
+    let disc = centered_cylinder("cam_disc", CAM_DISC_R, 8.0, 64).translate(0.0, 0.0, 0.0);
     // Axle bore
-    let axle_bore = centered_cylinder("cam_bore", CAM_AXLE_DIA / 2.0 + 0.05, 10.0, 32)
-        .translate(0.0, 0.0, 0.0);
+    let axle_bore =
+        centered_cylinder("cam_bore", CAM_AXLE_DIA / 2.0 + 0.05, 10.0, 32).translate(0.0, 0.0, 0.0);
     let disc = disc - axle_bore;
 
     // Eccentric cam profile — a second, offset disc union'd above main
-    let lobe = centered_cylinder("cam_lobe", CAM_BASE_RADIUS, 8.0, 48)
-        .translate(CAM_OFFSET_EFF, 0.0, 0.0);
+    let lobe =
+        centered_cylinder("cam_lobe", CAM_BASE_RADIUS, 8.0, 48).translate(CAM_OFFSET_EFF, 0.0, 0.0);
     let cam_body = disc + lobe;
 
     // Lever arm sticks out in +Y from the cam center (hand grip along Y).
-    let arm = centered_cube(
-        "lever_arm",
-        LEVER_ARM_W,
-        LEVER_ARM_LEN,
-        LEVER_ARM_T,
-    )
-    .translate(
+    let arm = centered_cube("lever_arm", LEVER_ARM_W, LEVER_ARM_LEN, LEVER_ARM_T).translate(
         0.0,
         LEVER_ARM_LEN / 2.0 + CAM_BASE_RADIUS,
         0.0,
     );
 
     // Hand grip = knurled endcap cylinder
-    let grip = centered_cylinder("lever_grip", 8.0, 16.0, 32)
-        .translate(0.0, LEVER_ARM_LEN + CAM_BASE_RADIUS + 8.0, 0.0);
+    let grip = centered_cylinder("lever_grip", 8.0, 16.0, 32).translate(
+        0.0,
+        LEVER_ARM_LEN + CAM_BASE_RADIUS + 8.0,
+        0.0,
+    );
 
     cam_body + arm + grip
 }
@@ -493,15 +492,15 @@ fn cam_lever() -> Part {
 fn latch() -> Part {
     // Simple hook: hinge pin hole on one end, hook tongue on the other.
     let body = centered_cube("latch_body", LATCH_HOOK_L, LATCH_HOOK_W, LATCH_HOOK_T);
-    let pin_hole = centered_cylinder("latch_pin_hole", LATCH_PIN_DIA / 2.0 + 0.1, LATCH_HOOK_T + 0.2, 24)
-        .translate(-LATCH_HOOK_L / 2.0 + 4.0, 0.0, 0.0);
-    let hook_notch = centered_cube(
-        "latch_notch",
-        6.0,
-        LATCH_HOOK_W + 0.2,
+    let pin_hole = centered_cylinder(
+        "latch_pin_hole",
+        LATCH_PIN_DIA / 2.0 + 0.1,
         LATCH_HOOK_T + 0.2,
+        24,
     )
-    .translate(LATCH_HOOK_L / 2.0 - 3.0, 0.0, -LATCH_HOOK_T / 2.0);
+    .translate(-LATCH_HOOK_L / 2.0 + 4.0, 0.0, 0.0);
+    let hook_notch = centered_cube("latch_notch", 6.0, LATCH_HOOK_W + 0.2, LATCH_HOOK_T + 0.2)
+        .translate(LATCH_HOOK_L / 2.0 - 3.0, 0.0, -LATCH_HOOK_T / 2.0);
     (body - pin_hole) - hook_notch
 }
 
@@ -514,8 +513,11 @@ fn assembly() -> Part {
     let fz = frame_outer_z();
     let chip_center_z = -fz / 2.0 + FRAME_FLOOR_Z + CHIP_Z / 2.0;
     for (idx, &cx) in chip_centers_x().iter().enumerate() {
-        let chip = centered_cube(&format!("chip_ghost_{idx}"), CHIP_X, CHIP_Y, CHIP_Z)
-            .translate(cx, 0.0, chip_center_z);
+        let chip = centered_cube(&format!("chip_ghost_{idx}"), CHIP_X, CHIP_Y, CHIP_Z).translate(
+            cx,
+            0.0,
+            chip_center_z,
+        );
         asm = asm + chip;
     }
 
@@ -532,7 +534,8 @@ fn assembly() -> Part {
     // Latch fixed to +X end of frame (preview only)
     let latch_x = frame_outer_x() / 2.0 - LATCH_HOOK_L / 2.0 - 2.0;
     let latch_z = bar_z;
-    let latch_part = latch().translate(latch_x, frame_outer_y() / 2.0 + LATCH_HOOK_W / 2.0, latch_z);
+    let latch_part =
+        latch().translate(latch_x, frame_outer_y() / 2.0 + LATCH_HOOK_W / 2.0, latch_z);
     asm = asm + latch_part;
 
     asm
@@ -588,7 +591,9 @@ fn emit_drawing() -> String {
     s.push_str("===============================================================================\n");
     s.push_str("  Multi-Organ Chip-Stack Manifold — Dimensioned Drawing & Analysis\n");
     s.push_str("  Ticket T-7CAFEB25 • laminarforge-cad • Rev D Fluidic-Via Chaining\n");
-    s.push_str("===============================================================================\n\n");
+    s.push_str(
+        "===============================================================================\n\n",
+    );
 
     // ── 3-chip variant schematic ──
     s.push_str("SCHEMATIC — 3-CHIP VARIANT (gut → liver → kidney ADME):\n\n");
@@ -602,7 +607,9 @@ fn emit_drawing() -> String {
     s.push_str("           cluster     cluster       cluster\n\n");
 
     // ── 5-chip variant ──
-    s.push_str("SCHEMATIC — 5-CHIP VARIANT (skin → lung → heart → liver → kidney inhaled tox):\n\n");
+    s.push_str(
+        "SCHEMATIC — 5-CHIP VARIANT (skin → lung → heart → liver → kidney inhaled tox):\n\n",
+    );
     s.push_str("    +----+ +----+ +----+ +----+ +----+\n");
     s.push_str("    | C1 |=| C2 |=| C3 |=| C4 |=| C5 |\n");
     s.push_str("    +----+ +----+ +----+ +----+ +----+\n");
@@ -610,13 +617,34 @@ fn emit_drawing() -> String {
 
     // ── Frame dimensions ──
     s.push_str("FRAME DIMENSIONS (5-chip build):\n");
-    s.push_str(&format!("  Outer X:            {:>8.2} mm\n", frame_outer_x()));
-    s.push_str(&format!("  Outer Y:            {:>8.2} mm\n", frame_outer_y()));
-    s.push_str(&format!("  Outer Z:            {:>8.2} mm\n", frame_outer_z()));
-    s.push_str(&format!("  Chip pocket XY:     {:>8.2} × {:>.2} mm (+0.05/−0)\n", POCKET_X, POCKET_Y));
-    s.push_str(&format!("  Chip pocket Z:      {:>8.2} mm (+0/−0.02)\n", POCKET_DEPTH));
-    s.push_str(&format!("  Dowel pin:          Ø{:.1} mm, H7 slip, {} mm deep, 2× per chip\n", DOWEL_DIA, DOWEL_HOLE_DEPTH));
-    s.push_str(&format!("  Chip-to-chip gap:   {:>.2} mm\n\n", INTERCHIP_GAP_X));
+    s.push_str(&format!(
+        "  Outer X:            {:>8.2} mm\n",
+        frame_outer_x()
+    ));
+    s.push_str(&format!(
+        "  Outer Y:            {:>8.2} mm\n",
+        frame_outer_y()
+    ));
+    s.push_str(&format!(
+        "  Outer Z:            {:>8.2} mm\n",
+        frame_outer_z()
+    ));
+    s.push_str(&format!(
+        "  Chip pocket XY:     {:>8.2} × {:>.2} mm (+0.05/−0)\n",
+        POCKET_X, POCKET_Y
+    ));
+    s.push_str(&format!(
+        "  Chip pocket Z:      {:>8.2} mm (+0/−0.02)\n",
+        POCKET_DEPTH
+    ));
+    s.push_str(&format!(
+        "  Dowel pin:          Ø{:.1} mm, H7 slip, {} mm deep, 2× per chip\n",
+        DOWEL_DIA, DOWEL_HOLE_DEPTH
+    ));
+    s.push_str(&format!(
+        "  Chip-to-chip gap:   {:>.2} mm\n\n",
+        INTERCHIP_GAP_X
+    ));
 
     // ── Plunger force diagram ──
     s.push_str("PLUNGER FORCE DIAGRAM (per via):\n\n");
@@ -632,42 +660,80 @@ fn emit_drawing() -> String {
     s.push_str("                              ▼\n");
     s.push_str("                         chip fluidic via (Ø1.5 mm)\n\n");
 
-    s.push_str(&format!("  Spring free length: {:.1} mm\n", SPRING_FREE_LEN));
+    s.push_str(&format!(
+        "  Spring free length: {:.1} mm\n",
+        SPRING_FREE_LEN
+    ));
     s.push_str(&format!("  Spring rate K:      {:.1} N/mm\n", SPRING_K));
-    s.push_str(&format!("  Compression:        {:.1} mm (pre-load)\n", SPRING_COMPRESSION));
+    s.push_str(&format!(
+        "  Compression:        {:.1} mm (pre-load)\n",
+        SPRING_COMPRESSION
+    ));
     s.push_str(&format!("  Force per via:      {:.1} N\n\n", SPRING_FORCE));
 
     // ── O-ring compression math ──
     s.push_str("O-RING COMPRESSION MATH (FKM 2 × 3 × 1 mm free CS):\n");
-    s.push_str(&format!("  Free cross-section:    {:.2} mm\n", ORING_FREE_CS));
-    s.push_str(&format!("  Compressed CS:         {:.2} mm (20% compression)\n", VIA_ORING_COMPRESSED_CS));
-    s.push_str(&format!("  O-ring groove depth:   1.0 mm (chip) + 0.2 mm float = 1.2 mm\n"));
+    s.push_str(&format!(
+        "  Free cross-section:    {:.2} mm\n",
+        ORING_FREE_CS
+    ));
+    s.push_str(&format!(
+        "  Compressed CS:         {:.2} mm (20% compression)\n",
+        VIA_ORING_COMPRESSED_CS
+    ));
+    s.push_str(&format!(
+        "  O-ring groove depth:   1.0 mm (chip) + 0.2 mm float = 1.2 mm\n"
+    ));
     s.push_str("  Seal pressure:         F/A = 10 N / (π × 1.25² mm²) ≈ 2.04 MPa\n");
     s.push_str("  FKM rated seat stress: 4–8 MPa → 4× safety margin\n");
     s.push_str("  Leak-before-burst @ 100 kPa test pressure:   passes\n\n");
 
     // ── Cam lever kinematics ──
     s.push_str("CAM LEVER KINEMATICS:\n");
-    s.push_str(&format!("  Axle diameter:          Ø{:.1} mm\n", CAM_AXLE_DIA));
-    s.push_str(&format!("  Cam offset (eff):       {:.2} mm\n", CAM_OFFSET_EFF));
+    s.push_str(&format!(
+        "  Axle diameter:          Ø{:.1} mm\n",
+        CAM_AXLE_DIA
+    ));
+    s.push_str(&format!(
+        "  Cam offset (eff):       {:.2} mm\n",
+        CAM_OFFSET_EFF
+    ));
     s.push_str(&format!("  Cam disc radius:        {:.1} mm\n", CAM_DISC_R));
-    s.push_str(&format!("  Lever arm length:       {:.1} mm\n", LEVER_ARM_LEN));
+    s.push_str(&format!(
+        "  Lever arm length:       {:.1} mm\n",
+        LEVER_ARM_LEN
+    ));
     s.push_str("  θ (rotation):     0°  →  2.5°  →   5°  →  7.5°  →  10°\n");
     s.push_str("  h(θ) (Z rise):    0.0 → 0.75  →   1.5 →  2.25 →   3.0 mm\n");
     s.push_str("  Mechanical advantage at θ=10°:\n");
-    s.push_str(&format!("    lever_arm / cam_offset = {:.1} / {:.2} ≈ {:.1}×\n",
-                        LEVER_ARM_LEN, CAM_OFFSET_EFF, LEVER_ARM_LEN / CAM_OFFSET_EFF));
+    s.push_str(&format!(
+        "    lever_arm / cam_offset = {:.1} / {:.2} ≈ {:.1}×\n",
+        LEVER_ARM_LEN,
+        CAM_OFFSET_EFF,
+        LEVER_ARM_LEN / CAM_OFFSET_EFF
+    ));
     // Hand force to compress 10 vias × 10 N = 100 N through 80/8.62 = 9.28:1 MA
     let total_force = (NUM_CHIPS as f64 - 1.0) * 2.0 * 10.0 + 4.0 * 10.0;
     let hand_force = total_force / (LEVER_ARM_LEN / CAM_OFFSET_EFF);
-    s.push_str(&format!("  Total stack force:      {:.1} N ({} vias × 10 N)\n", total_force, (NUM_CHIPS - 1) * 2 + 4));
-    s.push_str(&format!("  Hand force at lever:    {:.1} N (easy thumb press)\n\n", hand_force));
+    s.push_str(&format!(
+        "  Total stack force:      {:.1} N ({} vias × 10 N)\n",
+        total_force,
+        (NUM_CHIPS - 1) * 2 + 4
+    ));
+    s.push_str(&format!(
+        "  Hand force at lever:    {:.1} N (easy thumb press)\n\n",
+        hand_force
+    ));
 
     // ── Assembly sequence ──
     s.push_str("ASSEMBLY SEQUENCE:\n");
-    s.push_str("  1. Mount frame to 100-chip rack shelf via 8× M3 bolts (pre-drilled 9 mm grid).\n");
+    s.push_str(
+        "  1. Mount frame to 100-chip rack shelf via 8× M3 bolts (pre-drilled 9 mm grid).\n",
+    );
     s.push_str("  2. Press-fit 2× Ø3 mm hardened-steel dowel pins per chip location (10 total for 5-chip build).\n");
-    s.push_str("  3. Seat FKM O-rings into every chip fluidic-via seat (includes terminal ends).\n");
+    s.push_str(
+        "  3. Seat FKM O-rings into every chip fluidic-via seat (includes terminal ends).\n",
+    );
     s.push_str("  4. Drop chip 1 into −X-end pocket, seat onto dowels (tactile click, 0.05 mm XY clearance).\n");
     s.push_str("  5. Apply 1 µL of sterile DI water to each O-ring for lubrication.\n");
     s.push_str("  6. Drop chip 2, ensuring fluidic vias on shared short edge align within 0.1 mm (visual + IR alignment check).\n");
@@ -703,8 +769,10 @@ fn main() {
     println!();
 
     // Quick parametric sanity
-    assert!(NUM_CHIPS >= NUM_CHIPS_MIN && NUM_CHIPS <= NUM_CHIPS_MAX,
-            "NUM_CHIPS must be in [{NUM_CHIPS_MIN}, {NUM_CHIPS_MAX}]");
+    assert!(
+        NUM_CHIPS >= NUM_CHIPS_MIN && NUM_CHIPS <= NUM_CHIPS_MAX,
+        "NUM_CHIPS must be in [{NUM_CHIPS_MIN}, {NUM_CHIPS_MAX}]"
+    );
 
     // ── Build parts ──
     let frame_part = frame();
@@ -729,7 +797,10 @@ fn main() {
         ("output/multi_organ_manifold_latch.stl", &latch_part),
         ("output/multi_organ_manifold_plunger.stl", &plunger),
         ("output/multi_organ_manifold_oring.stl", &oring),
-        ("output/multi_organ_manifold_example_pocket.stl", &example_pocket),
+        (
+            "output/multi_organ_manifold_example_pocket.stl",
+            &example_pocket,
+        ),
         ("output/multi_organ_manifold_assembly.stl", &asm),
     ];
     for (path, part) in exports {
@@ -751,8 +822,14 @@ fn main() {
     println!("  Chips in manifold:         {}", v.num_chips);
     println!("  Chip-to-chip interfaces:   {}", v.num_interfaces);
     println!("  Total plunger vias:        {}", v.num_vias_total);
-    println!("  Plunger force per via:     {:.2} N (target 10.0 N)", v.per_via_force_n);
-    println!("  Chip Z flatness worst-case:{:.3} mm (limit 0.05 mm)", v.chip_flatness_mm);
+    println!(
+        "  Plunger force per via:     {:.2} N (target 10.0 N)",
+        v.per_via_force_n
+    );
+    println!(
+        "  Chip Z flatness worst-case:{:.3} mm (limit 0.05 mm)",
+        v.chip_flatness_mm
+    );
     if v.pass {
         println!("  Result:                    PASS");
     } else {

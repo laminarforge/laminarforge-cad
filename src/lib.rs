@@ -43,7 +43,7 @@ pub const HOLDER_SCREW_DIAMETER: f64 = 3.2;
 /// CNC-machined 6061-T6 aluminum. Holds tubes directly with integrated cartridge heater.
 /// Sits on PCB, connects via J4 (heater) and J3 (thermistor).
 pub const BLOCK_LENGTH: f64 = HEATER_ZONE_LENGTH; // 84mm
-pub const BLOCK_WIDTH: f64 = HEATER_ZONE_WIDTH;   // 22mm
+pub const BLOCK_WIDTH: f64 = HEATER_ZONE_WIDTH; // 22mm
 pub const BLOCK_HEIGHT: f64 = 25.0; // 15mm wells + 10mm floor (heater bore + thermal mass)
 pub const BLOCK_TUBE_DIAMETER: f64 = 6.2; // tighter fit for CNC aluminum (0.1mm clearance vs 0.35mm for FDM)
 pub const BLOCK_WELL_DEPTH: f64 = 15.0; // immerses full conical bottom of PCR tube
@@ -163,7 +163,7 @@ pub const VSLOT_SLOT_WIDTH: f64 = 6.0; // channel opening for M5 T-nuts
 
 /// OpenBuilds Mini V-Wheel (Delrin)
 pub const VWHEEL_OD: f64 = 15.23; // mm outer diameter
-pub const VWHEEL_BORE: f64 = 5.0;  // M5 bore
+pub const VWHEEL_BORE: f64 = 5.0; // M5 bore
 pub const VWHEEL_WIDTH: f64 = 8.80; // mm
 
 /// Eccentric spacer (for V-wheel preload adjustment)
@@ -191,12 +191,12 @@ pub const F625ZZ_FLANGE_OD: f64 = 17.0;
 /// Hamilton 1710RN syringe (100μL gastight, PN 81030)
 /// Selected per gap analysis: 1nL/microstep resolution, covers 10-100μL range
 /// Dimensions verified from Hamilton datasheet (PN 81065 / Knowledge Center)
-pub const H1710_BARREL_OD: f64 = 7.75;    // confirmed: 0.305" (NOT 6.6mm — that's the 1701/10μL)
-pub const H1710_BARREL_ID: f64 = 1.46;    // confirmed from Hamilton spec
+pub const H1710_BARREL_OD: f64 = 7.75; // confirmed: 0.305" (NOT 6.6mm — that's the 1701/10μL)
+pub const H1710_BARREL_ID: f64 = 1.46; // confirmed from Hamilton spec
 pub const H1710_BARREL_LENGTH: f64 = 65.0; // ~65mm (verified, was 60mm estimate)
-pub const H1710_FLANGE_WIDTH: f64 = 12.5;  // ~12.5mm (verified, was 14mm estimate)
+pub const H1710_FLANGE_WIDTH: f64 = 12.5; // ~12.5mm (verified, was 14mm estimate)
 pub const H1710_FLANGE_THICKNESS: f64 = 2.0; // estimated — verify in hand
-pub const H1710_NEEDLE_OD: f64 = 0.72;    // 22s gauge blunt
+pub const H1710_NEEDLE_OD: f64 = 0.72; // 22s gauge blunt
 
 /// V-slot M5 mounting (T-nut interface)
 pub const VSLOT_M5_HOLE: f64 = 5.3; // M5 clearance hole
@@ -391,7 +391,7 @@ pub const CNC16_CORNER_RADIUS: f64 = 3.18;
 
 /// Rev C plate dimensions (mm) — ANSI/SLAS microplate footprint
 pub const REVC_CHIP_LENGTH: f64 = 127.76; // X axis (long edge)
-pub const REVC_CHIP_WIDTH: f64 = 85.48;   // Y axis (short edge)
+pub const REVC_CHIP_WIDTH: f64 = 85.48; // Y axis (short edge)
 pub const REVC_CORNER_RADIUS: f64 = 3.18; // ANSI/SLAS 1-2004 §4.1.2.1
 
 /// Rev C plate thickness — 14.20mm PMMA + 0.15mm glass = 14.35mm total
@@ -399,12 +399,12 @@ pub const REVC_CORNER_RADIUS: f64 = 3.18; // ANSI/SLAS 1-2004 §4.1.2.1
 /// Minimum external clearance to plate bottom: 1.0mm (in well area)
 pub const REVC_PMMA_THICKNESS: f64 = 14.20;
 pub const REVC_GLASS_THICKNESS: f64 = 0.15; // 150μm borosilicate (#1.5 coverslip)
-pub const REVC_TOTAL_HEIGHT: f64 = 14.35;   // ANSI/SLAS 2-2004 standard plate height
+pub const REVC_TOTAL_HEIGHT: f64 = 14.35; // ANSI/SLAS 2-2004 standard plate height
 
 /// Rev C well dimensions — open-top wells on TOP face
 /// 4mm diameter fits 9mm pitch grid, compatible with 384-well robotic tips
 pub const REVC_WELL_DIAMETER: f64 = 4.0;
-pub const REVC_WELL_DEPTH: f64 = 10.0;    // ~125μL volume per well (π×2²×10)
+pub const REVC_WELL_DEPTH: f64 = 10.0; // ~125μL volume per well (π×2²×10)
 pub const REVC_WELL_VOLUME_UL: f64 = 125.7; // reference only, π×r²×h
 
 /// Rev C via dimensions — vertical through-hole connecting well bottom to channel
@@ -414,14 +414,14 @@ pub const REVC_VIA_DIAMETER: f64 = 1.0;
 pub const REVC_VIA_LENGTH: f64 = 4.0; // 14.20 - 10.0 - 0.2 = 4.0mm floor
 
 /// Rev C chamber dimensions — milled into BOTTOM face
-pub const REVC_CHAMBER_WIDTH: f64 = 3.0;   // X direction (unchanged from Rev B)
-pub const REVC_CHAMBER_LENGTH: f64 = 7.0;  // Y direction (was 10mm in Rev B, fits 9mm well spacing)
-pub const REVC_CHAMBER_DEPTH: f64 = 0.2;   // 200μm (unchanged from Rev B)
+pub const REVC_CHAMBER_WIDTH: f64 = 3.0; // X direction (unchanged from Rev B)
+pub const REVC_CHAMBER_LENGTH: f64 = 7.0; // Y direction (was 10mm in Rev B, fits 9mm well spacing)
+pub const REVC_CHAMBER_DEPTH: f64 = 0.2; // 200μm (unchanged from Rev B)
 
 /// Rev C channel dimensions — milled into BOTTOM face, connect vias to chambers
-pub const REVC_CHANNEL_WIDTH: f64 = 0.5;   // 500μm (unchanged from Rev B)
-pub const REVC_CHANNEL_DEPTH: f64 = 0.2;   // 200μm (unchanged from Rev B)
-pub const REVC_CHANNEL_LENGTH: f64 = 1.0;  // via center to chamber edge
+pub const REVC_CHANNEL_WIDTH: f64 = 0.5; // 500μm (unchanged from Rev B)
+pub const REVC_CHANNEL_DEPTH: f64 = 0.2; // 200μm (unchanged from Rev B)
+pub const REVC_CHANNEL_LENGTH: f64 = 1.0; // via center to chamber edge
 
 /// Rev C grid layout — 4×4 chambers, each with inlet + outlet well = 32 wells
 pub const REVC_NUM_CHAMBERS: usize = 16;
@@ -497,22 +497,22 @@ pub const REVC_CHAMBER_LABELS: [&str; 16] = [
 /// Format: (column_letter, inlet_row, outlet_row) per the 96-well grid
 /// Chamber order: row-major through the 4×4 grid
 pub const REVC_WELL_POSITIONS: [(&str, &str); 16] = [
-    ("A2",  "B2"),   // Ch1:  DRG sensory neurons
-    ("A5",  "B5"),   // Ch2:  Hepatocytes
-    ("A8",  "B8"),   // Ch3:  Motor neurons
-    ("A11", "B11"),  // Ch4:  Cortical neurons
-    ("C2",  "D2"),   // Ch5:  Astrocytes
-    ("C5",  "D5"),   // Ch6:  Cardiomyocytes
-    ("C8",  "D8"),   // Ch7:  Skeletal muscle
-    ("C11", "D11"),  // Ch8:  Endothelial cells
-    ("E2",  "F2"),   // Ch9:  Kidney epithelial
-    ("E5",  "F5"),   // Ch10: Lung epithelial
-    ("E8",  "F8"),   // Ch11: PBMCs
-    ("E11", "F11"),  // Ch12: Pancreatic beta
-    ("G2",  "H2"),   // Ch13: Enteric neurons
-    ("G5",  "H5"),   // Ch14: Schwann cells
-    ("G8",  "H8"),   // Ch15: HEK293 (pos ctrl)
-    ("G11", "H11"),  // Ch16: Empty (neg ctrl)
+    ("A2", "B2"),   // Ch1:  DRG sensory neurons
+    ("A5", "B5"),   // Ch2:  Hepatocytes
+    ("A8", "B8"),   // Ch3:  Motor neurons
+    ("A11", "B11"), // Ch4:  Cortical neurons
+    ("C2", "D2"),   // Ch5:  Astrocytes
+    ("C5", "D5"),   // Ch6:  Cardiomyocytes
+    ("C8", "D8"),   // Ch7:  Skeletal muscle
+    ("C11", "D11"), // Ch8:  Endothelial cells
+    ("E2", "F2"),   // Ch9:  Kidney epithelial
+    ("E5", "F5"),   // Ch10: Lung epithelial
+    ("E8", "F8"),   // Ch11: PBMCs
+    ("E11", "F11"), // Ch12: Pancreatic beta
+    ("G2", "H2"),   // Ch13: Enteric neurons
+    ("G5", "H5"),   // Ch14: Schwann cells
+    ("G8", "H8"),   // Ch15: HEK293 (pos ctrl)
+    ("G11", "H11"), // Ch16: Empty (neg ctrl)
 ];
 
 // ─── PCB Heater Trace Constants ───
@@ -725,8 +725,8 @@ pub fn fcb16_col_xs() -> [f64; 4] {
 pub fn fcb16_row_ys() -> [f64; 4] {
     let half_span = (FCB16_GRID_ROWS as f64 - 1.0) * FCB16_ROW_SPACING / 2.0; // 27.0
     [
-        half_span,                    // row 0: +27.0
-        half_span - FCB16_ROW_SPACING,     // row 1: +9.0
+        half_span,                           // row 0: +27.0
+        half_span - FCB16_ROW_SPACING,       // row 1: +9.0
         half_span - 2.0 * FCB16_ROW_SPACING, // row 2: -9.0
         half_span - 3.0 * FCB16_ROW_SPACING, // row 3: -27.0
     ]

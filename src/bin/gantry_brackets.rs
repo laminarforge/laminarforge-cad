@@ -40,41 +40,29 @@ fn build_motor_mount() {
     let motor_face_h = NEMA17_BODY + 8.0; // 50.3mm
 
     // ── V-slot mounting face ──
-    let vslot_face = centered_cube(
-        "vslot_face",
-        vslot_face_w,
-        bracket_thickness,
-        vslot_face_h,
-    );
+    let vslot_face = centered_cube("vslot_face", vslot_face_w, bracket_thickness, vslot_face_h);
 
     // ── Motor face (extends from top of V-slot face in +Y direction) ──
-    let motor_face = centered_cube(
-        "motor_face",
-        motor_face_w,
-        motor_face_h,
-        bracket_thickness,
-    )
-    .translate(
-        0.0,
-        motor_face_h / 2.0 - bracket_thickness / 2.0,
-        vslot_face_h / 2.0 - bracket_thickness / 2.0,
-    );
+    let motor_face = centered_cube("motor_face", motor_face_w, motor_face_h, bracket_thickness)
+        .translate(
+            0.0,
+            motor_face_h / 2.0 - bracket_thickness / 2.0,
+            vslot_face_h / 2.0 - bracket_thickness / 2.0,
+        );
 
     // ── Gusset (triangular reinforcement between faces) ──
     let gusset_size = 15.0;
-    let gusset = centered_cube("gusset", bracket_thickness, gusset_size, gusset_size)
-        .translate(
-            -(vslot_face_w / 2.0 - bracket_thickness / 2.0),
-            gusset_size / 2.0 - bracket_thickness / 2.0,
-            vslot_face_h / 2.0 - gusset_size / 2.0 - bracket_thickness,
-        );
+    let gusset = centered_cube("gusset", bracket_thickness, gusset_size, gusset_size).translate(
+        -(vslot_face_w / 2.0 - bracket_thickness / 2.0),
+        gusset_size / 2.0 - bracket_thickness / 2.0,
+        vslot_face_h / 2.0 - gusset_size / 2.0 - bracket_thickness,
+    );
 
-    let gusset2 = centered_cube("gusset2", bracket_thickness, gusset_size, gusset_size)
-        .translate(
-            vslot_face_w / 2.0 - bracket_thickness / 2.0,
-            gusset_size / 2.0 - bracket_thickness / 2.0,
-            vslot_face_h / 2.0 - gusset_size / 2.0 - bracket_thickness,
-        );
+    let gusset2 = centered_cube("gusset2", bracket_thickness, gusset_size, gusset_size).translate(
+        vslot_face_w / 2.0 - bracket_thickness / 2.0,
+        gusset_size / 2.0 - bracket_thickness / 2.0,
+        vslot_face_h / 2.0 - gusset_size / 2.0 - bracket_thickness,
+    );
 
     // ── V-slot M5 mounting holes (through V-slot face, into extrusion end) ──
     // 2× M5 holes aligned with V-slot channels (at ±10mm from center)
@@ -123,12 +111,11 @@ fn build_motor_mount() {
     // ── Boss recess (NEMA17 locating boss) ──
     let boss_d = NEMA17_BOSS_DIAMETER + 0.5;
     let boss_depth = 2.5;
-    let boss_recess = centered_cylinder("boss", boss_d / 2.0, boss_depth + 0.1, 48)
-        .translate(
-            0.0,
-            motor_y,
-            motor_z - bracket_thickness / 2.0 + boss_depth / 2.0 - 0.05,
-        );
+    let boss_recess = centered_cylinder("boss", boss_d / 2.0, boss_depth + 0.1, 48).translate(
+        0.0,
+        motor_y,
+        motor_z - bracket_thickness / 2.0 + boss_depth / 2.0 - 0.05,
+    );
 
     // ── Shaft through-hole ──
     let shaft_hole = centered_cylinder("shaft", 12.0 / 2.0, bracket_thickness + 2.0, 32)
@@ -149,8 +136,12 @@ fn build_motor_mount() {
     println!("Exported: output/gantry_motor_mount.stl");
     println!();
     println!("── Gantry Motor Mount ──");
-    println!("  V-slot face:    {vslot_face_w:.0}mm x {vslot_face_h:.0}mm x {bracket_thickness:.0}mm");
-    println!("  Motor face:     {motor_face_w:.0}mm x {motor_face_h:.0}mm x {bracket_thickness:.0}mm");
+    println!(
+        "  V-slot face:    {vslot_face_w:.0}mm x {vslot_face_h:.0}mm x {bracket_thickness:.0}mm"
+    );
+    println!(
+        "  Motor face:     {motor_face_w:.0}mm x {motor_face_h:.0}mm x {bracket_thickness:.0}mm"
+    );
     println!("  V-slot holes:   2x M5 ({VSLOT_M5_HOLE:.1}mm)");
     println!("  NEMA17 pattern: 4x M3 at {NEMA17_HOLE_SPACING:.0}mm square");
     println!("  Boss recess:    {boss_d:.1}mm dia x {boss_depth:.1}mm");
@@ -223,11 +214,7 @@ fn build_belt_tensioner() {
         flange_recess_d,
         flange_recess_depth + 0.1,
     )
-    .translate(
-        idler_x,
-        0.0,
-        body_height / 2.0 - flange_recess_depth / 2.0,
-    );
+    .translate(idler_x, 0.0, body_height / 2.0 - flange_recess_depth / 2.0);
 
     // V-slot mounting hole (M5 through bottom)
     let vslot_hole = centered_cylinder("vslot_mount", VSLOT_M5_HOLE / 2.0, body_height + 2.0, 24)
@@ -276,7 +263,11 @@ fn build_endstop_bracket() {
 
     // Pocket on +Z face (switch lever points up or to the side)
     let switch_pocket = centered_cube("switch_pocket", switch_w, switch_d, switch_h + 0.1)
-        .translate(0.0, -(body_width / 2.0 - switch_d / 2.0 + 0.1), body_height / 2.0 - switch_h / 2.0);
+        .translate(
+            0.0,
+            -(body_width / 2.0 - switch_d / 2.0 + 0.1),
+            body_height / 2.0 - switch_h / 2.0,
+        );
 
     // ── Microswitch M2 mounting holes ──
     let switch_hole_d = 2.2; // M2 clearance
@@ -312,7 +303,9 @@ fn build_endstop_bracket() {
     println!("── Gantry Endstop Bracket ──");
     println!("  Body:           {body_length:.0}mm x {body_width:.0}mm x {body_height:.0}mm");
     println!("  Switch pocket:  {switch_w:.0}mm x {switch_d:.0}mm x {switch_h:.0}mm");
-    println!("  Switch holes:   2x M2 ({switch_hole_d:.1}mm) at {switch_hole_spacing:.0}mm spacing");
+    println!(
+        "  Switch holes:   2x M2 ({switch_hole_d:.1}mm) at {switch_hole_spacing:.0}mm spacing"
+    );
     println!("  V-slot mount:   1x M5 ({VSLOT_M5_HOLE:.1}mm)");
     println!("  Material:       PETG");
 }

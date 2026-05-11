@@ -2,9 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write;
 use std::path::Path;
 
-use crate::*;
-use super::Component;
 use super::nets::*;
+use super::Component;
+use crate::*;
 
 /// Convert mm to DSN um (micrometers).
 fn mm_to_um(mm: f64) -> f64 {
@@ -111,7 +111,8 @@ fn write_structure(s: &mut String) {
             s,
             "    (keepout \"\" (circle signal 6950 {:.0} {:.0}))",
             x_um, y_um,
-        ).unwrap();
+        )
+        .unwrap();
     }
 
     // Via definition
@@ -120,14 +121,38 @@ fn write_structure(s: &mut String) {
     // Edge keepouts — 1mm strip along all 4 board edges to prevent
     // routing too close to the edge (JLCPCB requires 0.25mm min).
     let edge_w = mm_to_um(1.0); // 1mm keepout width
-    // Top edge
-    writeln!(s, "    (keepout \"\" (rect signal 0 0 {:.0} {:.0}))", board_x, -edge_w).unwrap();
+                                // Top edge
+    writeln!(
+        s,
+        "    (keepout \"\" (rect signal 0 0 {:.0} {:.0}))",
+        board_x, -edge_w
+    )
+    .unwrap();
     // Bottom edge
-    writeln!(s, "    (keepout \"\" (rect signal 0 {:.0} {:.0} {:.0}))", board_y_neg + edge_w, board_x, board_y_neg).unwrap();
+    writeln!(
+        s,
+        "    (keepout \"\" (rect signal 0 {:.0} {:.0} {:.0}))",
+        board_y_neg + edge_w,
+        board_x,
+        board_y_neg
+    )
+    .unwrap();
     // Left edge
-    writeln!(s, "    (keepout \"\" (rect signal 0 0 {:.0} {:.0}))", edge_w, board_y_neg).unwrap();
+    writeln!(
+        s,
+        "    (keepout \"\" (rect signal 0 0 {:.0} {:.0}))",
+        edge_w, board_y_neg
+    )
+    .unwrap();
     // Right edge
-    writeln!(s, "    (keepout \"\" (rect signal {:.0} 0 {:.0} {:.0}))", board_x - edge_w, board_x, board_y_neg).unwrap();
+    writeln!(
+        s,
+        "    (keepout \"\" (rect signal {:.0} 0 {:.0} {:.0}))",
+        board_x - edge_w,
+        board_x,
+        board_y_neg
+    )
+    .unwrap();
 
     // Default rules — clearance 230um gives margin above KiCad's 127um rule
     writeln!(s, "    (rule").unwrap();
@@ -163,8 +188,11 @@ fn write_placement(s: &mut String, components: &[Component]) {
         writeln!(
             s,
             "      (place {} {:.0} {:.0} front 0.0)",
-            ref_name, mm_to_um(x_mm), dsn_y(y_mm),
-        ).unwrap();
+            ref_name,
+            mm_to_um(x_mm),
+            dsn_y(y_mm),
+        )
+        .unwrap();
     }
     writeln!(s, "    )").unwrap();
 
@@ -174,12 +202,17 @@ fn write_placement(s: &mut String, components: &[Component]) {
             let x_um = mm_to_um(comp.x);
             let y_um = dsn_y(comp.y);
             let rot = dsn_rotation(comp.rotation);
-            let side = if comp.layer.contains("B.Cu") { "back" } else { "front" };
+            let side = if comp.layer.contains("B.Cu") {
+                "back"
+            } else {
+                "front"
+            };
             writeln!(
                 s,
                 "      (place {} {:.0} {:.0} {} {:.1} (PN {}))",
                 comp.reference, x_um, y_um, side, rot, comp.value,
-            ).unwrap();
+            )
+            .unwrap();
         }
         writeln!(s, "    )").unwrap();
     }
@@ -201,11 +234,14 @@ fn write_library(s: &mut String, components: &[Component]) {
     let mut padstacks: BTreeMap<String, PadstackDef> = BTreeMap::new();
 
     // Pre-register the mounting hole padstack
-    padstacks.insert("Round[A]Pad_6350_um".to_string(), PadstackDef {
-        width_um: 6350.0,
-        height_um: 6350.0,
-        is_thru: true,
-    });
+    padstacks.insert(
+        "Round[A]Pad_6350_um".to_string(),
+        PadstackDef {
+            width_um: 6350.0,
+            height_um: 6350.0,
+            is_thru: true,
+        },
+    );
 
     for comp in components {
         let key = footprint_key(comp);
@@ -223,18 +259,22 @@ fn write_library(s: &mut String, components: &[Component]) {
                 s,
                 "      (pin {} {} {:.0} {:.0})",
                 ps_name, pad.number, px_um, py_um,
-            ).unwrap();
+            )
+            .unwrap();
 
             // Record padstack definition
             if !padstacks.contains_key(&ps_name) {
                 let w_um = mm_to_um(pad.width);
                 let h_um = mm_to_um(pad.height);
                 let is_thru = pad.pad_type == "thru_hole" || pad.drill.is_some();
-                padstacks.insert(ps_name, PadstackDef {
-                    width_um: w_um,
-                    height_um: h_um,
-                    is_thru,
-                });
+                padstacks.insert(
+                    ps_name,
+                    PadstackDef {
+                        width_um: w_um,
+                        height_um: h_um,
+                        is_thru,
+                    },
+                );
             }
         }
         writeln!(s, "    )").unwrap();
@@ -256,7 +296,8 @@ fn write_library(s: &mut String, components: &[Component]) {
                 s,
                 "      (shape (rect F.Cu {:.0} {:.0} {:.0} {:.0}))",
                 -hw, -hh, hw, hh,
-            ).unwrap();
+            )
+            .unwrap();
         }
         writeln!(s, "      (attach off)").unwrap();
         writeln!(s, "    )").unwrap();
@@ -353,7 +394,8 @@ pub fn write_dsn(path: &Path, components: &[Component]) {
     let mut s = String::with_capacity(256 * 1024);
 
     // Use the file name from the path as the pcb identifier
-    let pcb_name = path.file_name()
+    let pcb_name = path
+        .file_name()
         .map(|n| n.to_string_lossy().to_string())
         .unwrap_or_else(|| "board.dsn".to_string());
 

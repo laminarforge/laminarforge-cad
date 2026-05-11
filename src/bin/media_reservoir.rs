@@ -101,8 +101,8 @@ fn main() {
     // Incubator wall cross-section: 3mm inner PETG + 25mm foam + 3mm outer PETG
     // + side-wall mount spacing. Use a single bulkhead gland 50 mm OD
     // with a 5-hole silicone grommet insert (one hole per channel).
-    let passthrough_od: f64 = 60.0;        // outer flange OD
-    let passthrough_boss_od: f64 = 40.0;   // threaded boss OD (goes through wall)
+    let passthrough_od: f64 = 60.0; // outer flange OD
+    let passthrough_boss_od: f64 = 40.0; // threaded boss OD (goes through wall)
     let passthrough_boss_length: f64 = 45.0; // 3 + 25 + 3 + 14 backing nut engage
     let passthrough_center_bore: f64 = 28.0; // fits 5-hole grommet
     let passthrough_grommet_holes: f64 = 5.0; // 5 tube channels through grommet
@@ -115,7 +115,7 @@ fn main() {
     // Takes one incoming tube (4.8 mm OD) and splits to 4 drip nozzles that
     // span the 4 columns of chips on that shelf. Nozzle length kept short
     // so the rocker's ±15° tilt doesn't swing the head into adjacent shelves.
-    let drip_head_x: f64 = 540.0;  // spans all 4 columns of 127.76mm chips
+    let drip_head_x: f64 = 540.0; // spans all 4 columns of 127.76mm chips
     let drip_head_y: f64 = 25.0;
     let drip_head_z: f64 = 12.0;
     let drip_nozzles: usize = 4;
@@ -155,15 +155,15 @@ fn main() {
     // Stiffening rings — 2× external raised bands for hand grip / stability
     let band1 = (centered_cylinder("band1_o", reservoir_od / 2.0 + 3.0, 6.0, 96)
         - centered_cylinder("band1_i", reservoir_od / 2.0, 6.2, 96))
-        .translate(0.0, 0.0, -reservoir_outer_h / 2.0 + 30.0);
+    .translate(0.0, 0.0, -reservoir_outer_h / 2.0 + 30.0);
     let band2 = (centered_cylinder("band2_o", reservoir_od / 2.0 + 3.0, 6.0, 96)
         - centered_cylinder("band2_i", reservoir_od / 2.0, 6.2, 96))
-        .translate(0.0, 0.0, reservoir_outer_h / 2.0 - 40.0);
+    .translate(0.0, 0.0, reservoir_outer_h / 2.0 - 40.0);
 
     // Lid-seat shoulder (top rim, slightly recessed 2 mm to seat lid O-ring)
     let rim_relief = (centered_cylinder("rim_o", reservoir_od / 2.0 + 0.1, 3.0, 96)
         - centered_cylinder("rim_i", reservoir_id / 2.0 - 2.0, 3.2, 96))
-        .translate(0.0, 0.0, reservoir_outer_h / 2.0 - 1.5);
+    .translate(0.0, 0.0, reservoir_outer_h / 2.0 - 1.5);
 
     // Collar flange where lid skirt grips (knurl proxy — 12 shallow pockets)
     let mut knurl = Part::empty("knurl");
@@ -171,8 +171,11 @@ fn main() {
         let theta = (i as f64) * std::f64::consts::PI / 6.0;
         let kx = (reservoir_od / 2.0 + 2.0) * theta.cos();
         let ky = (reservoir_od / 2.0 + 2.0) * theta.sin();
-        let pocket = centered_cube(&format!("kn{i}"), 4.0, 3.0, lid_collar_height)
-            .translate(kx, ky, reservoir_outer_h / 2.0 - lid_collar_height / 2.0);
+        let pocket = centered_cube(&format!("kn{i}"), 4.0, 3.0, lid_collar_height).translate(
+            kx,
+            ky,
+            reservoir_outer_h / 2.0 - lid_collar_height / 2.0,
+        );
         knurl = knurl + pocket;
     }
 
@@ -190,60 +193,73 @@ fn main() {
 
     // Skirt (hangs down around reservoir top, 15 mm tall)
     let skirt_h: f64 = 15.0;
-    let skirt_outer = centered_cylinder("skirt_o", lid_od / 2.0, skirt_h, 96)
-        .translate(0.0, 0.0, -(lid_thickness / 2.0) - skirt_h / 2.0);
+    let skirt_outer = centered_cylinder("skirt_o", lid_od / 2.0, skirt_h, 96).translate(
+        0.0,
+        0.0,
+        -(lid_thickness / 2.0) - skirt_h / 2.0,
+    );
     let skirt_inner = centered_cylinder("skirt_i", (reservoir_od + 0.4) / 2.0, skirt_h + 0.2, 96)
         .translate(0.0, 0.0, -(lid_thickness / 2.0) - skirt_h / 2.0);
 
     // O-ring groove (on lid underside, seats onto reservoir ID rim)
-    let oring_outer = centered_cylinder("or_o", (reservoir_id / 2.0) - 1.0, 2.2, 96)
-        .translate(0.0, 0.0, -(lid_thickness / 2.0) + 1.1);
-    let oring_inner = centered_cylinder("or_i", (reservoir_id / 2.0) - 3.0, 2.4, 96)
-        .translate(0.0, 0.0, -(lid_thickness / 2.0) + 1.1);
+    let oring_outer = centered_cylinder("or_o", (reservoir_id / 2.0) - 1.0, 2.2, 96).translate(
+        0.0,
+        0.0,
+        -(lid_thickness / 2.0) + 1.1,
+    );
+    let oring_inner = centered_cylinder("or_i", (reservoir_id / 2.0) - 3.0, 2.4, 96).translate(
+        0.0,
+        0.0,
+        -(lid_thickness / 2.0) + 1.1,
+    );
     let oring_groove = oring_outer - oring_inner;
 
     // Port A: HEPA-vented fill port — 22mm boss, 10mm bore, luer-lock compatible
     let fill_x = 0.0;
     let fill_y = lid_od / 2.0 - 25.0; // toward one edge
-    let fill_boss = centered_cylinder("fill_boss", fill_port_od / 2.0, 15.0, 48)
-        .translate(fill_x, fill_y, lid_thickness / 2.0 + 7.5);
+    let fill_boss = centered_cylinder("fill_boss", fill_port_od / 2.0, 15.0, 48).translate(
+        fill_x,
+        fill_y,
+        lid_thickness / 2.0 + 7.5,
+    );
     let fill_bore = centered_cylinder("fill_bore", fill_port_id / 2.0, lid_thickness + 20.0, 48)
         .translate(fill_x, fill_y, 0.0);
     // Luer lip (6mm ID step for luer-lock taper)
-    let luer_lip = centered_cylinder("luer_lip", 6.0 / 2.0, 6.0, 32)
-        .translate(fill_x, fill_y, lid_thickness / 2.0 + 15.0 + 3.0);
+    let luer_lip = centered_cylinder("luer_lip", 6.0 / 2.0, 6.0, 32).translate(
+        fill_x,
+        fill_y,
+        lid_thickness / 2.0 + 15.0 + 3.0,
+    );
 
     // Port B: Dip tube passthrough (center)
-    let dip_bore =
-        centered_cylinder("dip_bore", dip_tube_od / 2.0, lid_thickness + 2.0, 48);
+    let dip_bore = centered_cylinder("dip_bore", dip_tube_od / 2.0, lid_thickness + 2.0, 48);
     // Dip tube collar (prevents slide-through)
     let dip_collar = (centered_cylinder("dipc_o", 16.0 / 2.0, 6.0, 48)
         - centered_cylinder("dipc_i", dip_tube_od / 2.0, 6.2, 48))
-        .translate(0.0, 0.0, lid_thickness / 2.0 + 3.0);
+    .translate(0.0, 0.0, lid_thickness / 2.0 + 3.0);
 
     // Port C: Low-level sensor port (M12 clearance, near opposite of fill port)
     let sensor_x = 0.0;
     let sensor_y = -(lid_od / 2.0 - 25.0);
-    let sensor_bore = centered_cylinder(
-        "sens_bore",
-        sensor_port_od / 2.0,
-        lid_thickness + 2.0,
-        48,
-    )
-    .translate(sensor_x, sensor_y, 0.0);
+    let sensor_bore = centered_cylinder("sens_bore", sensor_port_od / 2.0, lid_thickness + 2.0, 48)
+        .translate(sensor_x, sensor_y, 0.0);
     let sensor_boss = (centered_cylinder("sens_boss_o", 22.0 / 2.0, 10.0, 48)
         - centered_cylinder("sens_boss_i", sensor_port_od / 2.0, 10.2, 48))
-        .translate(sensor_x, sensor_y, lid_thickness / 2.0 + 5.0);
+    .translate(sensor_x, sensor_y, lid_thickness / 2.0 + 5.0);
 
     // Port D: AseptiQuik QD bulkhead (25mm bore, with 40mm flange boss)
     let qd_x = lid_od / 2.0 - 35.0;
     let qd_y = 0.0;
-    let qd_bore =
-        centered_cylinder("qd_bore", aseptiquik_port_od / 2.0, lid_thickness + 20.0, 48)
-            .translate(qd_x, qd_y, 0.0);
+    let qd_bore = centered_cylinder(
+        "qd_bore",
+        aseptiquik_port_od / 2.0,
+        lid_thickness + 20.0,
+        48,
+    )
+    .translate(qd_x, qd_y, 0.0);
     let qd_boss = (centered_cylinder("qd_boss_o", 40.0 / 2.0, 12.0, 48)
         - centered_cylinder("qd_boss_i", aseptiquik_port_od / 2.0, 12.2, 48))
-        .translate(qd_x, qd_y, lid_thickness / 2.0 + 6.0);
+    .translate(qd_x, qd_y, lid_thickness / 2.0 + 6.0);
 
     // Port E: Lift eyelets (×2, on either side of fill port axis)
     let lift1 = centered_cylinder("lift1", lift_eyelet_od / 2.0, lid_thickness + 2.0, 24)
@@ -251,9 +267,7 @@ fn main() {
     let lift2 = centered_cylinder("lift2", lift_eyelet_od / 2.0, lid_thickness + 2.0, 24)
         .translate((lid_od / 2.0) - 15.0, 0.0, 0.0);
 
-    let lid = lid_body + skirt_outer - skirt_inner - oring_groove
-        + fill_boss
-        - fill_bore
+    let lid = lid_body + skirt_outer - skirt_inner - oring_groove + fill_boss - fill_bore
         + luer_lip
         - dip_bore
         + dip_collar
@@ -287,9 +301,13 @@ fn main() {
         let cx = pump_x_start + (i as f64) * pump_pitch;
 
         // NEMA17 shaft/boss passthrough in plate
-        let boss =
-            centered_cylinder(&format!("boss_{i}"), nema17_boss_clr / 2.0, manifold_plate_thickness + 2.0, 48)
-                .translate(cx, 0.0, 0.0);
+        let boss = centered_cylinder(
+            &format!("boss_{i}"),
+            nema17_boss_clr / 2.0,
+            manifold_plate_thickness + 2.0,
+            48,
+        )
+        .translate(cx, 0.0, 0.0);
         pump_cutouts = pump_cutouts + boss;
 
         // 4× M3 pump mounting holes on 38 mm square pattern (coplanar with
@@ -326,23 +344,33 @@ fn main() {
     // Channel ID labels (engraved front edge)
     for i in 0..pump_channels {
         let cx = pump_x_start + (i as f64) * pump_pitch;
-        let label = centered_cube(
-            &format!("lbl_{i}"),
-            20.0,
-            5.0,
-            1.0,
-        )
-        .translate(cx, -(manifold_plate_y / 2.0) + 8.0, manifold_plate_thickness / 2.0 - 0.4);
+        let label = centered_cube(&format!("lbl_{i}"), 20.0, 5.0, 1.0).translate(
+            cx,
+            -(manifold_plate_y / 2.0) + 8.0,
+            manifold_plate_thickness / 2.0 - 0.4,
+        );
         pump_cutouts = pump_cutouts + label;
     }
 
     // Baseplate mounting — 4 corner M5 holes for 20×20 extrusion T-nuts
     let mut base_mounts = Part::empty("base_mounts");
     for (bx, by) in [
-        (-(manifold_plate_x / 2.0) + 15.0, -(manifold_plate_y / 2.0) + 15.0),
-        ((manifold_plate_x / 2.0) - 15.0, -(manifold_plate_y / 2.0) + 15.0),
-        (-(manifold_plate_x / 2.0) + 15.0, (manifold_plate_y / 2.0) - 15.0),
-        ((manifold_plate_x / 2.0) - 15.0, (manifold_plate_y / 2.0) - 15.0),
+        (
+            -(manifold_plate_x / 2.0) + 15.0,
+            -(manifold_plate_y / 2.0) + 15.0,
+        ),
+        (
+            (manifold_plate_x / 2.0) - 15.0,
+            -(manifold_plate_y / 2.0) + 15.0,
+        ),
+        (
+            -(manifold_plate_x / 2.0) + 15.0,
+            (manifold_plate_y / 2.0) - 15.0,
+        ),
+        (
+            (manifold_plate_x / 2.0) - 15.0,
+            (manifold_plate_y / 2.0) - 15.0,
+        ),
     ] {
         let h = centered_cylinder("bm", 5.3 / 2.0, manifold_plate_thickness + 2.0, 24)
             .translate(bx, by, 0.0);
@@ -370,8 +398,11 @@ fn main() {
     )
     .translate(0.0, 0.0, 4.0 / 2.0 + passthrough_boss_length / 2.0);
     // Outer flange (outside container side) — smaller, acts as backing nut face
-    let outside_flange = centered_cylinder("pt_flange_out", 52.0 / 2.0, 5.0, 64)
-        .translate(0.0, 0.0, 4.0 / 2.0 + passthrough_boss_length + 5.0 / 2.0);
+    let outside_flange = centered_cylinder("pt_flange_out", 52.0 / 2.0, 5.0, 64).translate(
+        0.0,
+        0.0,
+        4.0 / 2.0 + passthrough_boss_length + 5.0 / 2.0,
+    );
 
     // Center bore (holds 5-hole grommet)
     let center_bore = centered_cylinder(
@@ -388,8 +419,11 @@ fn main() {
         let theta = (i as f64) * std::f64::consts::PI / 2.0 + std::f64::consts::PI / 4.0;
         let bx = ((passthrough_od - 10.0) / 2.0) * theta.cos();
         let by = ((passthrough_od - 10.0) / 2.0) * theta.sin();
-        let bolt = centered_cylinder(&format!("ptb_{i}"), 4.2 / 2.0, 4.0 + 2.0, 16)
-            .translate(bx, by, 4.0 / 2.0);
+        let bolt = centered_cylinder(&format!("ptb_{i}"), 4.2 / 2.0, 4.0 + 2.0, 16).translate(
+            bx,
+            by,
+            4.0 / 2.0,
+        );
         pt_bolts = pt_bolts + bolt;
     }
 
@@ -471,16 +505,14 @@ fn main() {
     let mut feet_holes = Part::empty("feet_holes");
     for fx in [-(drip_head_x / 2.0) + 10.0, (drip_head_x / 2.0) - 10.0] {
         for fy in [-(drip_head_y / 2.0) + 6.0, (drip_head_y / 2.0) - 6.0] {
-            let fh = centered_cylinder("fh", 3.2 / 2.0, drip_head_z + 2.0, 16)
-                .translate(fx, fy, 0.0);
+            let fh =
+                centered_cylinder("fh", 3.2 / 2.0, drip_head_z + 2.0, 16).translate(fx, fy, 0.0);
             feet_holes = feet_holes + fh;
         }
     }
 
-    let drip_head = head_body - dist_channel + inlet_barb - inlet_bore
-        + nozzles
-        - nozzle_bores
-        - feet_holes;
+    let drip_head =
+        head_body - dist_channel + inlet_barb - inlet_bore + nozzles - nozzle_bores - feet_holes;
     drip_head
         .write_stl("output/media_reservoir_drip_head.stl")
         .unwrap();
@@ -506,14 +538,20 @@ fn main() {
     // Drain boss under the drain hole (barb for 9mm ID silicone drain tubing)
     let tray_drain_boss = (centered_cylinder("tdb_o", 14.0 / 2.0, 12.0, 32)
         - centered_cylinder("tdb_i", 9.0 / 2.0, 12.2, 32))
-        .translate(-(tray_x / 2.0) + 30.0, (tray_y / 2.0) - 30.0, -(tray_outer_h / 2.0) - 6.0);
+    .translate(
+        -(tray_x / 2.0) + 30.0,
+        (tray_y / 2.0) - 30.0,
+        -(tray_outer_h / 2.0) - 6.0,
+    );
 
     // Splash ridge along front edge so the rocker tilt doesn't slosh media out
-    let splash_ridge = centered_cube("splash", tray_x - 20.0, 3.0, 10.0)
-        .translate(0.0, -(tray_y / 2.0) + 4.0, tray_outer_h / 2.0 + 5.0 - 0.5);
+    let splash_ridge = centered_cube("splash", tray_x - 20.0, 3.0, 10.0).translate(
+        0.0,
+        -(tray_y / 2.0) + 4.0,
+        tray_outer_h / 2.0 + 5.0 - 0.5,
+    );
 
-    let drip_tray =
-        tray_outer_box - tray_inner_box - tray_drain + tray_drain_boss + splash_ridge;
+    let drip_tray = tray_outer_box - tray_inner_box - tray_drain + tray_drain_boss + splash_ridge;
     drip_tray
         .write_stl("output/media_reservoir_drip_tray.stl")
         .unwrap();
@@ -534,20 +572,28 @@ fn main() {
 
     let waste_neck = centered_cylinder("waste_neck", waste_neck_od / 2.0, waste_neck_h, 48)
         .translate(0.0, 0.0, waste_h / 2.0 + waste_neck_h / 2.0);
-    let waste_neck_bore =
-        centered_cylinder("waste_neckb", (waste_neck_od - 6.0) / 2.0, waste_neck_h + 2.0, 48)
-            .translate(0.0, 0.0, waste_h / 2.0 + waste_neck_h / 2.0);
+    let waste_neck_bore = centered_cylinder(
+        "waste_neckb",
+        (waste_neck_od - 6.0) / 2.0,
+        waste_neck_h + 2.0,
+        48,
+    )
+    .translate(0.0, 0.0, waste_h / 2.0 + waste_neck_h / 2.0);
 
     // Drain-in barb (side, 15 mm from top rim, fits 9 mm ID tubing)
     let drain_in_barb = (centered_cylinder("din_o", 14.0 / 2.0, 18.0, 32)
         - centered_cylinder("din_i", 9.0 / 2.0, 20.0, 32))
-        .rotate(0.0, 90.0, 0.0)
-        .translate(waste_od / 2.0 + 9.0, 0.0, waste_h / 2.0 - 20.0);
+    .rotate(0.0, 90.0, 0.0)
+    .translate(waste_od / 2.0 + 9.0, 0.0, waste_h / 2.0 - 20.0);
 
     // Vent HEPA barb (back, top)
     let vent_barb = (centered_cylinder("vent_o", 10.0 / 2.0, 15.0, 24)
         - centered_cylinder("vent_i", 4.0 / 2.0, 17.0, 24))
-        .translate(0.0, -(waste_od / 2.0) + 10.0, waste_h / 2.0 + waste_neck_h + 7.5);
+    .translate(
+        0.0,
+        -(waste_od / 2.0) + 10.0,
+        waste_h / 2.0 + waste_neck_h + 7.5,
+    );
 
     let waste =
         waste_body - waste_interior + waste_neck - waste_neck_bore + drain_in_barb + vent_barb;
@@ -591,9 +637,7 @@ fn main() {
     println!(" MEDIA BUDGET");
     println!("   Chips:                 100");
     println!("   Media per chip per 48h: 5 mL");
-    println!(
-        "   Media per 48 h cycle:  {media_per_cycle_ml:.0} mL"
-    );
+    println!("   Media per 48 h cycle:  {media_per_cycle_ml:.0} mL");
     println!(
         "   Cycles per full fill:  {cycles_per_fill:.1}  →  {days_per_fill:.1} days uninterrupted"
     );
@@ -621,7 +665,9 @@ fn main() {
     println!();
     println!(" WALL PASS-THROUGH");
     println!("   Bulkhead gland:        Ø{passthrough_od:.0} mm OD flange, Ø{passthrough_boss_od:.0} mm OD boss × {passthrough_boss_length:.0} mm long");
-    println!("   Center bore:           Ø{passthrough_center_bore:.0} mm (5-hole silicone grommet)");
+    println!(
+        "   Center bore:           Ø{passthrough_center_bore:.0} mm (5-hole silicone grommet)"
+    );
     println!("   Grommet tube holes:    5 × Ø{grommet_hole_dia:.1} mm (press-fit on {tube_od} mm OD tube)");
     println!();
     println!(" DRIP HEADS (×5)");
@@ -631,7 +677,9 @@ fn main() {
     println!("   Mount:                 Hangs from rack frame, clear of ±15° rocker tilt envelope");
     println!();
     println!(" DRIP TRAY");
-    println!("   Size:                  {tray_x:.0} × {tray_y:.0} × {tray_outer_h:.0} mm (2.5 mm PETG)");
+    println!(
+        "   Size:                  {tray_x:.0} × {tray_y:.0} × {tray_outer_h:.0} mm (2.5 mm PETG)"
+    );
     println!("   Drain:                 Ø{tray_drain_od:.0} mm, back-left corner → waste bottle");
     println!("   Splash ridge:          3 × 10 mm along front edge");
     println!();
@@ -653,9 +701,13 @@ fn main() {
     println!("   HEPA vents:            Millipore Millex-FG 0.2 μm PTFE");
     println!();
     println!(" STERILE BARRIER STRATEGY");
-    println!("   1. Pre-sterilize: autoclave reservoir + dip-tube + silicone tubing at 121°C/20 min");
+    println!(
+        "   1. Pre-sterilize: autoclave reservoir + dip-tube + silicone tubing at 121°C/20 min"
+    );
     println!("   2. Seal: lid O-ring provides primary seal, HEPA vent maintains 0.2 μm barrier");
-    println!("   3. Connect: AseptiQuik DC connectors create sterile connection in non-sterile air");
+    println!(
+        "   3. Connect: AseptiQuik DC connectors create sterile connection in non-sterile air"
+    );
     println!("   4. Swap: empty reservoir → close QD at lid → exchange reservoir → reopen QD (chips never exposed)");
     println!();
     println!(" FAILURE MODES");
