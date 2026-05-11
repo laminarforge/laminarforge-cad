@@ -17,6 +17,7 @@ struct ReleaseConfig {
     outputs: Outputs,
     assembly: AssemblyConfig,
     review: ReviewConfig,
+    source_snapshot: SourceSnapshotConfig,
     gerbers: GerberConfig,
     drills: DrillConfig,
     position: PositionConfig,
@@ -65,6 +66,7 @@ struct Outputs {
     fabrication_bundle: String,
     assembly_bundle: String,
     review_bundle: String,
+    source_bundle: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -77,6 +79,11 @@ struct AssemblyConfig {
 #[derive(Debug, Deserialize)]
 struct ReviewConfig {
     remaining_gates: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct SourceSnapshotConfig {
+    files: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -251,7 +258,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ignored_self_zone,
         erc_violations,
     )?;
-    write_release_bundles(&config, &output_root)?;
+    write_release_bundles(&config, &root, &output_root)?;
     validate_release_outputs(&config, &parts, &placement, &output_root)?;
 
     println!("Wrote LAMP Rev A fab release:");
@@ -283,6 +290,9 @@ fn validate_config(config: &ReleaseConfig) -> Result<(), Box<dyn Error>> {
     }
     if config.review.remaining_gates.is_empty() {
         return Err("fab release review remaining_gates cannot be empty".into());
+    }
+    if config.source_snapshot.files.is_empty() {
+        return Err("fab release source_snapshot files cannot be empty".into());
     }
     if config.gerbers.precision != 5 && config.gerbers.precision != 6 {
         return Err("gerber precision must be 5 or 6".into());
@@ -806,6 +816,7 @@ fn write_manifest(
     )?;
     writeln!(file, "assembly_bundle: {}", config.outputs.assembly_bundle)?;
     writeln!(file, "review_bundle: {}", config.outputs.review_bundle)?;
+    writeln!(file, "source_bundle: {}", config.outputs.source_bundle)?;
     Ok(())
 }
 
@@ -866,6 +877,7 @@ fn write_order_audit_report(
     writeln!(file, "- `{}`", config.outputs.fabrication_bundle)?;
     writeln!(file, "- `{}`", config.outputs.assembly_bundle)?;
     writeln!(file, "- `{}`", config.outputs.review_bundle)?;
+    writeln!(file, "- `{}`", config.outputs.source_bundle)?;
     writeln!(file)?;
 
     writeln!(file, "## Manual-Install Parts")?;
@@ -888,7 +900,11 @@ fn write_order_audit_report(
     Ok(())
 }
 
-fn write_release_bundles(config: &ReleaseConfig, output_root: &Path) -> Result<(), Box<dyn Error>> {
+fn write_release_bundles(
+    config: &ReleaseConfig,
+    repo_root: &Path,
+    output_root: &Path,
+) -> Result<(), Box<dyn Error>> {
     let mut fabrication_entries = zip_entries_from_dirs(
         output_root,
         &[&config.outputs.gerbers_dir, &config.outputs.drills_dir],
@@ -896,7 +912,7 @@ fn write_release_bundles(config: &ReleaseConfig, output_root: &Path) -> Result<(
     fabrication_entries.sort_by(|left, right| left.archive_name.cmp(&right.archive_name));
     write_zip_bundle(
         output_root,
-        &config.outputs.fabrication_bundle,
+        &output_root.join(&config.outputs.fabrication_bundle),
         &fabrication_entries,
     )?;
 
@@ -908,7 +924,7 @@ fn write_release_bundles(config: &ReleaseConfig, output_root: &Path) -> Result<(
     ])?;
     write_zip_bundle(
         output_root,
-        &config.outputs.assembly_bundle,
+        &output_root.join(&config.outputs.assembly_bundle),
         &assembly_entries,
     )?;
 
@@ -923,16 +939,26 @@ fn write_release_bundles(config: &ReleaseConfig, output_root: &Path) -> Result<(
         review_files.push(config.outputs.step_file.as_str());
     }
     let review_entries = zip_entries_from_files(&review_files)?;
-    write_zip_bundle(output_root, &config.outputs.review_bundle, &review_entries)?;
+    write_zip_bundle(
+        output_root,
+        &output_root.join(&config.outputs.review_bundle),
+        &review_entries,
+    )?;
+
+    let source_entries = zip_entries_from_source_files(&config.source_snapshot.files)?;
+    write_zip_bundle(
+        repo_root,
+        &output_root.join(&config.outputs.source_bundle),
+        &source_entries,
+    )?;
     Ok(())
 }
 
 fn write_zip_bundle(
-    output_root: &Path,
-    bundle_relative: &str,
+    source_root: &Path,
+    bundle_path: &Path,
     entries: &[ZipEntry],
 ) -> Result<(), Box<dyn Error>> {
-    let bundle_path = output_root.join(bundle_relative);
     if let Some(parent) = bundle_path.parent() {
         fs::create_dir_all(parent)?;
     }
@@ -955,7 +981,7 @@ fn write_zip_bundle(
             )
             .into());
         }
-        let content = fs::read(output_root.join(&entry.source_relative))?;
+        let content = fs::read(source_root.join(&entry.source_relative))?;
         if content.is_empty() {
             return Err(format!("refusing to bundle empty file {}", entry.source_relative).into());
         }
@@ -994,6 +1020,20 @@ fn zip_entries_from_files(relative_files: &[&str]) -> Result<Vec<ZipEntry>, Box<
         .collect()
 }
 
+fn zip_entries_from_source_files(
+    relative_files: &[String],
+) -> Result<Vec<ZipEntry>, Box<dyn Error>> {
+    relative_files
+        .iter()
+        .map(|relative| {
+            Ok(ZipEntry {
+                source_relative: relative.clone(),
+                archive_name: normalize_archive_path(relative)?,
+            })
+        })
+        .collect()
+}
+
 fn archive_name_for(relative: &str) -> Result<String, Box<dyn Error>> {
     let filename = Path::new(relative)
         .file_name()
@@ -1001,6 +1041,14 @@ fn archive_name_for(relative: &str) -> Result<String, Box<dyn Error>> {
         .to_string_lossy()
         .to_string();
     Ok(filename)
+}
+
+fn normalize_archive_path(relative: &str) -> Result<String, Box<dyn Error>> {
+    let path = Path::new(relative);
+    if path.is_absolute() || relative.contains("..") || relative.trim().is_empty() {
+        return Err(format!("invalid source snapshot path: {relative}").into());
+    }
+    Ok(relative.replace('\\', "/"))
 }
 
 fn validate_release_outputs(
@@ -1145,6 +1193,22 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         &output_root.join(&config.outputs.review_bundle),
         &expected_review,
         "review bundle",
+        errors,
+    );
+
+    let expected_source = match zip_entries_from_source_files(&config.source_snapshot.files) {
+        Ok(entries) => entries,
+        Err(err) => {
+            errors.push(format!(
+                "failed to list source snapshot bundle inputs: {err}"
+            ));
+            Vec::new()
+        }
+    };
+    validate_zip_entries(
+        &output_root.join(&config.outputs.source_bundle),
+        &expected_source,
+        "source snapshot bundle",
         errors,
     );
 }

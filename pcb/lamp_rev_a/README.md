@@ -91,7 +91,8 @@ from through-hole/manual-install parts, then verifies that required Gerbers,
 drills, reports, position files, review STEP output, and the order audit report
 are present and non-empty. It also emits validated upload bundles under
 `fab_release/bundles/`: fabrication Gerbers/drills, assembly CSVs, and review
-artifacts.
+artifacts. The release also includes a source snapshot bundle with the exact
+KiCad and TOML inputs used to generate the fab package.
 
 Current KiCad checks:
 

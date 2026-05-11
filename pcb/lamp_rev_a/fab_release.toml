@@ -34,6 +34,7 @@ manifest_file = "release_manifest.txt"
 fabrication_bundle = "bundles/lamp_rev_a_jlcpcb_fabrication.zip"
 assembly_bundle = "bundles/lamp_rev_a_jlcpcb_assembly.zip"
 review_bundle = "bundles/lamp_rev_a_review_package.zip"
+source_bundle = "bundles/lamp_rev_a_source_snapshot.zip"
 
 [assembly]
 machine_side = "top"
@@ -50,6 +51,27 @@ remaining_gates = [
   "Heater current, copper temperature-rise, fuse trip-curve, and external thermal-cutoff bench validation.",
   "Optical one-channel bench calibration for 650 nm turbidimetry signal slope, negative-control stability, and detector saturation margin.",
   "Enclosure/connector fit check against the Rev A mechanical assembly before ordering assembled boards.",
+]
+
+[source_snapshot]
+files = [
+  "pcb/lamp_rev_a/contract.toml",
+  "pcb/lamp_rev_a/parts.toml",
+  "pcb/lamp_rev_a/power_architecture.toml",
+  "pcb/lamp_rev_a/optical_architecture.toml",
+  "pcb/lamp_rev_a/placement.toml",
+  "pcb/lamp_rev_a/pin_nets.toml",
+  "pcb/lamp_rev_a/routing_plan.toml",
+  "pcb/lamp_rev_a/routing_seed.toml",
+  "pcb/lamp_rev_a/copper_zones.toml",
+  "pcb/lamp_rev_a/fab_release.toml",
+  "pcb/lamp_rev_a/lamp_rev_a.kicad_sch",
+  "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb",
+  "pcb/lamp_rev_a/lamp_rev_a.kicad_pro",
+  "pcb/lamp_rev_a/lamp_rev_a.kicad_dru",
+  "pcb/lamp_rev_a/sym-lib-table",
+  "pcb/lamp_rev_a/fp-lib-table",
+  "pcb/lamp_rev_a/kibot.yaml",
 ]
 
 [gerbers]
