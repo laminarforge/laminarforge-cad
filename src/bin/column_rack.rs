@@ -82,7 +82,7 @@ fn main() {
     // Diagonal cut: a large cube rotated to slice from front-top to back-bottom
     // The triangle should be: full height at back (Y = base_y/2), zero at front (Y = -base_y/2)
     // We use a cube positioned and rotated to cut the diagonal
-    let cut_angle = (side_z as f64).atan2(side_y as f64).to_degrees();
+    let cut_angle = side_z.atan2(side_y).to_degrees();
     let cut_diag = (side_y * side_y + side_z * side_z).sqrt();
     let left_cut = centered_cube("left_cut", side_x + 2.0, cut_diag * 2.0, cut_diag * 2.0)
         .rotate(cut_angle, 0.0, 0.0)
