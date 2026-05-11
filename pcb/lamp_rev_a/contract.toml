@@ -3,7 +3,7 @@ name = "lamp_rev_a"
 ticket = "T-1451163D"
 revision = "Rev A"
 purpose = "Single-board ESP32-S3 PCBA for the LaminarForge eight-slot LAMP device."
-source_stage = "schematic_architecture"
+source_stage = "heater_protection_locked"
 
 [board]
 physical_board_count = 1
@@ -117,7 +117,7 @@ must_have_testpoint = true
 name = "+5V"
 nominal_voltage_v = 5.0
 max_current_ma = 1200
-source = "buck_from_12v_or_usb_vbus"
+source = "usb_vbus_via_schottky"
 must_have_testpoint = true
 
 [[rails]]
@@ -166,6 +166,12 @@ must_have_testpoint = true
 
 [[nets]]
 name = "HEATER_P"
+class = "Heater"
+min_track_width_mm = 1.50
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER_SUPPLY"
 class = "Heater"
 min_track_width_mm = 1.50
 must_have_testpoint = true
@@ -474,6 +480,11 @@ purpose = "logic rail verification"
 name = "TP_HEATER"
 net = "HEATER_P"
 purpose = "heater output verification under load"
+
+[[test_points]]
+name = "TP_HEATER_SUPPLY"
+net = "HEATER_SUPPLY"
+purpose = "fused heater supply verification before the external heater assembly"
 
 [[test_points]]
 name = "TP_PWM"

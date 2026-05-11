@@ -2,7 +2,7 @@
 name = "lamp_rev_a_parts"
 ticket = "T-1451163D"
 revision = "Rev A"
-source_stage = "schematic_architecture"
+source_stage = "heater_protection_locked"
 
 [schematic]
 root_file = "lamp_rev_a.kicad_sch"
@@ -25,7 +25,7 @@ required_nets = ["+12V_RAW", "+5V", "+3V3", "GND", "VBUS"]
 name = "heater_drive"
 title = "Heater Drive"
 modules = ["heater_drive"]
-required_nets = ["+12V_RAW", "HEATER_P", "HEATER_PWM", "GATE_DRV", "MOSFET_GATE", "GND"]
+required_nets = ["+12V_RAW", "+12V", "HEATER_SUPPLY", "HEATER_P", "HEATER_PWM", "GATE_DRV", "MOSFET_GATE", "GND"]
 
 [[blocks]]
 name = "temperature_sense"
@@ -43,7 +43,7 @@ required_nets = ["+3V3", "SDA", "SCL", "MUX_COM", "MUX_S0", "MUX_S1", "MUX_S2", 
 name = "manufacturing_test"
 title = "Manufacturing Test"
 modules = ["manufacturing_test"]
-required_nets = ["GND", "+12V_RAW", "+5V", "+3V3", "HEATER_P", "HEATER_PWM", "ADC_AIN1", "MUX_COM", "SDA", "SCL", "ESP_EN", "ESP_GPIO0", "UART_TX", "UART_RX", "VBUS"]
+required_nets = ["GND", "+12V_RAW", "+5V", "+3V3", "HEATER_SUPPLY", "HEATER_P", "HEATER_PWM", "ADC_AIN1", "MUX_COM", "SDA", "SCL", "ESP_EN", "ESP_GPIO0", "UART_TX", "UART_RX", "VBUS"]
 
 [[selected_parts]]
 id = "mcu_module"
@@ -82,6 +82,30 @@ nets = ["USB_CC1", "USB_CC2", "GND"]
 verification = "USB-C sink Rd pull-downs on CC1 and CC2."
 
 [[selected_parts]]
+id = "usb_esd_protection"
+module = "usb_programming"
+quantity = 1
+reference_prefix = "U"
+value = "USBLC6-2SC6"
+symbol = "USBLC6-2SC6"
+footprint = "lcsc:SOT-23-6"
+lcsc_part = "C7519"
+nets = ["USB_DP", "USB_DN", "VBUS", "GND"]
+verification = "Place next to USB-C connector before the USB pair reaches the ESP32-S3 module."
+
+[[selected_parts]]
+id = "vbus_to_5v_schottky"
+module = "power"
+quantity = 1
+reference_prefix = "D"
+value = "SS34"
+symbol = "SS34_C8678"
+footprint = "lcsc:SMA_L4.3-W2.6-LS5.2-RD"
+lcsc_part = "C8678"
+nets = ["VBUS", "+5V"]
+verification = "Rev A electronics 5 V source is USB VBUS through this diode; no 12 V to 5 V buck is populated."
+
+[[selected_parts]]
 id = "dc_input_jack"
 module = "power"
 quantity = 1
@@ -92,6 +116,30 @@ footprint = "lcsc:DC-IN-TH_DC-005-5A-2.0"
 lcsc_part = "C381116"
 nets = ["+12V_RAW", "GND"]
 verification = "Confirm connector current rating and enclosure access before fab."
+
+[[selected_parts]]
+id = "three_v_three_regulator"
+module = "power"
+quantity = 1
+reference_prefix = "U"
+value = "AMS1117-3.3"
+symbol = "AMS1117-3.3"
+footprint = "lcsc:SOT-223"
+lcsc_part = "C6186"
+nets = ["+5V", "+3V3", "GND"]
+verification = "JLCPCB-available 1 A SOT-223 LDO; thermal review required if Rev A firmware enables sustained Wi-Fi transmit."
+
+[[selected_parts]]
+id = "regulator_bulk_caps"
+module = "power"
+quantity = 4
+reference_prefix = "C"
+value = "22uF"
+symbol = "CL31A226KAHNNNE"
+footprint = "lcsc:C1206"
+lcsc_part = "C5672"
+nets = ["VBUS", "+5V", "+3V3", "+12V_RAW", "GND"]
+verification = "Bulk capacitors for VBUS, +5 V, +3.3 V, and 12 V input; place at rail entry/regulator pins."
 
 [[selected_parts]]
 id = "adc"
@@ -126,7 +174,7 @@ value = "TC4427ACOA"
 symbol = "TC4427ACOA"
 footprint = "lcsc:SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL"
 lcsc_part = "C636886"
-nets = ["+12V_RAW", "GND", "HEATER_PWM", "GATE_DRV"]
+nets = ["+12V", "GND", "HEATER_PWM", "GATE_DRV"]
 verification = "Confirm input threshold and output current are compatible with ESP32-S3 GPIO and selected MOSFET."
 
 [[selected_parts]]
@@ -140,6 +188,42 @@ footprint = "lcsc:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
 lcsc_part = "C20917"
 nets = ["GATE_DRV", "MOSFET_GATE", "HEATER_P", "GND"]
 verification = "Run thermal/current review before fab; replace if heater current or copper temperature rise is too high."
+
+[[selected_parts]]
+id = "heater_output_terminal"
+module = "heater_drive"
+quantity = 1
+reference_prefix = "J"
+value = "DB128H-5.08-2P-BK-S"
+symbol = "DB128H-5.08-2P-BK-S"
+footprint = "lcsc:TERM-BLOCK-5.08-2P"
+lcsc_part = "C430605"
+nets = ["HEATER_SUPPLY", "HEATER_P"]
+verification = "5.08 mm 2-pin screw terminal rated 16 A; use for the external heater assembly only."
+
+[[selected_parts]]
+id = "heater_resettable_fuse"
+module = "heater_drive"
+quantity = 1
+reference_prefix = "F"
+value = "SMD2920-300C-36V"
+symbol = "SMD2920-300C-36V"
+footprint = "lcsc:FUSE2920"
+lcsc_part = "C47002401"
+nets = ["+12V", "HEATER_SUPPLY"]
+verification = "3 A hold-current 36 V resettable fuse in the heater supply path; confirm trip curve against measured heater warm-up current."
+
+[[selected_parts]]
+id = "heater_tvs"
+module = "heater_drive"
+quantity = 1
+reference_prefix = "D"
+value = "SMBJ18A"
+symbol = "SMBJ18A"
+footprint = "lcsc:SMB_L4.6-W3.6-LS5.3-RD"
+lcsc_part = "C6937298"
+nets = ["HEATER_SUPPLY", "GND"]
+verification = "18 V 600 W TVS for heater supply transient suppression; place near the heater terminal and fuse."
 
 [[selected_parts]]
 id = "led_low_side_drivers"
@@ -237,19 +321,14 @@ lcsc_part = "C8678"
 nets = ["+12V_RAW", "+12V"]
 verification = "Confirm voltage drop, thermal rise, and whether ideal-diode protection is preferable."
 
-[[selection_gaps]]
-id = "buck_regulator"
-module = "power"
-blocks_fabrication = true
-reason = "12 V to 5 V regulator symbol, footprint, LCSC part, inductor, and compensation network are not locked."
-resolve_with = "Select a JLCPCB-available buck regulator module or IC and add it to pcb/lib before schematic capture."
-
-[[selection_gaps]]
-id = "three_v_three_regulator"
-module = "power"
-blocks_fabrication = true
-reason = "5 V to 3.3 V regulator symbol, footprint, LCSC part, and output capacitor requirements are not locked."
-resolve_with = "Select a regulator with enough ESP32-S3 Wi-Fi current headroom and add it to pcb/lib."
+[[external_safety_parts]]
+id = "inline_thermal_cutoff"
+module = "heater_drive"
+quantity = 1
+value = "KSD9700-105/5JSB/080A"
+lcsc_part = "C156519"
+role = "Normally-closed thermostat switch in series with the external heater assembly."
+installation = "Mount physically on the heater block or heater carrier, not on the controller PCB."
 
 [[selection_gaps]]
 id = "optical_emitters"
@@ -264,10 +343,3 @@ module = "optical_detection"
 blocks_fabrication = true
 reason = "Photodiode package, spectral response, dark current, and bias/readout topology are not selected."
 resolve_with = "Select the photodiode and decide whether the readout needs a transimpedance amplifier before the mux/ADC."
-
-[[selection_gaps]]
-id = "heater_connector_and_protection"
-module = "heater_drive"
-blocks_fabrication = true
-reason = "External heater connector, fuse/current limit, TVS, and thermal cutoff parts are not locked."
-resolve_with = "Select parts around the measured heater current and enclosure wiring method."

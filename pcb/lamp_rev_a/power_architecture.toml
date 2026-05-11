@@ -1,0 +1,17 @@
+[package]
+name = "lamp_rev_a_power_architecture"
+ticket = "T-B3DF4895"
+revision = "Rev A"
+
+[topology]
+electronics_5v_source = "usb_vbus_via_schottky"
+heater_power_source = "external_12v_input"
+requires_12v_to_5v_buck = false
+three_v_three_regulator = "AMS1117-3.3"
+usb_esd_protection = "USBLC6-2SC6"
+vbus_oring_diode = "SS34"
+
+[rationale]
+decision = "Rev A powers MCU, USB, ADC, mux, and logic from USB VBUS-derived +5V, then derives +3V3 locally. The external 12V input is reserved for the heater output path."
+why_not_buck = "The previous generated-board work identified direct high-drop linear regulation from 12V as thermally wrong. A 12V-to-5V buck adds switching noise, inductor layout risk, and another unvalidated power stage. Rev A can be brought up and tested with USB attached, so the simpler USB-powered electronics path is the faster manufacturable prototype."
+release_gate = "If standalone operation without USB power becomes required, add a separate 12V-to-5V buck subcircuit as a new explicit source-stage change instead of silently changing this topology."

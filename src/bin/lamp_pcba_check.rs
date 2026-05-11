@@ -7,6 +7,7 @@ use std::path::Path;
 
 const CONTRACT_PATH: &str = "pcb/lamp_rev_a/contract.toml";
 const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
+const POWER_ARCHITECTURE_PATH: &str = "pcb/lamp_rev_a/power_architecture.toml";
 const OPTICAL_MODE_PATH: &str = "pcb/lamp_rev_a/optical_mode.md";
 const SCHEMATIC_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
@@ -41,7 +42,40 @@ struct PartsManifest {
     blocks: Vec<SchematicBlock>,
     selected_parts: Vec<SelectedPart>,
     #[serde(default)]
+    external_safety_parts: Vec<ExternalSafetyPart>,
+    #[serde(default)]
     selection_gaps: Vec<SelectionGap>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PowerArchitecture {
+    package: PowerArchitecturePackage,
+    topology: PowerTopology,
+    rationale: PowerRationale,
+}
+
+#[derive(Debug, Deserialize)]
+struct PowerArchitecturePackage {
+    name: String,
+    ticket: String,
+    revision: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct PowerTopology {
+    electronics_5v_source: String,
+    heater_power_source: String,
+    requires_12v_to_5v_buck: bool,
+    three_v_three_regulator: String,
+    usb_esd_protection: String,
+    vbus_oring_diode: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct PowerRationale {
+    decision: String,
+    why_not_buck: String,
+    release_gate: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -79,6 +113,17 @@ struct SelectedPart {
     lcsc_part: String,
     nets: Vec<String>,
     verification: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ExternalSafetyPart {
+    id: String,
+    module: String,
+    quantity: u32,
+    value: String,
+    lcsc_part: String,
+    role: String,
+    installation: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -206,6 +251,7 @@ fn main() {
     let root = std::env::current_dir().expect("current dir");
     let contract = load_contract(&root.join(CONTRACT_PATH));
     let parts = load_parts(&root.join(PARTS_PATH));
+    let power = load_power_architecture(&root.join(POWER_ARCHITECTURE_PATH));
     let mut errors = Vec::new();
     let mut warnings = Vec::new();
 
@@ -213,6 +259,7 @@ fn main() {
     require_file(&root.join(DRU_PATH), &mut errors);
     require_file(&root.join(KIBOT_PATH), &mut errors);
     require_file(&root.join(PARTS_PATH), &mut errors);
+    require_file(&root.join(POWER_ARCHITECTURE_PATH), &mut errors);
     require_file(&root.join(OPTICAL_MODE_PATH), &mut errors);
     require_file(&root.join(SCHEMATIC_PATH), &mut errors);
     require_file(&root.join(SYM_LIB_TABLE_PATH), &mut errors);
@@ -228,6 +275,7 @@ fn main() {
     validate_test_points(&contract, &nets, &mut errors);
     validate_verification(&contract, &mut errors);
     validate_manufacturing(&contract, &mut errors);
+    validate_power_architecture(&power, &contract, &parts, &mut errors);
     validate_schematic_shell(
         &root.join(SCHEMATIC_PATH),
         &parts,
@@ -264,6 +312,10 @@ fn main() {
         println!("  test points: {}", contract.test_points.len());
         println!("  selected part groups: {}", parts.selected_parts.len());
         println!(
+            "  external safety part groups: {}",
+            parts.external_safety_parts.len()
+        );
+        println!(
             "  fab-blocking selection gaps: {}",
             fabrication_gap_count(&parts)
         );
@@ -283,6 +335,12 @@ fn load_contract(path: &Path) -> Contract {
 }
 
 fn load_parts(path: &Path) -> PartsManifest {
+    let content =
+        fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
+    toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
+}
+
+fn load_power_architecture(path: &Path) -> PowerArchitecture {
     let content =
         fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
     toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
@@ -556,6 +614,91 @@ fn validate_manufacturing(contract: &Contract, errors: &mut Vec<String>) {
     }
 }
 
+fn validate_power_architecture(
+    power: &PowerArchitecture,
+    contract: &Contract,
+    parts: &PartsManifest,
+    errors: &mut Vec<String>,
+) {
+    if power.package.name != "lamp_rev_a_power_architecture" {
+        errors.push(
+            "power architecture package name must be lamp_rev_a_power_architecture".to_string(),
+        );
+    }
+    if power.package.revision != contract.package.revision {
+        errors.push("power architecture revision must match contract revision".to_string());
+    }
+
+    let rail_sources: BTreeMap<&str, &str> = contract
+        .rails
+        .iter()
+        .map(|rail| (rail.name.as_str(), rail.source.as_str()))
+        .collect();
+    if rail_sources.get("+5V") != Some(&power.topology.electronics_5v_source.as_str()) {
+        errors.push("+5V rail source must match the locked power architecture".to_string());
+    }
+    if power.topology.heater_power_source != "external_12v_input" {
+        errors.push("Rev A heater power source must stay external_12v_input".to_string());
+    }
+    if power.topology.requires_12v_to_5v_buck {
+        errors.push("Rev A power architecture currently forbids a 12V-to-5V buck".to_string());
+    }
+
+    let selected_ids: BTreeSet<&str> = parts
+        .selected_parts
+        .iter()
+        .map(|part| part.id.as_str())
+        .collect();
+    for required in [
+        "usb_esd_protection",
+        "vbus_to_5v_schottky",
+        "three_v_three_regulator",
+        "regulator_bulk_caps",
+    ] {
+        if !selected_ids.contains(required) {
+            errors.push(format!(
+                "power architecture requires selected part group {required}"
+            ));
+        }
+    }
+
+    let selected_values: BTreeSet<&str> = parts
+        .selected_parts
+        .iter()
+        .map(|part| part.value.as_str())
+        .collect();
+    for value in [
+        power.topology.three_v_three_regulator.as_str(),
+        power.topology.usb_esd_protection.as_str(),
+        power.topology.vbus_oring_diode.as_str(),
+    ] {
+        if !selected_values.contains(value) {
+            errors.push(format!(
+                "power architecture selected value {value} is missing from parts.toml"
+            ));
+        }
+    }
+
+    for gap in &parts.selection_gaps {
+        if gap.id == "buck_regulator" || gap.id == "three_v_three_regulator" {
+            errors.push(format!(
+                "resolved power blocker {} must not remain in selection_gaps",
+                gap.id
+            ));
+        }
+    }
+
+    for text in [
+        &power.rationale.decision,
+        &power.rationale.why_not_buck,
+        &power.rationale.release_gate,
+    ] {
+        if text.trim().len() < 40 {
+            errors.push("power architecture rationale entries must be explicit".to_string());
+        }
+    }
+}
+
 fn validate_schematic_shell(
     path: &Path,
     parts: &PartsManifest,
@@ -625,6 +768,8 @@ fn validate_parts_manifest(
         &symbol_library,
         errors,
     );
+    validate_external_safety_parts(parts, &module_names, errors);
+    validate_heater_protection(parts, errors);
     validate_selection_gaps(parts, &module_names, contract, errors, warnings);
 }
 
@@ -780,6 +925,86 @@ fn validate_selected_parts(
     ] {
         if !selected_modules.contains(required) {
             errors.push(format!("required module {required} has no selected parts"));
+        }
+    }
+}
+
+fn validate_external_safety_parts(
+    parts: &PartsManifest,
+    module_names: &BTreeSet<&str>,
+    errors: &mut Vec<String>,
+) {
+    let mut ids = BTreeSet::new();
+    for part in &parts.external_safety_parts {
+        if !ids.insert(part.id.as_str()) {
+            errors.push(format!("duplicate external safety part id {}", part.id));
+        }
+        if !module_names.contains(part.module.as_str()) {
+            errors.push(format!(
+                "external safety part {} references unknown module {}",
+                part.id, part.module
+            ));
+        }
+        if part.quantity == 0 {
+            errors.push(format!(
+                "external safety part {} has zero quantity",
+                part.id
+            ));
+        }
+        if part.value.trim().is_empty() {
+            errors.push(format!("external safety part {} needs a value", part.id));
+        }
+        if !part.lcsc_part.starts_with('C')
+            || !part.lcsc_part[1..].chars().all(|ch| ch.is_ascii_digit())
+        {
+            errors.push(format!(
+                "external safety part {} has invalid LCSC part {}",
+                part.id, part.lcsc_part
+            ));
+        }
+        if part.role.trim().len() < 30 || part.installation.trim().len() < 30 {
+            errors.push(format!(
+                "external safety part {} needs explicit role and installation notes",
+                part.id
+            ));
+        }
+    }
+}
+
+fn validate_heater_protection(parts: &PartsManifest, errors: &mut Vec<String>) {
+    let selected_ids: BTreeSet<&str> = parts
+        .selected_parts
+        .iter()
+        .map(|part| part.id.as_str())
+        .collect();
+    for required in [
+        "heater_output_terminal",
+        "heater_resettable_fuse",
+        "heater_tvs",
+    ] {
+        if !selected_ids.contains(required) {
+            errors.push(format!(
+                "heater protection requires selected part group {required}"
+            ));
+        }
+    }
+
+    let external_ids: BTreeSet<&str> = parts
+        .external_safety_parts
+        .iter()
+        .map(|part| part.id.as_str())
+        .collect();
+    if !external_ids.contains("inline_thermal_cutoff") {
+        errors.push(
+            "heater protection requires external safety part inline_thermal_cutoff".to_string(),
+        );
+    }
+
+    for gap in &parts.selection_gaps {
+        if gap.id == "heater_connector_and_protection" {
+            errors.push(
+                "resolved heater protection blocker must not remain in selection_gaps".to_string(),
+            );
         }
     }
 }

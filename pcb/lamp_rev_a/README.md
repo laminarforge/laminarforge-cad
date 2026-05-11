@@ -10,6 +10,7 @@ workflow.
 
 - `contract.toml`: board requirements, rails, nets, GPIO map, test points, and verification gates.
 - `parts.toml`: selected schematic parts plus explicit fab-blocking part-selection gaps.
+- `power_architecture.toml`: locked Rev A power topology and the explicit no-buck decision.
 - `optical_mode.md`: current optical-mode decision boundary for emitter/detector selection.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: KiCad board seed with the Rev A outline and 4-layer stack.
@@ -42,7 +43,10 @@ contract.toml + parts.toml
 - One physical board for Rev A.
 - 4-layer stack: `F.Cu`, `In1.Cu` ground plane, `In2.Cu` power plane, `B.Cu`.
 - ESP32-S3 module, not a bare ESP32 chip.
+- USB VBUS is the Rev A electronics 5 V source through a Schottky path; +3V3 is derived locally.
+- The 12 V input is reserved for heater power. Do not add a 12 V to 5 V buck unless standalone non-USB operation becomes a new explicit Rev change.
 - External heater element driven from the board through a protected high-current output.
+- Heater path protection is locked as board-side resettable fuse + TVS + 5.08 mm heater terminal, with an external inline KSD9700 thermal cutoff mounted on the heater assembly.
 - Eight optical channels on the same board, but routed as a constrained analog section.
 - Test points are mandatory for rails, heater control/output, I2C, UART, boot/reset, ADC, and mux output.
 
@@ -57,11 +61,8 @@ cargo run --release --bin lamp_pcba_check
 The current schematic is an architecture shell, not a fabrication-ready circuit.
 The checker deliberately reports the remaining fab-blocking selection gaps:
 
-- 12 V to 5 V buck regulator.
-- 5 V to 3.3 V regulator.
 - Optical wavelength/mode decision and emitter selection.
 - Photodiodes and analog front-end topology.
-- Heater connector, fuse/current limit, TVS, and thermal cutoff.
 
 Current KiCad checks:
 
