@@ -37,6 +37,7 @@ contract.toml + parts.toml
   -> pin_nets.toml trusted pad assignments
   -> cargo run --release --bin lamp_rev_a_materialize_board
   -> cargo run --release --bin lamp_rev_a_seed_routes_from_drc when reseeding short safe traces
+  -> cargo run --release --bin lamp_rev_a_route_greedy for DRC-gated route iteration
   -> kicad-cli pcb drc --refill-zones for zone-connected routing checks
   -> KiCad schematic capture in lamp_rev_a.kicad_sch
   -> KiCad ERC
@@ -71,13 +72,17 @@ cargo run --release --bin lamp_pcba_check
 cargo run --release --bin lamp_rev_a_materialize_board
 cargo run --release --bin lamp_rev_a_fab_preview
 cargo run --release --bin lamp_rev_a_route_report
+cargo build --release --bin lamp_rev_a_materialize_board --bin lamp_rev_a_route_greedy
+LAMP_ROUTE_MAX_ACCEPTS=10 target/release/lamp_rev_a_route_greedy
 ```
 
 The current schematic is an architecture shell, not a fabrication-ready circuit.
 The checker should not report fab-blocking part-selection gaps. The board now
 materializes all selected parts into KiCad with zero physical DRC violations
-with a DRC-clean starter route seed and GND copper pours. The active work is
-schematic completion, routing the 50 remaining ratlines, schematic/PCB parity,
+with a DRC-clean starter route seed and GND copper pours. The route seed is
+currently at 55 accepted segments and 21 unconnected items after KiCad zone
+refill. The active work is schematic completion, routing the remaining ratlines,
+schematic/PCB parity,
 and bench validation.
 
 Current KiCad checks:
@@ -97,7 +102,10 @@ see the current routing backlog by net.
 
 `lamp_rev_a_seed_routes_from_drc` is intentionally conservative: it only seeds
 short direct routes that preserve zero physical DRC violations. Longer routes
-must be added deliberately in `routing_seed.toml` or finished in KiCad.
+must be added deliberately in `routing_seed.toml`, accepted by
+`lamp_rev_a_route_greedy`, or finished in KiCad. `lamp_rev_a_route_greedy`
+mechanically tries candidate routes, runs KiCad DRC, and keeps only candidates
+that reduce `unconnected_items` while preserving zero physical DRC violations.
 
 Do not accept autorouter output by itself. Use it to expose bad placement or
 constraint problems, then finish and review the layout in KiCad.
