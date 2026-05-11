@@ -2127,4 +2127,282 @@
       )
     )
   )
+  (symbol "SFH2704"
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "PD"
+      (id 0)
+      (at 0 5.08 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property
+      "Value"
+      "SFH2704"
+      (id 1)
+      (at 0 -5.08 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property
+      "Footprint"
+      "lcsc:PHOTODIODE-SMD-2X1.8"
+      (id 2)
+      (at 0 -7.62 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property
+      "Datasheet"
+      "https://jlcpcb.com/partdetail/OSRAM_OptoSemicon-SFH2704/C2833005"
+      (id 3)
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property
+      "LCSC Part"
+      "C2833005"
+      (id 5)
+      (at 0 -12.70 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (symbol "SFH2704_0_1"
+      (polyline
+        (pts
+          (xy 1.27 1.52) (xy -1.27 0) (xy 1.27 -1.78) (xy 1.27 1.52)
+        )
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type background))
+      )
+      (pin passive line
+        (at -5.08 0 0)
+        (length 3.81)
+        (name "K" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 5.08 0 180)
+        (length 3.81)
+        (name "A" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+  (symbol "TLV6001IDBVR"
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "U"
+      (id 0)
+      (at 0 7.62 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property
+      "Value"
+      "TLV6001IDBVR"
+      (id 1)
+      (at 0 -7.62 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property
+      "Footprint"
+      "lcsc:SOT-23-5"
+      (id 2)
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property
+      "Datasheet"
+      "https://jlcpcb.com/partdetail/TexasInstruments-TLV6001IDBVR/C179174"
+      (id 3)
+      (at 0 -12.70 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property
+      "LCSC Part"
+      "C179174"
+      (id 5)
+      (at 0 -15.24 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (symbol "TLV6001IDBVR_0_1"
+      (polyline
+        (pts
+          (xy -5.08 5.08) (xy -5.08 -5.08) (xy 5.08 0) (xy -5.08 5.08)
+        )
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type background))
+      )
+      (pin output line
+        (at 7.62 0 180)
+        (length 2.54)
+        (name "OUT" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 0 -7.62 90)
+        (length 2.54)
+        (name "V-" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -7.62 -2.54 0)
+        (length 2.54)
+        (name "+" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin input line
+        (at -7.62 2.54 0)
+        (length 2.54)
+        (name "-" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin power_in line
+        (at 0 7.62 270)
+        (length 2.54)
+        (name "V+" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+  (symbol "0805W8F1004T5E"
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "R"
+      (id 0)
+      (at 0 5.08 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property
+      "Value"
+      "0805W8F1004T5E"
+      (id 1)
+      (at 0 -5.08 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property
+      "Footprint"
+      "lcsc:R0805"
+      (id 2)
+      (at 0 -7.62 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property
+      "Datasheet"
+      "https://jlcpcb.com/partdetail/18202-0805W8F1004T5E/C17514"
+      (id 3)
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property
+      "LCSC Part"
+      "C17514"
+      (id 5)
+      (at 0 -12.70 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (symbol "0805W8F1004T5E_0_1"
+      (rectangle
+        (start -2.54 1.02)
+        (end 2.54 -1.02)
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type background))
+      )
+      (pin passive line
+        (at -5.08 0 0)
+        (length 2.54)
+        (name "1" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 5.08 0 180)
+        (length 2.54)
+        (name "2" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+  (symbol "CL10C100JB8NNNC"
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "C"
+      (id 0)
+      (at 0 5.08 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property
+      "Value"
+      "CL10C100JB8NNNC"
+      (id 1)
+      (at 0 -5.08 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property
+      "Footprint"
+      "lcsc:C0603"
+      (id 2)
+      (at 0 -7.62 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property
+      "Datasheet"
+      "https://jlcpcb.com/partdetail/C1634"
+      (id 3)
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property
+      "LCSC Part"
+      "C1634"
+      (id 5)
+      (at 0 -12.70 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (symbol "CL10C100JB8NNNC_0_1"
+      (polyline
+        (pts
+          (xy -0.51 -2.03) (xy -0.51 2.03)
+        )
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 2.54 0) (xy 0.51 0)
+        )
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 0.51 2.03) (xy 0.51 -2.03)
+        )
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy -0.51 0) (xy -2.54 0)
+        )
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type none))
+      )
+      (pin passive line
+        (at -5.08 0 0)
+        (length 2.54)
+        (name "1" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin passive line
+        (at 5.08 0 180)
+        (length 2.54)
+        (name "2" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
 )

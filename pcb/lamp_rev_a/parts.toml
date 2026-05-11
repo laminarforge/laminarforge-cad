@@ -2,7 +2,7 @@
 name = "lamp_rev_a_parts"
 ticket = "T-1451163D"
 revision = "Rev A"
-source_stage = "heater_protection_locked"
+source_stage = "optical_architecture_locked"
 
 [schematic]
 root_file = "lamp_rev_a.kicad_sch"
@@ -164,6 +164,66 @@ footprint = "lcsc:SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL"
 lcsc_part = "C139301"
 nets = ["+3V3", "GND", "MUX_COM", "MUX_S0", "MUX_S1", "MUX_S2", "MUX_Y0", "MUX_Y1", "MUX_Y2", "MUX_Y3", "MUX_Y4", "MUX_Y5", "MUX_Y6", "MUX_Y7"]
 verification = "Confirm on-resistance and leakage are acceptable for the photodiode front end."
+
+[[selected_parts]]
+id = "turbidity_emitters"
+module = "optical_detection"
+quantity = 8
+reference_prefix = "D"
+value = "KT-0603R"
+symbol = "KT-0603R"
+footprint = "lcsc:LED0603-RD"
+lcsc_part = "C2286"
+nets = ["LED_COL_0", "LED_COL_1", "LED_COL_2", "LED_COL_3", "LED_COL_4", "LED_COL_5", "LED_COL_6", "LED_COL_7", "LED_CATH_0", "LED_CATH_1", "LED_CATH_2", "LED_CATH_3", "LED_CATH_4", "LED_CATH_5", "LED_CATH_6", "LED_CATH_7"]
+verification = "Rev A turbidimetry emitter group; bench validation must confirm enough signal at the selected current and tube geometry."
+
+[[selected_parts]]
+id = "photodiodes"
+module = "optical_detection"
+quantity = 8
+reference_prefix = "PD"
+value = "SFH2704"
+symbol = "SFH2704"
+footprint = "lcsc:PHOTODIODE-SMD-2X1.8"
+lcsc_part = "C2833005"
+nets = ["MUX_Y0", "MUX_Y1", "MUX_Y2", "MUX_Y3", "MUX_Y4", "MUX_Y5", "MUX_Y6", "MUX_Y7", "GND"]
+verification = "400-1100 nm SMD photodiode for red-light turbidimetry; orient mechanically to the tube optical path."
+
+[[selected_parts]]
+id = "optical_tia_opamp"
+module = "optical_detection"
+quantity = 1
+reference_prefix = "U"
+value = "TLV6001IDBVR"
+symbol = "TLV6001IDBVR"
+footprint = "lcsc:SOT-23-5"
+lcsc_part = "C179174"
+nets = ["+3V3", "GND", "MUX_COM", "ADC_AIN1"]
+verification = "Single shared transimpedance stage after the analog mux; 1 pA input bias and rail-to-rail I/O."
+
+[[selected_parts]]
+id = "tia_feedback_resistor"
+module = "optical_detection"
+quantity = 1
+reference_prefix = "R"
+value = "1M"
+symbol = "0805W8F1004T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17514"
+nets = ["MUX_COM", "ADC_AIN1"]
+verification = "Initial TIA gain resistor; bench tune if detector saturates or signal slope is too small."
+
+[[selected_parts]]
+id = "tia_feedback_cap"
+module = "optical_detection"
+quantity = 1
+reference_prefix = "C"
+value = "10pF"
+symbol = "CL10C100JB8NNNC"
+footprint = "lcsc:C0603"
+lcsc_part = "C1634"
+nets = ["MUX_COM", "ADC_AIN1"]
+verification = "Initial TIA stability capacitor across the feedback resistor."
 
 [[selected_parts]]
 id = "heater_gate_driver"
@@ -329,17 +389,3 @@ value = "KSD9700-105/5JSB/080A"
 lcsc_part = "C156519"
 role = "Normally-closed thermostat switch in series with the external heater assembly."
 installation = "Mount physically on the heater block or heater carrier, not on the controller PCB."
-
-[[selection_gaps]]
-id = "optical_emitters"
-module = "optical_detection"
-blocks_fabrication = true
-reason = "The optical wavelength and emitter package are not locked; LAMP can be monitored through turbidity, colorimetric imaging, or fluorescence, and each mode drives different emitter/detector choices."
-resolve_with = "Choose the actual detection mode first, then select emitter wavelength, viewing angle, current target, footprint, and LCSC part."
-
-[[selection_gaps]]
-id = "photodiodes"
-module = "optical_detection"
-blocks_fabrication = true
-reason = "Photodiode package, spectral response, dark current, and bias/readout topology are not selected."
-resolve_with = "Select the photodiode and decide whether the readout needs a transimpedance amplifier before the mux/ADC."

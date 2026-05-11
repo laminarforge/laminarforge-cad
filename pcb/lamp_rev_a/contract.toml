@@ -3,7 +3,7 @@ name = "lamp_rev_a"
 ticket = "T-1451163D"
 revision = "Rev A"
 purpose = "Single-board ESP32-S3 PCBA for the LaminarForge eight-slot LAMP device."
-source_stage = "heater_protection_locked"
+source_stage = "optical_architecture_locked"
 
 [board]
 physical_board_count = 1

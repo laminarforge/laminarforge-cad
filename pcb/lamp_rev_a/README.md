@@ -11,7 +11,8 @@ workflow.
 - `contract.toml`: board requirements, rails, nets, GPIO map, test points, and verification gates.
 - `parts.toml`: selected schematic parts plus explicit fab-blocking part-selection gaps.
 - `power_architecture.toml`: locked Rev A power topology and the explicit no-buck decision.
-- `optical_mode.md`: current optical-mode decision boundary for emitter/detector selection.
+- `optical_architecture.toml`: locked Rev A optical topology, wavelength, detector, and front-end decision.
+- `optical_mode.md`: human-readable optical-mode decision and bench validation gate.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: KiCad board seed with the Rev A outline and 4-layer stack.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.
@@ -47,7 +48,7 @@ contract.toml + parts.toml
 - The 12 V input is reserved for heater power. Do not add a 12 V to 5 V buck unless standalone non-USB operation becomes a new explicit Rev change.
 - External heater element driven from the board through a protected high-current output.
 - Heater path protection is locked as board-side resettable fuse + TVS + 5.08 mm heater terminal, with an external inline KSD9700 thermal cutoff mounted on the heater assembly.
-- Eight optical channels on the same board, but routed as a constrained analog section.
+- Optical mode is locked to 650 nm red-light turbidimetry with eight LED/photodiode channels, muxed into one TIA and ADC path.
 - Test points are mandatory for rails, heater control/output, I2C, UART, boot/reset, ADC, and mux output.
 
 ## Local Checks
@@ -59,10 +60,8 @@ cargo run --release --bin lamp_pcba_check
 ```
 
 The current schematic is an architecture shell, not a fabrication-ready circuit.
-The checker deliberately reports the remaining fab-blocking selection gaps:
-
-- Optical wavelength/mode decision and emitter selection.
-- Photodiodes and analog front-end topology.
+The checker should not report fab-blocking part-selection gaps; remaining work
+is schematic capture, placement, routing, and bench validation.
 
 Current KiCad checks:
 

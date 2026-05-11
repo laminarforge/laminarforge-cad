@@ -8,6 +8,7 @@ use std::path::Path;
 const CONTRACT_PATH: &str = "pcb/lamp_rev_a/contract.toml";
 const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
 const POWER_ARCHITECTURE_PATH: &str = "pcb/lamp_rev_a/power_architecture.toml";
+const OPTICAL_ARCHITECTURE_PATH: &str = "pcb/lamp_rev_a/optical_architecture.toml";
 const OPTICAL_MODE_PATH: &str = "pcb/lamp_rev_a/optical_mode.md";
 const SCHEMATIC_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
@@ -75,6 +76,40 @@ struct PowerTopology {
 struct PowerRationale {
     decision: String,
     why_not_buck: String,
+    release_gate: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpticalArchitecture {
+    package: OpticalArchitecturePackage,
+    topology: OpticalTopology,
+    rationale: OpticalRationale,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpticalArchitecturePackage {
+    name: String,
+    ticket: String,
+    revision: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpticalTopology {
+    detection_mode: String,
+    wavelength_nm: u32,
+    emitter: String,
+    detector: String,
+    front_end: String,
+    transimpedance_op_amp: String,
+    feedback_resistor_ohm: u32,
+    feedback_cap_pf: u32,
+    sample_interval_s: u32,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpticalRationale {
+    decision: String,
+    why_not_colorimetric_camera: String,
     release_gate: String,
 }
 
@@ -252,6 +287,7 @@ fn main() {
     let contract = load_contract(&root.join(CONTRACT_PATH));
     let parts = load_parts(&root.join(PARTS_PATH));
     let power = load_power_architecture(&root.join(POWER_ARCHITECTURE_PATH));
+    let optical = load_optical_architecture(&root.join(OPTICAL_ARCHITECTURE_PATH));
     let mut errors = Vec::new();
     let mut warnings = Vec::new();
 
@@ -260,6 +296,7 @@ fn main() {
     require_file(&root.join(KIBOT_PATH), &mut errors);
     require_file(&root.join(PARTS_PATH), &mut errors);
     require_file(&root.join(POWER_ARCHITECTURE_PATH), &mut errors);
+    require_file(&root.join(OPTICAL_ARCHITECTURE_PATH), &mut errors);
     require_file(&root.join(OPTICAL_MODE_PATH), &mut errors);
     require_file(&root.join(SCHEMATIC_PATH), &mut errors);
     require_file(&root.join(SYM_LIB_TABLE_PATH), &mut errors);
@@ -276,6 +313,7 @@ fn main() {
     validate_verification(&contract, &mut errors);
     validate_manufacturing(&contract, &mut errors);
     validate_power_architecture(&power, &contract, &parts, &mut errors);
+    validate_optical_architecture(&optical, &contract, &parts, &mut errors);
     validate_schematic_shell(
         &root.join(SCHEMATIC_PATH),
         &parts,
@@ -341,6 +379,12 @@ fn load_parts(path: &Path) -> PartsManifest {
 }
 
 fn load_power_architecture(path: &Path) -> PowerArchitecture {
+    let content =
+        fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
+    toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
+}
+
+fn load_optical_architecture(path: &Path) -> OpticalArchitecture {
     let content =
         fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
     toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
@@ -695,6 +739,95 @@ fn validate_power_architecture(
     ] {
         if text.trim().len() < 40 {
             errors.push("power architecture rationale entries must be explicit".to_string());
+        }
+    }
+}
+
+fn validate_optical_architecture(
+    optical: &OpticalArchitecture,
+    contract: &Contract,
+    parts: &PartsManifest,
+    errors: &mut Vec<String>,
+) {
+    if optical.package.name != "lamp_rev_a_optical_architecture" {
+        errors.push(
+            "optical architecture package name must be lamp_rev_a_optical_architecture".to_string(),
+        );
+    }
+    if optical.package.revision != contract.package.revision {
+        errors.push("optical architecture revision must match contract revision".to_string());
+    }
+    if optical.topology.detection_mode != "turbidimetry" {
+        errors.push("Rev A optical detection mode must be turbidimetry".to_string());
+    }
+    if !(620..=700).contains(&optical.topology.wavelength_nm) {
+        errors.push("Rev A turbidimetry wavelength must stay in the red band".to_string());
+    }
+    if optical.topology.front_end != "photodiode_mux_to_single_tia" {
+        errors.push("Rev A optical front end must stay photodiode_mux_to_single_tia".to_string());
+    }
+    if optical.topology.feedback_resistor_ohm < 100_000 {
+        errors.push("TIA feedback resistor is too low for initial photodiode readout".to_string());
+    }
+    if optical.topology.feedback_cap_pf == 0 || optical.topology.feedback_cap_pf > 100 {
+        errors.push("TIA feedback capacitance must be explicitly bounded".to_string());
+    }
+    if optical.topology.sample_interval_s == 0 || optical.topology.sample_interval_s > 5 {
+        errors.push("optical sample interval must support real-time LAMP curves".to_string());
+    }
+
+    let selected_ids: BTreeSet<&str> = parts
+        .selected_parts
+        .iter()
+        .map(|part| part.id.as_str())
+        .collect();
+    for required in [
+        "turbidity_emitters",
+        "photodiodes",
+        "optical_tia_opamp",
+        "tia_feedback_resistor",
+        "tia_feedback_cap",
+    ] {
+        if !selected_ids.contains(required) {
+            errors.push(format!(
+                "optical architecture requires selected part group {required}"
+            ));
+        }
+    }
+
+    let selected_values: BTreeSet<&str> = parts
+        .selected_parts
+        .iter()
+        .map(|part| part.value.as_str())
+        .collect();
+    for value in [
+        optical.topology.emitter.as_str(),
+        optical.topology.detector.as_str(),
+        optical.topology.transimpedance_op_amp.as_str(),
+    ] {
+        if !selected_values.contains(value) {
+            errors.push(format!(
+                "optical architecture selected value {value} is missing from parts.toml"
+            ));
+        }
+    }
+
+    for gap in &parts.selection_gaps {
+        if gap.id == "optical_emitters" || gap.id == "photodiodes" {
+            errors.push(format!(
+                "resolved optical blocker {} must not remain in selection_gaps",
+                gap.id
+            ));
+        }
+    }
+
+    for text in [
+        &optical.rationale.decision,
+        &optical.rationale.why_not_colorimetric_camera,
+        &optical.rationale.release_gate,
+    ] {
+        if text.trim().len() < 40 {
+            errors.push("optical architecture rationale entries must be explicit".to_string());
         }
     }
 }

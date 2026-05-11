@@ -1,0 +1,20 @@
+[package]
+name = "lamp_rev_a_optical_architecture"
+ticket = "T-B3DF4895"
+revision = "Rev A"
+
+[topology]
+detection_mode = "turbidimetry"
+wavelength_nm = 650
+emitter = "KT-0603R"
+detector = "SFH2704"
+front_end = "photodiode_mux_to_single_tia"
+transimpedance_op_amp = "TLV6001IDBVR"
+feedback_resistor_ohm = 1000000
+feedback_cap_pf = 10
+sample_interval_s = 1
+
+[rationale]
+decision = "Rev A uses red-light turbidimetry through the reaction tube, matching published 8-tube LAMP turbidimeter work that measured magnesium pyrophosphate turbidity at 650 nm."
+why_not_colorimetric_camera = "Colorimetric camera readout is promising, but it changes the board into an imaging/illumination system and depends on dye chemistry, optics, enclosure lighting, and image processing. Turbidimetry keeps Rev A to LED plus detector channels and gives a lower-risk first PCBA."
+release_gate = "Bench calibration must confirm signal slope, negative-control stability, and detector saturation margin before fabrication release."
