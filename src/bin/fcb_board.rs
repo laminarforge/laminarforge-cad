@@ -255,7 +255,7 @@ fn main() {
     }
 
     // ── Distribution channels (bus → valve OUT → [external valve] → valve RETURN → inlet) ──
-    for (_idx, r) in routes.iter().enumerate() {
+    for r in &routes {
         let ch_label = format!("c{}r{}", r.col, r.row);
 
         // Bus tap: horizontal connector from bus at dist_x to the bus
@@ -326,7 +326,7 @@ fn main() {
 
     // ── Outlet collection channels ──
     // Each outlet port routes vertically to collector manifold at Y = +47
-    for (_idx, r) in routes.iter().enumerate() {
+    for r in &routes {
         let ch_label = format!("c{}r{}", r.col, r.row);
 
         // Vertical from outlet port Y to collector_y at outlet_route_x
