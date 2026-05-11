@@ -9,8 +9,11 @@ workflow.
 ## Source Of Truth
 
 - `contract.toml`: board requirements, rails, nets, GPIO map, test points, and verification gates.
+- `parts.toml`: selected schematic parts plus explicit fab-blocking part-selection gaps.
+- `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: KiCad board seed with the Rev A outline and 4-layer stack.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.
+- `sym-lib-table` / `fp-lib-table`: project-local library tables pointing at the locked `pcb/lib/lcsc` symbols and footprints.
 - `lamp_rev_a.kicad_dru`: custom KiCad design rules for power, heater, analog, and USB constraints.
 - `kibot.yaml`: intended fab/report export pipeline once the schematic and placed board exist.
 
@@ -20,9 +23,9 @@ schematic and PCB layout.
 ## Iteration Flow
 
 ```text
-contract.toml
+contract.toml + parts.toml
   -> cargo run --release --bin lamp_pcba_check
-  -> KiCad hierarchical schematic
+  -> KiCad schematic capture in lamp_rev_a.kicad_sch
   -> KiCad ERC
   -> footprint/BOM/JLC field lock
   -> KiCad placement using the board zones in contract.toml
@@ -50,7 +53,17 @@ Run:
 cargo run --release --bin lamp_pcba_check
 ```
 
-When the KiCad schematic exists, the acceptance path becomes:
+The current schematic is an architecture shell, not a fabrication-ready circuit.
+The checker deliberately reports the remaining fab-blocking selection gaps:
+
+- 12 V to 5 V buck regulator.
+- 5 V to 3.3 V regulator.
+- USB-C CC pull-down resistor value and locked LCSC part.
+- 460 nm optical emitters.
+- Photodiodes and analog front-end topology.
+- Heater connector, fuse/current limit, TVS, and thermal cutoff.
+
+Current KiCad checks:
 
 ```bash
 kicad-cli sch erc pcb/lamp_rev_a/lamp_rev_a.kicad_sch \

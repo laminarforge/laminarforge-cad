@@ -1,0 +1,47 @@
+(kicad_sch
+  (version 20230121)
+  (generator "laminarforge_lamp_rev_a")
+  (uuid "a0000000-0000-4000-8000-000000000001")
+  (paper "A4")
+  (title_block
+    (title "LaminarForge LAMP Rev A PCBA")
+    (date "2026-05-10")
+    (rev "A")
+    (company "LaminarForge")
+    (comment 1 "One physical PCB; KiCad schematic and layout are the board authority.")
+    (comment 2 "Contract and parts manifests are validated by lamp_pcba_check.")
+  )
+  (text "MCU / USB / Programming: ESP32-S3-WROOM-1-N8 module, USB-C, EN, BOOT, UART/JTAG, firmware pin map."
+    (at 20.32 25.4 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "a0000000-0000-4000-8000-000000000101")
+  )
+  (text "Power: 12 V input protection, 5 V buck, 3.3 V regulator, rail indicators, test points."
+    (at 20.32 35.56 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "a0000000-0000-4000-8000-000000000102")
+  )
+  (text "Heater Drive: protected external heater output, gate driver, MOSFET, fuse/current limit, thermal cutoff."
+    (at 20.32 45.72 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "a0000000-0000-4000-8000-000000000103")
+  )
+  (text "Temperature Sense: thermistor divider and ADC path with accessible measurement point."
+    (at 20.32 55.88 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "a0000000-0000-4000-8000-000000000104")
+  )
+  (text "Optical Detection: eight emitters, eight photodiodes, mux, ADC, guarded analog routing."
+    (at 20.32 66.04 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "a0000000-0000-4000-8000-000000000105")
+  )
+  (text "Manufacturing Test: rail, boot/reset, UART, heater, I2C, ADC, and mux test points."
+    (at 20.32 76.2 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "a0000000-0000-4000-8000-000000000106")
+  )
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)

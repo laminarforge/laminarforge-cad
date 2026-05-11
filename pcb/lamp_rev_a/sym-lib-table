@@ -1,0 +1,9 @@
+(sym_lib_table
+  (lib
+    (name "lcsc")
+    (type "KiCad")
+    (uri "${KIPRJMOD}/../lib/lcsc.kicad_sym")
+    (options "")
+    (descr "LaminarForge locked LCSC symbols")
+  )
+)

@@ -6,10 +6,15 @@ use std::fs;
 use std::path::Path;
 
 const CONTRACT_PATH: &str = "pcb/lamp_rev_a/contract.toml";
+const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
+const SCHEMATIC_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
 const README_PATH: &str = "pcb/lamp_rev_a/README.md";
 const DRU_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_dru";
 const KIBOT_PATH: &str = "pcb/lamp_rev_a/kibot.yaml";
+const SYM_LIB_TABLE_PATH: &str = "pcb/lamp_rev_a/sym-lib-table";
+const FP_LIB_TABLE_PATH: &str = "pcb/lamp_rev_a/fp-lib-table";
+const SYMBOL_LIBRARY_PATH: &str = "pcb/lib/lcsc.kicad_sym";
 
 #[derive(Debug, Deserialize)]
 struct Contract {
@@ -26,6 +31,62 @@ struct Contract {
     test_points: Vec<TestPoint>,
     verification: Verification,
     manufacturing: Manufacturing,
+}
+
+#[derive(Debug, Deserialize)]
+struct PartsManifest {
+    package: PartsPackage,
+    schematic: SchematicSource,
+    blocks: Vec<SchematicBlock>,
+    selected_parts: Vec<SelectedPart>,
+    #[serde(default)]
+    selection_gaps: Vec<SelectionGap>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PartsPackage {
+    name: String,
+    ticket: String,
+    revision: String,
+    source_stage: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SchematicSource {
+    root_file: String,
+    symbol_library: String,
+    footprint_library: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SchematicBlock {
+    name: String,
+    title: String,
+    modules: Vec<String>,
+    required_nets: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct SelectedPart {
+    id: String,
+    module: String,
+    quantity: u32,
+    reference_prefix: String,
+    value: String,
+    symbol: String,
+    footprint: String,
+    lcsc_part: String,
+    nets: Vec<String>,
+    verification: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SelectionGap {
+    id: String,
+    module: String,
+    blocks_fabrication: bool,
+    reason: String,
+    resolve_with: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -143,12 +204,17 @@ struct Manufacturing {
 fn main() {
     let root = std::env::current_dir().expect("current dir");
     let contract = load_contract(&root.join(CONTRACT_PATH));
+    let parts = load_parts(&root.join(PARTS_PATH));
     let mut errors = Vec::new();
     let mut warnings = Vec::new();
 
     require_file(&root.join(README_PATH), &mut errors);
     require_file(&root.join(DRU_PATH), &mut errors);
     require_file(&root.join(KIBOT_PATH), &mut errors);
+    require_file(&root.join(PARTS_PATH), &mut errors);
+    require_file(&root.join(SCHEMATIC_PATH), &mut errors);
+    require_file(&root.join(SYM_LIB_TABLE_PATH), &mut errors);
+    require_file(&root.join(FP_LIB_TABLE_PATH), &mut errors);
     require_file(&root.join(BOARD_PATH), &mut errors);
 
     validate_board(&contract, &mut errors);
@@ -160,6 +226,14 @@ fn main() {
     validate_test_points(&contract, &nets, &mut errors);
     validate_verification(&contract, &mut errors);
     validate_manufacturing(&contract, &mut errors);
+    validate_schematic_shell(
+        &root.join(SCHEMATIC_PATH),
+        &parts,
+        &contract,
+        &nets,
+        &mut errors,
+    );
+    validate_parts_manifest(&root, &parts, &contract, &nets, &mut errors, &mut warnings);
     validate_kicad_seed(
         &root.join(BOARD_PATH),
         &contract,
@@ -186,6 +260,11 @@ fn main() {
         println!("  nets: {}", nets.len());
         println!("  gpio assignments: {}", contract.gpio_map.len());
         println!("  test points: {}", contract.test_points.len());
+        println!("  selected part groups: {}", parts.selected_parts.len());
+        println!(
+            "  fab-blocking selection gaps: {}",
+            fabrication_gap_count(&parts)
+        );
     } else {
         eprintln!("LAMP Rev A PCBA contract check failed:");
         for error in errors {
@@ -196,6 +275,12 @@ fn main() {
 }
 
 fn load_contract(path: &Path) -> Contract {
+    let content =
+        fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
+    toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
+}
+
+fn load_parts(path: &Path) -> PartsManifest {
     let content =
         fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
     toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
@@ -467,6 +552,284 @@ fn validate_manufacturing(contract: &Contract, errors: &mut Vec<String>) {
                 .to_string(),
         );
     }
+}
+
+fn validate_schematic_shell(
+    path: &Path,
+    parts: &PartsManifest,
+    contract: &Contract,
+    nets: &[Net],
+    errors: &mut Vec<String>,
+) {
+    let schematic = match fs::read_to_string(path) {
+        Ok(schematic) => schematic,
+        Err(_) => return,
+    };
+
+    if !schematic.contains("(kicad_sch") {
+        errors.push("schematic root is not a KiCad schematic".to_string());
+    }
+    if !schematic.contains("LaminarForge LAMP Rev A PCBA") {
+        errors.push("schematic title must identify LaminarForge LAMP Rev A PCBA".to_string());
+    }
+    if !schematic.contains(&contract.board.primary_mcu) {
+        errors.push("schematic shell must name the locked ESP32-S3 module".to_string());
+    }
+
+    let net_names: BTreeSet<&str> = nets.iter().map(|net| net.name.as_str()).collect();
+    for block in &parts.blocks {
+        if !schematic.contains(&block.title) {
+            errors.push(format!("schematic shell is missing block {}", block.title));
+        }
+        for net in &block.required_nets {
+            if !net_names.contains(net.as_str()) {
+                errors.push(format!(
+                    "schematic block {} references unknown required net {}",
+                    block.name, net
+                ));
+            }
+        }
+    }
+}
+
+fn validate_parts_manifest(
+    root: &Path,
+    parts: &PartsManifest,
+    contract: &Contract,
+    nets: &[Net],
+    errors: &mut Vec<String>,
+    warnings: &mut Vec<String>,
+) {
+    validate_parts_package(parts, contract, errors);
+    validate_parts_sources(parts, errors);
+
+    let module_names: BTreeSet<&str> = contract
+        .modules
+        .iter()
+        .map(|module| module.name.as_str())
+        .collect();
+    let net_names: BTreeSet<&str> = nets.iter().map(|net| net.name.as_str()).collect();
+    let symbol_library = fs::read_to_string(root.join(SYMBOL_LIBRARY_PATH)).unwrap_or_else(|err| {
+        errors.push(format!("read symbol library {SYMBOL_LIBRARY_PATH}: {err}"));
+        String::new()
+    });
+
+    validate_blocks(parts, &module_names, &net_names, errors);
+    validate_selected_parts(
+        root,
+        parts,
+        &module_names,
+        &net_names,
+        &symbol_library,
+        errors,
+    );
+    validate_selection_gaps(parts, &module_names, contract, errors, warnings);
+}
+
+fn validate_parts_package(parts: &PartsManifest, contract: &Contract, errors: &mut Vec<String>) {
+    if parts.package.name != "lamp_rev_a_parts" {
+        errors.push("parts package name must be lamp_rev_a_parts".to_string());
+    }
+    if parts.package.ticket != contract.package.ticket {
+        errors.push(format!(
+            "parts ticket {} does not match contract ticket {}",
+            parts.package.ticket, contract.package.ticket
+        ));
+    }
+    if parts.package.revision != contract.package.revision {
+        errors.push("parts revision must match contract revision".to_string());
+    }
+    if parts.package.source_stage != contract.package.source_stage {
+        errors.push("parts source stage must match contract source stage".to_string());
+    }
+}
+
+fn validate_parts_sources(parts: &PartsManifest, errors: &mut Vec<String>) {
+    if parts.schematic.root_file != "lamp_rev_a.kicad_sch" {
+        errors.push("parts schematic root_file must be lamp_rev_a.kicad_sch".to_string());
+    }
+    if parts.schematic.symbol_library != "../lib/lcsc.kicad_sym" {
+        errors
+            .push("parts schematic symbol_library must point at ../lib/lcsc.kicad_sym".to_string());
+    }
+    if parts.schematic.footprint_library != "../lib/lcsc.pretty" {
+        errors
+            .push("parts schematic footprint_library must point at ../lib/lcsc.pretty".to_string());
+    }
+}
+
+fn validate_blocks(
+    parts: &PartsManifest,
+    module_names: &BTreeSet<&str>,
+    net_names: &BTreeSet<&str>,
+    errors: &mut Vec<String>,
+) {
+    let mut block_names = BTreeSet::new();
+    for block in &parts.blocks {
+        if !block_names.insert(block.name.as_str()) {
+            errors.push(format!("duplicate schematic block {}", block.name));
+        }
+        if block.title.trim().is_empty() {
+            errors.push(format!("schematic block {} needs a title", block.name));
+        }
+        for module in &block.modules {
+            if !module_names.contains(module.as_str()) {
+                errors.push(format!(
+                    "schematic block {} references unknown module {}",
+                    block.name, module
+                ));
+            }
+        }
+        for net in &block.required_nets {
+            if !net_names.contains(net.as_str()) {
+                errors.push(format!(
+                    "schematic block {} references unknown net {}",
+                    block.name, net
+                ));
+            }
+        }
+    }
+}
+
+fn validate_selected_parts(
+    root: &Path,
+    parts: &PartsManifest,
+    module_names: &BTreeSet<&str>,
+    net_names: &BTreeSet<&str>,
+    symbol_library: &str,
+    errors: &mut Vec<String>,
+) {
+    let mut ids = BTreeSet::new();
+    let mut selected_modules = BTreeSet::new();
+
+    for part in &parts.selected_parts {
+        if !ids.insert(part.id.as_str()) {
+            errors.push(format!("duplicate selected part id {}", part.id));
+        }
+        if !module_names.contains(part.module.as_str()) {
+            errors.push(format!(
+                "selected part {} references unknown module {}",
+                part.id, part.module
+            ));
+        }
+        selected_modules.insert(part.module.as_str());
+        if part.quantity == 0 {
+            errors.push(format!("selected part {} has zero quantity", part.id));
+        }
+        if part.reference_prefix.trim().is_empty() {
+            errors.push(format!(
+                "selected part {} needs a reference prefix",
+                part.id
+            ));
+        }
+        if part.value.trim().is_empty() {
+            errors.push(format!("selected part {} needs a value", part.id));
+        }
+        if !part.lcsc_part.starts_with('C')
+            || !part.lcsc_part[1..].chars().all(|ch| ch.is_ascii_digit())
+        {
+            errors.push(format!(
+                "selected part {} has invalid LCSC part {}",
+                part.id, part.lcsc_part
+            ));
+        }
+        if !symbol_library.contains(&format!("(symbol \"{}\"", part.symbol)) {
+            errors.push(format!(
+                "selected part {} symbol {} is missing from {}",
+                part.id, part.symbol, SYMBOL_LIBRARY_PATH
+            ));
+        }
+        match footprint_path(root, &part.footprint) {
+            Some(path) if path.is_file() => {}
+            Some(path) => errors.push(format!(
+                "selected part {} footprint {} is missing at {}",
+                part.id,
+                part.footprint,
+                path.display()
+            )),
+            None => errors.push(format!(
+                "selected part {} footprint {} must use library:name form",
+                part.id, part.footprint
+            )),
+        }
+        if part.verification.trim().is_empty() {
+            errors.push(format!(
+                "selected part {} needs verification notes",
+                part.id
+            ));
+        }
+        for net in &part.nets {
+            if !net_names.contains(net.as_str()) {
+                errors.push(format!(
+                    "selected part {} references unknown net {}",
+                    part.id, net
+                ));
+            }
+        }
+    }
+
+    for required in [
+        "esp32_s3",
+        "usb_programming",
+        "power",
+        "heater_drive",
+        "optical_detection",
+        "firmware_debug",
+    ] {
+        if !selected_modules.contains(required) {
+            errors.push(format!("required module {required} has no selected parts"));
+        }
+    }
+}
+
+fn validate_selection_gaps(
+    parts: &PartsManifest,
+    module_names: &BTreeSet<&str>,
+    contract: &Contract,
+    errors: &mut Vec<String>,
+    warnings: &mut Vec<String>,
+) {
+    let mut ids = BTreeSet::new();
+    for gap in &parts.selection_gaps {
+        if !ids.insert(gap.id.as_str()) {
+            errors.push(format!("duplicate selection gap {}", gap.id));
+        }
+        if !module_names.contains(gap.module.as_str()) {
+            errors.push(format!(
+                "selection gap {} references unknown module {}",
+                gap.id, gap.module
+            ));
+        }
+        if gap.reason.trim().is_empty() || gap.resolve_with.trim().is_empty() {
+            errors.push(format!(
+                "selection gap {} needs reason and resolve_with text",
+                gap.id
+            ));
+        }
+        if gap.blocks_fabrication {
+            warnings.push(format!(
+                "fab blocked by {}: {} Resolve with: {}",
+                gap.id, gap.reason, gap.resolve_with
+            ));
+        }
+    }
+
+    if contract.package.source_stage == "fabrication_release" && fabrication_gap_count(parts) > 0 {
+        errors.push("fabrication_release cannot have fab-blocking selection gaps".to_string());
+    }
+}
+
+fn footprint_path(root: &Path, footprint: &str) -> Option<std::path::PathBuf> {
+    let (library, name) = footprint.split_once(':')?;
+    Some(root.join(format!("pcb/lib/{library}.pretty/{name}.kicad_mod")))
+}
+
+fn fabrication_gap_count(parts: &PartsManifest) -> usize {
+    parts
+        .selection_gaps
+        .iter()
+        .filter(|gap| gap.blocks_fabrication)
+        .count()
 }
 
 fn validate_kicad_seed(

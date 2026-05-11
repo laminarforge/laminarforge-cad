@@ -1,0 +1,268 @@
+[package]
+name = "lamp_rev_a_parts"
+ticket = "T-1451163D"
+revision = "Rev A"
+source_stage = "schematic_architecture"
+
+[schematic]
+root_file = "lamp_rev_a.kicad_sch"
+symbol_library = "../lib/lcsc.kicad_sym"
+footprint_library = "../lib/lcsc.pretty"
+
+[[blocks]]
+name = "mcu_usb"
+title = "MCU / USB / Programming"
+modules = ["esp32_s3", "usb_programming", "firmware_debug"]
+required_nets = ["+3V3", "GND", "USB_DP", "USB_DN", "USB_CC1", "USB_CC2", "VBUS", "ESP_EN", "ESP_GPIO0", "UART_TX", "UART_RX"]
+
+[[blocks]]
+name = "power"
+title = "Power"
+modules = ["power"]
+required_nets = ["+12V_RAW", "+5V", "+3V3", "GND", "VBUS"]
+
+[[blocks]]
+name = "heater_drive"
+title = "Heater Drive"
+modules = ["heater_drive"]
+required_nets = ["+12V_RAW", "HEATER_P", "HEATER_PWM", "GATE_DRV", "MOSFET_GATE", "GND"]
+
+[[blocks]]
+name = "temperature_sense"
+title = "Temperature Sense"
+modules = ["temperature_sense"]
+required_nets = ["+3V3", "ADC_AIN1", "GND"]
+
+[[blocks]]
+name = "optical_detection"
+title = "Optical Detection"
+modules = ["optical_detection"]
+required_nets = ["+3V3", "SDA", "SCL", "MUX_COM", "MUX_S0", "MUX_S1", "MUX_S2", "ADC_AIN1"]
+
+[[blocks]]
+name = "manufacturing_test"
+title = "Manufacturing Test"
+modules = ["manufacturing_test"]
+required_nets = ["GND", "+12V_RAW", "+5V", "+3V3", "HEATER_P", "HEATER_PWM", "ADC_AIN1", "MUX_COM", "SDA", "SCL", "ESP_EN", "ESP_GPIO0", "UART_TX", "UART_RX", "VBUS"]
+
+[[selected_parts]]
+id = "mcu_module"
+module = "esp32_s3"
+quantity = 1
+reference_prefix = "U"
+value = "ESP32-S3-WROOM-1-N8"
+symbol = "ESP32-S3-WROOM-1-N8"
+footprint = "lcsc:WIFIM-SMD_ESP32-S3-WROOM-1-N8"
+lcsc_part = "C2913198"
+nets = ["+3V3", "GND", "USB_DP", "USB_DN", "ESP_EN", "ESP_GPIO0", "UART_TX", "UART_RX", "HEATER_PWM", "SDA", "SCL", "MUX_S0", "MUX_S1", "MUX_S2"]
+verification = "Check against Espressif ESP32-S3-WROOM hardware checklist before fab."
+
+[[selected_parts]]
+id = "usb_c_connector"
+module = "usb_programming"
+quantity = 1
+reference_prefix = "J"
+value = "TYPE-C 3.1 MT 16P"
+symbol = "TYPE-C3.1MT16P_C168688"
+footprint = "lcsc:USB-C-SMD_TYPE-C-USB-4"
+lcsc_part = "C168688"
+nets = ["VBUS", "GND", "USB_DP", "USB_DN", "USB_CC1", "USB_CC2"]
+verification = "Confirm CC pull-downs, ESD protection, and D+/D- pair routing before fab."
+
+[[selected_parts]]
+id = "dc_input_jack"
+module = "power"
+quantity = 1
+reference_prefix = "J"
+value = "DC-005-5A-2.0"
+symbol = "DC-005-5A-2.0"
+footprint = "lcsc:DC-IN-TH_DC-005-5A-2.0"
+lcsc_part = "C381116"
+nets = ["+12V_RAW", "GND"]
+verification = "Confirm connector current rating and enclosure access before fab."
+
+[[selected_parts]]
+id = "adc"
+module = "optical_detection"
+quantity = 1
+reference_prefix = "U"
+value = "ADS1115IDGSR"
+symbol = "ADS1115IDGSR"
+footprint = "lcsc:MSOP-10_L3.0-W3.0-P0.50-LS5.0-BL"
+lcsc_part = "C37593"
+nets = ["+3V3", "GND", "SDA", "SCL", "ADC_AIN1", "MUX_COM"]
+verification = "Confirm sample rate and input range for optical and thermistor measurements."
+
+[[selected_parts]]
+id = "optical_mux"
+module = "optical_detection"
+quantity = 1
+reference_prefix = "U"
+value = "CD74HC4051M"
+symbol = "CD74HC4051M"
+footprint = "lcsc:SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL"
+lcsc_part = "C139301"
+nets = ["+3V3", "GND", "MUX_COM", "MUX_S0", "MUX_S1", "MUX_S2", "MUX_Y0", "MUX_Y1", "MUX_Y2", "MUX_Y3", "MUX_Y4", "MUX_Y5", "MUX_Y6", "MUX_Y7"]
+verification = "Confirm on-resistance and leakage are acceptable for the photodiode front end."
+
+[[selected_parts]]
+id = "heater_gate_driver"
+module = "heater_drive"
+quantity = 1
+reference_prefix = "U"
+value = "TC4427ACOA"
+symbol = "TC4427ACOA"
+footprint = "lcsc:SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL"
+lcsc_part = "C636886"
+nets = ["+12V_RAW", "GND", "HEATER_PWM", "GATE_DRV"]
+verification = "Confirm input threshold and output current are compatible with ESP32-S3 GPIO and selected MOSFET."
+
+[[selected_parts]]
+id = "heater_mosfet"
+module = "heater_drive"
+quantity = 1
+reference_prefix = "Q"
+value = "AO3400A"
+symbol = "AO3400A"
+footprint = "lcsc:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
+lcsc_part = "C20917"
+nets = ["GATE_DRV", "MOSFET_GATE", "HEATER_P", "GND"]
+verification = "Run thermal/current review before fab; replace if heater current or copper temperature rise is too high."
+
+[[selected_parts]]
+id = "led_low_side_drivers"
+module = "optical_detection"
+quantity = 8
+reference_prefix = "Q"
+value = "MMBT3904"
+symbol = "MMBT3904-C20526"
+footprint = "lcsc:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
+lcsc_part = "C20526"
+nets = ["LED_BASE_0", "LED_BASE_1", "LED_BASE_2", "LED_BASE_3", "LED_BASE_4", "LED_BASE_5", "LED_BASE_6", "LED_BASE_7", "LED_CATH_0", "LED_CATH_1", "LED_CATH_2", "LED_CATH_3", "LED_CATH_4", "LED_CATH_5", "LED_CATH_6", "LED_CATH_7", "GND"]
+verification = "Confirm optical emitter current budget after selecting the actual 460 nm emitter."
+
+[[selected_parts]]
+id = "status_leds"
+module = "firmware_debug"
+quantity = 2
+reference_prefix = "D"
+value = "KT-0603R"
+symbol = "KT-0603R"
+footprint = "lcsc:LED0603-RD"
+lcsc_part = "C2286"
+nets = ["LED_PWR_ANODE", "LED_ACT_ANODE", "ESP_GPIO_ACT", "GND"]
+verification = "Status indicators only; not the optical detection emitter."
+
+[[selected_parts]]
+id = "resistor_100r"
+module = "optical_detection"
+quantity = 8
+reference_prefix = "R"
+value = "100R"
+symbol = "0805W8F1000T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17408"
+nets = ["LED_COL_0", "LED_COL_1", "LED_COL_2", "LED_COL_3", "LED_COL_4", "LED_COL_5", "LED_COL_6", "LED_COL_7"]
+verification = "Recalculate after optical emitter Vf/current target is locked."
+
+[[selected_parts]]
+id = "resistor_1k"
+module = "optical_detection"
+quantity = 10
+reference_prefix = "R"
+value = "1k"
+symbol = "0805W8F1001T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17513"
+nets = ["LED_BASE_0", "LED_BASE_1", "LED_BASE_2", "LED_BASE_3", "LED_BASE_4", "LED_BASE_5", "LED_BASE_6", "LED_BASE_7", "LED_PWR_ANODE", "LED_ACT_ANODE"]
+verification = "Confirm LED driver base current and status LED current."
+
+[[selected_parts]]
+id = "resistor_4k7"
+module = "optical_detection"
+quantity = 2
+reference_prefix = "R"
+value = "4.7k"
+symbol = "0805W8F4701T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17673"
+nets = ["SDA", "SCL"]
+verification = "Confirm I2C pull-up value against bus capacitance before fab."
+
+[[selected_parts]]
+id = "resistor_10k"
+module = "temperature_sense"
+quantity = 6
+reference_prefix = "R"
+value = "10k"
+symbol = "0805W8F1002T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17414"
+nets = ["ADC_AIN1", "ESP_EN", "ESP_GPIO0", "GND", "+3V3"]
+verification = "Confirm thermistor beta curve and ESP32 boot/reset pull values."
+
+[[selected_parts]]
+id = "decoupling_caps"
+module = "power"
+quantity = 16
+reference_prefix = "C"
+value = "100nF"
+symbol = "CC0603KRX7R9BB104"
+footprint = "lcsc:C0603"
+lcsc_part = "C14663"
+nets = ["+3V3", "+5V", "GND"]
+verification = "Place local to each IC power pin."
+
+[[selected_parts]]
+id = "input_schottky"
+module = "power"
+quantity = 1
+reference_prefix = "D"
+value = "SS34"
+symbol = "SS34_C8678"
+footprint = "lcsc:SMA_L4.3-W2.6-LS5.2-RD"
+lcsc_part = "C8678"
+nets = ["+12V_RAW", "+12V"]
+verification = "Confirm voltage drop, thermal rise, and whether ideal-diode protection is preferable."
+
+[[selection_gaps]]
+id = "usb_c_cc_resistors"
+module = "usb_programming"
+blocks_fabrication = true
+reason = "USB-C CC pull-down resistors must be locked at the correct sink value with symbol, footprint, and LCSC part."
+resolve_with = "Add a 5.1k resistor part to pcb/lib or pick an existing locked LCSC resistor before schematic capture."
+
+[[selection_gaps]]
+id = "buck_regulator"
+module = "power"
+blocks_fabrication = true
+reason = "12 V to 5 V regulator symbol, footprint, LCSC part, inductor, and compensation network are not locked."
+resolve_with = "Select a JLCPCB-available buck regulator module or IC and add it to pcb/lib before schematic capture."
+
+[[selection_gaps]]
+id = "three_v_three_regulator"
+module = "power"
+blocks_fabrication = true
+reason = "5 V to 3.3 V regulator symbol, footprint, LCSC part, and output capacitor requirements are not locked."
+resolve_with = "Select a regulator with enough ESP32-S3 Wi-Fi current headroom and add it to pcb/lib."
+
+[[selection_gaps]]
+id = "optical_emitters"
+module = "optical_detection"
+blocks_fabrication = true
+reason = "The actual 460 nm emitter package, current target, viewing angle, and LCSC part are not selected."
+resolve_with = "Select an optical emitter based on the LAMP detection geometry, then lock footprint and resistor values."
+
+[[selection_gaps]]
+id = "photodiodes"
+module = "optical_detection"
+blocks_fabrication = true
+reason = "Photodiode package, spectral response, dark current, and bias/readout topology are not selected."
+resolve_with = "Select the photodiode and decide whether the readout needs a transimpedance amplifier before the mux/ADC."
+
+[[selection_gaps]]
+id = "heater_connector_and_protection"
+module = "heater_drive"
+blocks_fabrication = true
+reason = "External heater connector, fuse/current limit, TVS, and thermal cutoff parts are not locked."
+resolve_with = "Select parts around the measured heater current and enclosure wiring method."

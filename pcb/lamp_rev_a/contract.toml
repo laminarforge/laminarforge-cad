@@ -1,9 +1,9 @@
 [package]
 name = "lamp_rev_a"
-ticket = "T-1C7DD38E"
+ticket = "T-1451163D"
 revision = "Rev A"
 purpose = "Single-board ESP32-S3 PCBA for the LaminarForge eight-slot LAMP device."
-source_stage = "contract_and_kicad_seed"
+source_stage = "schematic_architecture"
 
 [board]
 physical_board_count = 1

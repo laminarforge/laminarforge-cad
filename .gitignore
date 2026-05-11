@@ -95,6 +95,8 @@ Cargo.lock
 # CAD output
 /output
 *.kicad_prl
+pcb/lamp_rev_a/fab/
+pcb/lamp_rev_a/reports/
 
 # Test artifacts
 /test_clone_check
