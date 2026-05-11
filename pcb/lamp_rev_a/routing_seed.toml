@@ -3,7 +3,7 @@ name = "lamp_rev_a_routing_seed"
 revision = "Rev A"
 source_stage = "greedy_drc_clean_seed"
 source_report = "pcb/lamp_rev_a/reports/drc.json"
-segments = 55
+segments = 58
 
 
 [[segments]]
@@ -547,11 +547,41 @@ end_x_mm = 75.000
 end_y_mm = 27.650
 
 [[segments]]
-net = "ESP_GPIO0"
-layer = "B.Cu"
-via_at_ends = true
+net = "ESP_EN"
+layer = "F.Cu"
+via_at_ends = false
 width_mm = 0.200
-start_x_mm = 22.000
-start_y_mm = 34.000
-end_x_mm = 40.900
-end_y_mm = 24.560
+start_x_mm = 20.500
+start_y_mm = 10.600
+end_x_mm = 23.100
+end_y_mm = 10.590
+
+[[segments]]
+net = "ESP_GPIO0"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 40.900
+start_y_mm = 24.560
+end_x_mm = 45.000
+end_y_mm = 24.600
+
+[[segments]]
+net = "UART_TX"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 40.900
+start_y_mm = 11.860
+end_x_mm = 45.000
+end_y_mm = 10.000
+
+[[segments]]
+net = "UART_RX"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 40.900
+start_y_mm = 13.130
+end_x_mm = 45.000
+end_y_mm = 15.500

@@ -17294,7 +17294,7 @@
 
   (footprint "lcsc:TESTPOINT_SMD_1.5MM"
     (layer "F.Cu")
-    (at 18 34 0)
+    (at 20.500 10.600 0)
     (tstamp "00000000-0000-4000-8000-0000000006a4")
     (property "Reference" "TP_EN" (at 0 -1.8 0) (layer "F.Fab") (uuid "00000000-0000-4000-8000-0000000006a5") (effects (font (size 0.8 0.8) (thickness 0.1))))
     (property "Value" "ESP_EN" (at 0 1.8 0) (layer "F.Fab") (uuid "00000000-0000-4000-8000-0000000006a6") (effects (font (size 0.8 0.8) (thickness 0.1))))
@@ -17304,7 +17304,7 @@
 
   (footprint "lcsc:TESTPOINT_SMD_1.5MM"
     (layer "F.Cu")
-    (at 22 34 0)
+    (at 45 24.600 0)
     (tstamp "00000000-0000-4000-8000-0000000006a8")
     (property "Reference" "TP_BOOT" (at 0 -1.8 0) (layer "F.Fab") (uuid "00000000-0000-4000-8000-0000000006a9") (effects (font (size 0.8 0.8) (thickness 0.1))))
     (property "Value" "ESP_GPIO0" (at 0 1.8 0) (layer "F.Fab") (uuid "00000000-0000-4000-8000-0000000006aa") (effects (font (size 0.8 0.8) (thickness 0.1))))
@@ -17314,7 +17314,7 @@
 
   (footprint "lcsc:TESTPOINT_SMD_1.5MM"
     (layer "F.Cu")
-    (at 26 34 0)
+    (at 45 10 0)
     (tstamp "00000000-0000-4000-8000-0000000006ac")
     (property "Reference" "TP_TX" (at 0 -1.8 0) (layer "F.Fab") (uuid "00000000-0000-4000-8000-0000000006ad") (effects (font (size 0.8 0.8) (thickness 0.1))))
     (property "Value" "UART_TX" (at 0 1.8 0) (layer "F.Fab") (uuid "00000000-0000-4000-8000-0000000006ae") (effects (font (size 0.8 0.8) (thickness 0.1))))
@@ -17324,7 +17324,7 @@
 
   (footprint "lcsc:TESTPOINT_SMD_1.5MM"
     (layer "F.Cu")
-    (at 30 34 0)
+    (at 45 15.500 0)
     (tstamp "00000000-0000-4000-8000-0000000006b0")
     (property "Reference" "TP_RX" (at 0 -1.8 0) (layer "F.Fab") (uuid "00000000-0000-4000-8000-0000000006b1") (effects (font (size 0.8 0.8) (thickness 0.1))))
     (property "Value" "UART_RX" (at 0 1.8 0) (layer "F.Fab") (uuid "00000000-0000-4000-8000-0000000006b2") (effects (font (size 0.8 0.8) (thickness 0.1))))
@@ -18026,38 +18026,47 @@
     (uuid "00000000-0000-4000-8000-000000000703")
   )
 
-  (via
-    (at 22 34)
-    (size 0.6)
-    (drill 0.3)
-    (layers "F.Cu" "B.Cu")
-    (net 24)
+  (segment
+    (start 20.500 10.600)
+    (end 23.100 10.590)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 23)
     (uuid "00000000-0000-4000-8000-000000000704")
   )
 
-  (via
-    (at 40.900 24.560)
-    (size 0.6)
-    (drill 0.3)
-    (layers "F.Cu" "B.Cu")
+  (segment
+    (start 40.900 24.560)
+    (end 45 24.600)
+    (width 0.200)
+    (layer "F.Cu")
     (net 24)
     (uuid "00000000-0000-4000-8000-000000000705")
   )
 
   (segment
-    (start 22 34)
-    (end 40.900 24.560)
+    (start 40.900 11.860)
+    (end 45 10)
     (width 0.200)
-    (layer "B.Cu")
-    (net 24)
+    (layer "F.Cu")
+    (net 25)
     (uuid "00000000-0000-4000-8000-000000000706")
+  )
+
+  (segment
+    (start 40.900 13.130)
+    (end 45 15.500)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 26)
+    (uuid "00000000-0000-4000-8000-000000000707")
   )
 
   (zone
     (net 1)
     (net_name "GND")
     (layer "F.Cu")
-    (uuid "00000000-0000-4000-8000-000000000707")
+    (uuid "00000000-0000-4000-8000-000000000708")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.200))
     (min_thickness 0.150)
@@ -18076,7 +18085,7 @@
     (net 1)
     (net_name "GND")
     (layer "B.Cu")
-    (uuid "00000000-0000-4000-8000-000000000708")
+    (uuid "00000000-0000-4000-8000-000000000709")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.200))
     (min_thickness 0.150)

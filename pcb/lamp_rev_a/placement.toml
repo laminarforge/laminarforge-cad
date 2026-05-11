@@ -998,29 +998,29 @@ side = "top"
 [[test_points]]
 name = "TP_EN"
 net = "ESP_EN"
-x_mm = 18.0
-y_mm = 34.0
+x_mm = 20.5
+y_mm = 10.6
 side = "top"
 
 [[test_points]]
 name = "TP_BOOT"
 net = "ESP_GPIO0"
-x_mm = 22.0
-y_mm = 34.0
+x_mm = 45.0
+y_mm = 24.6
 side = "top"
 
 [[test_points]]
 name = "TP_TX"
 net = "UART_TX"
-x_mm = 26.0
-y_mm = 34.0
+x_mm = 45.0
+y_mm = 10.0
 side = "top"
 
 [[test_points]]
 name = "TP_RX"
 net = "UART_RX"
-x_mm = 30.0
-y_mm = 34.0
+x_mm = 45.0
+y_mm = 15.5
 side = "top"
 
 [[test_points]]
