@@ -177,6 +177,29 @@ struct CopperZonePoint {
     y_mm: f64,
 }
 
+struct BoardSources<'a> {
+    root: &'a Path,
+    contract: &'a Contract,
+    parts: &'a PartsManifest,
+    placement: &'a PlacementPlan,
+    pin_nets: &'a PinNetManifest,
+    routing_seed: &'a RoutingSeed,
+    copper_zones: &'a CopperZonePlan,
+    nets: &'a [String],
+}
+
+struct RouteEndpoint {
+    x_mm: f64,
+    y_mm: f64,
+    net_id: usize,
+}
+
+struct RouteViaPolicy<'a> {
+    via_usage: &'a BTreeMap<String, usize>,
+    via_layers: &'a BTreeMap<String, BTreeSet<String>>,
+    outer_points: &'a BTreeSet<String>,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let root = std::env::current_dir()?;
     let contract = read_toml::<Contract>(&root.join(CONTRACT_PATH))?;
@@ -187,16 +210,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     let copper_zones = read_toml::<CopperZonePlan>(&root.join(COPPER_ZONES_PATH))?;
     let nets = expand_nets(&contract);
 
-    let board = render_board(
-        &root,
-        &contract,
-        &parts,
-        &placement,
-        &pin_nets,
-        &routing_seed,
-        &copper_zones,
-        &nets,
-    )?;
+    let board = render_board(BoardSources {
+        root: &root,
+        contract: &contract,
+        parts: &parts,
+        placement: &placement,
+        pin_nets: &pin_nets,
+        routing_seed: &routing_seed,
+        copper_zones: &copper_zones,
+        nets: &nets,
+    })?;
     fs::write(root.join(BOARD_PATH), board)?;
 
     println!("Materialized LAMP Rev A KiCad board:");
@@ -229,37 +252,31 @@ fn expand_nets(contract: &Contract) -> Vec<String> {
     names
 }
 
-fn render_board(
-    root: &Path,
-    contract: &Contract,
-    parts: &PartsManifest,
-    placement: &PlacementPlan,
-    pin_nets: &PinNetManifest,
-    routing_seed: &RoutingSeed,
-    copper_zones: &CopperZonePlan,
-    nets: &[String],
-) -> Result<String, Box<dyn Error>> {
+fn render_board(sources: BoardSources<'_>) -> Result<String, Box<dyn Error>> {
     let mut counter = UuidCounter::default();
-    let net_ids = net_ids(nets);
-    let part_by_id = parts
+    let net_ids = net_ids(sources.nets);
+    let part_by_id = sources
+        .parts
         .selected_parts
         .iter()
         .map(|part| (part.id.as_str(), part))
         .collect::<BTreeMap<_, _>>();
-    let pin_nets_by_ref = pin_nets
+    let pin_nets_by_ref = sources
+        .pin_nets
         .assignments
         .iter()
         .map(|assignment| (assignment.reference.as_str(), assignment))
         .collect::<BTreeMap<_, _>>();
 
     let mut board = String::new();
-    write_header(&mut board, contract, nets)?;
-    write_board_geometry(&mut board, contract, &mut counter)?;
-    write_zone_guides(&mut board, contract, &mut counter)?;
-    write_optical_guides(&mut board, placement, &mut counter)?;
+    write_header(&mut board, sources.contract, sources.nets)?;
+    write_board_geometry(&mut board, sources.contract, &mut counter)?;
+    write_zone_guides(&mut board, sources.contract, &mut counter)?;
+    write_optical_guides(&mut board, sources.placement, &mut counter)?;
 
-    let footprint_dir = resolve_footprint_dir(root, &parts.schematic.footprint_library)?;
-    for item in &placement.placements {
+    let footprint_dir =
+        resolve_footprint_dir(sources.root, &sources.parts.schematic.footprint_library)?;
+    for item in &sources.placement.placements {
         let part = part_by_id.get(item.part_id.as_str()).ok_or_else(|| {
             format!(
                 "placement {} references unknown part {}",
@@ -277,12 +294,24 @@ fn render_board(
         )?;
     }
 
-    for point in &placement.test_points {
+    for point in &sources.placement.test_points {
         write_test_point(&mut board, point, &net_ids, &mut counter)?;
     }
 
-    write_route_segments(&mut board, contract, routing_seed, &net_ids, &mut counter)?;
-    write_copper_zones(&mut board, contract, copper_zones, &net_ids, &mut counter)?;
+    write_route_segments(
+        &mut board,
+        sources.contract,
+        sources.routing_seed,
+        &net_ids,
+        &mut counter,
+    )?;
+    write_copper_zones(
+        &mut board,
+        sources.contract,
+        sources.copper_zones,
+        &net_ids,
+        &mut counter,
+    )?;
 
     board.push_str(")\n");
     Ok(board)
@@ -589,6 +618,11 @@ fn write_route_segments(
     let via_usage = route_via_usage(routing_seed, net_ids)?;
     let via_layers = route_via_layers(routing_seed, net_ids)?;
     let outer_points = route_outer_points(routing_seed, net_ids)?;
+    let via_policy = RouteViaPolicy {
+        via_usage: &via_usage,
+        via_layers: &via_layers,
+        outer_points: &outer_points,
+    };
     let mut emitted_vias = BTreeSet::new();
 
     for segment in &routing_seed.segments {
@@ -630,12 +664,12 @@ fn write_route_segments(
         if route_segment_via_at_start(segment) {
             write_route_endpoint_via(
                 board,
-                segment.start_x_mm,
-                segment.start_y_mm,
-                net_id,
-                &via_usage,
-                &via_layers,
-                &outer_points,
+                RouteEndpoint {
+                    x_mm: segment.start_x_mm,
+                    y_mm: segment.start_y_mm,
+                    net_id,
+                },
+                &via_policy,
                 &mut emitted_vias,
                 counter,
             )?;
@@ -643,12 +677,12 @@ fn write_route_segments(
         if route_segment_via_at_end(segment) {
             write_route_endpoint_via(
                 board,
-                segment.end_x_mm,
-                segment.end_y_mm,
-                net_id,
-                &via_usage,
-                &via_layers,
-                &outer_points,
+                RouteEndpoint {
+                    x_mm: segment.end_x_mm,
+                    y_mm: segment.end_y_mm,
+                    net_id,
+                },
+                &via_policy,
                 &mut emitted_vias,
                 counter,
             )?;
@@ -774,22 +808,25 @@ fn route_outer_points(
 
 fn write_route_endpoint_via(
     board: &mut String,
-    x_mm: f64,
-    y_mm: f64,
-    net_id: usize,
-    via_usage: &BTreeMap<String, usize>,
-    via_layers: &BTreeMap<String, BTreeSet<String>>,
-    outer_points: &BTreeSet<String>,
+    endpoint: RouteEndpoint,
+    policy: &RouteViaPolicy<'_>,
     emitted_vias: &mut BTreeSet<String>,
     counter: &mut UuidCounter,
 ) -> Result<(), Box<dyn Error>> {
-    let key = route_point_key(net_id, x_mm, y_mm);
-    let route_layers = via_layers.get(&key);
-    let is_route_endpoint = via_usage.get(&key).copied().unwrap_or(0) == 1;
+    let key = route_point_key(endpoint.net_id, endpoint.x_mm, endpoint.y_mm);
+    let route_layers = policy.via_layers.get(&key);
+    let is_route_endpoint = policy.via_usage.get(&key).copied().unwrap_or(0) == 1;
     let changes_route_layer = route_layers.map(BTreeSet::len).unwrap_or(0) > 1;
-    let connects_outer_copper = outer_points.contains(&key);
+    let connects_outer_copper = policy.outer_points.contains(&key);
     if is_route_endpoint || changes_route_layer || connects_outer_copper {
-        write_via_once(board, x_mm, y_mm, net_id, emitted_vias, counter)?;
+        write_via_once(
+            board,
+            endpoint.x_mm,
+            endpoint.y_mm,
+            endpoint.net_id,
+            emitted_vias,
+            counter,
+        )?;
     }
     Ok(())
 }
