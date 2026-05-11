@@ -269,7 +269,7 @@ fn frame() -> Part {
         ];
         for (j, (dx, dy)) in offsets.iter().enumerate() {
             let hole = centered_cylinder(
-                &format!("dowel_c{idx}_{j}"),
+                format!("dowel_c{idx}_{j}"),
                 DOWEL_HOLE_DIA / 2.0,
                 dowel_tool_h,
                 24,
@@ -294,7 +294,7 @@ fn frame() -> Part {
     for (idx, cx) in xs.iter().enumerate() {
         for sy in [-1.0_f64, 1.0] {
             let my = sy * (fy / 2.0 - 10.0);
-            let m = centered_cylinder(&format!("frame_mid_mount_{idx}"), 1.8, mount_tool_h, 24)
+            let m = centered_cylinder(format!("frame_mid_mount_{idx}"), 1.8, mount_tool_h, 24)
                 .translate(*cx, my, 0.0);
             body = body - m;
         }
@@ -308,7 +308,7 @@ fn frame() -> Part {
 fn chip_pocket(cx: f64, cy: f64) -> Part {
     let pocket_center_z = -frame_outer_z() / 2.0 + FRAME_FLOOR_Z + CHIP_Z / 2.0;
     centered_cube(
-        &format!("chip_pocket_{:.0}_{:.0}", cx, cy),
+        format!("chip_pocket_{:.0}_{:.0}", cx, cy),
         POCKET_X,
         POCKET_Y,
         POCKET_DEPTH,
@@ -413,7 +413,7 @@ fn top_bar() -> Part {
         }
         let pocket_z = TOP_BAR_Z / 2.0 - PLUNGER_POCKET_DEPTH / 2.0 + 0.05;
         let pocket = centered_cylinder(
-            &format!("pp_{idx}"),
+            format!("pp_{idx}"),
             PLUNGER_POCKET_DIA / 2.0,
             PLUNGER_POCKET_DEPTH + 0.1,
             32,
@@ -423,7 +423,7 @@ fn top_bar() -> Part {
 
         // Guide bore through bar floor
         let guide = centered_cylinder(
-            &format!("pg_{idx}"),
+            format!("pg_{idx}"),
             PLUNGER_GUIDE_BORE_DIA / 2.0,
             TOP_BAR_Z + 0.2,
             24,
@@ -513,7 +513,7 @@ fn assembly() -> Part {
     let fz = frame_outer_z();
     let chip_center_z = -fz / 2.0 + FRAME_FLOOR_Z + CHIP_Z / 2.0;
     for (idx, &cx) in chip_centers_x().iter().enumerate() {
-        let chip = centered_cube(&format!("chip_ghost_{idx}"), CHIP_X, CHIP_Y, CHIP_Z).translate(
+        let chip = centered_cube(format!("chip_ghost_{idx}"), CHIP_X, CHIP_Y, CHIP_Z).translate(
             cx,
             0.0,
             chip_center_z,
@@ -681,9 +681,7 @@ fn emit_drawing() -> String {
         "  Compressed CS:         {:.2} mm (20% compression)\n",
         VIA_ORING_COMPRESSED_CS
     ));
-    s.push_str(&format!(
-        "  O-ring groove depth:   1.0 mm (chip) + 0.2 mm float = 1.2 mm\n"
-    ));
+    s.push_str("  O-ring groove depth:   1.0 mm (chip) + 0.2 mm float = 1.2 mm\n");
     s.push_str("  Seal pressure:         F/A = 10 N / (π × 1.25² mm²) ≈ 2.04 MPa\n");
     s.push_str("  FKM rated seat stress: 4–8 MPa → 4× safety margin\n");
     s.push_str("  Leak-before-burst @ 100 kPa test pressure:   passes\n\n");
@@ -769,10 +767,12 @@ fn main() {
     println!();
 
     // Quick parametric sanity
-    assert!(
-        NUM_CHIPS >= NUM_CHIPS_MIN && NUM_CHIPS <= NUM_CHIPS_MAX,
-        "NUM_CHIPS must be in [{NUM_CHIPS_MIN}, {NUM_CHIPS_MAX}]"
-    );
+    const {
+        assert!(
+            NUM_CHIPS >= NUM_CHIPS_MIN && NUM_CHIPS <= NUM_CHIPS_MAX,
+            "NUM_CHIPS is outside the supported range"
+        );
+    }
 
     // ── Build parts ──
     let frame_part = frame();

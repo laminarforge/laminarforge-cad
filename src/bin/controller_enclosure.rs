@@ -232,7 +232,7 @@ fn enclosure_body() -> Part {
     ];
     for (i, &(hx, hz)) in fp_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("fp_screw_{i}"),
+            format!("fp_screw_{i}"),
             PANEL_SCREW_DIA / 2.0,
             BOX_WALL + 2.0,
             24,
@@ -263,7 +263,7 @@ fn enclosure_body() -> Part {
     ];
     for (i, &(hx, hz)) in bp_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("bp_screw_{i}"),
+            format!("bp_screw_{i}"),
             PANEL_SCREW_DIA / 2.0,
             BOX_WALL + 2.0,
             24,
@@ -285,7 +285,7 @@ fn enclosure_body() -> Part {
             for slit_i in 0..LOUVER_COUNT {
                 let x_off = (slit_i as f64 - (LOUVER_COUNT as f64 - 1.0) / 2.0) * LOUVER_PITCH;
                 let slit = centered_cube(
-                    &format!("louver_{wall_idx}_{band_idx}_{slit_i}"),
+                    format!("louver_{wall_idx}_{band_idx}_{slit_i}"),
                     louver_depth,
                     LOUVER_LEN,
                     LOUVER_W,
@@ -305,19 +305,14 @@ fn enclosure_body() -> Part {
         (EAR_OFFSET_X, -(BOX_OUTER_Z / 2.0) + EAR_Z / 2.0),
     ];
     for (i, &(ex, ez)) in ear_positions.iter().enumerate() {
-        let ear = centered_cube(&format!("ear_{i}"), EAR_X, EAR_Y, EAR_Z).translate(
+        let ear = centered_cube(format!("ear_{i}"), EAR_X, EAR_Y, EAR_Z).translate(
             ex,
             -(BOX_OUTER_Y / 2.0) - EAR_Y / 2.0,
             ez,
         );
-        let hole = centered_cylinder(
-            &format!("ear_hole_{i}"),
-            EAR_HOLE_DIA / 2.0,
-            EAR_Y + 4.0,
-            24,
-        )
-        .rotate(90.0, 0.0, 0.0)
-        .translate(ex, -(BOX_OUTER_Y / 2.0) - EAR_Y / 2.0, ez);
+        let hole = centered_cylinder(format!("ear_hole_{i}"), EAR_HOLE_DIA / 2.0, EAR_Y + 4.0, 24)
+            .rotate(90.0, 0.0, 0.0)
+            .translate(ex, -(BOX_OUTER_Y / 2.0) - EAR_Y / 2.0, ez);
         body = body + ear;
         body = body - hole;
     }
@@ -330,13 +325,16 @@ fn enclosure_body() -> Part {
         (0.0, -(BOX_OUTER_Z / 2.0) + DIN_EAR_Z / 2.0 + 5.0),
     ];
     for (i, &(dx, dz)) in din_ear_positions.iter().enumerate() {
-        let tab = centered_cube(&format!("din_ear_{i}"), DIN_EAR_X, DIN_EAR_Y, DIN_EAR_Z)
-            .translate(dx, -(BOX_OUTER_Y / 2.0) - DIN_EAR_Y - 2.0, dz);
+        let tab = centered_cube(format!("din_ear_{i}"), DIN_EAR_X, DIN_EAR_Y, DIN_EAR_Z).translate(
+            dx,
+            -(BOX_OUTER_Y / 2.0) - DIN_EAR_Y - 2.0,
+            dz,
+        );
         body = body + tab;
         // M4 tapping holes for spring clip (2 per tab)
         for (j, &hx) in [-20.0, 20.0].iter().enumerate() {
             let hole = centered_cylinder(
-                &format!("din_ear_hole_{i}_{j}"),
+                format!("din_ear_hole_{i}_{j}"),
                 PANEL_SCREW_DIA / 2.0,
                 DIN_EAR_Y + 4.0,
                 24,
@@ -377,7 +375,7 @@ fn enclosure_body() -> Part {
     let boss_base_x = -(BOX_INNER_X / 2.0); // inner surface of left wall
     for (i, &(by, bz)) in pcb_boss_positions_yz.iter().enumerate() {
         let boss = centered_cylinder(
-            &format!("pcb_boss_{i}"),
+            format!("pcb_boss_{i}"),
             PCB_STANDOFF_DIA / 2.0,
             PCB_STANDOFF_H,
             24,
@@ -386,7 +384,7 @@ fn enclosure_body() -> Part {
         .translate(boss_base_x + PCB_STANDOFF_H / 2.0, by, bz);
         body = body + boss;
         // Tapping hole (2.7 mm, centered, 8 mm deep)
-        let tap = centered_cylinder(&format!("pcb_tap_{i}"), 2.7 / 2.0, 8.0, 24)
+        let tap = centered_cylinder(format!("pcb_tap_{i}"), 2.7 / 2.0, 8.0, 24)
             .rotate(0.0, 90.0, 0.0)
             .translate(boss_base_x + 8.0 / 2.0 + 1.0, by, bz);
         body = body - tap;
@@ -418,7 +416,7 @@ fn enclosure_body() -> Part {
     ];
     for (i, &(hx, hy)) in psu_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("psu_mount_{i}"),
+            format!("psu_mount_{i}"),
             PSU_SCREW_DIA / 2.0,
             BOX_WALL + 2.0,
             24,
@@ -436,7 +434,7 @@ fn enclosure_body() -> Part {
         .enumerate()
     {
         let hole = centered_cylinder(
-            &format!("ssr_mount_{i}"),
+            format!("ssr_mount_{i}"),
             SSR_MOUNT_DIA / 2.0,
             BOX_WALL + 2.0,
             24,
@@ -489,7 +487,7 @@ fn front_panel() -> Part {
     ];
     for (i, &(dx, dz)) in display_screw_offsets.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("display_screw_{i}"),
+            format!("display_screw_{i}"),
             DISPLAY_SCREW_DIA / 2.0,
             FRONT_PANEL_THICKNESS + 2.0,
             24,
@@ -541,7 +539,7 @@ fn front_panel() -> Part {
     let led_z = 55.0;
     for (i, &lx) in [-20.0_f64, 0.0, 20.0].iter().enumerate() {
         let led_hole = centered_cylinder(
-            &format!("status_led_{i}"),
+            format!("status_led_{i}"),
             STATUS_LED_DIA / 2.0,
             FRONT_PANEL_THICKNESS + 2.0,
             24,
@@ -572,7 +570,7 @@ fn front_panel() -> Part {
     ];
     for (i, &(sx, sz)) in sc_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("fp_screw_{i}"),
+            format!("fp_screw_{i}"),
             PANEL_SCREW_DIA / 2.0,
             FRONT_PANEL_THICKNESS + 2.0,
             24,
@@ -587,7 +585,7 @@ fn front_panel() -> Part {
 
 /// Back panel (removable — gland plate). Carries 6× cable glands, 80 mm fan
 /// + filter, USB-C bulkhead, RJ45 bulkhead. Sized to mate with the rear of
-/// the enclosure body with a perimeter gasket.
+///   the enclosure body with a perimeter gasket.
 fn back_panel_with_glands() -> Part {
     let panel_w = BOX_INNER_X - 0.4; // 293.6
     let panel_z = BOX_INNER_Z - 0.4; // 143.6
@@ -606,7 +604,7 @@ fn back_panel_with_glands() -> Part {
     ];
     for (i, &(gx, gdia)) in gland_specs.iter().enumerate() {
         let gland = centered_cylinder(
-            &format!("gland_{i}"),
+            format!("gland_{i}"),
             gdia / 2.0,
             BACK_PANEL_THICKNESS + 2.0,
             32,
@@ -636,7 +634,7 @@ fn back_panel_with_glands() -> Part {
     ];
     for (i, &(fx, fz)) in fan_corners.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("fan_screw_{i}"),
+            format!("fan_screw_{i}"),
             FAN_SCREW_DIA / 2.0,
             BACK_PANEL_THICKNESS + 2.0,
             24,
@@ -655,7 +653,7 @@ fn back_panel_with_glands() -> Part {
         .enumerate()
     {
         let hole = centered_cylinder(
-            &format!("usbc_screw_{i}"),
+            format!("usbc_screw_{i}"),
             2.5 / 2.0,
             BACK_PANEL_THICKNESS + 2.0,
             24,
@@ -674,7 +672,7 @@ fn back_panel_with_glands() -> Part {
         .enumerate()
     {
         let hole = centered_cylinder(
-            &format!("rj45_screw_{i}"),
+            format!("rj45_screw_{i}"),
             2.5 / 2.0,
             BACK_PANEL_THICKNESS + 2.0,
             24,
@@ -705,7 +703,7 @@ fn back_panel_with_glands() -> Part {
     ];
     for (i, &(sx, sz)) in bp_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("bp_screw_{i}"),
+            format!("bp_screw_{i}"),
             PANEL_SCREW_DIA / 2.0,
             BACK_PANEL_THICKNESS + 2.0,
             24,
@@ -730,7 +728,7 @@ fn din_rail_segment() -> Part {
         .enumerate()
     {
         let slot = centered_cube(
-            &format!("din_slot_{i}"),
+            format!("din_slot_{i}"),
             DIN_RAIL_SLOT_W,
             DIN_RAIL_SLOT_H + 2.0,
             DIN_RAIL_H + 2.0,
@@ -766,7 +764,7 @@ fn pcb_mount() -> Part {
     ];
     for (i, &(hx, hy)) in holes.iter().enumerate() {
         let standoff = centered_cylinder(
-            &format!("pcb_mount_standoff_{i}"),
+            format!("pcb_mount_standoff_{i}"),
             PCB_STANDOFF_DIA / 2.0,
             PCB_STANDOFF_H,
             24,
@@ -774,7 +772,7 @@ fn pcb_mount() -> Part {
         .translate(hx, hy, PCB_STANDOFF_H / 2.0 + 1.5);
         plate = plate + standoff;
         let hole = centered_cylinder(
-            &format!("pcb_mount_hole_{i}"),
+            format!("pcb_mount_hole_{i}"),
             PCB_MOUNT_HOLE_DIA / 2.0,
             3.0 + PCB_STANDOFF_H + 2.0,
             24,
@@ -794,7 +792,7 @@ fn psu_mount() -> Part {
     let hole_positions = [-100.0, 100.0];
     for (i, &hx) in hole_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("psu_strap_hole_{i}"),
+            format!("psu_strap_hole_{i}"),
             PSU_SCREW_DIA / 2.0,
             3.0 + 2.0,
             24,
@@ -817,7 +815,7 @@ fn ssr_heatsink() -> Part {
         .enumerate()
     {
         let hole = centered_cylinder(
-            &format!("ssr_hs_hole_{i}"),
+            format!("ssr_hs_hole_{i}"),
             SSR_MOUNT_DIA / 2.0,
             HEATSINK_Z + 2.0,
             24,
@@ -834,7 +832,7 @@ fn ssr_heatsink() -> Part {
     ];
     for (i, &(cx, cy)) in corner_offsets.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("ssr_floor_{i}"),
+            format!("ssr_floor_{i}"),
             SSR_MOUNT_DIA / 2.0,
             HEATSINK_Z + 2.0,
             24,
