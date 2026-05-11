@@ -50,6 +50,10 @@ struct RouteSegment {
     layer: String,
     #[serde(default)]
     via_at_ends: bool,
+    #[serde(default)]
+    via_at_start: Option<bool>,
+    #[serde(default)]
+    via_at_end: Option<bool>,
     width_mm: f64,
     start_x_mm: f64,
     start_y_mm: f64,
@@ -365,8 +369,7 @@ width_mm = {:.3}
 start_x_mm = {:.3}
 start_y_mm = {:.3}
 end_x_mm = {:.3}
-end_y_mm = {:.3}
-"#,
+end_y_mm = {:.3}"#,
             escape(&route.net),
             escape(&route.layer),
             route.via_at_ends,
@@ -376,6 +379,13 @@ end_y_mm = {:.3}
             route.end_x_mm,
             route.end_y_mm
         )?;
+        if let Some(via_at_start) = route.via_at_start {
+            writeln!(output, "via_at_start = {via_at_start}")?;
+        }
+        if let Some(via_at_end) = route.via_at_end {
+            writeln!(output, "via_at_end = {via_at_end}")?;
+        }
+        writeln!(output)?;
     }
     fs::write(ROUTING_SEED_PATH, output)?;
     Ok(())
@@ -446,6 +456,8 @@ fn segment(
         net: net.to_string(),
         layer: layer.to_string(),
         via_at_ends,
+        via_at_start: None,
+        via_at_end: None,
         width_mm,
         start_x_mm: round3(start.x),
         start_y_mm: round3(start.y),

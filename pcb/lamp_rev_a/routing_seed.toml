@@ -1,9 +1,9 @@
 [package]
 name = "lamp_rev_a_routing_seed"
 revision = "Rev A"
-source_stage = "greedy_drc_clean_seed"
+source_stage = "endpoint_via_route_seed"
 source_report = "pcb/lamp_rev_a/reports/drc.json"
-segments = 59
+segments = 89
 
 
 [[segments]]
@@ -16,6 +16,7 @@ start_y_mm = 4.610
 end_x_mm = 1.420
 end_y_mm = 5.390
 
+
 [[segments]]
 net = "GND"
 layer = "F.Cu"
@@ -25,6 +26,7 @@ start_x_mm = 12.580
 start_y_mm = 5.390
 end_x_mm = 10.210
 end_y_mm = 4.610
+
 
 [[segments]]
 net = "GND"
@@ -36,6 +38,7 @@ start_y_mm = 17.160
 end_x_mm = 29.100
 end_y_mm = 15.760
 
+
 [[segments]]
 net = "GND"
 layer = "F.Cu"
@@ -45,6 +48,7 @@ start_x_mm = 30.500
 start_y_mm = 14.360
 end_x_mm = 29.100
 end_y_mm = 14.360
+
 
 [[segments]]
 net = "GND"
@@ -56,6 +60,7 @@ start_y_mm = 15.760
 end_x_mm = 29.100
 end_y_mm = 15.760
 
+
 [[segments]]
 net = "GND"
 layer = "F.Cu"
@@ -65,6 +70,7 @@ start_x_mm = 30.500
 start_y_mm = 15.760
 end_x_mm = 30.500
 end_y_mm = 14.360
+
 
 [[segments]]
 net = "GND"
@@ -76,6 +82,7 @@ start_y_mm = 17.160
 end_x_mm = 29.100
 end_y_mm = 17.160
 
+
 [[segments]]
 net = "GND"
 layer = "F.Cu"
@@ -85,6 +92,7 @@ start_x_mm = 31.900
 start_y_mm = 14.360
 end_x_mm = 30.500
 end_y_mm = 14.360
+
 
 [[segments]]
 net = "GND"
@@ -96,6 +104,7 @@ start_y_mm = 15.760
 end_x_mm = 31.900
 end_y_mm = 14.360
 
+
 [[segments]]
 net = "GND"
 layer = "F.Cu"
@@ -105,6 +114,7 @@ start_x_mm = 31.900
 start_y_mm = 17.160
 end_x_mm = 30.500
 end_y_mm = 17.160
+
 
 [[segments]]
 net = "GND"
@@ -116,6 +126,7 @@ start_y_mm = 68.000
 end_x_mm = 43.950
 end_y_mm = 68.000
 
+
 [[segments]]
 net = "GND"
 layer = "F.Cu"
@@ -125,6 +136,7 @@ start_x_mm = 57.170
 start_y_mm = 66.740
 end_x_mm = 58.440
 end_y_mm = 66.740
+
 
 [[segments]]
 net = "GND"
@@ -136,6 +148,7 @@ start_y_mm = 66.740
 end_x_mm = 55.900
 end_y_mm = 66.740
 
+
 [[segments]]
 net = "+5V"
 layer = "F.Cu"
@@ -145,6 +158,7 @@ start_x_mm = 50.200
 start_y_mm = 8.000
 end_x_mm = 48.500
 end_y_mm = 5.000
+
 
 [[segments]]
 net = "+3V3"
@@ -156,6 +170,7 @@ start_y_mm = 12.300
 end_x_mm = 56.000
 end_y_mm = 8.300
 
+
 [[segments]]
 net = "+3V3"
 layer = "F.Cu"
@@ -165,6 +180,7 @@ start_x_mm = 59.500
 start_y_mm = 8.000
 end_x_mm = 56.000
 end_y_mm = 8.300
+
 
 [[segments]]
 net = "ADC_AIN1"
@@ -176,6 +192,7 @@ start_y_mm = 68.000
 end_x_mm = 40.000
 end_y_mm = 67.000
 
+
 [[segments]]
 net = "USB_DP"
 layer = "F.Cu"
@@ -185,6 +202,7 @@ start_x_mm = 17.050
 start_y_mm = 13.000
 end_x_mm = 17.050
 end_y_mm = 11.000
+
 
 [[segments]]
 net = "USB_DN"
@@ -196,6 +214,7 @@ start_y_mm = 13.000
 end_x_mm = 18.950
 end_y_mm = 11.000
 
+
 [[segments]]
 net = "GATE_DRV"
 layer = "F.Cu"
@@ -206,6 +225,7 @@ start_y_mm = 9.430
 end_x_mm = 67.370
 end_y_mm = 7.400
 
+
 [[segments]]
 net = "GATE_DRV"
 layer = "F.Cu"
@@ -215,6 +235,7 @@ start_x_mm = 67.370
 start_y_mm = 7.400
 end_x_mm = 65.000
 end_y_mm = 7.400
+
 
 [[segments]]
 net = "GATE_DRV"
@@ -226,6 +247,7 @@ start_y_mm = 7.400
 end_x_mm = 65.000
 end_y_mm = 18.000
 
+
 [[segments]]
 net = "GATE_DRV"
 layer = "F.Cu"
@@ -235,6 +257,7 @@ start_x_mm = 65.000
 start_y_mm = 18.000
 end_x_mm = 76.000
 end_y_mm = 17.950
+
 
 [[segments]]
 net = "MUX_COM"
@@ -246,6 +269,7 @@ start_y_mm = 74.000
 end_x_mm = 47.300
 end_y_mm = 70.000
 
+
 [[segments]]
 net = "VBUS"
 layer = "B.Cu"
@@ -255,6 +279,7 @@ start_x_mm = 9.410
 start_y_mm = 4.610
 end_x_mm = 4.590
 end_y_mm = 4.610
+
 
 [[segments]]
 net = "VBUS"
@@ -266,6 +291,7 @@ start_y_mm = 4.000
 end_x_mm = 16.500
 end_y_mm = 5.000
 
+
 [[segments]]
 net = "+12V_RAW"
 layer = "F.Cu"
@@ -275,6 +301,7 @@ start_x_mm = 82.500
 start_y_mm = 6.000
 end_x_mm = 81.800
 end_y_mm = 12.000
+
 
 [[segments]]
 net = "MUX_COM"
@@ -286,6 +313,7 @@ start_y_mm = 66.000
 end_x_mm = 38.000
 end_y_mm = 67.000
 
+
 [[segments]]
 net = "VBUS"
 layer = "F.Cu"
@@ -295,6 +323,7 @@ start_x_mm = 18.000
 start_y_mm = 11.000
 end_x_mm = 16.500
 end_y_mm = 5.000
+
 
 [[segments]]
 net = "ADC_AIN1"
@@ -306,6 +335,7 @@ start_y_mm = 68.000
 end_x_mm = 40.000
 end_y_mm = 74.000
 
+
 [[segments]]
 net = "ADC_AIN1"
 layer = "B.Cu"
@@ -315,6 +345,7 @@ start_x_mm = 42.050
 start_y_mm = 68.000
 end_x_mm = 48.700
 end_y_mm = 70.000
+
 
 [[segments]]
 net = "MUX_COM"
@@ -326,6 +357,7 @@ start_y_mm = 66.000
 end_x_mm = 47.300
 end_y_mm = 70.000
 
+
 [[segments]]
 net = "+12V_RAW"
 layer = "B.Cu"
@@ -335,6 +367,7 @@ start_x_mm = 81.800
 start_y_mm = 12.000
 end_x_mm = 89.000
 end_y_mm = 10.350
+
 
 [[segments]]
 net = "SDA"
@@ -346,6 +379,7 @@ start_y_mm = 25.950
 end_x_mm = 28.000
 end_y_mm = 34.000
 
+
 [[segments]]
 net = "HEATER_SUPPLY"
 layer = "F.Cu"
@@ -355,6 +389,7 @@ start_x_mm = 92.000
 start_y_mm = 25.000
 end_x_mm = 84.700
 end_y_mm = 20.000
+
 
 [[segments]]
 net = "+3V3"
@@ -366,6 +401,7 @@ start_y_mm = 66.000
 end_x_mm = 49.550
 end_y_mm = 61.260
 
+
 [[segments]]
 net = "+3V3"
 layer = "B.Cu"
@@ -375,6 +411,7 @@ start_x_mm = 50.000
 start_y_mm = 4.000
 end_x_mm = 56.000
 end_y_mm = 8.300
+
 
 [[segments]]
 net = "SCL"
@@ -386,6 +423,7 @@ start_y_mm = 25.950
 end_x_mm = 32.000
 end_y_mm = 34.000
 
+
 [[segments]]
 net = "+5V"
 layer = "B.Cu"
@@ -395,6 +433,7 @@ start_x_mm = 58.300
 start_y_mm = 12.300
 end_x_mm = 50.200
 end_y_mm = 8.000
+
 
 [[segments]]
 net = "HEATER_SUPPLY"
@@ -406,6 +445,7 @@ start_y_mm = 34.000
 end_x_mm = 92.000
 end_y_mm = 25.000
 
+
 [[segments]]
 net = "+12V"
 layer = "F.Cu"
@@ -415,6 +455,7 @@ start_x_mm = 79.300
 start_y_mm = 20.000
 end_x_mm = 86.200
 end_y_mm = 12.000
+
 
 [[segments]]
 net = "+5V"
@@ -426,6 +467,7 @@ start_y_mm = 5.000
 end_x_mm = 38.000
 end_y_mm = 4.000
 
+
 [[segments]]
 net = "HEATER_PWM"
 layer = "B.Cu"
@@ -435,6 +477,7 @@ start_x_mm = 67.370
 start_y_mm = 14.570
 end_x_mm = 64.000
 end_y_mm = 4.000
+
 
 [[segments]]
 net = "USB_DN"
@@ -446,6 +489,7 @@ start_y_mm = 23.290
 end_x_mm = 18.950
 end_y_mm = 13.000
 
+
 [[segments]]
 net = "USB_DP"
 layer = "B.Cu"
@@ -455,6 +499,7 @@ start_x_mm = 23.100
 start_y_mm = 24.560
 end_x_mm = 17.050
 end_y_mm = 13.000
+
 
 [[segments]]
 net = "USB_CC1"
@@ -466,6 +511,7 @@ start_y_mm = 4.610
 end_x_mm = 5.750
 end_y_mm = 16.500
 
+
 [[segments]]
 net = "USB_CC1"
 layer = "F.Cu"
@@ -475,6 +521,7 @@ start_x_mm = 5.750
 start_y_mm = 16.500
 end_x_mm = 7.000
 end_y_mm = 16.500
+
 
 [[segments]]
 net = "+12V_RAW"
@@ -486,6 +533,7 @@ start_y_mm = 10.350
 end_x_mm = 98.000
 end_y_mm = 5.000
 
+
 [[segments]]
 net = "+12V"
 layer = "B.Cu"
@@ -495,6 +543,7 @@ start_x_mm = 68.630
 start_y_mm = 9.430
 end_x_mm = 79.300
 end_y_mm = 20.000
+
 
 [[segments]]
 net = "USB_DP"
@@ -506,6 +555,7 @@ start_y_mm = 13.000
 end_x_mm = 7.750
 end_y_mm = 13.000
 
+
 [[segments]]
 net = "USB_DP"
 layer = "F.Cu"
@@ -515,6 +565,7 @@ start_x_mm = 7.750
 start_y_mm = 13.000
 end_x_mm = 7.750
 end_y_mm = 4.610
+
 
 [[segments]]
 net = "USB_DP"
@@ -526,6 +577,7 @@ start_y_mm = 13.000
 end_x_mm = 6.750
 end_y_mm = 4.610
 
+
 [[segments]]
 net = "HEATER_SUPPLY"
 layer = "F.Cu"
@@ -535,6 +587,7 @@ start_x_mm = 92.000
 start_y_mm = 25.000
 end_x_mm = 92.000
 end_y_mm = 27.650
+
 
 [[segments]]
 net = "HEATER_SUPPLY"
@@ -546,6 +599,7 @@ start_y_mm = 27.650
 end_x_mm = 75.000
 end_y_mm = 27.650
 
+
 [[segments]]
 net = "ESP_EN"
 layer = "F.Cu"
@@ -555,6 +609,7 @@ start_x_mm = 20.500
 start_y_mm = 10.600
 end_x_mm = 23.100
 end_y_mm = 10.590
+
 
 [[segments]]
 net = "ESP_GPIO0"
@@ -566,6 +621,7 @@ start_y_mm = 24.560
 end_x_mm = 45.000
 end_y_mm = 24.600
 
+
 [[segments]]
 net = "UART_TX"
 layer = "F.Cu"
@@ -575,6 +631,7 @@ start_x_mm = 40.900
 start_y_mm = 11.860
 end_x_mm = 45.000
 end_y_mm = 10.000
+
 
 [[segments]]
 net = "UART_RX"
@@ -586,6 +643,7 @@ start_y_mm = 13.130
 end_x_mm = 45.000
 end_y_mm = 15.500
 
+
 [[segments]]
 net = "SCL"
 layer = "F.Cu"
@@ -595,3 +653,352 @@ start_x_mm = 32.000
 start_y_mm = 34.000
 end_x_mm = 49.000
 end_y_mm = 45.890
+
+
+[[segments]]
+net = "VBUS"
+layer = "In2.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 45.800
+start_y_mm = 8.000
+end_x_mm = 22.000
+end_y_mm = 4.000
+
+
+[[segments]]
+net = "VBUS"
+layer = "B.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 22.000
+start_y_mm = 4.000
+end_x_mm = 22.000
+end_y_mm = 2.000
+
+
+[[segments]]
+net = "VBUS"
+layer = "B.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 22.000
+start_y_mm = 2.000
+end_x_mm = 9.410
+end_y_mm = 2.000
+
+
+[[segments]]
+net = "VBUS"
+layer = "B.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 9.410
+start_y_mm = 2.000
+end_x_mm = 9.410
+end_y_mm = 4.610
+
+
+[[segments]]
+net = "VBUS"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 9.410
+start_y_mm = 2.000
+end_x_mm = 9.410
+end_y_mm = 4.610
+
+
+[[segments]]
+net = "MUX_COM"
+layer = "In1.Cu"
+via_at_ends = true
+width_mm = 0.200
+start_x_mm = 45.000
+start_y_mm = 74.000
+end_x_mm = 52.090
+end_y_mm = 74.000
+
+
+[[segments]]
+net = "MUX_COM"
+layer = "In1.Cu"
+via_at_ends = true
+width_mm = 0.200
+start_x_mm = 52.090
+start_y_mm = 74.000
+end_x_mm = 52.090
+end_y_mm = 66.740
+
+
+[[segments]]
+net = "+3V3"
+layer = "In2.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 23.100
+start_y_mm = 9.320
+end_x_mm = 23.100
+end_y_mm = 12.000
+
+
+[[segments]]
+net = "+3V3"
+layer = "In2.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 23.100
+start_y_mm = 12.000
+end_x_mm = 52.000
+end_y_mm = 12.000
+
+
+[[segments]]
+net = "+3V3"
+layer = "In2.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 52.000
+start_y_mm = 12.000
+end_x_mm = 52.000
+end_y_mm = 4.000
+
+
+[[segments]]
+net = "+3V3"
+layer = "In2.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 52.000
+start_y_mm = 4.000
+end_x_mm = 50.000
+end_y_mm = 4.000
+
+
+[[segments]]
+net = "ADC_AIN1"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 50.500
+start_y_mm = 50.110
+end_x_mm = 50.500
+end_y_mm = 52.200
+
+
+[[segments]]
+net = "ADC_AIN1"
+layer = "In1.Cu"
+via_at_ends = true
+width_mm = 0.200
+start_x_mm = 50.500
+start_y_mm = 52.200
+end_x_mm = 50.500
+end_y_mm = 58.000
+
+
+[[segments]]
+net = "ADC_AIN1"
+layer = "In1.Cu"
+via_at_ends = true
+width_mm = 0.200
+start_x_mm = 50.500
+start_y_mm = 58.000
+end_x_mm = 42.050
+end_y_mm = 58.000
+
+
+[[segments]]
+net = "ADC_AIN1"
+layer = "In1.Cu"
+via_at_ends = true
+width_mm = 0.200
+start_x_mm = 42.050
+start_y_mm = 58.000
+end_x_mm = 42.050
+end_y_mm = 68.000
+
+
+[[segments]]
+net = "HEATER_P"
+layer = "In2.Cu"
+via_at_ends = false
+width_mm = 1.500
+start_x_mm = 74.000
+start_y_mm = 17.000
+end_x_mm = 86.920
+end_y_mm = 17.000
+
+via_at_start = true
+via_at_end = false
+
+[[segments]]
+net = "HEATER_P"
+layer = "In2.Cu"
+via_at_ends = false
+width_mm = 1.500
+start_x_mm = 86.920
+start_y_mm = 17.000
+end_x_mm = 86.920
+end_y_mm = 25.000
+
+via_at_start = false
+via_at_end = false
+
+[[segments]]
+net = "SDA"
+layer = "In1.Cu"
+via_at_ends = false
+via_at_start = true
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 28.000
+start_y_mm = 34.000
+end_x_mm = 28.000
+end_y_mm = 40.000
+
+[[segments]]
+net = "SDA"
+layer = "In1.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 28.000
+start_y_mm = 40.000
+end_x_mm = 49.200
+end_y_mm = 40.000
+
+[[segments]]
+net = "SDA"
+layer = "In1.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = true
+width_mm = 0.200
+start_x_mm = 49.200
+start_y_mm = 40.000
+end_x_mm = 49.200
+end_y_mm = 43.500
+
+[[segments]]
+net = "SDA"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 49.200
+start_y_mm = 43.500
+end_x_mm = 49.500
+end_y_mm = 45.890
+
+[[segments]]
+net = "HEATER_P"
+layer = "In2.Cu"
+via_at_ends = false
+width_mm = 1.500
+start_x_mm = 86.920
+start_y_mm = 25.000
+end_x_mm = 82.000
+end_y_mm = 30.000
+
+via_at_start = false
+via_at_end = true
+
+[[segments]]
+net = "+3V3"
+layer = "In2.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 52.000
+start_y_mm = 12.000
+end_x_mm = 52.000
+end_y_mm = 44.500
+
+via_at_start = false
+via_at_end = false
+
+[[segments]]
+net = "+3V3"
+layer = "In2.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 52.000
+start_y_mm = 44.500
+end_x_mm = 50.000
+end_y_mm = 44.500
+via_at_start = false
+via_at_end = true
+
+[[segments]]
+net = "HEATER_PWM"
+layer = "In1.Cu"
+via_at_ends = false
+via_at_start = true
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 25.020
+start_y_mm = 25.950
+end_x_mm = 25.020
+end_y_mm = 32.000
+
+[[segments]]
+net = "HEATER_PWM"
+layer = "In1.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = false
+width_mm = 0.200
+start_x_mm = 25.020
+start_y_mm = 32.000
+end_x_mm = 67.370
+end_y_mm = 32.000
+
+[[segments]]
+net = "HEATER_PWM"
+layer = "In1.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = true
+width_mm = 0.200
+start_x_mm = 67.370
+start_y_mm = 32.000
+end_x_mm = 67.370
+end_y_mm = 14.570
+
+[[segments]]
+net = "+3V3"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.250
+start_x_mm = 50.000
+start_y_mm = 44.500
+end_x_mm = 50.000
+end_y_mm = 45.890
+
+
+[[segments]]
+net = "+3V3"
+layer = "In2.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 49.550
+start_y_mm = 61.260
+end_x_mm = 49.550
+end_y_mm = 44.500
+
+via_at_start = true
+via_at_end = false
+
+[[segments]]
+net = "+3V3"
+layer = "In2.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 49.550
+start_y_mm = 44.500
+end_x_mm = 50.000
+end_y_mm = 44.500
+
+via_at_start = false
+via_at_end = false

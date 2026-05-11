@@ -2,12 +2,12 @@
 name = "lamp_rev_a_routing"
 ticket = "T-3FAFE2B4"
 revision = "Rev A"
-source_stage = "scl_route_seed_drc_clean"
+source_stage = "endpoint_via_route_seed_drc_clean"
 
 [current_state]
 physical_drc_violations = 0
-unconnected_items = 17
-starter_route_segments = 59
+unconnected_items = 6
+starter_route_segments = 89
 copper_zones = 2
 source_report = "pcb/lamp_rev_a/reports/drc.json"
 

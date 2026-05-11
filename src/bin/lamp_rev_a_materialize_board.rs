@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use serde::Deserialize;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt::Write as _;
 use std::fs;
@@ -142,6 +142,10 @@ struct RouteSegment {
     layer: String,
     #[serde(default)]
     via_at_ends: bool,
+    #[serde(default)]
+    via_at_start: Option<bool>,
+    #[serde(default)]
+    via_at_end: Option<bool>,
     width_mm: f64,
     start_x_mm: f64,
     start_y_mm: f64,
@@ -581,6 +585,11 @@ fn write_route_segments(
     net_ids: &BTreeMap<&str, usize>,
     counter: &mut UuidCounter,
 ) -> Result<(), Box<dyn Error>> {
+    let via_usage = route_via_usage(routing_seed, net_ids)?;
+    let via_layers = route_via_layers(routing_seed, net_ids)?;
+    let outer_points = route_outer_points(routing_seed, net_ids)?;
+    let mut emitted_vias = BTreeSet::new();
+
     for segment in &routing_seed.segments {
         if segment.layer != "F.Cu"
             && segment.layer != "B.Cu"
@@ -593,9 +602,13 @@ fn write_route_segments(
             )
             .into());
         }
-        if segment.layer != "F.Cu" && !segment.via_at_ends {
+        if segment.layer != "F.Cu"
+            && !segment.via_at_ends
+            && segment.via_at_start.is_none()
+            && segment.via_at_end.is_none()
+        {
             return Err(format!(
-                "{} route segment for {} must set via_at_ends = true",
+                "{} route segment for {} must set via_at_ends or explicit via_at_start/via_at_end",
                 segment.layer, segment.net
             )
             .into());
@@ -613,15 +626,31 @@ fn write_route_segments(
         let net_id = *net_ids
             .get(segment.net.as_str())
             .ok_or_else(|| format!("route segment references unknown net {}", segment.net))?;
-        if segment.via_at_ends {
-            write_via(
+        if route_segment_via_at_start(segment) {
+            write_route_endpoint_via(
                 board,
                 segment.start_x_mm,
                 segment.start_y_mm,
                 net_id,
+                &via_usage,
+                &via_layers,
+                &outer_points,
+                &mut emitted_vias,
                 counter,
             )?;
-            write_via(board, segment.end_x_mm, segment.end_y_mm, net_id, counter)?;
+        }
+        if route_segment_via_at_end(segment) {
+            write_route_endpoint_via(
+                board,
+                segment.end_x_mm,
+                segment.end_y_mm,
+                net_id,
+                &via_usage,
+                &via_layers,
+                &outer_points,
+                &mut emitted_vias,
+                counter,
+            )?;
         }
         writeln!(
             board,
@@ -645,6 +674,142 @@ fn write_route_segments(
         )?;
     }
     Ok(())
+}
+
+fn route_via_usage(
+    routing_seed: &RoutingSeed,
+    net_ids: &BTreeMap<&str, usize>,
+) -> Result<BTreeMap<String, usize>, Box<dyn Error>> {
+    let mut usage = BTreeMap::new();
+    for segment in &routing_seed.segments {
+        let net_id = *net_ids
+            .get(segment.net.as_str())
+            .ok_or_else(|| format!("route segment references unknown net {}", segment.net))?;
+        for (wants_via, x_mm, y_mm) in [
+            (
+                route_segment_via_at_start(segment),
+                segment.start_x_mm,
+                segment.start_y_mm,
+            ),
+            (
+                route_segment_via_at_end(segment),
+                segment.end_x_mm,
+                segment.end_y_mm,
+            ),
+        ] {
+            if !wants_via {
+                continue;
+            }
+            *usage
+                .entry(route_point_key(net_id, x_mm, y_mm))
+                .or_insert(0) += 1;
+        }
+    }
+    Ok(usage)
+}
+
+fn route_via_layers(
+    routing_seed: &RoutingSeed,
+    net_ids: &BTreeMap<&str, usize>,
+) -> Result<BTreeMap<String, BTreeSet<String>>, Box<dyn Error>> {
+    let mut layers = BTreeMap::new();
+    for segment in &routing_seed.segments {
+        let net_id = *net_ids
+            .get(segment.net.as_str())
+            .ok_or_else(|| format!("route segment references unknown net {}", segment.net))?;
+        for (wants_via, x_mm, y_mm) in [
+            (
+                route_segment_via_at_start(segment),
+                segment.start_x_mm,
+                segment.start_y_mm,
+            ),
+            (
+                route_segment_via_at_end(segment),
+                segment.end_x_mm,
+                segment.end_y_mm,
+            ),
+        ] {
+            if !wants_via {
+                continue;
+            }
+            layers
+                .entry(route_point_key(net_id, x_mm, y_mm))
+                .or_insert_with(BTreeSet::new)
+                .insert(segment.layer.clone());
+        }
+    }
+    Ok(layers)
+}
+
+fn route_segment_via_at_start(segment: &RouteSegment) -> bool {
+    segment.via_at_start.unwrap_or(segment.via_at_ends)
+}
+
+fn route_segment_via_at_end(segment: &RouteSegment) -> bool {
+    segment.via_at_end.unwrap_or(segment.via_at_ends)
+}
+
+fn route_outer_points(
+    routing_seed: &RoutingSeed,
+    net_ids: &BTreeMap<&str, usize>,
+) -> Result<BTreeSet<String>, Box<dyn Error>> {
+    let mut points = BTreeSet::new();
+    for segment in &routing_seed.segments {
+        if segment.layer != "F.Cu" {
+            continue;
+        }
+        let net_id = *net_ids
+            .get(segment.net.as_str())
+            .ok_or_else(|| format!("route segment references unknown net {}", segment.net))?;
+        points.insert(route_point_key(
+            net_id,
+            segment.start_x_mm,
+            segment.start_y_mm,
+        ));
+        points.insert(route_point_key(net_id, segment.end_x_mm, segment.end_y_mm));
+    }
+    Ok(points)
+}
+
+fn write_route_endpoint_via(
+    board: &mut String,
+    x_mm: f64,
+    y_mm: f64,
+    net_id: usize,
+    via_usage: &BTreeMap<String, usize>,
+    via_layers: &BTreeMap<String, BTreeSet<String>>,
+    outer_points: &BTreeSet<String>,
+    emitted_vias: &mut BTreeSet<String>,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    let key = route_point_key(net_id, x_mm, y_mm);
+    let route_layers = via_layers.get(&key);
+    let is_route_endpoint = via_usage.get(&key).copied().unwrap_or(0) == 1;
+    let changes_route_layer = route_layers.map(BTreeSet::len).unwrap_or(0) > 1;
+    let connects_outer_copper = outer_points.contains(&key);
+    if is_route_endpoint || changes_route_layer || connects_outer_copper {
+        write_via_once(board, x_mm, y_mm, net_id, emitted_vias, counter)?;
+    }
+    Ok(())
+}
+
+fn write_via_once(
+    board: &mut String,
+    x_mm: f64,
+    y_mm: f64,
+    net_id: usize,
+    emitted_vias: &mut BTreeSet<String>,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    let key = route_point_key(net_id, x_mm, y_mm);
+    if emitted_vias.insert(key) {
+        write_via(board, x_mm, y_mm, net_id, counter)?;
+    }
+    Ok(())
+}
+
+fn route_point_key(net_id: usize, x_mm: f64, y_mm: f64) -> String {
+    format!("{net_id}:{x_mm:.3}:{y_mm:.3}")
 }
 
 fn validate_board_point(
