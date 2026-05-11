@@ -18,6 +18,7 @@ workflow.
 - `routing_plan.toml`: routing phase order, current unrouted count, autorouter policy, and release gates.
 - `routing_seed.toml`: DRC-clean starter traces emitted into the materialized board.
 - `copper_zones.toml`: controlled KiCad copper pours, starting with front/back GND zones.
+- `fab_release.toml`: repeatable KiCad CLI export contract for Gerbers, drill files, assembly files, STEP, and release reports.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: materialized KiCad board with the Rev A outline, 4-layer stack, placed footprints, test points, and optical-slot guides.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.
@@ -71,6 +72,7 @@ Run:
 cargo run --release --bin lamp_pcba_check
 cargo run --release --bin lamp_rev_a_materialize_board
 cargo run --release --bin lamp_rev_a_fab_preview
+cargo run --release --bin lamp_rev_a_fab_release
 cargo run --release --bin lamp_rev_a_route_report
 cargo build --release --bin lamp_rev_a_materialize_board --bin lamp_rev_a_route_greedy
 LAMP_ROUTE_MAX_ACCEPTS=10 LAMP_ROUTE_MAX_TRIALS=160 target/release/lamp_rev_a_route_greedy

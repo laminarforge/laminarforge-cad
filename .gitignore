@@ -97,6 +97,7 @@ Cargo.lock
 /pcb/output/
 *.kicad_prl
 pcb/lamp_rev_a/fab/
+pcb/lamp_rev_a/fab_release/
 pcb/lamp_rev_a/reports/
 
 # Test artifacts

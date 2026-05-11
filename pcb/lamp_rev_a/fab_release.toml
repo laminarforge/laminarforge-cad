@@ -1,0 +1,72 @@
+[package]
+name = "lamp_rev_a_fab_release"
+ticket = "T-92248F71"
+revision = "Rev A"
+source_stage = "routed_board_release_export"
+
+[inputs]
+board = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb"
+schematic = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch"
+parts = "pcb/lamp_rev_a/parts.toml"
+placement = "pcb/lamp_rev_a/placement.toml"
+
+[outputs]
+root_dir = "pcb/lamp_rev_a/fab_release"
+reports_dir = "reports"
+gerbers_dir = "gerbers"
+drills_dir = "drills"
+assembly_dir = "assembly"
+review_dir = "review"
+drc_report = "reports/drc.json"
+erc_report = "reports/erc.json"
+drill_report = "reports/drill_report.txt"
+bom_file = "assembly/bom_jlcpcb.csv"
+cpl_file = "assembly/cpl_jlcpcb.csv"
+position_file = "assembly/kicad_position_front.csv"
+step_file = "review/lamp_rev_a_board.step"
+manifest_file = "release_manifest.txt"
+
+[gerbers]
+layers = [
+  "F.Cu",
+  "In1.Cu",
+  "In2.Cu",
+  "B.Cu",
+  "F.SilkS",
+  "B.SilkS",
+  "F.Mask",
+  "B.Mask",
+  "F.Paste",
+  "Edge.Cuts",
+]
+check_zones = true
+precision = 6
+use_board_plot_params = false
+
+[drills]
+format = "excellon"
+units = "mm"
+origin = "absolute"
+zeros_format = "decimal"
+oval_format = "alternate"
+separate_th = true
+generate_map = true
+generate_report = true
+
+[position]
+side = "front"
+format = "csv"
+units = "mm"
+smd_only = true
+exclude_dnp = true
+
+[step]
+enabled = true
+board_only = true
+force = true
+
+[gates]
+allow_kicad_self_zone_unconnected = true
+max_physical_drc_violations = 0
+max_real_unconnected_items = 0
+max_erc_violations = 0
