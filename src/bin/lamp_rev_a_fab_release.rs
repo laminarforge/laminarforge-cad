@@ -15,6 +15,7 @@ struct ReleaseConfig {
     inputs: Inputs,
     outputs: Outputs,
     assembly: AssemblyConfig,
+    review: ReviewConfig,
     gerbers: GerberConfig,
     drills: DrillConfig,
     position: PositionConfig,
@@ -57,6 +58,7 @@ struct Outputs {
     manual_file: String,
     position_file: String,
     step_file: String,
+    order_audit_file: String,
     manifest_file: String,
 }
 
@@ -65,6 +67,11 @@ struct AssemblyConfig {
     machine_side: String,
     manual_part_ids: Vec<String>,
     require_cpl_matches_kicad_position: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct ReviewConfig {
+    remaining_gates: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -221,6 +228,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     if config.step.enabled {
         run_step_export(&config, &board, &output_root)?;
     }
+    write_order_audit_report(
+        &config,
+        &parts,
+        &placement,
+        &output_root,
+        drc_violations,
+        real_unconnected,
+        ignored_self_zone,
+        erc_violations,
+    )?;
     validate_release_outputs(&config, &parts, &placement, &output_root)?;
 
     write_manifest(
@@ -258,6 +275,9 @@ fn validate_config(config: &ReleaseConfig) -> Result<(), Box<dyn Error>> {
     }
     if config.assembly.machine_side != "top" {
         return Err("Rev A release supports top-side machine assembly only".into());
+    }
+    if config.review.remaining_gates.is_empty() {
+        return Err("fab release review remaining_gates cannot be empty".into());
     }
     if config.gerbers.precision != 5 && config.gerbers.precision != 6 {
         return Err("gerber precision must be 5 or 6".into());
@@ -772,6 +792,81 @@ fn write_manifest(
     if config.step.enabled {
         writeln!(file, "step: {}", config.outputs.step_file)?;
     }
+    writeln!(file, "order_audit: {}", config.outputs.order_audit_file)?;
+    Ok(())
+}
+
+fn write_order_audit_report(
+    config: &ReleaseConfig,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    output_root: &Path,
+    drc_violations: usize,
+    real_unconnected: usize,
+    ignored_self_zone: usize,
+    erc_violations: usize,
+) -> Result<(), Box<dyn Error>> {
+    let machine_count = machine_placement_count(parts, placement, &config.assembly);
+    let manual_count = manual_placement_count(placement, &config.assembly);
+    let mut file = fs::File::create(output_root.join(&config.outputs.order_audit_file))?;
+
+    writeln!(file, "# LaminarForge LAMP Rev A Fab Order Audit")?;
+    writeln!(file)?;
+    writeln!(file, "## Gate Results")?;
+    writeln!(file)?;
+    writeln!(file, "- DRC violations: `{drc_violations}`")?;
+    writeln!(file, "- Real unconnected items: `{real_unconnected}`")?;
+    writeln!(
+        file,
+        "- Ignored KiCad self-zone report items: `{ignored_self_zone}`"
+    )?;
+    writeln!(file, "- ERC violations: `{erc_violations}`")?;
+    writeln!(file, "- Machine-assembly placements: `{machine_count}`")?;
+    writeln!(file, "- Manual-install placements: `{manual_count}`")?;
+    writeln!(file)?;
+
+    writeln!(file, "## Upload Files")?;
+    writeln!(file)?;
+    writeln!(file, "### Gerbers")?;
+    for path in list_relative_files(output_root, &config.outputs.gerbers_dir)? {
+        writeln!(file, "- `{path}`")?;
+    }
+    writeln!(file)?;
+    writeln!(file, "### Drill Files")?;
+    for path in list_relative_files(output_root, &config.outputs.drills_dir)? {
+        writeln!(file, "- `{path}`")?;
+    }
+    writeln!(file)?;
+    writeln!(file, "### Assembly")?;
+    for path in list_relative_files(output_root, &config.outputs.assembly_dir)? {
+        writeln!(file, "- `{path}`")?;
+    }
+    writeln!(file)?;
+    writeln!(file, "### Review")?;
+    for path in list_relative_files(output_root, &config.outputs.review_dir)? {
+        if path != config.outputs.order_audit_file {
+            writeln!(file, "- `{path}`")?;
+        }
+    }
+    writeln!(file)?;
+
+    writeln!(file, "## Manual-Install Parts")?;
+    writeln!(file)?;
+    for row in manual_install_rows(parts, placement, &config.assembly)? {
+        writeln!(
+            file,
+            "- `{}`: {} / {} / {}",
+            row.reference, row.value, row.footprint, row.lcsc_part
+        )?;
+    }
+    writeln!(file)?;
+
+    writeln!(file, "## Remaining Review Gates")?;
+    writeln!(file)?;
+    for gate in &config.review.remaining_gates {
+        writeln!(file, "- {gate}")?;
+    }
+
     Ok(())
 }
 
@@ -816,6 +911,7 @@ fn validate_release_outputs(
         &config.outputs.cpl_file,
         &config.outputs.manual_file,
         &config.outputs.position_file,
+        &config.outputs.order_audit_file,
         &config.outputs.drill_report,
         &config.outputs.erc_report,
         &config.outputs.drc_report,
@@ -854,6 +950,68 @@ fn validate_release_outputs(
     } else {
         Err(errors.join("\n").into())
     }
+}
+
+fn list_relative_files(
+    output_root: &Path,
+    relative_dir: &str,
+) -> Result<Vec<String>, Box<dyn Error>> {
+    let dir = output_root.join(relative_dir);
+    let mut paths = Vec::new();
+    for entry in fs::read_dir(&dir)? {
+        let path = entry?.path();
+        if path.is_file() {
+            let filename = path
+                .file_name()
+                .ok_or_else(|| format!("path has no filename: {}", path.display()))?
+                .to_string_lossy();
+            paths.push(format!("{relative_dir}/{filename}"));
+        }
+    }
+    paths.sort();
+    Ok(paths)
+}
+
+struct ManualInstallRow {
+    reference: String,
+    value: String,
+    footprint: String,
+    lcsc_part: String,
+}
+
+fn manual_install_rows(
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    assembly: &AssemblyConfig,
+) -> Result<Vec<ManualInstallRow>, Box<dyn Error>> {
+    let manual_part_ids = manual_part_ids(assembly);
+    let parts_by_id = parts
+        .selected_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let mut rows = Vec::new();
+
+    for item in &placement.placements {
+        if !manual_part_ids.contains(item.part_id.as_str()) {
+            continue;
+        }
+        let part = parts_by_id.get(item.part_id.as_str()).ok_or_else(|| {
+            format!(
+                "manual placement {} references unknown part {}",
+                item.reference, item.part_id
+            )
+        })?;
+        rows.push(ManualInstallRow {
+            reference: item.reference.clone(),
+            value: part.value.clone(),
+            footprint: part.footprint.clone(),
+            lcsc_part: part.lcsc_part.clone(),
+        });
+    }
+
+    rows.sort_by_key(|row| reference_order(&row.reference));
+    Ok(rows)
 }
 
 fn expected_gerber_filename(layer: &str) -> Option<&'static str> {
