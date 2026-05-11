@@ -73,14 +73,14 @@ cargo run --release --bin lamp_rev_a_materialize_board
 cargo run --release --bin lamp_rev_a_fab_preview
 cargo run --release --bin lamp_rev_a_route_report
 cargo build --release --bin lamp_rev_a_materialize_board --bin lamp_rev_a_route_greedy
-LAMP_ROUTE_MAX_ACCEPTS=10 target/release/lamp_rev_a_route_greedy
+LAMP_ROUTE_MAX_ACCEPTS=10 LAMP_ROUTE_MAX_TRIALS=160 target/release/lamp_rev_a_route_greedy
 ```
 
 The current schematic is an architecture shell, not a fabrication-ready circuit.
 The checker should not report fab-blocking part-selection gaps. The board now
 materializes all selected parts into KiCad with zero physical DRC violations
 with a DRC-clean starter route seed and GND copper pours. The route seed is
-currently at 58 accepted segments and 18 unconnected items after KiCad zone
+currently at 59 accepted segments and 17 unconnected items after KiCad zone
 refill. The active work is schematic completion, routing the remaining ratlines,
 schematic/PCB parity,
 and bench validation.

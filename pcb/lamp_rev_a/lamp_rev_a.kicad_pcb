@@ -18062,11 +18062,20 @@
     (uuid "00000000-0000-4000-8000-000000000707")
   )
 
+  (segment
+    (start 32 34)
+    (end 49 45.890)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 12)
+    (uuid "00000000-0000-4000-8000-000000000708")
+  )
+
   (zone
     (net 1)
     (net_name "GND")
     (layer "F.Cu")
-    (uuid "00000000-0000-4000-8000-000000000708")
+    (uuid "00000000-0000-4000-8000-000000000709")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.200))
     (min_thickness 0.150)
@@ -18085,7 +18094,7 @@
     (net 1)
     (net_name "GND")
     (layer "B.Cu")
-    (uuid "00000000-0000-4000-8000-000000000709")
+    (uuid "00000000-0000-4000-8000-00000000070a")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.200))
     (min_thickness 0.150)

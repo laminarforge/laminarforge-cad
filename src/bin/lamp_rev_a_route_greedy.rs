@@ -68,11 +68,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let max_accepts = env_usize("LAMP_ROUTE_MAX_ACCEPTS", 12)?;
     let max_candidates = env_usize("LAMP_ROUTE_MAX_CANDIDATES", 240)?;
     let max_rejects_per_round = env_usize("LAMP_ROUTE_MAX_REJECTS_PER_ROUND", 90)?;
+    let max_trials = env_usize("LAMP_ROUTE_MAX_TRIALS", 360)?;
     let kicad_cli = env::var("KICAD_CLI").unwrap_or_else(|_| "/opt/homebrew/bin/kicad-cli".into());
 
     let mut seed = read_seed()?;
     let original_seed = seed.clone();
     let mut accepted = 0usize;
+    let mut trials = 0usize;
 
     run_materializer()?;
     run_drc(&kicad_cli)?;
@@ -92,12 +94,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
     println!("  existing seed segments: {}", seed.segments.len());
 
-    while accepted < max_accepts && !baseline.unconnected_items.is_empty() {
+    'routing: while accepted < max_accepts && !baseline.unconnected_items.is_empty() {
         let candidates = build_candidates(&baseline, max_candidates);
         let mut accepted_this_round = false;
         let mut rejected_this_round = 0usize;
 
         for candidate in candidates {
+            if trials >= max_trials {
+                println!("  stopping after {trials} candidate trials");
+                break 'routing;
+            }
+            trials += 1;
+
             let trial_seed = with_candidate(&seed, &candidate);
             write_seed(&trial_seed)?;
             run_materializer()?;
@@ -150,6 +158,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     println!("  accepted routes: {accepted}");
+    println!("  candidate trials: {trials}");
     println!("  final seed segments: {}", seed.segments.len());
     println!(
         "  final unconnected: {}",
@@ -206,6 +215,13 @@ fn candidates_for_pair(net: &str, start: Position, end: Position) -> Vec<Candida
         distance_mm: direct_distance + 0.25,
         segments: vec![segment(net, "B.Cu", true, width, start, end)],
     });
+    if let Some(layer) = inner_layer_for_net(net) {
+        candidates.push(Candidate {
+            label: format!("{net}:{layer}-direct"),
+            distance_mm: direct_distance + 0.10,
+            segments: vec![segment(net, layer, true, width, start, end)],
+        });
+    }
 
     for (label, corner) in [
         (
@@ -242,6 +258,16 @@ fn candidates_for_pair(net: &str, start: Position, end: Position) -> Vec<Candida
                 segment(net, "B.Cu", true, width, corner, end),
             ],
         });
+        if let Some(layer) = inner_layer_for_net(net) {
+            candidates.push(Candidate {
+                label: format!("{net}:{layer}-{label}"),
+                distance_mm: distance(start, corner) + distance(corner, end) + 0.60,
+                segments: vec![
+                    segment(net, layer, true, width, start, corner),
+                    segment(net, layer, true, width, corner, end),
+                ],
+            });
+        }
     }
 
     for &y in routing_channel_ys(net) {
@@ -259,6 +285,17 @@ fn candidates_for_pair(net: &str, start: Position, end: Position) -> Vec<Candida
                 segment(net, "B.Cu", true, width, b, end),
             ],
         });
+        if let Some(layer) = inner_layer_for_net(net) {
+            candidates.push(Candidate {
+                label: format!("{net}:{layer}-y{y:.1}"),
+                distance_mm: distance(start, a) + distance(a, b) + distance(b, end) + 1.25,
+                segments: vec![
+                    segment(net, layer, true, width, start, a),
+                    segment(net, layer, true, width, a, b),
+                    segment(net, layer, true, width, b, end),
+                ],
+            });
+        }
     }
 
     for &x in routing_channel_xs(net) {
@@ -276,6 +313,17 @@ fn candidates_for_pair(net: &str, start: Position, end: Position) -> Vec<Candida
                 segment(net, "B.Cu", true, width, b, end),
             ],
         });
+        if let Some(layer) = inner_layer_for_net(net) {
+            candidates.push(Candidate {
+                label: format!("{net}:{layer}-x{x:.1}"),
+                distance_mm: distance(start, a) + distance(a, b) + distance(b, end) + 1.25,
+                segments: vec![
+                    segment(net, layer, true, width, start, a),
+                    segment(net, layer, true, width, a, b),
+                    segment(net, layer, true, width, b, end),
+                ],
+            });
+        }
     }
 
     candidates
@@ -443,6 +491,18 @@ fn width_for_net(net: &str) -> f64 {
         "HEATER_SUPPLY" | "HEATER_P" => 1.50,
         "+12V_RAW" | "+12V" | "+5V" | "+3V3" | "VBUS" | "GND" => 0.50,
         _ => 0.20,
+    }
+}
+
+fn inner_layer_for_net(net: &str) -> Option<&'static str> {
+    match net {
+        "+12V_RAW" | "+12V" | "+5V" | "+3V3" | "VBUS" | "HEATER_SUPPLY" | "HEATER_P" => {
+            Some("In2.Cu")
+        }
+        "USB_DP" | "USB_DN" | "USB_CC1" | "USB_CC2" | "SDA" | "SCL" | "MUX_S0" | "MUX_S1"
+        | "MUX_S2" | "ESP_EN" | "ESP_GPIO0" | "UART_TX" | "UART_RX" | "HEATER_PWM" | "ADC_AIN1"
+        | "MUX_COM" => Some("In1.Cu"),
+        _ => None,
     }
 }
 

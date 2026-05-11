@@ -3,7 +3,7 @@ name = "lamp_rev_a_routing_seed"
 revision = "Rev A"
 source_stage = "greedy_drc_clean_seed"
 source_report = "pcb/lamp_rev_a/reports/drc.json"
-segments = 58
+segments = 59
 
 
 [[segments]]
@@ -585,3 +585,13 @@ start_x_mm = 40.900
 start_y_mm = 13.130
 end_x_mm = 45.000
 end_y_mm = 15.500
+
+[[segments]]
+net = "SCL"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 32.000
+start_y_mm = 34.000
+end_x_mm = 49.000
+end_y_mm = 45.890

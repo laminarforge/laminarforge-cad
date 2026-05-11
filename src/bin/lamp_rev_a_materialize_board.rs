@@ -582,17 +582,21 @@ fn write_route_segments(
     counter: &mut UuidCounter,
 ) -> Result<(), Box<dyn Error>> {
     for segment in &routing_seed.segments {
-        if segment.layer != "F.Cu" && segment.layer != "B.Cu" {
+        if segment.layer != "F.Cu"
+            && segment.layer != "B.Cu"
+            && segment.layer != "In1.Cu"
+            && segment.layer != "In2.Cu"
+        {
             return Err(format!(
                 "route segment for {} uses unsupported layer {}",
                 segment.net, segment.layer
             )
             .into());
         }
-        if segment.layer == "B.Cu" && !segment.via_at_ends {
+        if segment.layer != "F.Cu" && !segment.via_at_ends {
             return Err(format!(
-                "B.Cu route segment for {} must set via_at_ends = true",
-                segment.net
+                "{} route segment for {} must set via_at_ends = true",
+                segment.layer, segment.net
             )
             .into());
         }
