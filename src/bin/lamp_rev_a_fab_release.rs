@@ -145,6 +145,14 @@ struct Gates {
     max_erc_violations: usize,
 }
 
+#[derive(Debug, Clone, Copy)]
+struct ReleaseGateResults {
+    drc_violations: usize,
+    real_unconnected: usize,
+    ignored_self_zone: usize,
+    erc_violations: usize,
+}
+
 #[derive(Debug, Deserialize)]
 struct PartsManifest {
     selected_parts: Vec<SelectedPart>,
@@ -355,6 +363,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     run_kicad_erc(&schematic, &erc_report)?;
     let erc_violations = validate_erc_report(&erc_report, &config.gates)?;
+    let gate_results = ReleaseGateResults {
+        drc_violations,
+        real_unconnected,
+        ignored_self_zone,
+        erc_violations,
+    };
 
     let parts = read_toml::<PartsManifest>(&parts_path)?;
     let placement = read_toml::<PlacementPlan>(&placement_path)?;
@@ -389,24 +403,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     if config.step.enabled {
         run_step_export(&config, &board, &output_root)?;
     }
-    write_manifest(
-        &config,
-        &output_root,
-        drc_violations,
-        real_unconnected,
-        ignored_self_zone,
-        erc_violations,
-    )?;
-    write_order_audit_report(
-        &config,
-        &parts,
-        &placement,
-        &output_root,
-        drc_violations,
-        real_unconnected,
-        ignored_self_zone,
-        erc_violations,
-    )?;
+    write_manifest(&config, &output_root, gate_results)?;
+    write_order_audit_report(&config, &parts, &placement, &output_root, gate_results)?;
     write_bringup_checklist(&config, &placement, &output_root)?;
     write_firmware_handoff(
         &config,
@@ -1178,11 +1176,12 @@ fn display_command(program: &str, args: &[String]) -> String {
 fn write_manifest(
     config: &ReleaseConfig,
     output_root: &Path,
-    drc_violations: usize,
-    real_unconnected: usize,
-    ignored_self_zone: usize,
-    erc_violations: usize,
+    gate_results: ReleaseGateResults,
 ) -> Result<(), Box<dyn Error>> {
+    let drc_violations = gate_results.drc_violations;
+    let real_unconnected = gate_results.real_unconnected;
+    let ignored_self_zone = gate_results.ignored_self_zone;
+    let erc_violations = gate_results.erc_violations;
     let mut file = fs::File::create(output_root.join(&config.outputs.manifest_file))?;
     writeln!(file, "LaminarForge LAMP Rev A PCBA Fab Release")?;
     writeln!(file, "revision: {}", config.package.revision)?;
@@ -1235,11 +1234,12 @@ fn write_order_audit_report(
     parts: &PartsManifest,
     placement: &PlacementPlan,
     output_root: &Path,
-    drc_violations: usize,
-    real_unconnected: usize,
-    ignored_self_zone: usize,
-    erc_violations: usize,
+    gate_results: ReleaseGateResults,
 ) -> Result<(), Box<dyn Error>> {
+    let drc_violations = gate_results.drc_violations;
+    let real_unconnected = gate_results.real_unconnected;
+    let ignored_self_zone = gate_results.ignored_self_zone;
+    let erc_violations = gate_results.erc_violations;
     let machine_count = machine_placement_count(parts, placement, &config.assembly);
     let manual_count = manual_placement_count(placement, &config.assembly);
     let mut file = fs::File::create(output_root.join(&config.outputs.order_audit_file))?;
@@ -1679,7 +1679,7 @@ fn write_zip_bundle(
         fs::create_dir_all(parent)?;
     }
 
-    let file = fs::File::create(&bundle_path)?;
+    let file = fs::File::create(bundle_path)?;
     let mut zip = ZipWriter::new(file);
     let modified = zip::DateTime::from_date_and_time(2026, 1, 1, 0, 0, 0)?;
     let options = SimpleFileOptions::default()

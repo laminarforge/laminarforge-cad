@@ -261,7 +261,7 @@ fn esp32_pads() -> Vec<Pad> {
 /// SOIC-8 footprint (used for AMS1117-5V LDO placeholder, regulator, etc.)
 fn soic8_pads_generic(nets: [u32; 8]) -> Vec<Pad> {
     let mut pads = Vec::with_capacity(8);
-    for i in 0..8 {
+    for (i, net) in nets.iter().enumerate() {
         let pin = (i + 1) as i32;
         let (x, y) = if pin <= 4 {
             (-2.7, -1.905 + (pin as f64 - 1.0) * 1.27)
@@ -269,7 +269,7 @@ fn soic8_pads_generic(nets: [u32; 8]) -> Vec<Pad> {
             (2.7, -1.905 + (8.0 - pin as f64) * 1.27)
         };
         let num = Box::leak(format!("{}", pin).into_boxed_str());
-        pads.push(pad_smd(num, x, y, 1.5, 0.6, nets[i]));
+        pads.push(pad_smd(num, x, y, 1.5, 0.6, *net));
     }
     pads
 }
@@ -447,6 +447,7 @@ fn relay_pads(coil_plus: u32, coil_minus: u32, common_a: u32, no_a: u32) -> Vec<
 
 // ───────────────────────── Component list ─────────────────────────
 
+#[allow(clippy::vec_init_then_push)]
 fn define_components() -> Vec<Component> {
     let mut c: Vec<Component> = Vec::new();
 
