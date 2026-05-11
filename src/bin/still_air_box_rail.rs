@@ -44,7 +44,7 @@ fn build_rail(name: &str, total_length: f64) -> Vec<(String, Part)> {
 
     for seg_idx in 0..num_segments {
         let seg_name = if num_segments == 1 {
-            format!("{name}")
+            name.to_string()
         } else {
             format!("{name}_seg{}", seg_idx + 1)
         };
