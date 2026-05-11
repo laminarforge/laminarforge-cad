@@ -1,0 +1,51 @@
+[package]
+name = "lamp_rev_a_routing"
+ticket = "T-9523CA78"
+revision = "Rev A"
+source_stage = "placement_drc_clean"
+
+[current_state]
+physical_drc_violations = 0
+unconnected_items = 93
+source_report = "pcb/lamp_rev_a/reports/drc.json"
+
+[[routing_phases]]
+name = "power_and_ground"
+priority = 1
+nets = ["GND", "VBUS", "+5V", "+3V3", "+12V_RAW", "+12V"]
+goal = "Create low-impedance rails, ground return paths, regulator input/output links, and stitching vias before signal routing."
+
+[[routing_phases]]
+name = "heater_power"
+priority = 2
+nets = ["HEATER_SUPPLY", "HEATER_P", "HEATER_PWM", "GATE_DRV"]
+goal = "Route high-current heater output and gate-drive path with explicit width constraints and short return path."
+
+[[routing_phases]]
+name = "usb_programming"
+priority = 3
+nets = ["USB_DP", "USB_DN", "USB_CC1", "USB_CC2"]
+goal = "Route USB data/CC paths as short, direct traces from connector through ESD protection to ESP32-S3."
+
+[[routing_phases]]
+name = "digital_control"
+priority = 4
+nets = ["SDA", "SCL", "MUX_S0", "MUX_S1", "MUX_S2", "ESP_EN", "ESP_GPIO0", "UART_TX", "UART_RX"]
+goal = "Route low-speed digital control and debug/test access after power, heater, and USB constraints are stable."
+
+[[routing_phases]]
+name = "analog_optical"
+priority = 5
+nets = ["MUX_COM", "ADC_AIN1"]
+net_prefixes = ["MUX_Y", "LED_BASE_"]
+goal = "Route optical channel and TIA/ADC nets with guarded analog spacing and short detector-to-mux paths."
+
+[autorouter_policy]
+freerouting_allowed_for_diagnostics = true
+freerouting_output_is_fab_ready = false
+accepted_use = "Use autorouter output to expose bad placement or impossible constraints, then review and finish in KiCad."
+
+[verification]
+pre_route_gate = "kicad-cli pcb drc reports 0 physical violations before routing."
+iteration_gate = "cargo run --release --bin lamp_rev_a_route_report after every DRC run."
+release_gate = "0 DRC violations, 0 unconnected items, schematic/PCB parity clean, BOM/CPL generated from final KiCad board."

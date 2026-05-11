@@ -15,6 +15,7 @@ workflow.
 - `optical_mode.md`: human-readable optical-mode decision and bench validation gate.
 - `placement.toml`: locked starting refs, coordinates, test points, and eight-slot optical geometry.
 - `pin_nets.toml`: conservative footprint pad-to-net assignments for known package pinouts.
+- `routing_plan.toml`: routing phase order, current unrouted count, autorouter policy, and release gates.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: materialized KiCad board with the Rev A outline, 4-layer stack, placed footprints, test points, and optical-slot guides.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.
@@ -65,6 +66,7 @@ Run:
 cargo run --release --bin lamp_pcba_check
 cargo run --release --bin lamp_rev_a_materialize_board
 cargo run --release --bin lamp_rev_a_fab_preview
+cargo run --release --bin lamp_rev_a_route_report
 ```
 
 The current schematic is an architecture shell, not a fabrication-ready circuit.
@@ -85,7 +87,8 @@ kicad-cli pcb drc --format json \
 ```
 
 Expected DRC state at this stage: `0 violations` and unrouted connections still
-listed under `unconnected_items`.
+listed under `unconnected_items`. Run `lamp_rev_a_route_report` after DRC to
+see the current routing backlog by net.
 
 Do not accept autorouter output by itself. Use it to expose bad placement or
 constraint problems, then finish and review the layout in KiCad.
