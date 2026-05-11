@@ -142,6 +142,7 @@ fn main() {
     // For visualization: show outer shell as a hollow box with the
     // front face open (so the interior is visible).
 
+    #[allow(clippy::too_many_arguments)]
     fn build_incubator_hollow(
         shell_outer_x: f64,
         shell_outer_y: f64,
@@ -189,6 +190,7 @@ fn main() {
     // 2. ROCKER (simplified primitives)
     // ══════════════════════════════════════════════════════════════
 
+    #[allow(clippy::too_many_arguments)]
     fn build_rocker(
         base_x: f64,
         base_y: f64,
@@ -272,6 +274,7 @@ fn main() {
     // 3. RACK (simplified primitives)
     // ══════════════════════════════════════════════════════════════
 
+    #[allow(clippy::too_many_arguments)]
     fn build_rack(
         rack_base_x: f64,
         rack_base_y: f64,
@@ -408,8 +411,7 @@ fn main() {
         centered_cube("door_body", door_x, door_thickness, door_z).translate(
             0.0,
             chamber_front_y - door_thickness / 2.0,
-            chamber_front_y.abs().min(0.0).max(0.0) // unused
-                    + 275.0, // chamber center z (interior floor 0 → center 275)
+            275.0, // chamber center z (interior floor 0 -> center 275)
         )
     }
 
