@@ -998,7 +998,7 @@ side = "top"
 [[test_points]]
 name = "TP_EN"
 net = "ESP_EN"
-x_mm = 20.5
+x_mm = 25.5
 y_mm = 10.6
 side = "top"
 

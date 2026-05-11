@@ -2,12 +2,13 @@
 name = "lamp_rev_a_routing"
 ticket = "T-3FAFE2B4"
 revision = "Rev A"
-source_stage = "endpoint_via_route_seed_drc_clean"
+source_stage = "usb_top_lane_route_seed_drc_clean"
 
 [current_state]
 physical_drc_violations = 0
-unconnected_items = 3
-starter_route_segments = 101
+unconnected_items = 0
+ignored_kicad_self_zone_items = 1
+starter_route_segments = 112
 copper_zones = 2
 source_report = "pcb/lamp_rev_a/reports/drc.json"
 
@@ -50,4 +51,4 @@ accepted_use = "Use autorouter output to expose bad placement or impossible cons
 [verification]
 pre_route_gate = "kicad-cli pcb drc reports 0 physical violations before routing."
 iteration_gate = "cargo run --release --bin lamp_rev_a_route_report after every DRC run."
-release_gate = "0 DRC violations, 0 unconnected items, schematic/PCB parity clean, BOM/CPL generated from final KiCad board."
+release_gate = "0 DRC violations, 0 real unconnected items, schematic/PCB parity clean, BOM/CPL generated from final KiCad board."

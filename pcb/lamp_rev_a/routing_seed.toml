@@ -1,9 +1,9 @@
 [package]
 name = "lamp_rev_a_routing_seed"
 revision = "Rev A"
-source_stage = "endpoint_via_route_seed"
+source_stage = "usb_top_lane_route_seed"
 source_report = "pcb/lamp_rev_a/reports/drc.json"
-segments = 101
+segments = 112
 
 
 [[segments]]
@@ -605,7 +605,7 @@ net = "ESP_EN"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.200
-start_x_mm = 20.500
+start_x_mm = 25.500
 start_y_mm = 10.600
 end_x_mm = 23.100
 end_y_mm = 10.590
@@ -845,6 +845,116 @@ end_y_mm = 25.000
 
 via_at_start = false
 via_at_end = false
+
+[[segments]]
+net = "GND"
+layer = "B.Cu"
+via_at_ends = true
+width_mm = 0.500
+start_x_mm = 1.500
+start_y_mm = 1.500
+end_x_mm = 2.500
+end_y_mm = 1.500
+
+[[segments]]
+net = "USB_DN"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 6.250
+start_y_mm = 4.610
+end_x_mm = 6.250
+end_y_mm = 0.800
+
+[[segments]]
+net = "USB_DN"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 7.250
+start_y_mm = 4.610
+end_x_mm = 7.250
+end_y_mm = 0.800
+
+[[segments]]
+net = "USB_DN"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 6.250
+start_y_mm = 0.800
+end_x_mm = 7.250
+end_y_mm = 0.800
+
+[[segments]]
+net = "USB_DN"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 7.250
+start_y_mm = 0.800
+end_x_mm = 20.500
+end_y_mm = 0.800
+
+[[segments]]
+net = "USB_DN"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 20.500
+start_y_mm = 0.800
+end_x_mm = 20.500
+end_y_mm = 11.000
+
+[[segments]]
+net = "USB_DN"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 20.500
+start_y_mm = 11.000
+end_x_mm = 18.950
+end_y_mm = 11.000
+
+[[segments]]
+net = "USB_CC2"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 8.750
+start_y_mm = 4.610
+end_x_mm = 8.750
+end_y_mm = 1.400
+
+[[segments]]
+net = "USB_CC2"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 8.750
+start_y_mm = 1.400
+end_x_mm = 15.500
+end_y_mm = 1.400
+
+[[segments]]
+net = "USB_CC2"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 15.500
+start_y_mm = 1.400
+end_x_mm = 15.500
+end_y_mm = 11.000
+
+[[segments]]
+net = "USB_CC2"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 15.500
+start_y_mm = 11.000
+end_x_mm = 14.000
+end_y_mm = 11.000
 
 [[segments]]
 net = "MUX_S0"

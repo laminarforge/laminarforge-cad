@@ -167,6 +167,7 @@ struct CopperZone {
     min_thickness_mm: f64,
     thermal_gap_mm: f64,
     thermal_bridge_width_mm: f64,
+    remove_islands: bool,
     points: Vec<CopperZonePoint>,
 }
 
@@ -891,6 +892,8 @@ fn write_copper_zones(
             validate_board_point(point.x_mm, point.y_mm, contract, &zone.net)?;
         }
 
+        let island_removal_mode = if zone.remove_islands { 0 } else { 1 };
+
         writeln!(
             board,
             r#"
@@ -902,7 +905,7 @@ fn write_copper_zones(
     (hatch edge 0.5)
     (connect_pads yes (clearance {}))
     (min_thickness {})
-    (fill yes (thermal_gap {}) (thermal_bridge_width {}))
+    (fill yes (thermal_gap {}) (thermal_bridge_width {}) (island_removal_mode {}))
     (polygon
       (pts"#,
             net_id,
@@ -912,7 +915,8 @@ fn write_copper_zones(
             fmt(zone.clearance_mm),
             fmt(zone.min_thickness_mm),
             fmt(zone.thermal_gap_mm),
-            fmt(zone.thermal_bridge_width_mm)
+            fmt(zone.thermal_bridge_width_mm),
+            island_removal_mode
         )?;
         for point in &zone.points {
             writeln!(

@@ -12,6 +12,7 @@ clearance_mm = 0.20
 min_thickness_mm = 0.15
 thermal_gap_mm = 0.30
 thermal_bridge_width_mm = 0.30
+remove_islands = true
 
 [[zones.points]]
 x_mm = 0.75
@@ -37,6 +38,7 @@ clearance_mm = 0.20
 min_thickness_mm = 0.15
 thermal_gap_mm = 0.30
 thermal_bridge_width_mm = 0.30
+remove_islands = true
 
 [[zones.points]]
 x_mm = 0.75

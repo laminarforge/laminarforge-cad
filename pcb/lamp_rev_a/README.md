@@ -80,9 +80,9 @@ The current schematic is an architecture shell, not a fabrication-ready circuit.
 The checker should not report fab-blocking part-selection gaps. The board now
 materializes all selected parts into KiCad with zero physical DRC violations
 with a DRC-clean starter route seed and GND copper pours. The route seed is
-currently at 101 accepted segments and 3 unconnected items after KiCad zone
-refill. The active work is schematic completion, routing the remaining ratlines,
-schematic/PCB parity,
+currently at 112 accepted segments, zero real unrouted ratlines after KiCad zone
+refill, and one ignored KiCad self-zone report item for the front GND pour. The
+active work is schematic completion, schematic/PCB parity, fab export validation,
 and bench validation.
 
 Current KiCad checks:
@@ -96,9 +96,10 @@ kicad-cli pcb drc --refill-zones --format json \
   pcb/lamp_rev_a/lamp_rev_a.kicad_pcb
 ```
 
-Expected DRC state at this stage: `0 violations` and unrouted connections still
-listed under `unconnected_items`. Run `lamp_rev_a_route_report` after DRC to
-see the current routing backlog by net.
+Expected DRC state at this stage: `0 violations` and no real unrouted
+connections. KiCad may still report one self-referential front-GND-zone
+`unconnected_items` entry; `lamp_rev_a_route_report` ignores only that exact
+self-zone artifact and still reports real ratlines by net.
 
 `lamp_rev_a_seed_routes_from_drc` is intentionally conservative: it only seeds
 short direct routes that preserve zero physical DRC violations. Longer routes
