@@ -89,7 +89,9 @@ and bench validation.
 `lamp_rev_a_fab_release` emits JLCPCB machine-assembly BOM/CPL files separately
 from through-hole/manual-install parts, then verifies that required Gerbers,
 drills, reports, position files, review STEP output, and the order audit report
-are present and non-empty.
+are present and non-empty. It also emits validated upload bundles under
+`fab_release/bundles/`: fabrication Gerbers/drills, assembly CSVs, and review
+artifacts.
 
 Current KiCad checks:
 

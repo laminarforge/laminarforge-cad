@@ -5,6 +5,7 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 use std::process::Command;
+use zip::{write::SimpleFileOptions, CompressionMethod, ZipArchive, ZipWriter};
 
 const CONFIG_PATH: &str = "pcb/lamp_rev_a/fab_release.toml";
 
@@ -50,6 +51,7 @@ struct Outputs {
     drills_dir: String,
     assembly_dir: String,
     review_dir: String,
+    bundles_dir: String,
     drc_report: String,
     erc_report: String,
     drill_report: String,
@@ -60,6 +62,9 @@ struct Outputs {
     step_file: String,
     order_audit_file: String,
     manifest_file: String,
+    fabrication_bundle: String,
+    assembly_bundle: String,
+    review_bundle: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -228,6 +233,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     if config.step.enabled {
         run_step_export(&config, &board, &output_root)?;
     }
+    write_manifest(
+        &config,
+        &output_root,
+        drc_violations,
+        real_unconnected,
+        ignored_self_zone,
+        erc_violations,
+    )?;
     write_order_audit_report(
         &config,
         &parts,
@@ -238,16 +251,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         ignored_self_zone,
         erc_violations,
     )?;
+    write_release_bundles(&config, &output_root)?;
     validate_release_outputs(&config, &parts, &placement, &output_root)?;
-
-    write_manifest(
-        &config,
-        &output_root,
-        drc_violations,
-        real_unconnected,
-        ignored_self_zone,
-        erc_violations,
-    )?;
 
     println!("Wrote LAMP Rev A fab release:");
     println!("  {}", output_root.display());
@@ -297,6 +302,7 @@ fn create_output_dirs(output_root: &Path, outputs: &Outputs) -> Result<(), Box<d
         &outputs.drills_dir,
         &outputs.assembly_dir,
         &outputs.review_dir,
+        &outputs.bundles_dir,
     ] {
         fs::create_dir_all(output_root.join(dir))?;
     }
@@ -793,6 +799,13 @@ fn write_manifest(
         writeln!(file, "step: {}", config.outputs.step_file)?;
     }
     writeln!(file, "order_audit: {}", config.outputs.order_audit_file)?;
+    writeln!(
+        file,
+        "fabrication_bundle: {}",
+        config.outputs.fabrication_bundle
+    )?;
+    writeln!(file, "assembly_bundle: {}", config.outputs.assembly_bundle)?;
+    writeln!(file, "review_bundle: {}", config.outputs.review_bundle)?;
     Ok(())
 }
 
@@ -849,6 +862,11 @@ fn write_order_audit_report(
         }
     }
     writeln!(file)?;
+    writeln!(file, "### Upload Bundles")?;
+    writeln!(file, "- `{}`", config.outputs.fabrication_bundle)?;
+    writeln!(file, "- `{}`", config.outputs.assembly_bundle)?;
+    writeln!(file, "- `{}`", config.outputs.review_bundle)?;
+    writeln!(file)?;
 
     writeln!(file, "## Manual-Install Parts")?;
     writeln!(file)?;
@@ -868,6 +886,121 @@ fn write_order_audit_report(
     }
 
     Ok(())
+}
+
+fn write_release_bundles(config: &ReleaseConfig, output_root: &Path) -> Result<(), Box<dyn Error>> {
+    let mut fabrication_entries = zip_entries_from_dirs(
+        output_root,
+        &[&config.outputs.gerbers_dir, &config.outputs.drills_dir],
+    )?;
+    fabrication_entries.sort_by(|left, right| left.archive_name.cmp(&right.archive_name));
+    write_zip_bundle(
+        output_root,
+        &config.outputs.fabrication_bundle,
+        &fabrication_entries,
+    )?;
+
+    let assembly_entries = zip_entries_from_files(&[
+        &config.outputs.bom_file,
+        &config.outputs.cpl_file,
+        &config.outputs.manual_file,
+        &config.outputs.position_file,
+    ])?;
+    write_zip_bundle(
+        output_root,
+        &config.outputs.assembly_bundle,
+        &assembly_entries,
+    )?;
+
+    let mut review_files = vec![
+        config.outputs.manifest_file.as_str(),
+        config.outputs.order_audit_file.as_str(),
+        config.outputs.drc_report.as_str(),
+        config.outputs.erc_report.as_str(),
+        config.outputs.drill_report.as_str(),
+    ];
+    if config.step.enabled {
+        review_files.push(config.outputs.step_file.as_str());
+    }
+    let review_entries = zip_entries_from_files(&review_files)?;
+    write_zip_bundle(output_root, &config.outputs.review_bundle, &review_entries)?;
+    Ok(())
+}
+
+fn write_zip_bundle(
+    output_root: &Path,
+    bundle_relative: &str,
+    entries: &[ZipEntry],
+) -> Result<(), Box<dyn Error>> {
+    let bundle_path = output_root.join(bundle_relative);
+    if let Some(parent) = bundle_path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    let file = fs::File::create(&bundle_path)?;
+    let mut zip = ZipWriter::new(file);
+    let modified = zip::DateTime::from_date_and_time(2026, 1, 1, 0, 0, 0)?;
+    let options = SimpleFileOptions::default()
+        .compression_method(CompressionMethod::Stored)
+        .last_modified_time(modified)
+        .unix_permissions(0o644);
+
+    let mut archive_names = BTreeSet::new();
+    for entry in entries {
+        if !archive_names.insert(entry.archive_name.as_str()) {
+            return Err(format!(
+                "duplicate ZIP entry {} in {}",
+                entry.archive_name,
+                bundle_path.display()
+            )
+            .into());
+        }
+        let content = fs::read(output_root.join(&entry.source_relative))?;
+        if content.is_empty() {
+            return Err(format!("refusing to bundle empty file {}", entry.source_relative).into());
+        }
+        zip.start_file(entry.archive_name.as_str(), options)?;
+        zip.write_all(&content)?;
+    }
+    zip.finish()?;
+    Ok(())
+}
+
+fn zip_entries_from_dirs(
+    output_root: &Path,
+    relative_dirs: &[&str],
+) -> Result<Vec<ZipEntry>, Box<dyn Error>> {
+    let mut entries = Vec::new();
+    for relative_dir in relative_dirs {
+        for source_relative in list_relative_files(output_root, relative_dir)? {
+            entries.push(ZipEntry {
+                archive_name: archive_name_for(&source_relative)?,
+                source_relative,
+            });
+        }
+    }
+    Ok(entries)
+}
+
+fn zip_entries_from_files(relative_files: &[&str]) -> Result<Vec<ZipEntry>, Box<dyn Error>> {
+    relative_files
+        .iter()
+        .map(|relative| {
+            Ok(ZipEntry {
+                source_relative: (*relative).to_string(),
+                archive_name: archive_name_for(relative)?,
+            })
+        })
+        .collect()
+}
+
+fn archive_name_for(relative: &str) -> Result<String, Box<dyn Error>> {
+    let filename = Path::new(relative)
+        .file_name()
+        .ok_or_else(|| format!("release path has no filename: {relative}"))?
+        .to_string_lossy()
+        .to_string();
+    Ok(filename)
 }
 
 fn validate_release_outputs(
@@ -912,6 +1045,7 @@ fn validate_release_outputs(
         &config.outputs.manual_file,
         &config.outputs.position_file,
         &config.outputs.order_audit_file,
+        &config.outputs.manifest_file,
         &config.outputs.drill_report,
         &config.outputs.erc_report,
         &config.outputs.drc_report,
@@ -944,11 +1078,129 @@ fn validate_release_outputs(
             &mut errors,
         );
     }
+    validate_release_bundles(config, output_root, &mut errors);
 
     if errors.is_empty() {
         Ok(())
     } else {
         Err(errors.join("\n").into())
+    }
+}
+
+fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: &mut Vec<String>) {
+    let expected_fabrication = match zip_entries_from_dirs(
+        output_root,
+        &[&config.outputs.gerbers_dir, &config.outputs.drills_dir],
+    ) {
+        Ok(entries) => entries,
+        Err(err) => {
+            errors.push(format!("failed to list fabrication bundle inputs: {err}"));
+            Vec::new()
+        }
+    };
+    validate_zip_entries(
+        &output_root.join(&config.outputs.fabrication_bundle),
+        &expected_fabrication,
+        "fabrication bundle",
+        errors,
+    );
+
+    let expected_assembly = match zip_entries_from_files(&[
+        &config.outputs.bom_file,
+        &config.outputs.cpl_file,
+        &config.outputs.manual_file,
+        &config.outputs.position_file,
+    ]) {
+        Ok(entries) => entries,
+        Err(err) => {
+            errors.push(format!("failed to list assembly bundle inputs: {err}"));
+            Vec::new()
+        }
+    };
+    validate_zip_entries(
+        &output_root.join(&config.outputs.assembly_bundle),
+        &expected_assembly,
+        "assembly bundle",
+        errors,
+    );
+
+    let mut review_files = vec![
+        config.outputs.manifest_file.as_str(),
+        config.outputs.order_audit_file.as_str(),
+        config.outputs.drc_report.as_str(),
+        config.outputs.erc_report.as_str(),
+        config.outputs.drill_report.as_str(),
+    ];
+    if config.step.enabled {
+        review_files.push(config.outputs.step_file.as_str());
+    }
+    let expected_review = match zip_entries_from_files(&review_files) {
+        Ok(entries) => entries,
+        Err(err) => {
+            errors.push(format!("failed to list review bundle inputs: {err}"));
+            Vec::new()
+        }
+    };
+    validate_zip_entries(
+        &output_root.join(&config.outputs.review_bundle),
+        &expected_review,
+        "review bundle",
+        errors,
+    );
+}
+
+fn validate_zip_entries(
+    path: &Path,
+    expected_entries: &[ZipEntry],
+    label: &str,
+    errors: &mut Vec<String>,
+) {
+    validate_nonempty_file(path, errors);
+
+    let file = match fs::File::open(path) {
+        Ok(file) => file,
+        Err(err) => {
+            errors.push(format!("failed to open {label} {}: {err}", path.display()));
+            return;
+        }
+    };
+    let mut archive = match ZipArchive::new(file) {
+        Ok(archive) => archive,
+        Err(err) => {
+            errors.push(format!("failed to read {label} {}: {err}", path.display()));
+            return;
+        }
+    };
+
+    let mut expected_names = expected_entries
+        .iter()
+        .map(|entry| entry.archive_name.clone())
+        .collect::<Vec<_>>();
+    expected_names.sort();
+
+    let mut actual_names = Vec::new();
+    for index in 0..archive.len() {
+        let file = match archive.by_index(index) {
+            Ok(file) => file,
+            Err(err) => {
+                errors.push(format!("failed to read {label} entry {index}: {err}"));
+                return;
+            }
+        };
+        if file.size() == 0 {
+            errors.push(format!("{label} contains empty entry {}", file.name()));
+        }
+        actual_names.push(file.name().to_string());
+    }
+    actual_names.sort();
+
+    if actual_names != expected_names {
+        errors.push(format!(
+            "{label} entries differ for {}\nexpected: {:?}\nactual: {:?}",
+            path.display(),
+            expected_names,
+            actual_names
+        ));
     }
 }
 
@@ -977,6 +1229,11 @@ struct ManualInstallRow {
     value: String,
     footprint: String,
     lcsc_part: String,
+}
+
+struct ZipEntry {
+    source_relative: String,
+    archive_name: String,
 }
 
 fn manual_install_rows(

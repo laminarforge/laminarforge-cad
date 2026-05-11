@@ -1,8 +1,8 @@
 [package]
 name = "lamp_rev_a_fab_release"
-ticket = "T-92248F71"
+ticket = "T-467872EC"
 revision = "Rev A"
-source_stage = "routed_board_release_export"
+source_stage = "upload_bundle_release_export"
 
 [toolchain]
 min_kicad_major = 10
@@ -20,6 +20,7 @@ gerbers_dir = "gerbers"
 drills_dir = "drills"
 assembly_dir = "assembly"
 review_dir = "review"
+bundles_dir = "bundles"
 drc_report = "reports/drc.json"
 erc_report = "reports/erc.json"
 drill_report = "reports/drill_report.txt"
@@ -30,6 +31,9 @@ position_file = "assembly/kicad_position_front.csv"
 step_file = "review/lamp_rev_a_board.step"
 order_audit_file = "review/order_audit.md"
 manifest_file = "release_manifest.txt"
+fabrication_bundle = "bundles/lamp_rev_a_jlcpcb_fabrication.zip"
+assembly_bundle = "bundles/lamp_rev_a_jlcpcb_assembly.zip"
+review_bundle = "bundles/lamp_rev_a_review_package.zip"
 
 [assembly]
 machine_side = "top"
