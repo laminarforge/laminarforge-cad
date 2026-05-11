@@ -127,6 +127,7 @@ const RACK_Z: f64 = 206.0; // 3 shelves × 40 mm + 86 mm (base+handle) − 20 mm
 const OUTER_RING_OD: f64 = 460.0; // outer diameter (circumscribes inner plate + ring width)
 const OUTER_RING_ID: f64 = 400.0; // inner opening
 const OUTER_RING_Z: f64 = 20.0; // ring thickness (axial)
+#[allow(dead_code)]
 const OUTER_RING_WALL: f64 = (OUTER_RING_OD - OUTER_RING_ID) / 2.0; // 30 mm
 
 // Inner platform (rolls around Y)
@@ -521,7 +522,7 @@ fn bearing_mount() -> Part {
     // Hollow the middle to save weight
     let hollow = centered_cube("bm_hollow", body_x - 30.0, body_y - 30.0, body_z - 80.0);
 
-    (body - bearing_bore - shaft_through - base_bolts - hollow)
+    body - bearing_bore - shaft_through - base_bolts - hollow
 }
 
 /// Static base plate with stepper mount on -X and bearing stand on +X.

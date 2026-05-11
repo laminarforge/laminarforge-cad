@@ -51,7 +51,7 @@ fn main() {
     // ── Lid ──
     let lid_od: f64 = reservoir_od + 8.0; // lid skirt overhangs reservoir by 4mm per side
     let lid_thickness: f64 = 8.0;
-    let lid_id: f64 = reservoir_id; // seals against reservoir ID via silicone O-ring
+    let _lid_id: f64 = reservoir_id; // seals against reservoir ID via silicone O-ring
 
     // Lid penetrations:
     //   A. HEPA-vented fill port (luer-lock), 22mm boss on top
@@ -78,7 +78,7 @@ fn main() {
     let pump_body_x: f64 = 76.0;
     let pump_body_y: f64 = 60.0;
     let pump_body_z: f64 = 45.0;
-    let pump_boss_dia: f64 = 23.0;
+    let _pump_boss_dia: f64 = 23.0;
     let pump_mount_hole_dia: f64 = 3.2;
     let pump_mount_pattern: f64 = 38.0; // square bolt pattern
     let pump_barb_offset_y: f64 = 22.0; // inlet/outlet Y offset from head center

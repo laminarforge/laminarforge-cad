@@ -103,7 +103,7 @@ pub fn validate_and_export(pcb_path: &Path, output_dir: &Path) {
             "gerbers",
             &pcb_path.to_string_lossy(),
             "-o",
-            &gerber_dir.to_string_lossy().to_string(),
+            gerber_dir.to_string_lossy().as_ref(),
         ])
         .output()
         .expect("failed to run kicad-cli gerber export");
@@ -125,7 +125,7 @@ pub fn validate_and_export(pcb_path: &Path, output_dir: &Path) {
             "drill",
             &pcb_path.to_string_lossy(),
             "-o",
-            &gerber_dir.to_string_lossy().to_string(),
+            gerber_dir.to_string_lossy().as_ref(),
             "--format",
             "excellon",
             "--excellon-units",

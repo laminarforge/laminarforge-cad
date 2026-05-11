@@ -34,7 +34,7 @@ fn main() {
     let via_len_print = 4.0;
 
     // ── Single chamber (row 0, column 0) ──
-    let cx = REVC_COL_XS_CENTERED[0]; // -40.50
+    let _cx = REVC_COL_XS_CENTERED[0]; // -40.50
     let cy = REVC_CHAMBER_CENTER_YS[0]; // -27.00
     let iy = REVC_INLET_YS[0]; // -31.50
     let oy = REVC_OUTLET_YS[0]; // -22.50

@@ -76,6 +76,7 @@ const AIRLOCK_D: f64 = 600.0; // Y (deep into room)
 // Rocker bed footprint
 const BED_X: f64 = 900.0;
 const BED_Y: f64 = 750.0;
+#[allow(dead_code)]
 const BED_Z: f64 = 900.0; // overall platform height incl. rocker + rack
 const BED_AISLE: f64 = 600.0;
 

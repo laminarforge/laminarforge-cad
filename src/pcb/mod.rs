@@ -87,6 +87,7 @@ pub struct HeaterStats {
 }
 
 /// Write a single trace segment
+#[allow(clippy::too_many_arguments)]
 pub fn write_trace(
     pcb: &mut String,
     x1: f64,

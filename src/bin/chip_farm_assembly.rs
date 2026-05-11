@@ -59,8 +59,8 @@ fn main() {
     let shell_outer_z = chamber_outer_z + (insulation_gap + shell_wall) * 2.0; // 606
 
     // Chamber center (in assembly coords: interior floor = z=0)
-    let chamber_cx = 0.0;
-    let chamber_cy = 0.0;
+    let _chamber_cx = 0.0;
+    let _chamber_cy = 0.0;
     let chamber_cz = inner_z / 2.0; // 275 mm above the interior floor
 
     // ── Rocker (rack_rocker.rs) ──
@@ -94,7 +94,7 @@ fn main() {
         - rocker_base_z / 2.0
         + boss_cz_local; // = rocker_origin_z - rocker_base_z/2 + boss_cz_local
     let _ = boss_cz_world; // simplified below
-    let boss_cz_assembly: f64 = rocker_base_z + boss_z / 2.0; // rocker sits on floor; boss rises above base
+    let _boss_cz_assembly: f64 = rocker_base_z + boss_z / 2.0; // rocker sits on floor; boss rises above base
 
     // ── Rack (chip_stack_rack.rs) ──
     let chip_x: f64 = 127.76;
@@ -134,7 +134,7 @@ fn main() {
     let rack_base_top_z = rack_base_bottom_z + rack_base_z;
     // Post Z in rack-local: post_z = base_thickness + post_height/2 ≈ 6 + 115 = 121.
     // Post bottom sits at rack_base_top_z; post center in assembly:
-    let post_world_cz = rack_base_top_z + post_height / 2.0;
+    let _post_world_cz = rack_base_top_z + post_height / 2.0;
 
     // ══════════════════════════════════════════════════════════════
     // 1. INCUBATOR SHELL (thin-walled box) — nested assembly

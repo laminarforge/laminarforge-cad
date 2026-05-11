@@ -31,6 +31,7 @@ use std::process;
 // ─── Inputs ───────────────────────────────────────────────────────────────
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 struct Assumptions {
     // Chip unit cost (Rev C CNC baseline $50; IM target $6.85)
     chip_unit_cost: f64,
@@ -140,6 +141,7 @@ fn tiers() -> [Tier; 3] {
 // ─── Cost model ───────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 struct Breakdown {
     tier_name: String,
     tier_id: u8,

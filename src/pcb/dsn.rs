@@ -263,19 +263,16 @@ fn write_library(s: &mut String, components: &[Component]) {
             .unwrap();
 
             // Record padstack definition
-            if !padstacks.contains_key(&ps_name) {
+            padstacks.entry(ps_name).or_insert_with(|| {
                 let w_um = mm_to_um(pad.width);
                 let h_um = mm_to_um(pad.height);
                 let is_thru = pad.pad_type == "thru_hole" || pad.drill.is_some();
-                padstacks.insert(
-                    ps_name,
-                    PadstackDef {
-                        width_um: w_um,
-                        height_um: h_um,
-                        is_thru,
-                    },
-                );
-            }
+                PadstackDef {
+                    width_um: w_um,
+                    height_um: h_um,
+                    is_thru,
+                }
+            });
         }
         writeln!(s, "    )").unwrap();
     }

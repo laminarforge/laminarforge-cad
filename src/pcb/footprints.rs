@@ -68,125 +68,126 @@ pub fn write_footprint(pcb: &mut String, comp: &Component) {
 // ─── Pad Helpers ───
 
 pub fn esp32_pads() -> Vec<Pad> {
-    let mut pads = Vec::new();
-    pads.push(Pad {
-        number: "GND",
-        pad_type: "smd",
-        shape: "rect",
-        x: 0.0,
-        y: 0.0,
-        width: 6.0,
-        height: 6.0,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_GND,
-        net_name: "GND",
-        drill: None,
-    });
-    pads.push(Pad {
-        number: "2",
-        pad_type: "smd",
-        shape: "rect",
-        x: -8.0,
-        y: -10.0,
-        width: 1.5,
-        height: 0.9,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_3V3,
-        net_name: "+3V3",
-        drill: None,
-    });
-    // Pin 3 = EN: external RC pull-up, not tied directly to 3V3
-    pads.push(Pad {
-        number: "3",
-        pad_type: "smd",
-        shape: "rect",
-        x: -8.0,
-        y: -8.73,
-        width: 1.5,
-        height: 0.9,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_ESP_EN,
-        net_name: "ESP_EN",
-        drill: None,
-    });
-    pads.push(Pad {
-        number: "15",
-        pad_type: "smd",
-        shape: "rect",
-        x: -8.0,
-        y: 6.37,
-        width: 1.5,
-        height: 0.9,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_HEATER_PWM,
-        net_name: "HEATER_PWM",
-        drill: None,
-    });
-    pads.push(Pad {
-        number: "16",
-        pad_type: "smd",
-        shape: "rect",
-        x: -8.0,
-        y: 7.64,
-        width: 1.5,
-        height: 0.9,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_SDA,
-        net_name: "SDA",
-        drill: None,
-    });
-    pads.push(Pad {
-        number: "17",
-        pad_type: "smd",
-        shape: "rect",
-        x: -8.0,
-        y: 8.91,
-        width: 1.5,
-        height: 0.9,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_SCL,
-        net_name: "SCL",
-        drill: None,
-    });
-    pads.push(Pad {
-        number: "18",
-        pad_type: "smd",
-        shape: "rect",
-        x: -8.0,
-        y: 10.18,
-        width: 1.5,
-        height: 0.9,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_MUX_S0,
-        net_name: "MUX_S0",
-        drill: None,
-    });
-    pads.push(Pad {
-        number: "19",
-        pad_type: "smd",
-        shape: "rect",
-        x: -8.0,
-        y: 11.45,
-        width: 1.5,
-        height: 0.9,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_MUX_S1,
-        net_name: "MUX_S1",
-        drill: None,
-    });
-    pads.push(Pad {
-        number: "20",
-        pad_type: "smd",
-        shape: "rect",
-        x: -8.0,
-        y: 12.72,
-        width: 1.5,
-        height: 0.9,
-        layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
-        net_id: NET_MUX_S2,
-        net_name: "MUX_S2",
-        drill: None,
-    });
+    let mut pads = vec![
+        Pad {
+            number: "GND",
+            pad_type: "smd",
+            shape: "rect",
+            x: 0.0,
+            y: 0.0,
+            width: 6.0,
+            height: 6.0,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_GND,
+            net_name: "GND",
+            drill: None,
+        },
+        Pad {
+            number: "2",
+            pad_type: "smd",
+            shape: "rect",
+            x: -8.0,
+            y: -10.0,
+            width: 1.5,
+            height: 0.9,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_3V3,
+            net_name: "+3V3",
+            drill: None,
+        },
+        // Pin 3 = EN: external RC pull-up, not tied directly to 3V3
+        Pad {
+            number: "3",
+            pad_type: "smd",
+            shape: "rect",
+            x: -8.0,
+            y: -8.73,
+            width: 1.5,
+            height: 0.9,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_ESP_EN,
+            net_name: "ESP_EN",
+            drill: None,
+        },
+        Pad {
+            number: "15",
+            pad_type: "smd",
+            shape: "rect",
+            x: -8.0,
+            y: 6.37,
+            width: 1.5,
+            height: 0.9,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_HEATER_PWM,
+            net_name: "HEATER_PWM",
+            drill: None,
+        },
+        Pad {
+            number: "16",
+            pad_type: "smd",
+            shape: "rect",
+            x: -8.0,
+            y: 7.64,
+            width: 1.5,
+            height: 0.9,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_SDA,
+            net_name: "SDA",
+            drill: None,
+        },
+        Pad {
+            number: "17",
+            pad_type: "smd",
+            shape: "rect",
+            x: -8.0,
+            y: 8.91,
+            width: 1.5,
+            height: 0.9,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_SCL,
+            net_name: "SCL",
+            drill: None,
+        },
+        Pad {
+            number: "18",
+            pad_type: "smd",
+            shape: "rect",
+            x: -8.0,
+            y: 10.18,
+            width: 1.5,
+            height: 0.9,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_MUX_S0,
+            net_name: "MUX_S0",
+            drill: None,
+        },
+        Pad {
+            number: "19",
+            pad_type: "smd",
+            shape: "rect",
+            x: -8.0,
+            y: 11.45,
+            width: 1.5,
+            height: 0.9,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_MUX_S1,
+            net_name: "MUX_S1",
+            drill: None,
+        },
+        Pad {
+            number: "20",
+            pad_type: "smd",
+            shape: "rect",
+            x: -8.0,
+            y: 12.72,
+            width: 1.5,
+            height: 0.9,
+            layers: "\"F.Cu\" \"F.Paste\" \"F.Mask\"",
+            net_id: NET_MUX_S2,
+            net_name: "MUX_S2",
+            drill: None,
+        },
+    ];
     // LED base drives on right side of module.
     // Pins 21-26 → LB0-5, pin 30 → LB6, pin 28 → LB7.
     // Pin 27 is reserved for ESP_GPIO0 (defined separately below).
@@ -312,7 +313,7 @@ pub fn msop10_pads() -> Vec<Pad> {
         (NET_SCL, "SCL"),
     ];
     let mut pads = Vec::new();
-    for i in 0..10 {
+    for (i, (net_id, net_name)) in pin_nets.iter().copied().enumerate() {
         let pin = i + 1;
         let (x, y) = if pin <= 5 {
             (-1.5, -1.0 + (pin as f64 - 1.0) * 0.5)
@@ -320,7 +321,6 @@ pub fn msop10_pads() -> Vec<Pad> {
             (1.5, -1.0 + (10.0 - pin as f64) * 0.5)
         };
         let pin_str = Box::leak(format!("{}", pin).into_boxed_str());
-        let (net_id, net_name) = pin_nets[i];
         pads.push(Pad {
             number: pin_str,
             pad_type: "smd",
@@ -358,7 +358,7 @@ pub fn soic16w_pads() -> Vec<Pad> {
         (NET_3V3, "+3V3"),
     ];
     let mut pads = Vec::new();
-    for i in 0..16 {
+    for (i, (net_id, net_name)) in pin_nets.iter().copied().enumerate() {
         let pin = i + 1;
         let (x, y) = if pin <= 8 {
             (-4.8, -4.445 + (pin as f64 - 1.0) * 1.27)
@@ -366,7 +366,6 @@ pub fn soic16w_pads() -> Vec<Pad> {
             (4.8, -4.445 + (16.0 - pin as f64) * 1.27)
         };
         let pin_str = Box::leak(format!("{}", pin).into_boxed_str());
-        let (net_id, net_name) = pin_nets[i];
         pads.push(Pad {
             number: pin_str,
             pad_type: "smd",
@@ -402,7 +401,7 @@ pub fn soic8_pads() -> Vec<Pad> {
         (NET_UNCONNECTED, ""),          // Pin 8: NC
     ];
     let mut pads = Vec::new();
-    for i in 0..8 {
+    for (i, (net_id, net_name)) in pin_nets.iter().copied().enumerate() {
         let pin = i + 1;
         let (x, y) = if pin <= 4 {
             (-2.7, -1.905 + (pin as f64 - 1.0) * 1.27)
@@ -410,7 +409,6 @@ pub fn soic8_pads() -> Vec<Pad> {
             (2.7, -1.905 + (8.0 - pin as f64) * 1.27)
         };
         let pin_str = Box::leak(format!("{}", pin).into_boxed_str());
-        let (net_id, net_name) = pin_nets[i];
         pads.push(Pad {
             number: pin_str,
             pad_type: "smd",

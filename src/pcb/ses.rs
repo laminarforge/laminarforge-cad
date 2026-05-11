@@ -306,7 +306,7 @@ fn extract_resolution(routes_node: &SExpr) -> f64 {
         if let Some(body) = res_node.tagged("resolution") {
             // body = [unit_atom, value_atom]
             if body.len() >= 2 {
-                let value = body[1].as_atom().map(|s| parse_f64(s)).unwrap_or(1.0);
+                let value = body[1].as_atom().map(parse_f64).unwrap_or(1.0);
                 // scale = value means 1 file unit = 1/value of the base unit (um)
                 // So to get um: file_coord / value * 1.0 um
                 // But Freerouting actually writes coordinates as integer um when
