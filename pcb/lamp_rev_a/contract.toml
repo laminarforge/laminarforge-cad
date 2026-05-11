@@ -1,0 +1,551 @@
+[package]
+name = "lamp_rev_a"
+ticket = "T-1C7DD38E"
+revision = "Rev A"
+purpose = "Single-board ESP32-S3 PCBA for the LaminarForge eight-slot LAMP device."
+source_stage = "contract_and_kicad_seed"
+
+[board]
+physical_board_count = 1
+width_mm = 100.0
+height_mm = 80.0
+thickness_mm = 1.6
+layer_count = 4
+slot_count = 8
+slot_spacing_mm = 12.0
+primary_mcu = "ESP32-S3-WROOM-1-N8"
+manufacturer_class = "JLCPCB 4-layer standard"
+
+[stackup]
+copper_layers = ["F.Cu", "In1.Cu", "In2.Cu", "B.Cu"]
+ground_plane_layer = "In1.Cu"
+power_plane_layer = "In2.Cu"
+outer_copper_oz = 1.0
+inner_copper_oz = 0.5
+min_clearance_mm = 0.15
+min_signal_track_mm = 0.20
+min_via_drill_mm = 0.30
+
+[[zones]]
+name = "mcu_usb"
+purpose = "ESP32-S3 module, USB-C, boot/reset, UART/JTAG/debug"
+x_min_mm = 0.0
+x_max_mm = 35.0
+y_min_mm = 0.0
+y_max_mm = 35.0
+
+[[zones]]
+name = "analog_optical"
+purpose = "LED emitters, photodiodes, mux, ADC, guarded analog routes"
+x_min_mm = 5.0
+x_max_mm = 96.0
+y_min_mm = 45.0
+y_max_mm = 75.0
+
+[[zones]]
+name = "heater_power"
+purpose = "12 V input, heater connector, MOSFET, gate driver, current-return path"
+x_min_mm = 60.0
+x_max_mm = 100.0
+y_min_mm = 0.0
+y_max_mm = 35.0
+
+[[zones]]
+name = "mechanical_thermal"
+purpose = "Heater block mounts, tube geometry, enclosure mounting holes"
+x_min_mm = 0.0
+x_max_mm = 100.0
+y_min_mm = 35.0
+y_max_mm = 80.0
+
+[[modules]]
+name = "esp32_s3"
+status = "required"
+owner = "schematic"
+deliverable = "ESP32-S3-WROOM module with EN, GPIO0, USB, UART, and test pads."
+
+[[modules]]
+name = "usb_programming"
+status = "required"
+owner = "schematic"
+deliverable = "USB-C connector, CC pull-downs, ESD protection, D+/D- routing constraints."
+
+[[modules]]
+name = "power"
+status = "required"
+owner = "schematic"
+deliverable = "12 V input protection, 5 V buck, 3.3 V regulator, rail indicators."
+
+[[modules]]
+name = "heater_drive"
+status = "required"
+owner = "schematic"
+deliverable = "External heater connector, MOSFET, gate driver, flyback/TVS protection, fuse or current limit."
+
+[[modules]]
+name = "temperature_sense"
+status = "required"
+owner = "schematic"
+deliverable = "Thermistor divider and ADC input with test point."
+
+[[modules]]
+name = "optical_detection"
+status = "required"
+owner = "schematic"
+deliverable = "Eight 460 nm LEDs, eight photodiodes, load resistors, mux, ADC."
+
+[[modules]]
+name = "firmware_debug"
+status = "required"
+owner = "schematic"
+deliverable = "UART/JTAG header and stable firmware pin map."
+
+[[modules]]
+name = "manufacturing_test"
+status = "required"
+owner = "layout"
+deliverable = "Board-edge or accessible test points for power, programming, heater, analog, and I2C."
+
+[[rails]]
+name = "+12V_RAW"
+nominal_voltage_v = 12.0
+max_current_ma = 3500
+source = "barrel_or_locking_input"
+must_have_testpoint = true
+
+[[rails]]
+name = "+5V"
+nominal_voltage_v = 5.0
+max_current_ma = 1200
+source = "buck_from_12v_or_usb_vbus"
+must_have_testpoint = true
+
+[[rails]]
+name = "+3V3"
+nominal_voltage_v = 3.3
+max_current_ma = 700
+source = "regulator_from_5v"
+must_have_testpoint = true
+
+[[rails]]
+name = "HEATER_P"
+nominal_voltage_v = 12.0
+max_current_ma = 3000
+source = "switched_external_heater_output"
+must_have_testpoint = true
+
+[[nets]]
+name = "GND"
+class = "Ground"
+min_track_width_mm = 0.30
+must_have_testpoint = true
+
+[[nets]]
+name = "+12V_RAW"
+class = "Power"
+min_track_width_mm = 1.20
+must_have_testpoint = true
+
+[[nets]]
+name = "+12V"
+class = "Power"
+min_track_width_mm = 1.00
+must_have_testpoint = false
+
+[[nets]]
+name = "+5V"
+class = "Power"
+min_track_width_mm = 0.50
+must_have_testpoint = true
+
+[[nets]]
+name = "+3V3"
+class = "Power"
+min_track_width_mm = 0.30
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER_P"
+class = "Heater"
+min_track_width_mm = 1.50
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER_PWM"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "MOSFET_GATE"
+class = "Digital"
+min_track_width_mm = 0.25
+must_have_testpoint = false
+
+[[nets]]
+name = "GATE_DRV"
+class = "Digital"
+min_track_width_mm = 0.25
+must_have_testpoint = false
+
+[[nets]]
+name = "SDA"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "SCL"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "ADC_AIN1"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "MUX_COM"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "MUX_S0"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "MUX_S1"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "MUX_S2"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "USB_DP"
+class = "USB"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "USB_DN"
+class = "USB"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "USB_CC1"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "USB_CC2"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "VBUS"
+class = "Power"
+min_track_width_mm = 0.50
+must_have_testpoint = true
+
+[[nets]]
+name = "ESP_EN"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "ESP_GPIO0"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "UART_TX"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "UART_RX"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "ESP_GPIO_ACT"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "LED_PWR_ANODE"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "LED_ACT_ANODE"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[net_groups]]
+prefix = "LED_BASE_"
+count = 8
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[net_groups]]
+prefix = "LED_COL_"
+count = 8
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[net_groups]]
+prefix = "LED_CATH_"
+count = 8
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[net_groups]]
+prefix = "MUX_Y"
+count = 8
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[gpio_map]]
+esp32_module_pin = 13
+net = "USB_DN"
+function = "USB D-"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 14
+net = "USB_DP"
+function = "USB D+"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 15
+net = "HEATER_PWM"
+function = "heater gate PWM"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 16
+net = "SDA"
+function = "I2C data"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 17
+net = "SCL"
+function = "I2C clock"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 18
+net = "MUX_S0"
+function = "optical mux select bit 0"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 19
+net = "MUX_S1"
+function = "optical mux select bit 1"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 20
+net = "MUX_S2"
+function = "optical mux select bit 2"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 21
+net = "LED_BASE_0"
+function = "slot 0 LED drive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 22
+net = "LED_BASE_1"
+function = "slot 1 LED drive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 23
+net = "LED_BASE_2"
+function = "slot 2 LED drive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 24
+net = "LED_BASE_3"
+function = "slot 3 LED drive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 25
+net = "LED_BASE_4"
+function = "slot 4 LED drive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 26
+net = "LED_BASE_5"
+function = "slot 5 LED drive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 27
+net = "ESP_GPIO0"
+function = "boot strap"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 28
+net = "LED_BASE_7"
+function = "slot 7 LED drive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 30
+net = "LED_BASE_6"
+function = "slot 6 LED drive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 35
+net = "ESP_GPIO_ACT"
+function = "activity LED"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 36
+net = "UART_RX"
+function = "UART receive"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 37
+net = "UART_TX"
+function = "UART transmit"
+locked = true
+
+[[test_points]]
+name = "TP_GND"
+net = "GND"
+purpose = "common measurement return"
+
+[[test_points]]
+name = "TP_12V"
+net = "+12V_RAW"
+purpose = "input rail verification"
+
+[[test_points]]
+name = "TP_5V"
+net = "+5V"
+purpose = "buck output verification"
+
+[[test_points]]
+name = "TP_3V3"
+net = "+3V3"
+purpose = "logic rail verification"
+
+[[test_points]]
+name = "TP_HEATER"
+net = "HEATER_P"
+purpose = "heater output verification under load"
+
+[[test_points]]
+name = "TP_PWM"
+net = "HEATER_PWM"
+purpose = "firmware heater PWM verification"
+
+[[test_points]]
+name = "TP_ADC"
+net = "ADC_AIN1"
+purpose = "thermistor ADC verification"
+
+[[test_points]]
+name = "TP_MUX"
+net = "MUX_COM"
+purpose = "optical mux output verification"
+
+[[test_points]]
+name = "TP_SDA"
+net = "SDA"
+purpose = "I2C bus debug"
+
+[[test_points]]
+name = "TP_SCL"
+net = "SCL"
+purpose = "I2C bus debug"
+
+[[test_points]]
+name = "TP_EN"
+net = "ESP_EN"
+purpose = "reset circuit debug"
+
+[[test_points]]
+name = "TP_BOOT"
+net = "ESP_GPIO0"
+purpose = "boot strap debug"
+
+[[test_points]]
+name = "TP_TX"
+net = "UART_TX"
+purpose = "UART programming debug"
+
+[[test_points]]
+name = "TP_RX"
+net = "UART_RX"
+purpose = "UART programming debug"
+
+[[test_points]]
+name = "TP_VBUS"
+net = "VBUS"
+purpose = "USB input rail verification"
+
+[verification]
+required_gates = [
+  "contract_check",
+  "kicad_erc",
+  "kicad_drc",
+  "schematic_pcb_parity",
+  "bom_jlcpcb_fields",
+  "cpl_jlcpcb_fields",
+  "gerber_drill_export",
+  "step_export",
+  "pre_fab_human_review"
+]
+autorouter_policy = "Autorouting may be used only as a diagnostic after placement; final acceptance is KiCad DRC plus manual review."
+simulation_policy = "Use SPICE for power/analog subcircuits, IPC/current calculators for copper sizing, and STEP enclosure interference checks before fabrication."
+
+[manufacturing]
+target_vendor = "JLCPCB"
+assembly_side = "top"
+requires_bom_lcsc = true
+requires_cpl = true
+requires_gerbers = true
+requires_drills = true
+requires_drc_clean = true
+license_marking = "CERN-OHL-S v2"

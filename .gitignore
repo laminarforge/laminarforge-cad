@@ -94,6 +94,7 @@ Cargo.lock
 
 # CAD output
 /output
+*.kicad_prl
 
 # Test artifacts
 /test_clone_check
