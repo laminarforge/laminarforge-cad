@@ -772,16 +772,16 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  ***  MONOLITHIC DESIGN -- No separate chip, no O-rings, no clamping  ***\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Drawing Rev:    A (initial release)\n");
     d.push_str("  Date:           2026-02-28\n");
     d.push_str("  Units:          millimeters (mm)\n");
     d.push_str("  Origin:         Geometric center of board\n");
     d.push_str("  Coordinate:     X = long axis, Y = short axis, Z = thickness axis\n");
     d.push_str("  Tolerances:     See Section 9\n");
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 1: Overall Dimensions
     d.push_str(
@@ -791,7 +791,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  PART 1 -- MAIN BOARD (all features milled into top face)\n");
     d.push_str(&format!("    Length (X):     {:.0} mm\n", length));
     d.push_str(&format!("    Width  (Y):     {:.0} mm\n", width));
@@ -801,7 +801,7 @@ fn main() {
     d.push_str(
         "    Features:       Chambers, channels, bus, manifold, through-holes -- all on top face\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  PART 2 -- COVER PLATE\n");
     d.push_str(&format!("    Length (X):     {:.0} mm\n", length));
     d.push_str(&format!(
@@ -814,7 +814,7 @@ fn main() {
     d.push_str(
         "    Features:       4 alignment pin through-holes + 4 sensor PCB mounting through-holes\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  ASSEMBLY:\n");
     d.push_str("    1. CNC mill main board (all features on top face)\n");
     d.push_str(
@@ -840,14 +840,14 @@ fn main() {
         "    Total assembled thickness: {:.1} mm (board + cover, excludes sensor PCB)\n",
         thickness + cover_thickness
     ));
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  KEY DIFFERENCE FROM OLD DESIGN:\n");
     d.push_str("    This monolithic board replaces both the 16-chamber chip (127.76x85.48x3mm)\n");
     d.push_str("    and the FCB (180x140x6mm, two plates). Chambers, inlet/outlet channels,\n");
     d.push_str("    bus, distribution, valves, and collection are all on ONE plate.\n");
     d.push_str("    Eliminated: O-ring grooves, chip interface through-holes, mounting holes,\n");
     d.push_str("    clamp plate, separate chip. Through-holes reduced from 76 to 38.\n");
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 2: Chamber Layout
     d.push_str(
@@ -857,7 +857,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Grid:           4 columns (X) x 4 rows (Y)\n");
     d.push_str(&format!(
         "  Column spacing: {:.2} mm center-to-center\n",
@@ -867,10 +867,10 @@ fn main() {
         "  Row spacing:    {:.2} mm center-to-center\n",
         row_spacing
     ));
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Column X centers:  -37.50, -12.50, +12.50, +37.50 mm\n");
     d.push_str("  Row Y centers:     +27.00, +9.00, -9.00, -27.00 mm\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Chamber dimensions (each identical):\n");
     d.push_str(&format!("    Width  (X):     {:.2} mm\n", chamber_w));
     d.push_str(&format!("    Length (Y):    {:.2} mm\n", chamber_l));
@@ -879,9 +879,9 @@ fn main() {
         chamber_d
     ));
     d.push_str("    Corner radius:  0.50 mm minimum (natural end mill radius)\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Chamber center coordinates:\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("    Ch  | Row | Col |   X (mm)  |   Y (mm)\n");
     d.push_str("    ----+-----+-----+-----------+-----------\n");
     for ri in 0..num_rows {
@@ -897,7 +897,7 @@ fn main() {
             ));
         }
     }
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 3: Chamber Allocation Table
     d.push_str(
@@ -907,7 +907,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("    Ch  | Row | Col | Cell Type / Purpose\n");
     d.push_str("    ----+-----+-----+----------------------------------------------\n");
     for (i, label) in CHAMBER_LABELS.iter().enumerate() {
@@ -921,13 +921,13 @@ fn main() {
             label
         ));
     }
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Purpose: Expose all 16 chambers simultaneously to the same AAV library\n");
     d.push_str("  to assess which serotype variants preferentially transduce each cell type.\n");
     d.push_str(
         "  DRG sensory neurons are the primary target; all others are off-target tissues.\n",
     );
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 4: Channel Dimensions
     d.push_str(
@@ -937,10 +937,10 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  All channels milled into top face of main board only.\n");
     d.push_str("  Sealed by bonding cover plate on top.\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Channel Type               Width (mm)   Depth (mm)   Notes\n");
     d.push_str(
         "  -------------------------  ----------   ----------   -------------------------\n",
@@ -978,7 +978,7 @@ fn main() {
         "  Output feed channels         {:.1}          {:.1}         Collector to output port\n",
         out_w, out_d
     ));
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Inlet channels (16 total):\n");
     d.push_str(&format!(
         "    Width: {:.2} mm, Depth: {:.2} mm, Length: {:.2} mm\n",
@@ -988,7 +988,7 @@ fn main() {
     d.push_str(
         "    Connects DIRECTLY to distribution channel (channel junction, no through-hole)\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Outlet channels (16 total):\n");
     d.push_str(&format!(
         "    Width: {:.2} mm, Depth: {:.2} mm, Length: {:.2} mm\n",
@@ -998,7 +998,7 @@ fn main() {
     d.push_str(
         "    Connects DIRECTLY to outlet collection channel (channel junction, no through-hole)\n",
     );
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 5: Through-Hole Coordinates
     d.push_str(
@@ -1008,13 +1008,13 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str(&format!(
         "  All through-holes: {:.2} mm diameter, full thickness ({:.1} mm)\n",
         port_dia, thickness
     ));
     d.push_str("  Compatible with 1/16\" OD barb fittings\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  INPUT PORTS (4, left edge):\n");
     d.push_str("    Port  |  Label   |    X (mm)   |    Y (mm)\n");
     d.push_str("    ------+----------+-------------+-------------\n");
@@ -1027,7 +1027,7 @@ fn main() {
             iy
         ));
     }
-    d.push_str("\n");
+    d.push('\n');
 
     d.push_str("  OUTPUT PORTS (2, right edge):\n");
     d.push_str("    Port  |  Label   |    X (mm)   |    Y (mm)\n");
@@ -1041,27 +1041,27 @@ fn main() {
             oy
         ));
     }
-    d.push_str("\n");
+    d.push('\n');
 
     d.push_str("  VALVE PORTS (32: 16 OUT + 16 RETURN, bottom edge):\n");
     d.push_str(&format!("    All valve ports at Y = {:.1} mm\n", valve_y));
     d.push_str("    Ch  | Col | Row |   OUT X   | RETURN X\n");
     d.push_str("    ----+-----+-----+-----------+-----------\n");
-    for (_i, vp) in valve_ports.iter().enumerate() {
+    for vp in &valve_ports {
         let ch_num = vp.row * num_cols + vp.col + 1; // actual chamber number (row-first)
         d.push_str(&format!(
             "    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}\n",
             ch_num, vp.col, vp.row, vp.out_x, vp.ret_x
         ));
     }
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  TOTAL THROUGH-HOLES: 38\n");
     d.push_str("    Input ports:         4\n");
     d.push_str("    Output ports:        2\n");
     d.push_str("    Valve ports:         32 (16 OUT + 16 RETURN)\n");
     d.push_str("    Chip interface:      0 (ELIMINATED -- chambers are on-board)\n");
     d.push_str("    Mounting holes:      0 (ELIMINATED -- no clamping needed)\n");
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 6: Bus and Manifold Layout
     d.push_str(
@@ -1071,7 +1071,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str(&format!("  SHARED BUS CHANNEL:\n"));
     d.push_str(&format!("    Horizontal at Y = {:.1} mm\n", bus_y));
     d.push_str(&format!(
@@ -1082,7 +1082,7 @@ fn main() {
         "    Dimensions: {:.1}mm W x {:.1}mm D\n",
         bus_w, bus_d
     ));
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Input feed channels (4 vertical, input port to bus):\n");
     for (i, &iy) in input_ys.iter().enumerate() {
         d.push_str(&format!(
@@ -1095,7 +1095,7 @@ fn main() {
             (iy - bus_y).abs()
         ));
     }
-    d.push_str("\n");
+    d.push('\n');
     d.push_str(&format!("  COLLECTOR MANIFOLD:\n"));
     d.push_str(&format!("    Horizontal at Y = {:.1} mm\n", collector_y));
     d.push_str(&format!(
@@ -1106,7 +1106,7 @@ fn main() {
         "    Dimensions: {:.1}mm W x {:.1}mm D\n",
         out_w, out_d
     ));
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Output feed channels (2 vertical, collector to output ports):\n");
     for (i, &oy) in output_ys.iter().enumerate() {
         d.push_str(&format!(
@@ -1119,7 +1119,7 @@ fn main() {
             (collector_y - oy).abs()
         ));
     }
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 7: Distribution Routing
     d.push_str(
@@ -1129,7 +1129,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  DISTRIBUTION PATH (per chamber):\n");
     d.push_str("    1. Bus tap: horizontal at bus_y from bus to distribution X offset\n");
     d.push_str("    2. Segment A: vertical from bus_y down to valve OUT port\n");
@@ -1138,24 +1138,24 @@ fn main() {
     d.push_str("    5. Horizontal connector at inlet_endpoint_y (CHANNEL JUNCTION)\n");
     d.push_str("       --> connects distribution channel directly to chamber inlet channel\n");
     d.push_str("       --> NO through-hole interface (monolithic design)\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Distribution X offsets (within each column, to avoid crossing):\n");
     d.push_str("    Row 3 channel: col_x - 7.5 mm\n");
     d.push_str("    Row 2 channel: col_x - 2.5 mm\n");
     d.push_str("    Row 1 channel: col_x + 2.5 mm\n");
     d.push_str("    Row 0 channel: col_x + 7.5 mm\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  OUTLET ROUTING (per chamber):\n");
     d.push_str("    1. Horizontal connector at outlet_endpoint_y (CHANNEL JUNCTION)\n");
     d.push_str("       --> connects chamber outlet channel directly to outlet routing\n");
     d.push_str("    2. Vertical from outlet_endpoint_y up to collector manifold at Y = +47\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Outlet X offsets (within each column, to avoid crossing):\n");
     d.push_str("    Row 0: col_x - 1.5 mm\n");
     d.push_str("    Row 1: col_x - 0.5 mm\n");
     d.push_str("    Row 2: col_x + 0.5 mm\n");
     d.push_str("    Row 3: col_x + 1.5 mm\n");
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 8: Alignment Pin Positions
     d.push_str(
@@ -1165,7 +1165,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  4 alignment pin holes for cover plate registration.\n");
     d.push_str("  Bottom 2 at Y = -64 (6mm from board bottom edge).\n");
     d.push_str(
@@ -1174,7 +1174,7 @@ fn main() {
     d.push_str(
         "  NOTE: Top holes moved inward from board corners to accommodate 12mm connector strip.\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str(&format!("  Hole diameter:  {:.2} mm\n", align_dia));
     d.push_str(&format!(
         "  Hole depth:     {:.2} mm (blind hole, from top face only)\n",
@@ -1182,9 +1182,9 @@ fn main() {
     ));
     d.push_str("  Inset:          6.00 mm from nearest edge (board edge for bottom, cover plate edge for top)\n");
     d.push_str("  Pin material:   1.00 mm dia stainless steel dowel pins\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Alignment hole coordinates (X, Y from board center):\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("    Align |    X (mm)   |    Y (mm)\n");
     d.push_str("    ------+-------------+-------------\n");
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
@@ -1195,7 +1195,7 @@ fn main() {
             ay
         ));
     }
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 9: Tolerances
     d.push_str(
@@ -1205,7 +1205,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Dimension                       Tolerance       Notes\n");
     d.push_str("  ----------------------------    -----------     -------------------------\n");
     d.push_str("  Board length / width            +/- 0.10 mm     CNC edge profile\n");
@@ -1223,7 +1223,7 @@ fn main() {
     d.push_str("  Chamber center-to-center        +/- 0.10 mm     Grid accuracy\n");
     d.push_str("  Surface roughness (pockets)     Ra < 0.4 um     Optical clarity req'd\n");
     d.push_str("  Surface roughness (top face)    Ra < 0.2 um     Bonding surface\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  CRITICAL DIMENSIONS:\n");
     d.push_str("  - Chamber depth (200 um +/- 25 um): Directly affects cell culture volume\n");
     d.push_str("    and shear stress. Must be uniform across all 16 chambers.\n");
@@ -1232,7 +1232,7 @@ fn main() {
     d.push_str("  - Mating surface flatness: < 5 um across full 180x140mm board.\n");
     d.push_str("  - Channel junctions must be continuous with no step or ridge between\n");
     d.push_str("    connecting channels of the same depth.\n");
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 10: Material Specification
     d.push_str(
@@ -1242,7 +1242,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Material:       Cast PMMA (polymethyl methacrylate), also known as acrylic\n");
     d.push_str("  Grade:          Cell culture grade, optically clear\n");
     d.push_str("  Suppliers:      McMaster-Carr 8589K11, Goodfellow AC341300, or equivalent\n");
@@ -1251,10 +1251,10 @@ fn main() {
     d.push_str("    - Optically clear -- required for fluorescence microscopy\n");
     d.push_str("    - Biocompatible -- no cytotoxic additives\n");
     d.push_str("    - UV transmissive if UV sterilization is planned\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Main board stock:  3.0 mm thick cast PMMA sheet\n");
     d.push_str("  Cover plate stock: 1.0 mm thick cast PMMA sheet\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Bonding method:  Chloroform vapor-assisted thermal bonding\n");
     d.push_str("    - Expose mating surfaces to chloroform vapor for exactly 30 seconds\n");
     d.push_str("    - Immediately press cover plate onto board, apply uniform pressure\n");
@@ -1266,7 +1266,7 @@ fn main() {
     d.push_str("    - DO NOT exceed 30s exposure -- causes channel swelling/distortion\n");
     d.push_str("    - DO NOT use liquid Weld-On 3 -- capillary wicking fills shallow channels\n");
     d.push_str("    - Ref: Ahmed et al., Sci Rep 14:2831 (2024); Ogilvie et al. (2010)\n");
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 11: Machinist Notes
     d.push_str(
@@ -1276,7 +1276,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  End mills required:\n");
     d.push_str(
         "    - 0.5 mm flat end mill -- bus, distribution, inlet/outlet, collection channels\n",
@@ -1285,7 +1285,7 @@ fn main() {
     d.push_str("    - 1.5 mm drill bit -- all 38 port through-holes\n");
     d.push_str("    - 1.0 mm drill bit -- alignment pin holes (blind, 0.5mm deep)\n");
     d.push_str("    - 2.2 mm drill bit -- sensor PCB mounting holes (blind, 1.0mm deep)\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Milling strategy:\n");
     d.push_str("    1. Fixture 3 mm PMMA stock on vacuum table\n");
     d.push_str("    2. Face mill top surface for flatness\n");
@@ -1302,13 +1302,13 @@ fn main() {
     d.push_str("    6b. Drill 4 blind sensor PCB mount holes (2.2 mm dia, 1.0 mm deep)\n");
     d.push_str("    7. Engrave label area (0.1 mm deep)\n");
     d.push_str("    8. Profile cut board outline (180 x 140 mm)\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  Feeds and speeds (cast PMMA):\n");
     d.push_str("    - 0.5 mm end mill: 18,000 RPM, 200 mm/min feed, single pass\n");
     d.push_str("    - 3.0 mm end mill: 12,000 RPM, 500 mm/min feed, single pass\n");
     d.push_str("    - Drilling: 8,000 RPM, 100 mm/min plunge rate\n");
     d.push_str("    - Use air blast or mist coolant (no flood -- swells PMMA)\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  CRITICAL GEOMETRY NOTES:\n");
     d.push_str(
         "    - Inter-row wall: 2.0mm solid PMMA between adjacent rows' channel endpoints.\n",
@@ -1318,14 +1318,14 @@ fn main() {
     d.push_str("    - Outlet collection channels within each column have 0.5mm walls between\n");
     d.push_str("      adjacent 0.5mm-wide channels. Use single-pass 500um end mill. Verify\n");
     d.push_str("      wall integrity under magnification after milling.\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  CAUTION:\n");
     d.push_str("    - PMMA melts easily -- do not let chips reweld to surface\n");
     d.push_str("    - Use sharp, single-flute or O-flute end mills designed for plastics\n");
     d.push_str("    - Deburr all through-holes from both sides\n");
     d.push_str("    - Clean with IPA after machining (no acetone -- dissolves PMMA)\n");
     d.push_str("    - Handle with gloves after cleaning to prevent oil contamination\n");
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 12: Key Difference Callout
     d.push_str(
@@ -1335,7 +1335,7 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  OLD DESIGN (separate chip + FCB):\n");
     d.push_str("    - 16-chamber chip: 127.76mm x 85.48mm x 3mm + 1mm cover = 4mm\n");
     d.push_str("    - FCB: 180mm x 140mm x 6mm (two 3mm plates)\n");
@@ -1344,7 +1344,7 @@ fn main() {
     d.push_str("    - 76 through-holes total (68 ports + 8 mounting)\n");
     d.push_str("    - 3 separate parts to machine and align\n");
     d.push_str("    - Total stack height: ~13mm\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  NEW DESIGN (monolithic board + integrated sensors):\n");
     d.push_str(&format!(
         "    - Main board: {:.0}mm x {:.0}mm x {:.0}mm\n",
@@ -1360,7 +1360,7 @@ fn main() {
         "    - Total stack height: {:.0}mm (board + cover, excl. sensor PCB)\n",
         thickness + cover_thickness
     ));
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  BENEFITS:\n");
     d.push_str("    - 50% fewer through-holes (38 vs 76)\n");
     d.push_str("    - No O-rings (32 eliminated) -- no seal failures\n");
@@ -1369,7 +1369,7 @@ fn main() {
     d.push_str("    - Fewer parts: 2 vs 4 (board + cover vs chip + cover + FCB top + FCB bottom + clamp)\n");
     d.push_str("    - Channel junctions are continuous (no dead volume at port interfaces)\n");
     d.push_str("    - Lower manufacturing cost and faster assembly\n");
-    d.push_str("\n");
+    d.push('\n');
     // Section 13: Electrode Layout
     d.push_str(
         "================================================================================\n",
@@ -1378,30 +1378,30 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  PURPOSE: Measure transepithelial electrical resistance (TEER) and impedance\n");
     d.push_str("  across cell layers in each chamber. Resistance increases as cells grow and\n");
     d.push_str("  form tight junctions; drops when cells die or detach.\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  ELECTRODE MATERIAL: Ti/Au thin film (10nm Ti adhesion layer + 100nm Au)\n");
     d.push_str("  DEPOSITION METHOD: Sputter coating with shadow mask (3D-printed or laser-cut)\n");
     d.push_str("  DEPOSITION TIMING: After CNC milling, BEFORE cover plate bonding\n");
     d.push_str("  NOTE: Gold is unaffected by chloroform vapor bonding step.\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  ELECTRODES PER CHAMBER: 2 (one near inlet end, one near outlet end)\n");
     d.push_str(
         "    Electrode A (inlet):  1.0mm x 2.0mm pad, centered in chamber, 1.5mm from inlet edge\n",
     );
     d.push_str("    Electrode B (outlet): 1.0mm x 2.0mm pad, centered in chamber, 1.5mm from outlet edge\n");
     d.push_str("    Total: 32 electrodes (16 chambers x 2) + 1 common ground = 33 connections\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  ELECTRODE POSITIONS (within each chamber):\n");
     d.push_str("    Chamber dimensions: 3.0mm W (X) x 10.0mm L (Y) x 0.2mm D\n");
     d.push_str("    Electrode A center: chamber_center_X, chamber_center_Y - 3.5mm (inlet side)\n");
     d.push_str(
         "    Electrode B center: chamber_center_X, chamber_center_Y + 3.5mm (outlet side)\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     for ri in 0..num_rows {
         for ci in 0..num_cols {
             let idx = ri * num_cols + ci;
@@ -1419,7 +1419,7 @@ fn main() {
             ));
         }
     }
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  TRACE ROUTING:\n");
     d.push_str(
         "    Traces run on the top (milled) face of the main board, between milled features.\n",
@@ -1431,7 +1431,7 @@ fn main() {
         "    Trace width: 200um (0.2mm). Trace spacing: >= 200um between adjacent traces.\n",
     );
     d.push_str("    Traces are ~100nm thick (flat on surface, do not affect channel geometry).\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  CONNECTOR STRIP (EXPOSED NORTH EDGE):\n");
     d.push_str(&format!(
         "    Location: Y = +{:.0} to +{:.0} (top {:.0}mm of board, not covered by cover plate)\n",
@@ -1443,7 +1443,7 @@ fn main() {
     d.push_str("    Pad dimensions: 1.0mm x 3.0mm each\n");
     d.push_str("    Total connector width: 33mm (centered at X = 0)\n");
     d.push_str("    Compatible with 33-pin, 1.0mm pitch FFC/FPC connector\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  EDGE PAD PINOUT (left to right, X ascending):\n");
     d.push_str("    Pad 1:  GND (common ground)\n");
     for i in 0..16 {
@@ -1464,14 +1464,14 @@ fn main() {
             ci
         ));
     }
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  SHADOW MASK:\n");
     d.push_str("    Material: Kapton film (0.05mm thick) or laser-cut stainless steel\n");
     d.push_str(
         "    Must have cutouts for: 32 electrode pads, 32 traces, 33 edge pads, 1 ground plane\n",
     );
     d.push_str("    Registration: Use same 4 alignment pin holes as cover plate\n");
-    d.push_str("\n");
+    d.push('\n');
 
     // Section 14: Sensor Integration
     d.push_str(
@@ -1481,10 +1481,10 @@ fn main() {
     d.push_str(
         "================================================================================\n",
     );
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  SENSOR PCB: Sits on top of cover plate, aligned with chamber grid.\n");
     d.push_str("  Provides impedance sensing (via gold electrodes) and fluorescence detection.\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  MOUNTING:\n");
     d.push_str("    4 blind holes on main board (M2, 1.0mm deep) with matching cover plate through-holes\n");
     d.push_str("    Positions (X, Y from board center):\n");
@@ -1497,7 +1497,7 @@ fn main() {
         ));
     }
     d.push_str("    Fasteners: M2 nylon screws (non-conductive, biocompatible)\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  IMPEDANCE SENSING:\n");
     d.push_str("    IC: AD5933 impedance network analyzer (~$15, 1kHz-100kHz sweep)\n");
     d.push_str("    Multiplexer: CD74HC4067 16-channel analog MUX (x2 for 32 electrodes)\n");
@@ -1506,7 +1506,7 @@ fn main() {
     );
     d.push_str("    Measurement: AC impedance at multiple frequencies per chamber\n");
     d.push_str("    Read rate: All 16 chambers in < 30 seconds\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  FLUORESCENCE DETECTION:\n");
     d.push_str(
         "    Excitation: 16x blue LEDs (470nm) on sensor PCB bottom face, one per chamber\n",
@@ -1520,19 +1520,19 @@ fn main() {
     d.push_str("    Optical path: LED -> cover plate -> chamber (cells + GFP) -> cover plate -> filter -> photodiode\n");
     d.push_str("    ADC: ADS1115 16-bit ADC (x4 for 16 photodiodes, or MUX + single ADC)\n");
     d.push_str("    NOTE: Both LED and photodiode on SAME side (top), epifluorescence geometry\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  CONTROLLER:\n");
     d.push_str("    MCU: ESP32-S3 (WiFi + BT, I2C for AD5933/ADS1115)\n");
     d.push_str("    Data logging: SD card + WiFi upload\n");
     d.push_str("    Measurement interval: Configurable (default: every 5 minutes)\n");
     d.push_str("    Power: USB-C, 5V\n");
-    d.push_str("\n");
+    d.push('\n');
     d.push_str("  SENSOR PCB DIMENSIONS (approximate):\n");
     d.push_str("    Length (X): ~120mm (covers chamber grid + margins)\n");
     d.push_str("    Width (Y): ~90mm (covers chamber grid + FFC connector)\n");
     d.push_str("    Top face: ESP32, AD5933, MUX ICs, ADS1115, FFC connector, USB-C, SD slot\n");
     d.push_str("    Bottom face: 16 blue LEDs + 16 OPT101P photodiodes (aligned with chambers)\n");
-    d.push_str("\n");
+    d.push('\n');
 
     d.push_str(
         "================================================================================\n",
@@ -1554,13 +1554,13 @@ fn main() {
     s.push_str("║  Monolithic 16-Chamber Microfluidic Board                               ║\n");
     s.push_str("║  LaminarForge Nonprofit — laminarforge.org                              ║\n");
     s.push_str("╚══════════════════════════════════════════════════════════════════════════╝\n");
-    s.push_str("\n");
+    s.push('\n');
     s.push_str("FILES INCLUDED:\n");
     s.push_str("  monolithic_board_16ch.step        ← PRIMARY (3D main board)\n");
     s.push_str("  monolithic_board_16ch_cover.step  ← PRIMARY (3D cover plate)\n");
     s.push_str("  monolithic_board_16ch_top.dxf     ← 2D top-face reference\n");
     s.push_str("  monolithic_board_16ch_drawing.txt ← Full technical drawing with coordinates\n");
-    s.push_str("\n");
+    s.push('\n');
 
     // ── PART 1 ──
     s.push_str("═══════════════════════════════════════════════════\n");
@@ -1573,10 +1573,10 @@ fn main() {
     s.push_str("  Material:    Cast PMMA (acrylic), optically clear\n");
     s.push_str("               McMaster 8560K265 or equiv. (extruded OK if Ra < 0.4um)\n");
     s.push_str("  Qty:         1\n");
-    s.push_str("\n");
+    s.push('\n');
     s.push_str("  CRITICAL: All features milled into TOP FACE ONLY.\n");
     s.push_str("  Board is flat-bottomed. No features on bottom or edges.\n");
-    s.push_str("\n");
+    s.push('\n');
 
     s.push_str("FEATURE TABLE:\n");
     s.push_str(
@@ -1634,7 +1634,7 @@ fn main() {
     s.push_str(
         "  └──────────────────────────┴────────┴────────┴────────┴──────────┴──────────────┘\n",
     );
-    s.push_str("\n");
+    s.push('\n');
 
     s.push_str("TOLERANCES:\n");
     s.push_str("  Channel width:     ±0.05mm  (critical for flow control)\n");
@@ -1643,7 +1643,7 @@ fn main() {
     s.push_str("  Through-hole pos:  ±0.10mm\n");
     s.push_str("  Chamber flatness:  ≤0.01mm  (bonding surface must be flat)\n");
     s.push_str("  Overall dims:      ±0.10mm\n");
-    s.push_str("\n");
+    s.push('\n');
 
     s.push_str("SURFACE FINISH:\n");
     s.push_str("  Top face (milled): Ra ≤ 0.4um (optical polish preferred)\n");
@@ -1651,7 +1651,7 @@ fn main() {
     s.push_str("  Bottom face:       As-received (not machined)\n");
     s.push_str("  NOTE: Part will be solvent-bonded to a cover plate.\n");
     s.push_str("         Top surface quality directly affects bond integrity.\n");
-    s.push_str("\n");
+    s.push('\n');
 
     s.push_str("MACHINING NOTES:\n");
     s.push_str("  • Use single-flute O-flute end mills for PMMA (no chipping)\n");
@@ -1663,7 +1663,7 @@ fn main() {
     s.push_str("  • Deburr all through-holes from bottom side\n");
     s.push_str("  • DO NOT use climb milling on thin walls between channels\n");
     s.push_str("  • Clean with IPA after machining (remove chips from channels)\n");
-    s.push_str("\n");
+    s.push('\n');
 
     // ── PART 2 ──
     s.push_str("═══════════════════════════════════════════════════\n");
@@ -1675,7 +1675,7 @@ fn main() {
     ));
     s.push_str("  Material:    Cast PMMA (acrylic), optically clear (SAME material as Part 1)\n");
     s.push_str("  Qty:         1\n");
-    s.push_str("\n");
+    s.push('\n');
     s.push_str("FEATURE TABLE:\n");
     s.push_str(&format!(
         "  Alignment through-holes:   4x ø{:.1}mm, THRU\n",
@@ -1686,11 +1686,11 @@ fn main() {
         sensor_mount_dia
     ));
     s.push_str("  All other surfaces: flat, no features\n");
-    s.push_str("\n");
+    s.push('\n');
     s.push_str("  NOTE: Cover plate holes MUST align with Part 1 blind holes.\n");
     s.push_str("        See STEP file for exact positions.\n");
     s.push_str("        Both faces must be optically smooth (Ra ≤ 0.2um).\n");
-    s.push_str("\n");
+    s.push('\n');
 
     // ── INSPECTION ──
     s.push_str("═══════════════════════════════════════════════════\n");
@@ -1701,7 +1701,7 @@ fn main() {
     s.push_str("  3. Verify top-face flatness (bonding surface)\n");
     s.push_str("  4. Visual inspection: no cracks, chips, or crazing on milled surfaces\n");
     s.push_str("  5. Cover plate alignment: dry-fit with alignment pins before shipping\n");
-    s.push_str("\n");
+    s.push('\n');
 
     s.push_str("═══════════════════════════════════════════════════\n");
     s.push_str("CONTACT\n");
@@ -1818,7 +1818,7 @@ fn main() {
     println!("  VALVE PORTS (Y = {valve_y:.0}):");
     println!("    Ch  | Col | Row |   OUT X   | RETURN X");
     println!("    ----+-----+-----+-----------+-----------");
-    for (_i, vp) in valve_ports.iter().enumerate() {
+    for vp in &valve_ports {
         let ch_num = vp.row * num_cols + vp.col + 1; // actual chamber number (row-first)
         println!(
             "    {:2}  |  {}  |  {}  |  {:+7.2}  |  {:+7.2}",
