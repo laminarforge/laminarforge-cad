@@ -136,7 +136,7 @@ fn outer_body() -> Part {
     for &(sx, sy) in &[(1.0_f64, 1.0_f64), (1.0, -1.0), (-1.0, 1.0), (-1.0, -1.0)] {
         let si = (sx as i32, sy as i32);
         let corner_sq = centered_cube(
-            &format!("cr_sq_{}_{}", si.0, si.1),
+            format!("cr_sq_{}_{}", si.0, si.1),
             CORNER_R,
             CORNER_R,
             through,
@@ -147,7 +147,7 @@ fn outer_body() -> Part {
             0.0,
         );
         let corner_cyl =
-            centered_cylinder(&format!("cr_cyl_{}_{}", si.0, si.1), CORNER_R, through, 32)
+            centered_cylinder(format!("cr_cyl_{}_{}", si.0, si.1), CORNER_R, through, 32)
                 .translate(sx * (half_l - CORNER_R), sy * (half_w - CORNER_R), 0.0);
         plate = plate - (corner_sq - corner_cyl);
     }
@@ -164,13 +164,8 @@ fn outer_body() -> Part {
     {
         let ax = sx * (half_l - ALIGN_INSET);
         let ay = sy * (half_w - ALIGN_INSET);
-        let hole = centered_cylinder(
-            &format!("align_{i}"),
-            ALIGN_DIAMETER / 2.0,
-            align_tool_h,
-            24,
-        )
-        .translate(ax, ay, align_z);
+        let hole = centered_cylinder(format!("align_{i}"), ALIGN_DIAMETER / 2.0, align_tool_h, 24)
+            .translate(ax, ay, align_z);
         plate = plate - hole;
     }
 
@@ -182,7 +177,7 @@ fn outer_body() -> Part {
     {
         let mx = sx * (half_l - MOUNT_INSET);
         let my = sy * (half_w - MOUNT_INSET);
-        let hole = centered_cylinder(&format!("mount_{i}"), MOUNT_DIAMETER / 2.0, through_h, 32)
+        let hole = centered_cylinder(format!("mount_{i}"), MOUNT_DIAMETER / 2.0, through_h, 32)
             .translate(mx, my, 0.0);
         plate = plate - hole;
     }
@@ -208,7 +203,7 @@ fn subtract_wells(mut plate: Part) -> Part {
                 let dx = (k as f64 - (WELLS_PER_SIDE as f64 - 1.0) / 2.0) * WELL_PITCH;
                 let well_x = cx + dx;
                 let well = centered_cylinder(
-                    &format!("inlet_well_c{chamber_id}_{k}"),
+                    format!("inlet_well_c{chamber_id}_{k}"),
                     WELL_DIAMETER / 2.0,
                     well_tool_h,
                     32,
@@ -221,7 +216,7 @@ fn subtract_wells(mut plate: Part) -> Part {
                 let dx = (k as f64 - (WELLS_PER_SIDE as f64 - 1.0) / 2.0) * WELL_PITCH;
                 let well_x = cx + dx;
                 let well = centered_cylinder(
-                    &format!("outlet_well_c{chamber_id}_{k}"),
+                    format!("outlet_well_c{chamber_id}_{k}"),
                     WELL_DIAMETER / 2.0,
                     well_tool_h,
                     32,
@@ -250,7 +245,7 @@ fn subtract_vias(mut plate: Part) -> Part {
                 let dx = (k as f64 - (WELLS_PER_SIDE as f64 - 1.0) / 2.0) * WELL_PITCH;
                 let x = cx + dx;
                 let via_in = centered_cylinder(
-                    &format!("via_in_c{chamber_id}_{k}"),
+                    format!("via_in_c{chamber_id}_{k}"),
                     VIA_DIAMETER / 2.0,
                     via_tool_h,
                     24,
@@ -258,7 +253,7 @@ fn subtract_vias(mut plate: Part) -> Part {
                 .translate(x, inlet_y, via_z);
                 plate = plate - via_in;
                 let via_out = centered_cylinder(
-                    &format!("via_out_c{chamber_id}_{k}"),
+                    format!("via_out_c{chamber_id}_{k}"),
                     VIA_DIAMETER / 2.0,
                     via_tool_h,
                     24,
@@ -285,7 +280,7 @@ fn subtract_channels_and_chambers(mut plate: Part) -> Part {
 
             // Chamber pocket
             let chamber = centered_cube(
-                &format!("chamber_{chamber_id}"),
+                format!("chamber_{chamber_id}"),
                 CHAMBER_WIDTH,
                 CHAMBER_LENGTH,
                 chamber_tool_h,
@@ -313,7 +308,7 @@ fn subtract_channels_and_chambers(mut plate: Part) -> Part {
                 let tool_h = depth + 0.2;
                 let z = chip_bot + depth / 2.0 - 0.1;
                 let ch = centered_cube(
-                    &format!("inlet_ch_c{chamber_id}_{k}"),
+                    format!("inlet_ch_c{chamber_id}_{k}"),
                     CHANNEL_WIDTH,
                     ch_in_len,
                     tool_h,
@@ -338,7 +333,7 @@ fn subtract_channels_and_chambers(mut plate: Part) -> Part {
                 let tool_h = depth + 0.2;
                 let z = chip_bot + depth / 2.0 - 0.1;
                 let ch = centered_cube(
-                    &format!("outlet_ch_c{chamber_id}_{k}"),
+                    format!("outlet_ch_c{chamber_id}_{k}"),
                     CHANNEL_WIDTH,
                     ch_out_len,
                     tool_h,
@@ -395,7 +390,7 @@ fn subtract_teer_electrodes(mut plate: Part) -> Part {
             let top_pad_y1 = cy + CHAMBER_LENGTH / 4.0;
             for (j, py) in [top_pad_y0, top_pad_y1].iter().enumerate() {
                 let pocket = centered_cube(
-                    &format!("teer_top_c{chamber_id}_{j}"),
+                    format!("teer_top_c{chamber_id}_{j}"),
                     TEER_PAD_W,
                     TEER_PAD_L,
                     pocket_tool_h,
@@ -407,7 +402,7 @@ fn subtract_teer_electrodes(mut plate: Part) -> Part {
             // Two BOTTOM (glass-side) electrode pockets
             for (j, py) in [top_pad_y0, top_pad_y1].iter().enumerate() {
                 let pocket = centered_cube(
-                    &format!("teer_bot_c{chamber_id}_{j}"),
+                    format!("teer_bot_c{chamber_id}_{j}"),
                     TEER_PAD_W,
                     TEER_PAD_L,
                     pocket_tool_h,
@@ -427,7 +422,7 @@ fn subtract_teer_electrodes(mut plate: Part) -> Part {
             for (j, py) in [top_pad_y0, top_pad_y1].iter().enumerate() {
                 // Bottom-face trace (connects glass electrode to edge pad)
                 let trace = centered_cube(
-                    &format!("teer_trace_c{chamber_id}_{j}"),
+                    format!("teer_trace_c{chamber_id}_{j}"),
                     trace_len_x,
                     TEER_TRACE_WIDTH,
                     trace_tool_h,
@@ -444,7 +439,7 @@ fn subtract_teer_electrodes(mut plate: Part) -> Part {
                 let py_lo = py_base - EDGE_PAD_PITCH_Y / 2.0;
                 for (k, py) in [py_hi, py_lo].iter().enumerate() {
                     let pad = centered_cube(
-                        &format!("edge_pad_c{chamber_id}_{j}_{k}"),
+                        format!("edge_pad_c{chamber_id}_{j}_{k}"),
                         EDGE_PAD_W,
                         EDGE_PAD_L,
                         EDGE_PAD_POCKET_DEPTH + 0.1,
@@ -478,7 +473,7 @@ fn subtract_thermistor_trace(mut plate: Part) -> Part {
     let pad_x = chip_half_l - EDGE_PAD_INSET_X;
     for (i, py_off) in [-6.0_f64, -2.0, 2.0, 6.0].iter().enumerate() {
         let pad = centered_cube(
-            &format!("rtd_pad_{i}"),
+            format!("rtd_pad_{i}"),
             EDGE_PAD_W,
             EDGE_PAD_L,
             EDGE_PAD_POCKET_DEPTH + 0.1,
@@ -521,13 +516,13 @@ fn subtract_fluidic_vias(mut plate: Part) -> Part {
 
             // Through-hole
             let hole =
-                centered_cylinder(&format!("{tag}_hole"), FLUIDIC_VIA_ID / 2.0, through_h, 32)
+                centered_cylinder(format!("{tag}_hole"), FLUIDIC_VIA_ID / 2.0, through_h, 32)
                     .translate(via_x, via_y, 0.0);
             plate = plate - hole;
 
             // O-ring seat (counterbore on top face)
             let seat = centered_cylinder(
-                &format!("{tag}_seat"),
+                format!("{tag}_seat"),
                 FLUIDIC_VIA_OD_SEAT / 2.0,
                 seat_tool_h,
                 32,
@@ -548,7 +543,7 @@ fn glass_bottom() -> Part {
     for &(sx, sy) in &[(1.0_f64, 1.0_f64), (1.0, -1.0), (-1.0, 1.0), (-1.0, -1.0)] {
         let si = (sx as i32, sy as i32);
         let gsq = centered_cube(
-            &format!("glass_cr_sq_{}_{}", si.0, si.1),
+            format!("glass_cr_sq_{}_{}", si.0, si.1),
             CORNER_R,
             CORNER_R,
             GLASS_THICKNESS + 0.1,
@@ -559,7 +554,7 @@ fn glass_bottom() -> Part {
             0.0,
         );
         let gcyl = centered_cylinder(
-            &format!("glass_cr_cyl_{}_{}", si.0, si.1),
+            format!("glass_cr_cyl_{}_{}", si.0, si.1),
             CORNER_R,
             GLASS_THICKNESS + 0.1,
             32,
