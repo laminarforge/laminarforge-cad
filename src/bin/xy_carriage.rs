@@ -31,8 +31,9 @@ fn main() {
 /// V-wheels in triangular arrangement grip the V-slot rail:
 ///   - 2 fixed wheels on one side
 ///   - 2 eccentric-spacer wheels on the other side (for preload adjustment)
-///   GT2 belt attaches via clamping blocks on the plate.
-///   Vertical mounting holes accept the Z-axis 2040 V-slot extrusion.
+///
+/// GT2 belt attaches via clamping blocks on the plate.
+/// Vertical mounting holes accept the Z-axis 2040 V-slot extrusion.
 fn build_xy_carriage_plate() {
     // ── Plate dimensions ──
     let plate_w = 70.0; // X (along rail travel direction)
