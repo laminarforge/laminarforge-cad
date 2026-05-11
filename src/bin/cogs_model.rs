@@ -265,11 +265,7 @@ fn compute(tier: &Tier, a: &Assumptions) -> Breakdown {
 // ─── Output formatters ────────────────────────────────────────────────────
 
 fn usd(v: f64) -> String {
-    if v.abs() >= 1_000.0 {
-        format!("${:>10.2}", v)
-    } else {
-        format!("${:>10.2}", v)
-    }
+    format!("${:>10.2}", v)
 }
 
 fn print_breakdown(b: &Breakdown) {
@@ -379,7 +375,10 @@ fn print_compare(bs: &[Breakdown]) {
     println!(
         "╠══════════════════════════════════════════════════════════════════════════════════╣"
     );
-    let rows: [(&str, fn(&Breakdown) -> f64); 15] = [
+    type BreakdownMetric = fn(&Breakdown) -> f64;
+    type CompareRow = (&'static str, BreakdownMetric);
+
+    let rows: [CompareRow; 15] = [
         ("Chip unit", |b| b.chip_unit),
         ("Media", |b| b.media_per_chip),
         ("ECM coating", |b| b.ecm_per_chip),
