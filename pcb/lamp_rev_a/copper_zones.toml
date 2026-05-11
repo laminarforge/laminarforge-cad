@@ -1,0 +1,55 @@
+[package]
+name = "lamp_rev_a_copper_zones"
+ticket = "T-23F2CAD8"
+revision = "Rev A"
+source_stage = "routing_seed_drc_clean"
+
+[[zones]]
+name = "front_ground_pour"
+net = "GND"
+layer = "F.Cu"
+clearance_mm = 0.20
+min_thickness_mm = 0.15
+thermal_gap_mm = 0.30
+thermal_bridge_width_mm = 0.30
+
+[[zones.points]]
+x_mm = 0.75
+y_mm = 0.75
+
+[[zones.points]]
+x_mm = 99.25
+y_mm = 0.75
+
+[[zones.points]]
+x_mm = 99.25
+y_mm = 79.25
+
+[[zones.points]]
+x_mm = 0.75
+y_mm = 79.25
+
+[[zones]]
+name = "back_ground_pour"
+net = "GND"
+layer = "B.Cu"
+clearance_mm = 0.20
+min_thickness_mm = 0.15
+thermal_gap_mm = 0.30
+thermal_bridge_width_mm = 0.30
+
+[[zones.points]]
+x_mm = 0.75
+y_mm = 0.75
+
+[[zones.points]]
+x_mm = 99.25
+y_mm = 0.75
+
+[[zones.points]]
+x_mm = 99.25
+y_mm = 79.25
+
+[[zones.points]]
+x_mm = 0.75
+y_mm = 79.25

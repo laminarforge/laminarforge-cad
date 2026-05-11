@@ -2,12 +2,13 @@
 name = "lamp_rev_a_routing"
 ticket = "T-56201F4B"
 revision = "Rev A"
-source_stage = "routing_seed_drc_clean"
+source_stage = "ground_zone_drc_clean"
 
 [current_state]
 physical_drc_violations = 0
-unconnected_items = 73
+unconnected_items = 50
 starter_route_segments = 23
+copper_zones = 2
 source_report = "pcb/lamp_rev_a/reports/drc.json"
 
 [[routing_phases]]

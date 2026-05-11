@@ -17,6 +17,7 @@ workflow.
 - `pin_nets.toml`: conservative footprint pad-to-net assignments for known package pinouts.
 - `routing_plan.toml`: routing phase order, current unrouted count, autorouter policy, and release gates.
 - `routing_seed.toml`: DRC-clean starter traces emitted into the materialized board.
+- `copper_zones.toml`: controlled KiCad copper pours, starting with front/back GND zones.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: materialized KiCad board with the Rev A outline, 4-layer stack, placed footprints, test points, and optical-slot guides.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.
@@ -36,6 +37,7 @@ contract.toml + parts.toml
   -> pin_nets.toml trusted pad assignments
   -> cargo run --release --bin lamp_rev_a_materialize_board
   -> cargo run --release --bin lamp_rev_a_seed_routes_from_drc when reseeding short safe traces
+  -> kicad-cli pcb drc --refill-zones for zone-connected routing checks
   -> KiCad schematic capture in lamp_rev_a.kicad_sch
   -> KiCad ERC
   -> footprint/BOM/JLC field lock
@@ -74,8 +76,9 @@ cargo run --release --bin lamp_rev_a_route_report
 The current schematic is an architecture shell, not a fabrication-ready circuit.
 The checker should not report fab-blocking part-selection gaps. The board now
 materializes all selected parts into KiCad with zero physical DRC violations
-and a DRC-clean starter route seed. The active work is schematic completion,
-routing the 73 remaining ratlines, schematic/PCB parity, and bench validation.
+with a DRC-clean starter route seed and GND copper pours. The active work is
+schematic completion, routing the 50 remaining ratlines, schematic/PCB parity,
+and bench validation.
 
 Current KiCad checks:
 
@@ -83,7 +86,7 @@ Current KiCad checks:
 kicad-cli sch erc pcb/lamp_rev_a/lamp_rev_a.kicad_sch \
   -o pcb/lamp_rev_a/reports/erc.json --format json
 
-kicad-cli pcb drc --format json \
+kicad-cli pcb drc --refill-zones --format json \
   --output pcb/lamp_rev_a/reports/drc.json \
   pcb/lamp_rev_a/lamp_rev_a.kicad_pcb
 ```

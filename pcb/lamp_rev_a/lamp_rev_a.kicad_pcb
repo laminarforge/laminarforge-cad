@@ -17548,4 +17548,42 @@
     (net 10)
     (uuid "00000000-0000-4000-8000-0000000006ce")
   )
+
+  (zone
+    (net 1)
+    (net_name "GND")
+    (layer "F.Cu")
+    (uuid "00000000-0000-4000-8000-0000000006cf")
+    (hatch edge 0.5)
+    (connect_pads yes (clearance 0.200))
+    (min_thickness 0.150)
+    (fill yes (thermal_gap 0.300) (thermal_bridge_width 0.300))
+    (polygon
+      (pts
+        (xy 0.750 0.750)
+        (xy 99.250 0.750)
+        (xy 99.250 79.250)
+        (xy 0.750 79.250)
+      )
+    )
+  )
+
+  (zone
+    (net 1)
+    (net_name "GND")
+    (layer "B.Cu")
+    (uuid "00000000-0000-4000-8000-0000000006d0")
+    (hatch edge 0.5)
+    (connect_pads yes (clearance 0.200))
+    (min_thickness 0.150)
+    (fill yes (thermal_gap 0.300) (thermal_bridge_width 0.300))
+    (polygon
+      (pts
+        (xy 0.750 0.750)
+        (xy 99.250 0.750)
+        (xy 99.250 79.250)
+        (xy 0.750 79.250)
+      )
+    )
+  )
 )

@@ -12,6 +12,7 @@ const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
 const PLACEMENT_PATH: &str = "pcb/lamp_rev_a/placement.toml";
 const PIN_NETS_PATH: &str = "pcb/lamp_rev_a/pin_nets.toml";
 const ROUTING_SEED_PATH: &str = "pcb/lamp_rev_a/routing_seed.toml";
+const COPPER_ZONES_PATH: &str = "pcb/lamp_rev_a/copper_zones.toml";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
 
 #[derive(Debug, Deserialize)]
@@ -148,6 +149,29 @@ struct RouteSegment {
     end_y_mm: f64,
 }
 
+#[derive(Debug, Deserialize)]
+struct CopperZonePlan {
+    zones: Vec<CopperZone>,
+}
+
+#[derive(Debug, Deserialize)]
+struct CopperZone {
+    name: String,
+    net: String,
+    layer: String,
+    clearance_mm: f64,
+    min_thickness_mm: f64,
+    thermal_gap_mm: f64,
+    thermal_bridge_width_mm: f64,
+    points: Vec<CopperZonePoint>,
+}
+
+#[derive(Debug, Deserialize)]
+struct CopperZonePoint {
+    x_mm: f64,
+    y_mm: f64,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let root = std::env::current_dir()?;
     let contract = read_toml::<Contract>(&root.join(CONTRACT_PATH))?;
@@ -155,6 +179,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let placement = read_toml::<PlacementPlan>(&root.join(PLACEMENT_PATH))?;
     let pin_nets = read_toml::<PinNetManifest>(&root.join(PIN_NETS_PATH))?;
     let routing_seed = read_toml::<RoutingSeed>(&root.join(ROUTING_SEED_PATH))?;
+    let copper_zones = read_toml::<CopperZonePlan>(&root.join(COPPER_ZONES_PATH))?;
     let nets = expand_nets(&contract);
 
     let board = render_board(
@@ -164,6 +189,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         &placement,
         &pin_nets,
         &routing_seed,
+        &copper_zones,
         &nets,
     )?;
     fs::write(root.join(BOARD_PATH), board)?;
@@ -175,6 +201,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("  nets: {}", nets.len());
     println!("  assigned pad nets: {}", assigned_pad_count(&pin_nets));
     println!("  starter route segments: {}", routing_seed.segments.len());
+    println!("  copper zones: {}", copper_zones.zones.len());
     Ok(())
 }
 
@@ -204,6 +231,7 @@ fn render_board(
     placement: &PlacementPlan,
     pin_nets: &PinNetManifest,
     routing_seed: &RoutingSeed,
+    copper_zones: &CopperZonePlan,
     nets: &[String],
 ) -> Result<String, Box<dyn Error>> {
     let mut counter = UuidCounter::default();
@@ -249,6 +277,7 @@ fn render_board(
     }
 
     write_route_segments(&mut board, contract, routing_seed, &net_ids, &mut counter)?;
+    write_copper_zones(&mut board, contract, copper_zones, &net_ids, &mut counter)?;
 
     board.push_str(")\n");
     Ok(board)
@@ -576,12 +605,7 @@ fn write_route_segments(
             contract,
             &segment.net,
         )?;
-        validate_board_point(
-            segment.end_x_mm,
-            segment.end_y_mm,
-            contract,
-            &segment.net,
-        )?;
+        validate_board_point(segment.end_x_mm, segment.end_y_mm, contract, &segment.net)?;
         let net_id = *net_ids
             .get(segment.net.as_str())
             .ok_or_else(|| format!("route segment references unknown net {}", segment.net))?;
@@ -593,13 +617,7 @@ fn write_route_segments(
                 net_id,
                 counter,
             )?;
-            write_via(
-                board,
-                segment.end_x_mm,
-                segment.end_y_mm,
-                net_id,
-                counter,
-            )?;
+            write_via(board, segment.end_x_mm, segment.end_y_mm, net_id, counter)?;
         }
         writeln!(
             board,
@@ -631,10 +649,7 @@ fn validate_board_point(
     contract: &Contract,
     net: &str,
 ) -> Result<(), Box<dyn Error>> {
-    if x_mm < 0.0
-        || y_mm < 0.0
-        || x_mm > contract.board.width_mm
-        || y_mm > contract.board.height_mm
+    if x_mm < 0.0 || y_mm < 0.0 || x_mm > contract.board.width_mm || y_mm > contract.board.height_mm
     {
         return Err(format!("route segment for {net} has off-board point {x_mm},{y_mm}").into());
     }
@@ -664,6 +679,87 @@ fn write_via(
         net_id,
         counter.next()
     )?;
+    Ok(())
+}
+
+fn write_copper_zones(
+    board: &mut String,
+    contract: &Contract,
+    copper_zones: &CopperZonePlan,
+    net_ids: &BTreeMap<&str, usize>,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    for zone in &copper_zones.zones {
+        if zone.layer != "F.Cu"
+            && zone.layer != "B.Cu"
+            && zone.layer != "In1.Cu"
+            && zone.layer != "In2.Cu"
+        {
+            return Err(format!(
+                "copper zone {} uses unsupported layer {}",
+                zone.name, zone.layer
+            )
+            .into());
+        }
+        if zone.points.len() < 3 {
+            return Err(format!("copper zone {} needs at least three points", zone.name).into());
+        }
+        if zone.clearance_mm < 0.15 {
+            return Err(
+                format!("copper zone {} clearance is below Rev A minimum", zone.name).into(),
+            );
+        }
+        if zone.min_thickness_mm <= 0.0 {
+            return Err(format!("copper zone {} min thickness must be positive", zone.name).into());
+        }
+        let net_id = *net_ids.get(zone.net.as_str()).ok_or_else(|| {
+            format!(
+                "copper zone {} references unknown net {}",
+                zone.name, zone.net
+            )
+        })?;
+        for point in &zone.points {
+            validate_board_point(point.x_mm, point.y_mm, contract, &zone.net)?;
+        }
+
+        writeln!(
+            board,
+            r#"
+  (zone
+    (net {})
+    (net_name "{}")
+    (layer "{}")
+    (uuid "{}")
+    (hatch edge 0.5)
+    (connect_pads yes (clearance {}))
+    (min_thickness {})
+    (fill yes (thermal_gap {}) (thermal_bridge_width {}))
+    (polygon
+      (pts"#,
+            net_id,
+            escape(&zone.net),
+            escape(&zone.layer),
+            counter.next(),
+            fmt(zone.clearance_mm),
+            fmt(zone.min_thickness_mm),
+            fmt(zone.thermal_gap_mm),
+            fmt(zone.thermal_bridge_width_mm)
+        )?;
+        for point in &zone.points {
+            writeln!(
+                board,
+                r#"        (xy {} {})"#,
+                fmt(point.x_mm),
+                fmt(point.y_mm)
+            )?;
+        }
+        board.push_str(
+            r#"      )
+    )
+  )"#,
+        );
+        board.push('\n');
+    }
     Ok(())
 }
 
