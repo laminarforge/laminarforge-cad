@@ -43,14 +43,14 @@ use vcad::{centered_cylinder, Part};
 fn main() {
     // ── Dimensions (validated against literature A-E5A1E1FD) ──
 
-    let head_length = 18.0; // mm  (literature: 15-20mm, mid-range)
+    let head_length: f64 = 18.0; // mm  (literature: 15-20mm, mid-range)
     let head_tip_diameter = 2.6; // mm  (tapered for genital anatomy)
-    let head_base_diameter = 3.0; // mm  (max, fits 12mm OD collector tube)
+    let head_base_diameter: f64 = 3.0; // mm  (max, fits 12mm OD collector tube)
     let shaft_diameter = 2.0; // mm  (literature: 2.0-2.5mm)
     let total_length = 150.0; // mm  (literature: >=150mm)
     let breakpoint_from_tip = 80.0; // mm  (literature: 70-80mm)
 
-    let unit_cell = 0.8; // mm  (literature: 0.5-1.0mm)
+    let unit_cell: f64 = 0.8; // mm  (literature: 0.5-1.0mm)
     let strut_diameter = 0.3; // mm  (literature: 0.2-0.4mm)
     let strut_radius = strut_diameter / 2.0;
 
@@ -93,9 +93,9 @@ fn main() {
     // ── Build BCC lattice head ──
     // Generate struts within the head envelope, then clip to tapered cone.
 
-    let cells_x = ((head_base_diameter / unit_cell) as f64).ceil() as i32 + 1;
+    let cells_x = (head_base_diameter / unit_cell).ceil() as i32 + 1;
     let cells_y = cells_x;
-    let cells_z = ((head_length / unit_cell) as f64).ceil() as i32;
+    let cells_z = (head_length / unit_cell).ceil() as i32;
 
     let offset_x = -(cells_x as f64 * unit_cell) / 2.0;
     let offset_y = -(cells_y as f64 * unit_cell) / 2.0;
