@@ -10,6 +10,7 @@ const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
 const POWER_ARCHITECTURE_PATH: &str = "pcb/lamp_rev_a/power_architecture.toml";
 const OPTICAL_ARCHITECTURE_PATH: &str = "pcb/lamp_rev_a/optical_architecture.toml";
 const OPTICAL_MODE_PATH: &str = "pcb/lamp_rev_a/optical_mode.md";
+const PLACEMENT_PATH: &str = "pcb/lamp_rev_a/placement.toml";
 const SCHEMATIC_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
 const README_PATH: &str = "pcb/lamp_rev_a/README.md";
@@ -84,6 +85,55 @@ struct OpticalArchitecture {
     package: OpticalArchitecturePackage,
     topology: OpticalTopology,
     rationale: OpticalRationale,
+}
+
+#[derive(Debug, Deserialize)]
+struct PlacementPlan {
+    package: PlacementPackage,
+    placements: Vec<FootprintPlacement>,
+    test_points: Vec<TestPointPlacement>,
+    optical_slots: Vec<OpticalSlotPlacement>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PlacementPackage {
+    name: String,
+    ticket: String,
+    revision: String,
+    source_stage: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct FootprintPlacement {
+    reference: String,
+    part_id: String,
+    zone: String,
+    x_mm: f64,
+    y_mm: f64,
+    rotation_deg: f64,
+    side: String,
+    locked: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct TestPointPlacement {
+    name: String,
+    net: String,
+    x_mm: f64,
+    y_mm: f64,
+    side: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpticalSlotPlacement {
+    slot: u32,
+    x_mm: f64,
+    y_mm: f64,
+    emitter_ref: String,
+    detector_ref: String,
+    driver_ref: String,
+    led_resistor_ref: String,
+    base_resistor_ref: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -288,6 +338,7 @@ fn main() {
     let parts = load_parts(&root.join(PARTS_PATH));
     let power = load_power_architecture(&root.join(POWER_ARCHITECTURE_PATH));
     let optical = load_optical_architecture(&root.join(OPTICAL_ARCHITECTURE_PATH));
+    let placement = load_placement(&root.join(PLACEMENT_PATH));
     let mut errors = Vec::new();
     let mut warnings = Vec::new();
 
@@ -298,6 +349,7 @@ fn main() {
     require_file(&root.join(POWER_ARCHITECTURE_PATH), &mut errors);
     require_file(&root.join(OPTICAL_ARCHITECTURE_PATH), &mut errors);
     require_file(&root.join(OPTICAL_MODE_PATH), &mut errors);
+    require_file(&root.join(PLACEMENT_PATH), &mut errors);
     require_file(&root.join(SCHEMATIC_PATH), &mut errors);
     require_file(&root.join(SYM_LIB_TABLE_PATH), &mut errors);
     require_file(&root.join(FP_LIB_TABLE_PATH), &mut errors);
@@ -314,6 +366,7 @@ fn main() {
     validate_manufacturing(&contract, &mut errors);
     validate_power_architecture(&power, &contract, &parts, &mut errors);
     validate_optical_architecture(&optical, &contract, &parts, &mut errors);
+    validate_placement_plan(&placement, &parts, &contract, &nets, &mut errors);
     validate_schematic_shell(
         &root.join(SCHEMATIC_PATH),
         &parts,
@@ -349,6 +402,8 @@ fn main() {
         println!("  gpio assignments: {}", contract.gpio_map.len());
         println!("  test points: {}", contract.test_points.len());
         println!("  selected part groups: {}", parts.selected_parts.len());
+        println!("  placed footprints: {}", placement.placements.len());
+        println!("  placed optical slots: {}", placement.optical_slots.len());
         println!(
             "  external safety part groups: {}",
             parts.external_safety_parts.len()
@@ -385,6 +440,12 @@ fn load_power_architecture(path: &Path) -> PowerArchitecture {
 }
 
 fn load_optical_architecture(path: &Path) -> OpticalArchitecture {
+    let content =
+        fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
+    toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
+}
+
+fn load_placement(path: &Path) -> PlacementPlan {
     let content =
         fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
     toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
@@ -829,6 +890,240 @@ fn validate_optical_architecture(
         if text.trim().len() < 40 {
             errors.push("optical architecture rationale entries must be explicit".to_string());
         }
+    }
+}
+
+fn validate_placement_plan(
+    placement: &PlacementPlan,
+    parts: &PartsManifest,
+    contract: &Contract,
+    nets: &[Net],
+    errors: &mut Vec<String>,
+) {
+    if placement.package.name != "lamp_rev_a_placement" {
+        errors.push("placement package name must be lamp_rev_a_placement".to_string());
+    }
+    if placement.package.ticket != contract.package.ticket {
+        errors.push(format!(
+            "placement ticket {} does not match contract ticket {}",
+            placement.package.ticket, contract.package.ticket
+        ));
+    }
+    if placement.package.revision != contract.package.revision {
+        errors.push("placement revision must match contract revision".to_string());
+    }
+    if placement.package.source_stage != contract.package.source_stage {
+        errors.push("placement source stage must match contract source stage".to_string());
+    }
+
+    let zones: BTreeMap<&str, &Zone> = contract
+        .zones
+        .iter()
+        .map(|zone| (zone.name.as_str(), zone))
+        .collect();
+    let parts_by_id: BTreeMap<&str, &SelectedPart> = parts
+        .selected_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect();
+    let mut refs = BTreeSet::new();
+    let mut counts: BTreeMap<&str, u32> = BTreeMap::new();
+
+    for item in &placement.placements {
+        if !refs.insert(item.reference.as_str()) {
+            errors.push(format!("duplicate placed reference {}", item.reference));
+        }
+        if !item.x_mm.is_finite() || !item.y_mm.is_finite() || !item.rotation_deg.is_finite() {
+            errors.push(format!(
+                "placement {} has non-finite coordinate or rotation",
+                item.reference
+            ));
+        }
+        if item.x_mm <= 0.0
+            || item.y_mm <= 0.0
+            || item.x_mm >= contract.board.width_mm
+            || item.y_mm >= contract.board.height_mm
+        {
+            errors.push(format!(
+                "placement {} is outside board bounds",
+                item.reference
+            ));
+        }
+        if item.side != "top" {
+            errors.push(format!(
+                "placement {} must be on the top side for Rev A assembly",
+                item.reference
+            ));
+        }
+        if !item.locked {
+            errors.push(format!("placement {} must be locked", item.reference));
+        }
+
+        match parts_by_id.get(item.part_id.as_str()) {
+            Some(part) => {
+                if !item.reference.starts_with(&part.reference_prefix) {
+                    errors.push(format!(
+                        "placement {} does not match prefix {} for part group {}",
+                        item.reference, part.reference_prefix, part.id
+                    ));
+                }
+                *counts.entry(part.id.as_str()).or_default() += 1;
+            }
+            None => errors.push(format!(
+                "placement {} references unknown part group {}",
+                item.reference, item.part_id
+            )),
+        }
+
+        match zones.get(item.zone.as_str()) {
+            Some(zone)
+                if item.x_mm >= zone.x_min_mm
+                    && item.x_mm <= zone.x_max_mm
+                    && item.y_mm >= zone.y_min_mm
+                    && item.y_mm <= zone.y_max_mm => {}
+            Some(_) => errors.push(format!(
+                "placement {} is outside declared zone {}",
+                item.reference, item.zone
+            )),
+            None => errors.push(format!(
+                "placement {} references unknown zone {}",
+                item.reference, item.zone
+            )),
+        }
+    }
+
+    for part in &parts.selected_parts {
+        let count = counts.get(part.id.as_str()).copied().unwrap_or_default();
+        if count != part.quantity {
+            errors.push(format!(
+                "part group {} expects {} placements but has {}",
+                part.id, part.quantity, count
+            ));
+        }
+    }
+
+    validate_test_point_placements(placement, contract, nets, errors);
+    validate_optical_slot_placements(placement, contract, &refs, errors);
+}
+
+fn validate_test_point_placements(
+    placement: &PlacementPlan,
+    contract: &Contract,
+    nets: &[Net],
+    errors: &mut Vec<String>,
+) {
+    let net_names: BTreeSet<&str> = nets.iter().map(|net| net.name.as_str()).collect();
+    let required_points: BTreeMap<&str, &str> = contract
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point.net.as_str()))
+        .collect();
+    let mut seen = BTreeSet::new();
+
+    for point in &placement.test_points {
+        if !seen.insert(point.name.as_str()) {
+            errors.push(format!("duplicate test point placement {}", point.name));
+        }
+        match required_points.get(point.name.as_str()) {
+            Some(net) if *net == point.net => {}
+            Some(net) => errors.push(format!(
+                "test point {} is placed on net {} but contract requires {}",
+                point.name, point.net, net
+            )),
+            None => errors.push(format!(
+                "test point placement {} is not in the contract",
+                point.name
+            )),
+        }
+        if !net_names.contains(point.net.as_str()) {
+            errors.push(format!(
+                "test point placement {} references unknown net {}",
+                point.name, point.net
+            ));
+        }
+        if point.x_mm <= 0.0
+            || point.y_mm <= 0.0
+            || point.x_mm >= contract.board.width_mm
+            || point.y_mm >= contract.board.height_mm
+        {
+            errors.push(format!(
+                "test point placement {} is outside board bounds",
+                point.name
+            ));
+        }
+        if point.side != "top" {
+            errors.push(format!(
+                "test point placement {} must be top-side accessible",
+                point.name
+            ));
+        }
+    }
+
+    for point in &contract.test_points {
+        if !seen.contains(point.name.as_str()) {
+            errors.push(format!("missing test point placement {}", point.name));
+        }
+    }
+}
+
+fn validate_optical_slot_placements(
+    placement: &PlacementPlan,
+    contract: &Contract,
+    refs: &BTreeSet<&str>,
+    errors: &mut Vec<String>,
+) {
+    let mut slots = BTreeSet::new();
+    let mut last_x: Option<f64> = None;
+    for slot in &placement.optical_slots {
+        if !slots.insert(slot.slot) {
+            errors.push(format!("duplicate optical slot {}", slot.slot));
+        }
+        if slot.slot >= contract.board.slot_count {
+            errors.push(format!("optical slot {} exceeds slot count", slot.slot));
+        }
+        if slot.x_mm <= 0.0
+            || slot.y_mm <= 0.0
+            || slot.x_mm >= contract.board.width_mm
+            || slot.y_mm >= contract.board.height_mm
+        {
+            errors.push(format!(
+                "optical slot {} is outside board bounds",
+                slot.slot
+            ));
+        }
+        if let Some(prev_x) = last_x {
+            let spacing = slot.x_mm - prev_x;
+            if (spacing - contract.board.slot_spacing_mm).abs() > 0.25 {
+                errors.push(format!(
+                    "optical slot {} spacing is {:.2} mm, expected {:.2} mm",
+                    slot.slot, spacing, contract.board.slot_spacing_mm
+                ));
+            }
+        }
+        last_x = Some(slot.x_mm);
+
+        for reference in [
+            &slot.emitter_ref,
+            &slot.detector_ref,
+            &slot.driver_ref,
+            &slot.led_resistor_ref,
+            &slot.base_resistor_ref,
+        ] {
+            if !refs.contains(reference.as_str()) {
+                errors.push(format!(
+                    "optical slot {} references unknown placed component {}",
+                    slot.slot, reference
+                ));
+            }
+        }
+    }
+
+    if placement.optical_slots.len() as u32 != contract.board.slot_count {
+        errors.push(format!(
+            "expected {} optical slots but found {}",
+            contract.board.slot_count,
+            placement.optical_slots.len()
+        ));
     }
 }
 

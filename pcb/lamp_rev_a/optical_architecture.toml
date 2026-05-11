@@ -1,6 +1,6 @@
 [package]
 name = "lamp_rev_a_optical_architecture"
-ticket = "T-B3DF4895"
+ticket = "T-44DA2427"
 revision = "Rev A"
 
 [topology]

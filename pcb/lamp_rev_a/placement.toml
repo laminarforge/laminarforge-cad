@@ -1,0 +1,1111 @@
+[package]
+name = "lamp_rev_a_placement"
+ticket = "T-44DA2427"
+revision = "Rev A"
+source_stage = "placement_locked"
+
+# Board coordinates are KiCad millimeters from the upper-left board origin.
+# These are locked starting placements, not final routed coordinates. Move them
+# deliberately in KiCad when routing proves a better layout.
+
+[[placements]]
+reference = "U1"
+part_id = "mcu_module"
+zone = "mcu_usb"
+x_mm = 22.0
+y_mm = 20.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J1"
+part_id = "usb_c_connector"
+zone = "mcu_usb"
+x_mm = 7.0
+y_mm = 7.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R1"
+part_id = "usb_c_cc_resistors"
+zone = "mcu_usb"
+x_mm = 12.0
+y_mm = 13.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R2"
+part_id = "usb_c_cc_resistors"
+zone = "mcu_usb"
+x_mm = 12.0
+y_mm = 15.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U2"
+part_id = "usb_esd_protection"
+zone = "mcu_usb"
+x_mm = 17.0
+y_mm = 8.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D1"
+part_id = "vbus_to_5v_schottky"
+zone = "mcu_usb"
+x_mm = 32.0
+y_mm = 8.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J2"
+part_id = "dc_input_jack"
+zone = "heater_power"
+x_mm = 92.0
+y_mm = 8.0
+rotation_deg = 180.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U3"
+part_id = "three_v_three_regulator"
+zone = "low_voltage_power"
+x_mm = 44.0
+y_mm = 10.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C1"
+part_id = "regulator_bulk_caps"
+zone = "mcu_usb"
+x_mm = 26.0
+y_mm = 8.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C2"
+part_id = "regulator_bulk_caps"
+zone = "low_voltage_power"
+x_mm = 38.0
+y_mm = 8.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C3"
+part_id = "regulator_bulk_caps"
+zone = "low_voltage_power"
+x_mm = 48.0
+y_mm = 12.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C4"
+part_id = "regulator_bulk_caps"
+zone = "heater_power"
+x_mm = 84.0
+y_mm = 6.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U4"
+part_id = "adc"
+zone = "analog_optical"
+x_mm = 50.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U5"
+part_id = "optical_mux"
+zone = "analog_optical"
+x_mm = 52.0
+y_mm = 58.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D2"
+part_id = "turbidity_emitters"
+zone = "analog_optical"
+x_mm = 8.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D3"
+part_id = "turbidity_emitters"
+zone = "analog_optical"
+x_mm = 20.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D4"
+part_id = "turbidity_emitters"
+zone = "analog_optical"
+x_mm = 32.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D5"
+part_id = "turbidity_emitters"
+zone = "analog_optical"
+x_mm = 44.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D6"
+part_id = "turbidity_emitters"
+zone = "analog_optical"
+x_mm = 56.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D7"
+part_id = "turbidity_emitters"
+zone = "analog_optical"
+x_mm = 68.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D8"
+part_id = "turbidity_emitters"
+zone = "analog_optical"
+x_mm = 80.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D9"
+part_id = "turbidity_emitters"
+zone = "analog_optical"
+x_mm = 92.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "PD1"
+part_id = "photodiodes"
+zone = "analog_optical"
+x_mm = 8.0
+y_mm = 70.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "PD2"
+part_id = "photodiodes"
+zone = "analog_optical"
+x_mm = 20.0
+y_mm = 70.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "PD3"
+part_id = "photodiodes"
+zone = "analog_optical"
+x_mm = 32.0
+y_mm = 70.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "PD4"
+part_id = "photodiodes"
+zone = "analog_optical"
+x_mm = 44.0
+y_mm = 70.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "PD5"
+part_id = "photodiodes"
+zone = "analog_optical"
+x_mm = 56.0
+y_mm = 70.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "PD6"
+part_id = "photodiodes"
+zone = "analog_optical"
+x_mm = 68.0
+y_mm = 70.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "PD7"
+part_id = "photodiodes"
+zone = "analog_optical"
+x_mm = 80.0
+y_mm = 70.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "PD8"
+part_id = "photodiodes"
+zone = "analog_optical"
+x_mm = 92.0
+y_mm = 70.0
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U6"
+part_id = "optical_tia_opamp"
+zone = "analog_optical"
+x_mm = 43.0
+y_mm = 58.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R3"
+part_id = "tia_feedback_resistor"
+zone = "analog_optical"
+x_mm = 43.0
+y_mm = 62.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C5"
+part_id = "tia_feedback_cap"
+zone = "analog_optical"
+x_mm = 47.0
+y_mm = 62.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U7"
+part_id = "heater_gate_driver"
+zone = "heater_power"
+x_mm = 68.0
+y_mm = 12.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q1"
+part_id = "heater_mosfet"
+zone = "heater_power"
+x_mm = 75.0
+y_mm = 17.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J3"
+part_id = "heater_output_terminal"
+zone = "heater_power"
+x_mm = 92.0
+y_mm = 25.0
+rotation_deg = 180.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "F1"
+part_id = "heater_resettable_fuse"
+zone = "heater_power"
+x_mm = 82.0
+y_mm = 20.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D10"
+part_id = "heater_tvs"
+zone = "heater_power"
+x_mm = 75.0
+y_mm = 25.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q2"
+part_id = "led_low_side_drivers"
+zone = "analog_optical"
+x_mm = 8.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q3"
+part_id = "led_low_side_drivers"
+zone = "analog_optical"
+x_mm = 20.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q4"
+part_id = "led_low_side_drivers"
+zone = "analog_optical"
+x_mm = 32.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q5"
+part_id = "led_low_side_drivers"
+zone = "analog_optical"
+x_mm = 44.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q6"
+part_id = "led_low_side_drivers"
+zone = "analog_optical"
+x_mm = 56.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q7"
+part_id = "led_low_side_drivers"
+zone = "analog_optical"
+x_mm = 68.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q8"
+part_id = "led_low_side_drivers"
+zone = "analog_optical"
+x_mm = 80.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q9"
+part_id = "led_low_side_drivers"
+zone = "analog_optical"
+x_mm = 92.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D11"
+part_id = "status_leds"
+zone = "mcu_usb"
+x_mm = 10.0
+y_mm = 30.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D12"
+part_id = "status_leds"
+zone = "mcu_usb"
+x_mm = 15.0
+y_mm = 30.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R4"
+part_id = "resistor_100r"
+zone = "analog_optical"
+x_mm = 8.0
+y_mm = 51.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R5"
+part_id = "resistor_100r"
+zone = "analog_optical"
+x_mm = 20.0
+y_mm = 51.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R6"
+part_id = "resistor_100r"
+zone = "analog_optical"
+x_mm = 32.0
+y_mm = 51.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R7"
+part_id = "resistor_100r"
+zone = "analog_optical"
+x_mm = 44.0
+y_mm = 51.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R8"
+part_id = "resistor_100r"
+zone = "analog_optical"
+x_mm = 56.0
+y_mm = 51.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R9"
+part_id = "resistor_100r"
+zone = "analog_optical"
+x_mm = 68.0
+y_mm = 51.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R10"
+part_id = "resistor_100r"
+zone = "analog_optical"
+x_mm = 80.0
+y_mm = 51.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R11"
+part_id = "resistor_100r"
+zone = "analog_optical"
+x_mm = 92.0
+y_mm = 51.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R12"
+part_id = "resistor_1k"
+zone = "analog_optical"
+x_mm = 8.0
+y_mm = 46.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R13"
+part_id = "resistor_1k"
+zone = "analog_optical"
+x_mm = 20.0
+y_mm = 46.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R14"
+part_id = "resistor_1k"
+zone = "analog_optical"
+x_mm = 32.0
+y_mm = 46.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R15"
+part_id = "resistor_1k"
+zone = "analog_optical"
+x_mm = 44.0
+y_mm = 46.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R16"
+part_id = "resistor_1k"
+zone = "analog_optical"
+x_mm = 56.0
+y_mm = 46.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R17"
+part_id = "resistor_1k"
+zone = "analog_optical"
+x_mm = 68.0
+y_mm = 46.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R18"
+part_id = "resistor_1k"
+zone = "analog_optical"
+x_mm = 80.0
+y_mm = 46.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R19"
+part_id = "resistor_1k"
+zone = "analog_optical"
+x_mm = 92.0
+y_mm = 46.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R20"
+part_id = "resistor_1k"
+zone = "mcu_usb"
+x_mm = 10.0
+y_mm = 27.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R21"
+part_id = "resistor_1k"
+zone = "mcu_usb"
+x_mm = 15.0
+y_mm = 27.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R22"
+part_id = "resistor_4k7"
+zone = "mcu_usb"
+x_mm = 29.0
+y_mm = 28.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R23"
+part_id = "resistor_4k7"
+zone = "mcu_usb"
+x_mm = 32.0
+y_mm = 28.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R24"
+part_id = "resistor_10k"
+zone = "mcu_usb"
+x_mm = 26.0
+y_mm = 24.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R25"
+part_id = "resistor_10k"
+zone = "mcu_usb"
+x_mm = 30.0
+y_mm = 24.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R26"
+part_id = "resistor_10k"
+zone = "analog_optical"
+x_mm = 57.0
+y_mm = 50.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R27"
+part_id = "resistor_10k"
+zone = "analog_optical"
+x_mm = 60.0
+y_mm = 50.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R28"
+part_id = "resistor_10k"
+zone = "analog_optical"
+x_mm = 65.0
+y_mm = 50.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R29"
+part_id = "resistor_10k"
+zone = "analog_optical"
+x_mm = 68.0
+y_mm = 50.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C6"
+part_id = "decoupling_caps"
+zone = "mcu_usb"
+x_mm = 18.0
+y_mm = 14.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C7"
+part_id = "decoupling_caps"
+zone = "mcu_usb"
+x_mm = 22.0
+y_mm = 14.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C8"
+part_id = "decoupling_caps"
+zone = "mcu_usb"
+x_mm = 27.0
+y_mm = 18.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C9"
+part_id = "decoupling_caps"
+zone = "mcu_usb"
+x_mm = 17.0
+y_mm = 9.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C10"
+part_id = "decoupling_caps"
+zone = "low_voltage_power"
+x_mm = 42.0
+y_mm = 14.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C11"
+part_id = "decoupling_caps"
+zone = "low_voltage_power"
+x_mm = 47.0
+y_mm = 14.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C12"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 50.0
+y_mm = 51.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C13"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 54.0
+y_mm = 51.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C14"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 44.0
+y_mm = 55.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C15"
+part_id = "decoupling_caps"
+zone = "heater_power"
+x_mm = 68.0
+y_mm = 15.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C16"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 9.0
+y_mm = 57.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C17"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 21.0
+y_mm = 57.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C18"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 33.0
+y_mm = 57.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C19"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 45.0
+y_mm = 68.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C20"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 69.0
+y_mm = 57.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C21"
+part_id = "decoupling_caps"
+zone = "analog_optical"
+x_mm = 93.0
+y_mm = 57.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D13"
+part_id = "input_schottky"
+zone = "heater_power"
+x_mm = 84.0
+y_mm = 12.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[test_points]]
+name = "TP_GND"
+net = "GND"
+x_mm = 5.0
+y_mm = 38.0
+side = "top"
+
+[[test_points]]
+name = "TP_12V"
+net = "+12V_RAW"
+x_mm = 98.0
+y_mm = 5.0
+side = "top"
+
+[[test_points]]
+name = "TP_5V"
+net = "+5V"
+x_mm = 38.0
+y_mm = 4.0
+side = "top"
+
+[[test_points]]
+name = "TP_3V3"
+net = "+3V3"
+x_mm = 50.0
+y_mm = 4.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER"
+net = "HEATER_P"
+x_mm = 98.0
+y_mm = 30.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER_SUPPLY"
+net = "HEATER_SUPPLY"
+x_mm = 88.0
+y_mm = 34.0
+side = "top"
+
+[[test_points]]
+name = "TP_PWM"
+net = "HEATER_PWM"
+x_mm = 64.0
+y_mm = 4.0
+side = "top"
+
+[[test_points]]
+name = "TP_ADC"
+net = "ADC_AIN1"
+x_mm = 40.0
+y_mm = 74.0
+side = "top"
+
+[[test_points]]
+name = "TP_MUX"
+net = "MUX_COM"
+x_mm = 45.0
+y_mm = 74.0
+side = "top"
+
+[[test_points]]
+name = "TP_SDA"
+net = "SDA"
+x_mm = 28.0
+y_mm = 34.0
+side = "top"
+
+[[test_points]]
+name = "TP_SCL"
+net = "SCL"
+x_mm = 32.0
+y_mm = 34.0
+side = "top"
+
+[[test_points]]
+name = "TP_EN"
+net = "ESP_EN"
+x_mm = 18.0
+y_mm = 34.0
+side = "top"
+
+[[test_points]]
+name = "TP_BOOT"
+net = "ESP_GPIO0"
+x_mm = 22.0
+y_mm = 34.0
+side = "top"
+
+[[test_points]]
+name = "TP_TX"
+net = "UART_TX"
+x_mm = 26.0
+y_mm = 34.0
+side = "top"
+
+[[test_points]]
+name = "TP_RX"
+net = "UART_RX"
+x_mm = 30.0
+y_mm = 34.0
+side = "top"
+
+[[test_points]]
+name = "TP_VBUS"
+net = "VBUS"
+x_mm = 12.0
+y_mm = 4.0
+side = "top"
+
+[[optical_slots]]
+slot = 0
+x_mm = 8.0
+y_mm = 62.0
+emitter_ref = "D2"
+detector_ref = "PD1"
+driver_ref = "Q2"
+led_resistor_ref = "R4"
+base_resistor_ref = "R12"
+
+[[optical_slots]]
+slot = 1
+x_mm = 20.0
+y_mm = 62.0
+emitter_ref = "D3"
+detector_ref = "PD2"
+driver_ref = "Q3"
+led_resistor_ref = "R5"
+base_resistor_ref = "R13"
+
+[[optical_slots]]
+slot = 2
+x_mm = 32.0
+y_mm = 62.0
+emitter_ref = "D4"
+detector_ref = "PD3"
+driver_ref = "Q4"
+led_resistor_ref = "R6"
+base_resistor_ref = "R14"
+
+[[optical_slots]]
+slot = 3
+x_mm = 44.0
+y_mm = 62.0
+emitter_ref = "D5"
+detector_ref = "PD4"
+driver_ref = "Q5"
+led_resistor_ref = "R7"
+base_resistor_ref = "R15"
+
+[[optical_slots]]
+slot = 4
+x_mm = 56.0
+y_mm = 62.0
+emitter_ref = "D6"
+detector_ref = "PD5"
+driver_ref = "Q6"
+led_resistor_ref = "R8"
+base_resistor_ref = "R16"
+
+[[optical_slots]]
+slot = 5
+x_mm = 68.0
+y_mm = 62.0
+emitter_ref = "D7"
+detector_ref = "PD6"
+driver_ref = "Q7"
+led_resistor_ref = "R9"
+base_resistor_ref = "R17"
+
+[[optical_slots]]
+slot = 6
+x_mm = 80.0
+y_mm = 62.0
+emitter_ref = "D8"
+detector_ref = "PD7"
+driver_ref = "Q8"
+led_resistor_ref = "R10"
+base_resistor_ref = "R18"
+
+[[optical_slots]]
+slot = 7
+x_mm = 92.0
+y_mm = 62.0
+emitter_ref = "D9"
+detector_ref = "PD8"
+driver_ref = "Q9"
+led_resistor_ref = "R11"
+base_resistor_ref = "R19"

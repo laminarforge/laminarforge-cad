@@ -16,7 +16,7 @@
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "a0000000-0000-4000-8000-000000000101")
   )
-  (text "Power: 12 V input protection, 5 V buck, 3.3 V regulator, rail indicators, test points."
+  (text "Power: 12 V input protection, USB-derived 5 V path, 3.3 V regulator, rail indicators, test points."
     (at 20.32 35.56 0)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "a0000000-0000-4000-8000-000000000102")

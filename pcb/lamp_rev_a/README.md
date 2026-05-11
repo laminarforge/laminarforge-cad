@@ -13,6 +13,7 @@ workflow.
 - `power_architecture.toml`: locked Rev A power topology and the explicit no-buck decision.
 - `optical_architecture.toml`: locked Rev A optical topology, wavelength, detector, and front-end decision.
 - `optical_mode.md`: human-readable optical-mode decision and bench validation gate.
+- `placement.toml`: locked starting refs, coordinates, test points, and eight-slot optical geometry.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: KiCad board seed with the Rev A outline and 4-layer stack.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.
@@ -28,6 +29,7 @@ schematic and PCB layout.
 ```text
 contract.toml + parts.toml
   -> cargo run --release --bin lamp_pcba_check
+  -> placement.toml refs and zone checks
   -> KiCad schematic capture in lamp_rev_a.kicad_sch
   -> KiCad ERC
   -> footprint/BOM/JLC field lock
@@ -49,6 +51,7 @@ contract.toml + parts.toml
 - External heater element driven from the board through a protected high-current output.
 - Heater path protection is locked as board-side resettable fuse + TVS + 5.08 mm heater terminal, with an external inline KSD9700 thermal cutoff mounted on the heater assembly.
 - Optical mode is locked to 650 nm red-light turbidimetry with eight LED/photodiode channels, muxed into one TIA and ADC path.
+- Starting placement is locked in `placement.toml`: 91 top-side footprints, 16 test points, and 8 optical slots at 12 mm pitch.
 - Test points are mandatory for rails, heater control/output, I2C, UART, boot/reset, ADC, and mux output.
 
 ## Local Checks
@@ -60,8 +63,9 @@ cargo run --release --bin lamp_pcba_check
 ```
 
 The current schematic is an architecture shell, not a fabrication-ready circuit.
-The checker should not report fab-blocking part-selection gaps; remaining work
-is schematic capture, placement, routing, and bench validation.
+The checker should not report fab-blocking part-selection gaps. Remaining work
+is schematic capture from the locked refs, KiCad placement materialization,
+routing, and bench validation.
 
 Current KiCad checks:
 

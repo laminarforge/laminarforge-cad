@@ -1,9 +1,9 @@
 [package]
 name = "lamp_rev_a"
-ticket = "T-1451163D"
+ticket = "T-44DA2427"
 revision = "Rev A"
 purpose = "Single-board ESP32-S3 PCBA for the LaminarForge eight-slot LAMP device."
-source_stage = "optical_architecture_locked"
+source_stage = "placement_locked"
 
 [board]
 physical_board_count = 1
@@ -31,6 +31,14 @@ name = "mcu_usb"
 purpose = "ESP32-S3 module, USB-C, boot/reset, UART/JTAG/debug"
 x_min_mm = 0.0
 x_max_mm = 35.0
+y_min_mm = 0.0
+y_max_mm = 35.0
+
+[[zones]]
+name = "low_voltage_power"
+purpose = "USB-derived 5 V, 3.3 V regulation, rail bulk capacitance"
+x_min_mm = 30.0
+x_max_mm = 60.0
 y_min_mm = 0.0
 y_max_mm = 35.0
 
@@ -74,7 +82,7 @@ deliverable = "USB-C connector, CC pull-downs, ESD protection, D+/D- routing con
 name = "power"
 status = "required"
 owner = "schematic"
-deliverable = "12 V input protection, 5 V buck, 3.3 V regulator, rail indicators."
+deliverable = "12 V input protection, USB-derived 5 V path, 3.3 V regulator, rail indicators."
 
 [[modules]]
 name = "heater_drive"
