@@ -31,8 +31,8 @@ fn main() {
 /// V-wheels in triangular arrangement grip the V-slot rail:
 ///   - 2 fixed wheels on one side
 ///   - 2 eccentric-spacer wheels on the other side (for preload adjustment)
-/// GT2 belt attaches via clamping blocks on the plate.
-/// Vertical mounting holes accept the Z-axis 2040 V-slot extrusion.
+///   GT2 belt attaches via clamping blocks on the plate.
+///   Vertical mounting holes accept the Z-axis 2040 V-slot extrusion.
 fn build_xy_carriage_plate() {
     // ── Plate dimensions ──
     let plate_w = 70.0; // X (along rail travel direction)
@@ -338,11 +338,8 @@ fn build_syringe_clamp() {
         .translate(0.0, 0.0, clamp_h / 2.0 - flange_t / 2.0 - 2.0);
 
     // ── Needle clearance hole (through bottom) ──
-    let needle_hole = centered_cylinder("needle", 2.0 / 2.0, 10.0, 24).translate(
-        0.0,
-        0.0,
-        -(clamp_h / 2.0) - 2.0,
-    );
+    let needle_hole =
+        centered_cylinder("needle", 1.0, 10.0, 24).translate(0.0, 0.0, -(clamp_h / 2.0) - 2.0);
 
     // ── Bolt holes (M3, 2× for clamping halves together) ──
     let bolt_spacing = 18.0;
