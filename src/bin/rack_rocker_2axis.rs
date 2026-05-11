@@ -653,9 +653,12 @@ fn swept_halfwidths(sx: f64, sy: f64, sz: f64, pitch_deg: f64, roll_deg: f64) ->
     (max_x, max_y, max_z)
 }
 
+type PartFactory = fn() -> Part;
+type ExportSpec = (&'static str, PartFactory);
+
 fn main() {
     // ── 1. Export each part as STL + STEP ──
-    let exports: [(&str, fn() -> Part); 6] = [
+    let exports: [ExportSpec; 6] = [
         ("output/rack_rocker_2axis_outer_ring.stl", outer_ring),
         (
             "output/rack_rocker_2axis_inner_platform.stl",
