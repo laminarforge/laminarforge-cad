@@ -7,6 +7,7 @@ use std::path::Path;
 
 const CONTRACT_PATH: &str = "pcb/lamp_rev_a/contract.toml";
 const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
+const OPTICAL_MODE_PATH: &str = "pcb/lamp_rev_a/optical_mode.md";
 const SCHEMATIC_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
 const README_PATH: &str = "pcb/lamp_rev_a/README.md";
@@ -212,6 +213,7 @@ fn main() {
     require_file(&root.join(DRU_PATH), &mut errors);
     require_file(&root.join(KIBOT_PATH), &mut errors);
     require_file(&root.join(PARTS_PATH), &mut errors);
+    require_file(&root.join(OPTICAL_MODE_PATH), &mut errors);
     require_file(&root.join(SCHEMATIC_PATH), &mut errors);
     require_file(&root.join(SYM_LIB_TABLE_PATH), &mut errors);
     require_file(&root.join(FP_LIB_TABLE_PATH), &mut errors);

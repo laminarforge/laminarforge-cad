@@ -10,6 +10,7 @@ workflow.
 
 - `contract.toml`: board requirements, rails, nets, GPIO map, test points, and verification gates.
 - `parts.toml`: selected schematic parts plus explicit fab-blocking part-selection gaps.
+- `optical_mode.md`: current optical-mode decision boundary for emitter/detector selection.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: KiCad board seed with the Rev A outline and 4-layer stack.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.

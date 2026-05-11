@@ -151,7 +151,7 @@ symbol = "MMBT3904-C20526"
 footprint = "lcsc:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
 lcsc_part = "C20526"
 nets = ["LED_BASE_0", "LED_BASE_1", "LED_BASE_2", "LED_BASE_3", "LED_BASE_4", "LED_BASE_5", "LED_BASE_6", "LED_BASE_7", "LED_CATH_0", "LED_CATH_1", "LED_CATH_2", "LED_CATH_3", "LED_CATH_4", "LED_CATH_5", "LED_CATH_6", "LED_CATH_7", "GND"]
-verification = "Confirm optical emitter current budget after selecting the actual 460 nm emitter."
+verification = "Confirm optical emitter current budget after selecting the detection mode, wavelength, and emitter package."
 
 [[selected_parts]]
 id = "status_leds"
@@ -255,7 +255,7 @@ resolve_with = "Select a regulator with enough ESP32-S3 Wi-Fi current headroom a
 id = "optical_emitters"
 module = "optical_detection"
 blocks_fabrication = true
-reason = "The optical wavelength and emitter package are not locked; current contract says 460 nm, while common LAMP turbidimetry references monitor around 650 nm."
+reason = "The optical wavelength and emitter package are not locked; LAMP can be monitored through turbidity, colorimetric imaging, or fluorescence, and each mode drives different emitter/detector choices."
 resolve_with = "Choose the actual detection mode first, then select emitter wavelength, viewing angle, current target, footprint, and LCSC part."
 
 [[selection_gaps]]

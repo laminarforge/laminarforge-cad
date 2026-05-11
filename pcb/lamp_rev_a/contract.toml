@@ -92,7 +92,7 @@ deliverable = "Thermistor divider and ADC input with test point."
 name = "optical_detection"
 status = "required"
 owner = "schematic"
-deliverable = "Eight 460 nm LEDs, eight photodiodes, load resistors, mux, ADC."
+deliverable = "Eight optical channels with emitter wavelength, detector, geometry, mux, and ADC path selected from the locked detection mode."
 
 [[modules]]
 name = "firmware_debug"
