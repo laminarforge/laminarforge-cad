@@ -1,3 +1,9 @@
+#![allow(
+    clippy::items_after_test_module,
+    clippy::needless_range_loop,
+    clippy::type_complexity
+)]
+
 // ─── DOE Planner — Design of Experiments CLI for LaminarForge chip campaigns ───
 //
 // Plans multi-chip campaigns with statistical rigor on the 100-chip rack
@@ -1323,7 +1329,7 @@ mod tests {
         // Cohen's rule of thumb: n ≈ 16/d^2. For d=0.5 that's 64 per group.
         // Our non-central t answer should land near that value (within 10%).
         let n = n_for_power_t(0.5, 0.05, 0.80);
-        assert!(n >= 55 && n <= 75, "n was {}", n);
+        assert!((55..=75).contains(&n), "n was {}", n);
     }
 
     #[test]
