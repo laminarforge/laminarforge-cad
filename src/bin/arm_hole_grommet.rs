@@ -64,7 +64,7 @@ fn main() {
 
         // Each barb is a small ramp-shaped block
         // Simplified as a cube positioned on the outer surface
-        let barb = centered_cube(&format!("barb_{i}"), barb_width, barb_height, barb_length)
+        let barb = centered_cube(format!("barb_{i}"), barb_width, barb_height, barb_length)
             .translate(0.0, barb_radial_pos, barb_z)
             .rotate(0.0, 0.0, angle);
 
@@ -114,7 +114,7 @@ fn main() {
     for i in 0..num_barbs {
         let angle = 360.0 * (i as f64) / (num_barbs as f64);
         let slot = centered_cube(
-            &format!("slot_{i}"),
+            format!("slot_{i}"),
             barb_width + 1.0, // 0.5mm clearance each side
             barb_height + 1.0,
             ring_height + 2.0, // full height slot

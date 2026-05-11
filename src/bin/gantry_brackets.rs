@@ -74,7 +74,7 @@ fn build_motor_mount() {
 
     for (i, (hx, hz)) in vslot_hole_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("vslot_hole_{i}"),
+            format!("vslot_hole_{i}"),
             VSLOT_M5_HOLE / 2.0,
             bracket_thickness + 2.0,
             24,
@@ -99,7 +99,7 @@ fn build_motor_mount() {
 
     for (i, (bx, by)) in bolt_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("motor_bolt_{i}"),
+            format!("motor_bolt_{i}"),
             NEMA17_HOLE_DIAMETER / 2.0,
             bracket_thickness + 2.0,
             24,

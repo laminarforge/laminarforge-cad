@@ -259,7 +259,7 @@ fn main() {
             let hy =
                 -(num_holes_y as f64 - 1.0) * hole_spacing_y / 2.0 + (iy as f64) * hole_spacing_y;
             let hole = centered_cylinder(
-                &format!("vent_{ix}_{iy}"),
+                format!("vent_{ix}_{iy}"),
                 hole_d / 2.0,
                 shelf_thickness + 2.0,
                 16,

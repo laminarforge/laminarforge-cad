@@ -79,7 +79,7 @@ fn main() {
 
     for (i, &(y, z)) in bolt_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("me_bolt_{i}"),
+            format!("me_bolt_{i}"),
             m3_hole / 2.0,
             me_thickness + 2.0,
             24,

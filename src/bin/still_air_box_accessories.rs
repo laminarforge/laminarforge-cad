@@ -37,17 +37,12 @@ fn build_tube_rack() -> Part {
     for i in 0..num_tubes {
         let x = first_x + (i as f64) * tube_spacing;
         // Blind hole from top
-        let hole = centered_cylinder(
-            &format!("tube_{i}"),
-            tube_hole_d / 2.0,
-            hole_depth + 0.1,
-            24,
-        )
-        .translate(x, 0.0, (block_height - hole_depth) / 2.0 + 0.05);
+        let hole = centered_cylinder(format!("tube_{i}"), tube_hole_d / 2.0, hole_depth + 0.1, 24)
+            .translate(x, 0.0, (block_height - hole_depth) / 2.0 + 0.05);
 
         // Chamfer at top for easy insertion (45-degree cone)
         let chamfer = Part::cone(
-            &format!("chamfer_{i}"),
+            format!("chamfer_{i}"),
             tube_hole_d / 2.0 + 1.0, // bottom radius (wider)
             tube_hole_d / 2.0,       // top radius (matches hole)
             1.5,                     // chamfer height
@@ -98,7 +93,7 @@ fn build_reagent_holder() -> Part {
     for i in 0..num_bottles {
         let x = first_x + (i as f64) * bottle_spacing;
         let hole = centered_cylinder(
-            &format!("bottle_{i}"),
+            format!("bottle_{i}"),
             bottle_hole_d / 2.0,
             hole_depth + 0.1,
             32,
@@ -107,7 +102,7 @@ fn build_reagent_holder() -> Part {
 
         // Chamfer for easy insertion
         let chamfer = Part::cone(
-            &format!("bchamfer_{i}"),
+            format!("bchamfer_{i}"),
             bottle_hole_d / 2.0 + 1.5,
             bottle_hole_d / 2.0,
             2.0,

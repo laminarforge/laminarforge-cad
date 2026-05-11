@@ -76,7 +76,7 @@ fn main() {
     let mut fan_bolts = Part::empty("fan_bolts");
     for (i, (bx, by)) in bolt_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("fan_bolt_{i}"),
+            format!("fan_bolt_{i}"),
             fan_bolt_d / 2.0,
             housing_z + 2.0,
             24,
@@ -100,7 +100,7 @@ fn main() {
         for i in 0..num_vents {
             let vx = -(num_vents as f64 - 1.0) * vent_spacing / 2.0 + (i as f64) * vent_spacing;
             let slot = centered_cube(
-                &format!("vent_fb_{}", i),
+                format!("vent_fb_{}", i),
                 vent_width,
                 housing_y + 2.0,
                 vent_height,
@@ -109,7 +109,7 @@ fn main() {
 
             // Only cut where the wall is (mask to wall thickness)
             let wall_mask = centered_cube(
-                &format!("wall_mask_fb_{}", i),
+                format!("wall_mask_fb_{}", i),
                 vent_width + 1.0,
                 6.0,
                 vent_height + 1.0,
@@ -129,7 +129,7 @@ fn main() {
         for i in 0..num_vents {
             let vy = -(num_vents as f64 - 1.0) * vent_spacing / 2.0 + (i as f64) * vent_spacing;
             let slot = centered_cube(
-                &format!("vent_lr_{}", i),
+                format!("vent_lr_{}", i),
                 housing_x + 2.0,
                 vent_width,
                 vent_height,
@@ -137,7 +137,7 @@ fn main() {
             .translate(0.0, vy, -(housing_z / 2.0) + vent_height / 2.0 + 3.0);
 
             let wall_mask = centered_cube(
-                &format!("wall_mask_lr_{}", i),
+                format!("wall_mask_lr_{}", i),
                 6.0,
                 vent_width + 1.0,
                 vent_height + 1.0,
@@ -163,7 +163,7 @@ fn main() {
     ];
 
     for (i, (fx, fy)) in foot_positions.iter().enumerate() {
-        let recess = centered_cylinder(&format!("foot_{i}"), foot_d / 2.0, foot_depth, 24)
+        let recess = centered_cylinder(format!("foot_{i}"), foot_d / 2.0, foot_depth, 24)
             .translate(*fx, *fy, -(housing_z / 2.0) + foot_depth / 2.0);
         foot_recesses = foot_recesses + recess;
     }

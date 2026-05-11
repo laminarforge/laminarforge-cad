@@ -182,7 +182,7 @@ fn main() {
     for &sx in &[-1.0f64, 1.0] {
         for &sy in &[-1.0f64, 1.0] {
             let h = centered_cylinder(
-                &format!("mgn_{}_{}", sx as i32, sy as i32),
+                format!("mgn_{}_{}", sx as i32, sy as i32),
                 mgn_bolt_d / 2.0,
                 carr_z + 2.0,
                 24,
@@ -257,7 +257,7 @@ fn main() {
     let mut blue_ports = Part::empty("blue_ports");
     for i in 0..3 {
         let theta = (i as f64) * 120.0_f64.to_radians();
-        let hole = centered_cylinder(&format!("blue_{i}"), 8.0 / 2.0, head_wall + 2.0, 32)
+        let hole = centered_cylinder(format!("blue_{i}"), 8.0 / 2.0, head_wall + 2.0, 32)
             .translate(
                 20.0 * theta.cos(),
                 20.0 * theta.sin(),
@@ -309,7 +309,7 @@ fn main() {
     for &sx in &[-1.0f64, 1.0] {
         for &sy in &[-1.0f64, 1.0] {
             let h = centered_cylinder(
-                &format!("wmh_{}_{}", sx as i32, sy as i32),
+                format!("wmh_{}_{}", sx as i32, sy as i32),
                 3.3 / 2.0,
                 win_frame_t + 2.0,
                 24,
@@ -367,7 +367,7 @@ fn main() {
     for &sx in &[-1.0f64, 1.0] {
         for &sy in &[-1.0f64, 1.0] {
             let h = centered_cylinder(
-                &format!("ch_{}_{}", sx as i32, sy as i32),
+                format!("ch_{}_{}", sx as i32, sy as i32),
                 5.5 / 2.0,
                 mnt_t + 2.0,
                 24,
@@ -419,9 +419,9 @@ fn main() {
 
     // Y-rails (two of them) at ±y_beam_x, spanning Y
     for (i, &sx) in [-1.0f64, 1.0].iter().enumerate() {
-        let y_rail_extr = centered_cube(&format!("y_rail_extr_{i}"), extr_w, y_beam_len, extr_h)
+        let y_rail_extr = centered_cube(format!("y_rail_extr_{i}"), extr_w, y_beam_len, extr_h)
             .translate(sx * y_beam_x, 0.0, beam_center_z);
-        let y_rail_mgn = centered_cube(&format!("y_rail_mgn_{i}"), mgn12_w, y_beam_len, mgn12_h)
+        let y_rail_mgn = centered_cube(format!("y_rail_mgn_{i}"), mgn12_w, y_beam_len, mgn12_h)
             .translate(sx * y_beam_x, 0.0, mgn12_center_z);
         asm = asm + y_rail_extr + y_rail_mgn;
     }
@@ -439,7 +439,7 @@ fn main() {
     // Y-carriages at each end of the X-beam (one sits on each Y-rail)
     for (i, &sx) in [-1.0f64, 1.0].iter().enumerate() {
         let yc = centered_cube(
-            &format!("asm_yc_{i}"),
+            format!("asm_yc_{i}"),
             carr_y, // cross-axis (along Y-rail)
             carr_x, // along-axis
             carr_z,
@@ -484,7 +484,7 @@ fn main() {
     // 2× ceiling mounts (bridging Y-beam ends to chamber ceiling)
     for (i, &sx) in [-1.0f64, 1.0].iter().enumerate() {
         for (j, &sy) in [-1.0f64, 1.0].iter().enumerate() {
-            let cm = centered_cube(&format!("asm_cm_{i}_{j}"), mnt_x, mnt_y, mnt_h).translate(
+            let cm = centered_cube(format!("asm_cm_{i}_{j}"), mnt_x, mnt_y, mnt_h).translate(
                 sx * y_beam_x,
                 sy * (y_beam_len / 2.0 - mnt_y / 2.0),
                 beam_top_z + mnt_h / 2.0 - mnt_t,

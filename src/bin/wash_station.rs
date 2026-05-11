@@ -101,7 +101,7 @@ fn main() {
     for (i, wx) in [well1_x, well2_x].iter().enumerate() {
         // Outer well cylinder
         let well_outer = centered_cylinder(
-            &format!("well_outer_{i}"),
+            format!("well_outer_{i}"),
             well_od / 2.0,
             well_depth + floor,
             32,
@@ -115,7 +115,7 @@ fn main() {
 
         // Inner bore (the actual well cavity)
         let well_bore = centered_cylinder(
-            &format!("well_bore_{i}"),
+            format!("well_bore_{i}"),
             well_id / 2.0,
             well_depth + 1.0,
             32,
@@ -128,13 +128,13 @@ fn main() {
         well_bores = well_bores + well_bore;
 
         // Fluid inlet through bottom of well (for peristaltic pump feed)
-        let inlet = centered_cylinder(&format!("well_inlet_{i}"), inlet_d / 2.0, floor + 2.0, 24)
+        let inlet = centered_cylinder(format!("well_inlet_{i}"), inlet_d / 2.0, floor + 2.0, 24)
             .translate(*wx, 0.0, -(body_height + rim_height) / 2.0 + floor / 2.0);
         well_bores = well_bores + inlet;
 
         // Overflow port (side hole near top of well, connects to drain channel)
         let overflow = centered_cylinder(
-            &format!("well_overflow_{i}"),
+            format!("well_overflow_{i}"),
             overflow_d / 2.0,
             well_od + 4.0,
             24,
@@ -194,7 +194,7 @@ fn main() {
 
     for (i, (mx, my)) in mount_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("mount_{i}"),
+            format!("mount_{i}"),
             mount_hole_d / 2.0,
             body_height + rim_height + 2.0,
             24,

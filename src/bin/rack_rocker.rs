@@ -126,7 +126,7 @@ fn main() {
     let mut rail_tabs = Part::empty("rail_tabs");
     for (i, &xo) in rail_x_offsets.iter().enumerate() {
         let tab = centered_cube(
-            &format!("rail_tab_{i}"),
+            format!("rail_tab_{i}"),
             rail_slot_width - 0.3, // 0.3 mm slide clearance
             rail_tab_len,
             rail_slot_depth,
@@ -150,7 +150,7 @@ fn main() {
     .enumerate()
     {
         let pocket = centered_cylinder(
-            &format!("foot_pocket_{i}"),
+            format!("foot_pocket_{i}"),
             foot_d / 2.0,
             foot_depth + 0.1,
             32,
@@ -199,7 +199,7 @@ fn main() {
     .iter()
     .enumerate()
     {
-        let bolt = centered_cylinder(&format!("nema_bolt_{i}"), m5_clear / 2.0, boss_x + 2.0, 24)
+        let bolt = centered_cylinder(format!("nema_bolt_{i}"), m5_clear / 2.0, boss_x + 2.0, 24)
             .rotate(0.0, 90.0, 0.0)
             .translate(boss_cx, boss_cy + *dy, boss_cz + *dz);
         nema_bolts = nema_bolts + bolt;
@@ -322,7 +322,7 @@ fn main() {
         (rack_pattern_x / 2.0, 0.0),
     ];
     for (i, (hx, hy)) in m6_positions.iter().enumerate() {
-        let hole = centered_cylinder(&format!("m6_{i}"), m6_clear / 2.0, top_z + 2.0, 24)
+        let hole = centered_cylinder(format!("m6_{i}"), m6_clear / 2.0, top_z + 2.0, 24)
             .translate(*hx, *hy, 0.0);
         rack_holes = rack_holes + hole;
     }
@@ -379,7 +379,7 @@ fn main() {
     let mut ribs = Part::empty("ribs");
     for (i, rx) in rib_x_positions.iter().enumerate() {
         let rib =
-            centered_cube(&format!("rib_{i}"), rib_x, rib_y, rib_z).translate(*rx, 0.0, rib_cz);
+            centered_cube(format!("rib_{i}"), rib_x, rib_y, rib_z).translate(*rx, 0.0, rib_cz);
         ribs = ribs + rib;
     }
 
@@ -398,7 +398,7 @@ fn main() {
     .iter()
     .enumerate()
     {
-        let tab = centered_cube(&format!("ret_tab_{i}"), tab_x, tab_y, tab_z).translate(
+        let tab = centered_cube(format!("ret_tab_{i}"), tab_x, tab_y, tab_z).translate(
             *tx,
             *ty,
             top_z / 2.0 + tab_z / 2.0,
@@ -582,7 +582,7 @@ fn main() {
     let rib_world_cz = pivot_axis_z - rib_z / 2.0;
     let mut asm_ribs = Part::empty("asm_ribs");
     for (i, rx) in rib_x_positions.iter().enumerate() {
-        let rib = centered_cube(&format!("asm_rib_{i}"), rib_x, rib_y, rib_z).translate(
+        let rib = centered_cube(format!("asm_rib_{i}"), rib_x, rib_y, rib_z).translate(
             *rx,
             0.0,
             rib_world_cz,

@@ -47,7 +47,7 @@ fn build_heating_block() -> Part {
     for i in 0..NUM_SLOTS {
         let x = first_x + (i as f64) * SLOT_SPACING;
         let well = centered_cylinder(
-            &format!("well_{i}"),
+            format!("well_{i}"),
             BLOCK_TUBE_DIAMETER / 2.0,
             BLOCK_WELL_DEPTH + 1.0,
             24,
@@ -67,7 +67,7 @@ fn build_lid() -> Part {
     for i in 0..NUM_SLOTS {
         let x = first_x + (i as f64) * SLOT_SPACING;
         let hole = centered_cylinder(
-            &format!("lid_hole_{i}"),
+            format!("lid_hole_{i}"),
             LID_TUBE_HOLE_DIAMETER / 2.0,
             LID_THICKNESS + 2.0,
             24,
@@ -96,7 +96,7 @@ fn build_tubes() -> Part {
 
     for i in 0..NUM_SLOTS {
         let x = first_x + (i as f64) * SLOT_SPACING;
-        let tube = centered_cylinder(&format!("tube_{i}"), TUBE_OD / 2.0, tube_length, 24)
+        let tube = centered_cylinder(format!("tube_{i}"), TUBE_OD / 2.0, tube_length, 24)
             .translate(x, 0.0, 0.0);
         tubes = tubes + tube;
     }

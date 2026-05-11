@@ -143,7 +143,7 @@ fn main() {
             let y = first_row_y - (row as f64) * pitch;
 
             let well = centered_cylinder(
-                &format!("well_r{row}_c{col}"),
+                format!("well_r{row}_c{col}"),
                 well_diameter / 2.0,
                 well_depth_from_top + 1.0, // +1mm to cut through top face
                 well_facets,
@@ -171,7 +171,7 @@ fn main() {
     let mut mounts = Part::empty("mounts");
     for (i, &(mx, my)) in mount_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("mount_{i}"),
+            format!("mount_{i}"),
             mount_hole_d / 2.0,
             block_z + 2.0, // through entire block
             24,

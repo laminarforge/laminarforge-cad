@@ -253,7 +253,7 @@ fn outer_ring() -> Part {
         if near_pitch || near_roll {
             continue;
         }
-        let w = centered_cylinder(&format!("win_{i}"), r_window / 2.0, OUTER_RING_Z + 2.0, 32)
+        let w = centered_cylinder(format!("win_{i}"), r_window / 2.0, OUTER_RING_Z + 2.0, 32)
             .translate(wx, wy, 0.0);
         windows = windows + w;
     }
@@ -287,7 +287,7 @@ fn inner_platform() -> Part {
     ];
     let mut holes = Part::empty("plate_holes");
     for (i, (hx, hy)) in positions.iter().enumerate() {
-        let h = centered_cylinder(&format!("m6_{i}"), M6_CLEAR / 2.0, INNER_PLATE_Z + 2.0, 24)
+        let h = centered_cylinder(format!("m6_{i}"), M6_CLEAR / 2.0, INNER_PLATE_Z + 2.0, 24)
             .translate(*hx, *hy, 0.0);
         holes = holes + h;
     }
@@ -312,7 +312,7 @@ fn inner_platform() -> Part {
     let rib_cz = -(INNER_PLATE_Z / 2.0) - rib_z / 2.0;
     let mut ribs = Part::empty("plate_ribs");
     for (i, rx) in [-140.0, 0.0, 140.0].iter().enumerate() {
-        let r = centered_cube(&format!("pr_{i}"), rib_x, rib_y, rib_z).translate(*rx, 0.0, rib_cz);
+        let r = centered_cube(format!("pr_{i}"), rib_x, rib_y, rib_z).translate(*rx, 0.0, rib_cz);
         ribs = ribs + r;
     }
 
@@ -330,7 +330,7 @@ fn inner_platform() -> Part {
     .iter()
     .enumerate()
     {
-        let t = centered_cube(&format!("rt_{i}"), tab, tab, tab_z).translate(
+        let t = centered_cube(format!("rt_{i}"), tab, tab, tab_z).translate(
             *tx,
             *ty,
             INNER_PLATE_Z / 2.0 + tab_z / 2.0,
@@ -367,7 +367,7 @@ fn outer_stepper_mount() -> Part {
     .iter()
     .enumerate()
     {
-        let h = centered_cylinder(&format!("osm_m3_{i}"), M3_CLEAR / 2.0, body_x + 2.0, 24)
+        let h = centered_cylinder(format!("osm_m3_{i}"), M3_CLEAR / 2.0, body_x + 2.0, 24)
             .rotate(0.0, 90.0, 0.0)
             .translate(0.0, *dy, *dz);
         m3s = m3s + h;
@@ -424,7 +424,7 @@ fn inner_stepper_mount() -> Part {
     .iter()
     .enumerate()
     {
-        let h = centered_cylinder(&format!("ism_m3_{i}"), M3_CLEAR / 2.0, body_y + 2.0, 24)
+        let h = centered_cylinder(format!("ism_m3_{i}"), M3_CLEAR / 2.0, body_y + 2.0, 24)
             .rotate(90.0, 0.0, 0.0)
             .translate(*dx, 0.0, *dz);
         m3s = m3s + h;
@@ -535,7 +535,7 @@ fn base_plate() -> Part {
     let xs = [-180.0, -60.0, 60.0, 180.0];
     let mut rails = Part::empty("base2_rails");
     for (i, xo) in xs.iter().enumerate() {
-        let r = centered_cube(&format!("rail_{i}"), rail_w, rail_l, rail_d).translate(
+        let r = centered_cube(format!("rail_{i}"), rail_w, rail_l, rail_d).translate(
             *xo,
             0.0,
             -BASE_Z / 2.0 - rail_d / 2.0,

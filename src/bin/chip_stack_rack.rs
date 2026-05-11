@@ -149,7 +149,7 @@ fn main() {
             // through exposes the glass bottom. If shelf_thickness ≥
             // pocket_depth, the pocket is a blind recess.
             let pocket = centered_cube(
-                &format!("pocket_{cx}_{ry}"),
+                format!("pocket_{cx}_{ry}"),
                 pocket_x,
                 pocket_y,
                 pocket_depth + 0.5,
@@ -159,7 +159,7 @@ fn main() {
 
             // Optical cut-through at pocket center (fully through shelf)
             let cut = centered_cube(
-                &format!("cut_{cx}_{ry}"),
+                format!("cut_{cx}_{ry}"),
                 optical_x,
                 optical_y,
                 shelf_thickness + 2.0,
@@ -170,7 +170,7 @@ fn main() {
             // Label slot in front gutter (toward -Y)
             let label_y_pos = py - pocket_y / 2.0 - label_y / 2.0 - 0.5;
             let label = centered_cube(
-                &format!("label_{cx}_{ry}"),
+                format!("label_{cx}_{ry}"),
                 label_x,
                 label_y,
                 label_depth + 0.1,
@@ -207,7 +207,7 @@ fn main() {
             for &sx in &[-1.0f64, 1.0] {
                 for &sy in &[-1.0f64, 1.0] {
                     let tab = centered_cube(
-                        &format!("tab_{cx}_{ry}_{}_{}", sx as i32, sy as i32),
+                        format!("tab_{cx}_{ry}_{}_{}", sx as i32, sy as i32),
                         tab_x,
                         tab_y,
                         tab_h,
@@ -233,7 +233,7 @@ fn main() {
         for &sy in &[-1.0f64, 1.0] {
             // Cut a square out of each shelf corner where the post sits
             let notch = centered_cube(
-                &format!("notch_{}_{}", sx as i32, sy as i32),
+                format!("notch_{}_{}", sx as i32, sy as i32),
                 notch_side,
                 notch_side,
                 shelf_thickness + 2.0,
@@ -279,7 +279,7 @@ fn main() {
         let z = first_shelf_z + (i as f64) * shelf_pitch;
         // Notch on +X face (cut a slot from +X face inward)
         let slot_x = centered_cube(
-            &format!("slotx_{i}"),
+            format!("slotx_{i}"),
             notch_d + 0.5,
             post_side + 0.2,
             notch_h,
@@ -287,7 +287,7 @@ fn main() {
         .translate(post_side / 2.0 - notch_d / 2.0 + 0.25, 0.0, z);
         // Notch on +Y face
         let slot_y = centered_cube(
-            &format!("sloty_{i}"),
+            format!("sloty_{i}"),
             post_side + 0.2,
             notch_d + 0.5,
             notch_h,
@@ -311,7 +311,7 @@ fn main() {
     for &sx in &[-1.0f64, 1.0] {
         for &sy in &[-1.0f64, 1.0] {
             let hole = centered_cylinder(
-                &format!("fh_{}_{}", sx as i32, sy as i32),
+                format!("fh_{}_{}", sx as i32, sy as i32),
                 corner_bolt_dia / 2.0,
                 post_flange_thickness + 2.0,
                 24,
@@ -346,7 +346,7 @@ fn main() {
                     let px = sx * post_cx + fx * flange_bolt_offset;
                     let py = sy * post_cy + fy * flange_bolt_offset;
                     let hole = centered_cylinder(
-                        &format!(
+                        format!(
                             "bph_{}_{}_{}_{}",
                             sx as i32, sy as i32, fx as i32, fy as i32
                         ),
@@ -378,7 +378,7 @@ fn main() {
     ];
     for (i, (px, py)) in rocker_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("rh_{i}"),
+            format!("rh_{i}"),
             rocker_bolt_dia / 2.0,
             base_thickness + 2.0,
             24,
@@ -447,7 +447,7 @@ fn main() {
                             let px = sx * post_cx + fx * flange_bolt_offset;
                             let py = sy * post_cy + fy * flange_bolt_offset;
                             let hole = centered_cylinder(
-                                &format!(
+                                format!(
                                     "abh_{}_{}_{}_{}",
                                     sx as i32, sy as i32, fx as i32, fy as i32
                                 ),
@@ -486,9 +486,9 @@ fn main() {
         for (j, &sy) in [-1.0f64, 1.0].iter().enumerate() {
             // Build a fresh copy of the post per corner (vcad Parts
             // aren't Clone-safe to reuse across CSG operations).
-            let p = centered_cube(&format!("ap_o_{i}_{j}"), post_side, post_side, post_height)
+            let p = centered_cube(format!("ap_o_{i}_{j}"), post_side, post_side, post_height)
                 + centered_cube(
-                    &format!("ap_f_{i}_{j}"),
+                    format!("ap_f_{i}_{j}"),
                     post_flange_side,
                     post_flange_side,
                     post_flange_thickness,
@@ -515,12 +515,12 @@ fn main() {
         // Build a simplified shelf for assembly (just outline + corner
         // notches, skip pockets/tabs/labels/cuts to keep tree small)
         let s = {
-            let body = centered_cube(&format!("asm_shelf_{i}"), shelf_x, shelf_y, shelf_thickness);
-            let mut notches = Part::empty(&format!("asm_notches_{i}"));
+            let body = centered_cube(format!("asm_shelf_{i}"), shelf_x, shelf_y, shelf_thickness);
+            let mut notches = Part::empty(format!("asm_notches_{i}"));
             for &sx in &[-1.0f64, 1.0] {
                 for &sy in &[-1.0f64, 1.0] {
                     let n = centered_cube(
-                        &format!("asm_n_{i}_{}_{}", sx as i32, sy as i32),
+                        format!("asm_n_{i}_{}_{}", sx as i32, sy as i32),
                         notch_side,
                         notch_side,
                         shelf_thickness + 2.0,
@@ -540,7 +540,7 @@ fn main() {
     for cx in 0..cols {
         let px = grid_origin_x + (cx as f64) * (pocket_x + gutter_interior);
         let py = grid_origin_y; // row 0
-        let chip = centered_cube(&format!("chip_dummy_{cx}"), chip_x, chip_y, chip_z)
+        let chip = centered_cube(format!("chip_dummy_{cx}"), chip_x, chip_y, chip_z)
             .translate(px, py, dummy_z);
         asm = asm + chip;
     }

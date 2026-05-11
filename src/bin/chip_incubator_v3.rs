@@ -188,7 +188,7 @@ fn wall_panels() -> Part {
     let rack_base_z = -(INNER_Z / 2.0) + 100.0; // rack base above gimbal
     for n in 0..5 {
         let z = rack_base_z + n as f64 * shelf_pitch + 20.0;
-        let hole = centered_cylinder(&format!("drip_{n}"), 14.0 / 2.0, WALL + 2.0, 32)
+        let hole = centered_cylinder(format!("drip_{n}"), 14.0 / 2.0, WALL + 2.0, 32)
             .rotate(0.0, 90.0, 0.0)
             .translate(cx / 2.0, 200.0, z);
         drip_mounts = drip_mounts + hole;

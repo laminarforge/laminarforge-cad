@@ -52,7 +52,7 @@ fn main() {
     for i in 0..NUM_SLOTS {
         let x = first_x + (i as f64) * SLOT_SPACING;
         let hole = centered_cylinder(
-            &format!("tube_access_{i}"),
+            format!("tube_access_{i}"),
             LID_TUBE_HOLE_DIAMETER / 2.0,
             LID_THICKNESS + LID_LIP_DEPTH + 2.0, // through plate and lip
             32,

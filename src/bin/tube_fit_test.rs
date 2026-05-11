@@ -48,7 +48,7 @@ fn main() {
         let x = first_x + (i as f64) * HOLE_SPACING;
 
         // Through-hole
-        let hole = centered_cylinder(&format!("hole_{i}"), diameter / 2.0, BLOCK_HEIGHT + 2.0, 32)
+        let hole = centered_cylinder(format!("hole_{i}"), diameter / 2.0, BLOCK_HEIGHT + 2.0, 32)
             .translate(x, 0.0, 0.0);
         holes = holes + hole;
 
@@ -59,17 +59,12 @@ fn main() {
 
         for b in 0..num_bars {
             let mx = mark_start_x + (b as f64) * (MARK_WIDTH + MARK_GAP);
-            let bar = centered_cube(
-                &format!("mark_{i}_{b}"),
-                MARK_WIDTH,
-                MARK_DEPTH,
-                MARK_HEIGHT,
-            )
-            .translate(
-                mx,
-                -(BLOCK_WIDTH / 2.0) - MARK_DEPTH / 2.0 + 0.01, // flush with front face, raised outward
-                -(BLOCK_HEIGHT / 2.0) + MARK_HEIGHT / 2.0 + 1.0, // near bottom of front face
-            );
+            let bar = centered_cube(format!("mark_{i}_{b}"), MARK_WIDTH, MARK_DEPTH, MARK_HEIGHT)
+                .translate(
+                    mx,
+                    -(BLOCK_WIDTH / 2.0) - MARK_DEPTH / 2.0 + 0.01, // flush with front face, raised outward
+                    -(BLOCK_HEIGHT / 2.0) + MARK_HEIGHT / 2.0 + 1.0, // near bottom of front face
+                );
             marks = marks + bar;
         }
     }

@@ -46,7 +46,7 @@ fn main() {
             let hx = -(num_cols as f64 - 1.0) * hole_spacing / 2.0 + (col as f64) * hole_spacing;
             let hy = -(num_rows as f64 - 1.0) * hole_spacing / 2.0 + (row as f64) * hole_spacing;
             let hole = centered_cylinder(
-                &format!("hole_{row}_{col}"),
+                format!("hole_{row}_{col}"),
                 hole_d / 2.0,
                 hole_depth + 1.0,
                 24,

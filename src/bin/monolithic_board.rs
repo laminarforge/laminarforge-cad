@@ -299,7 +299,7 @@ fn main() {
         for (ci, &cx) in col_xs.iter().enumerate() {
             let idx = ri * num_cols + ci;
             let chamber = centered_cube(
-                &format!("chamber_{idx}"),
+                format!("chamber_{idx}"),
                 chamber_w,
                 chamber_l,
                 pocket_tool_h,
@@ -318,7 +318,7 @@ fn main() {
             let inlet_end_y = chamber_bottom_y - ch_len;
             let inlet_center_y = (chamber_bottom_y + inlet_end_y) / 2.0;
 
-            let inlet_ch = centered_cube(&format!("inlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h)
+            let inlet_ch = centered_cube(format!("inlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h)
                 .translate(cx, inlet_center_y, pocket_z);
             board = board - inlet_ch;
         }
@@ -333,7 +333,7 @@ fn main() {
             let outlet_end_y = chamber_top_y + ch_len;
             let outlet_center_y = (chamber_top_y + outlet_end_y) / 2.0;
 
-            let outlet_ch = centered_cube(&format!("outlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h)
+            let outlet_ch = centered_cube(format!("outlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h)
                 .translate(cx, outlet_center_y, pocket_z);
             board = board - outlet_ch;
         }
@@ -355,8 +355,11 @@ fn main() {
     for (i, &iy) in input_ys.iter().enumerate() {
         let feed_len = (iy - bus_y).abs();
         let feed_center_y = (iy + bus_y) / 2.0;
-        let feed = centered_cube(&format!("input_feed_{i}"), bus_w, feed_len, bus_tool_h)
-            .translate(input_x, feed_center_y, bus_z);
+        let feed = centered_cube(format!("input_feed_{i}"), bus_w, feed_len, bus_tool_h).translate(
+            input_x,
+            feed_center_y,
+            bus_z,
+        );
         board = board - feed;
     }
 
@@ -370,7 +373,7 @@ fn main() {
         let tap_len = tap_x_end - tap_x_start;
         if tap_len > 0.01 {
             let tap = centered_cube(
-                &format!("bus_tap_{ch_label}"),
+                format!("bus_tap_{ch_label}"),
                 tap_len + dist_w,
                 bus_w,
                 bus_tool_h,
@@ -388,7 +391,7 @@ fn main() {
         let h_bus_to_valve_len = (r.dist_x - seg_a_x).abs();
         if h_bus_to_valve_len > 0.01 {
             let h_conn = centered_cube(
-                &format!("dist_h_bus_{ch_label}"),
+                format!("dist_h_bus_{ch_label}"),
                 h_bus_to_valve_len + dist_w,
                 dist_w,
                 dist_tool_h,
@@ -397,13 +400,8 @@ fn main() {
             board = board - h_conn;
         }
 
-        let seg_a = centered_cube(
-            &format!("dist_a_{ch_label}"),
-            dist_w,
-            seg_a_len,
-            dist_tool_h,
-        )
-        .translate(seg_a_x, seg_a_center_y, dist_z);
+        let seg_a = centered_cube(format!("dist_a_{ch_label}"), dist_w, seg_a_len, dist_tool_h)
+            .translate(seg_a_x, seg_a_center_y, dist_z);
         board = board - seg_a;
 
         // Segment B: vertical from valve RETURN port up to inlet channel endpoint
@@ -413,13 +411,8 @@ fn main() {
         let seg_b_len = (r.inlet_endpoint_y - valve_y).abs();
         let seg_b_center_y = (valve_y + r.inlet_endpoint_y) / 2.0;
 
-        let seg_b = centered_cube(
-            &format!("dist_b_{ch_label}"),
-            dist_w,
-            seg_b_len,
-            dist_tool_h,
-        )
-        .translate(seg_b_x, seg_b_center_y, dist_z);
+        let seg_b = centered_cube(format!("dist_b_{ch_label}"), dist_w, seg_b_len, dist_tool_h)
+            .translate(seg_b_x, seg_b_center_y, dist_z);
         board = board - seg_b;
 
         // Horizontal connector from valve_ret_x to col_x at inlet_endpoint_y
@@ -427,7 +420,7 @@ fn main() {
         let h_ret_to_inlet_len = (r.col_x - seg_b_x).abs();
         if h_ret_to_inlet_len > 0.01 {
             let h_conn_b = centered_cube(
-                &format!("inlet_junc_{ch_label}"),
+                format!("inlet_junc_{ch_label}"),
                 h_ret_to_inlet_len + dist_w,
                 dist_w,
                 dist_tool_h,
@@ -441,7 +434,7 @@ fn main() {
         let h_out_len = (r.col_x - r.outlet_route_x).abs();
         if h_out_len > 0.01 {
             let h_out = centered_cube(
-                &format!("outlet_junc_{ch_label}"),
+                format!("outlet_junc_{ch_label}"),
                 h_out_len + out_w,
                 out_w,
                 out_tool_h,
@@ -459,7 +452,7 @@ fn main() {
         let out_center_y = (r.outlet_endpoint_y + collector_y) / 2.0;
 
         let out_ch = centered_cube(
-            &format!("outlet_{ch_label}"),
+            format!("outlet_{ch_label}"),
             out_w,
             out_vert_len,
             out_tool_h,
@@ -487,7 +480,7 @@ fn main() {
         if out_feed_len > 0.01 {
             let out_feed_center_y = (collector_y + oy) / 2.0;
             let out_feed =
-                centered_cube(&format!("output_feed_{i}"), out_w, out_feed_len, out_tool_h)
+                centered_cube(format!("output_feed_{i}"), out_w, out_feed_len, out_tool_h)
                     .translate(output_x, out_feed_center_y, out_z);
             board = board - out_feed;
         }
@@ -499,14 +492,14 @@ fn main() {
 
     // ── 9a. Input port through-holes (4) ──
     for (i, &iy) in input_ys.iter().enumerate() {
-        let hole = centered_cylinder(&format!("input_port_{i}"), input_dia / 2.0, through_h, 32)
+        let hole = centered_cylinder(format!("input_port_{i}"), input_dia / 2.0, through_h, 32)
             .translate(input_x, iy, 0.0);
         board = board - hole;
     }
 
     // ── 9b. Output port through-holes (2) ──
     for (i, &oy) in output_ys.iter().enumerate() {
-        let hole = centered_cylinder(&format!("output_port_{i}"), port_dia / 2.0, through_h, 32)
+        let hole = centered_cylinder(format!("output_port_{i}"), port_dia / 2.0, through_h, 32)
             .translate(output_x, oy, 0.0);
         board = board - hole;
     }
@@ -514,11 +507,11 @@ fn main() {
     // ── 9c. Valve port through-holes (32: 16 OUT + 16 RETURN) ──
     for (idx, vp) in valve_ports.iter().enumerate() {
         let hole_out =
-            centered_cylinder(&format!("valve_out_{idx}"), valve_dia / 2.0, through_h, 32)
+            centered_cylinder(format!("valve_out_{idx}"), valve_dia / 2.0, through_h, 32)
                 .translate(vp.out_x, vp.y, 0.0);
 
         let hole_ret =
-            centered_cylinder(&format!("valve_ret_{idx}"), valve_dia / 2.0, through_h, 32)
+            centered_cylinder(format!("valve_ret_{idx}"), valve_dia / 2.0, through_h, 32)
                 .translate(vp.ret_x, vp.y, 0.0);
 
         board = board - hole_out - hole_ret;
@@ -542,9 +535,8 @@ fn main() {
     ];
 
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
-        let align_hole =
-            centered_cylinder(&format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
-                .translate(ax, ay, align_z);
+        let align_hole = centered_cylinder(format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
+            .translate(ax, ay, align_z);
         board = board - align_hole;
     }
 
@@ -553,7 +545,7 @@ fn main() {
     let sensor_mount_z = board_top - sensor_mount_depth / 2.0 + 0.1;
     for (i, &(sx, sy)) in sensor_mount_positions.iter().enumerate() {
         let mount_hole = centered_cylinder(
-            &format!("sensor_mount_{i}"),
+            format!("sensor_mount_{i}"),
             sensor_mount_dia / 2.0,
             sensor_mount_tool_h,
             24,
@@ -582,7 +574,7 @@ fn main() {
     let cover_through_h = cover_thickness + 0.5;
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("cover_align_{i}"),
+            format!("cover_align_{i}"),
             align_dia / 2.0,
             cover_through_h,
             24,
@@ -592,7 +584,7 @@ fn main() {
     }
     for (i, &(sx, sy)) in sensor_mount_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("cover_sensor_mount_{i}"),
+            format!("cover_sensor_mount_{i}"),
             sensor_mount_dia / 2.0,
             cover_through_h,
             24,

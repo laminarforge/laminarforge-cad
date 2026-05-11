@@ -29,7 +29,7 @@ fn main() {
     for i in 0..NUM_SLOTS {
         let x = first_x + (i as f64) * SLOT_SPACING;
         let hole = centered_cylinder(
-            &format!("hole_{i}"),
+            format!("hole_{i}"),
             HOLDER_TUBE_DIAMETER / 2.0,
             HOLDER_HEIGHT + 2.0,
             32,

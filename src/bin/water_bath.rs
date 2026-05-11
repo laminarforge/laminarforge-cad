@@ -190,7 +190,7 @@ fn main() {
             let hx = -(num_cols as f64 - 1.0) * tube_spacing / 2.0 + (col as f64) * tube_spacing;
             let hy = -(num_rows as f64 - 1.0) * tube_spacing / 2.0 + (row as f64) * tube_spacing;
             let hole = centered_cylinder(
-                &format!("tube_{row}_{col}"),
+                format!("tube_{row}_{col}"),
                 tube_d / 2.0,
                 rack_base_z + 2.0,
                 24,

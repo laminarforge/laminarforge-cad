@@ -70,7 +70,7 @@ fn main() {
 
     let mut legs = Part::empty("legs");
     for (i, (lx, ly)) in leg_positions.iter().enumerate() {
-        let leg = centered_cube(&format!("leg_{i}"), leg_width, leg_depth, leg_height).translate(
+        let leg = centered_cube(format!("leg_{i}"), leg_width, leg_depth, leg_height).translate(
             *lx,
             *ly,
             -(leg_height / 2.0),

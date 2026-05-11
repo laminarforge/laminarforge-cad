@@ -124,7 +124,7 @@ fn build_xy_carriage_plate() {
 
     for (i, (zx, zy)) in z_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("z_mount_{i}"),
+            format!("z_mount_{i}"),
             VSLOT_M5_HOLE / 2.0,
             plate_t + 2.0,
             24,
@@ -229,7 +229,7 @@ fn build_z_carriage() {
     .enumerate()
     {
         let hole = centered_cylinder(
-            &format!("motor_{i}"),
+            format!("motor_{i}"),
             NEMA17_HOLE_DIAMETER / 2.0,
             motor_plate_t + 2.0,
             24,

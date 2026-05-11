@@ -53,7 +53,7 @@ fn main() {
     for i in 0..NUM_SLOTS {
         let x = first_x + (i as f64) * SLOT_SPACING;
         let well = centered_cylinder(
-            &format!("well_{i}"),
+            format!("well_{i}"),
             BLOCK_TUBE_DIAMETER / 2.0,
             BLOCK_WELL_DEPTH + 1.0, // +1mm to cleanly cut through top face
             32,
@@ -110,7 +110,7 @@ fn main() {
     let mut mounts = Part::empty("mounts");
     for (i, &(mx, my)) in mount_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("mount_{i}"),
+            format!("mount_{i}"),
             BLOCK_MOUNT_HOLE_DIAMETER / 2.0,
             BLOCK_HEIGHT + 2.0,
             24,

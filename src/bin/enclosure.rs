@@ -70,7 +70,7 @@ fn main() {
     for &dx in &[-mount_spacing_x / 2.0, mount_spacing_x / 2.0] {
         for &dy in &[-mount_spacing_y / 2.0, mount_spacing_y / 2.0] {
             let hole = centered_cylinder(
-                &format!(
+                format!(
                     "mount_{}_{}",
                     if dx < 0.0 { "l" } else { "r" },
                     if dy < 0.0 { "f" } else { "b" }
@@ -133,7 +133,7 @@ fn main() {
         for j in 0..num_vents {
             let vz = vent_start_z + (j as f64) * vent_spacing;
             let slot = centered_cube(
-                &format!("vent_{}_{j}", if *side < 0.0 { "l" } else { "r" }),
+                format!("vent_{}_{j}", if *side < 0.0 { "l" } else { "r" }),
                 ENCLOSURE_WALL + 2.0,
                 vent_width,
                 vent_height,

@@ -140,7 +140,7 @@ fn main() {
     for &(sx, sy) in &[(1.0_f64, 1.0_f64), (1.0, -1.0), (-1.0, 1.0), (-1.0, -1.0)] {
         let si = (sx as i32, sy as i32);
         let corner_sq = centered_cube(
-            &format!("cr_sq_{}_{}", si.0, si.1),
+            format!("cr_sq_{}_{}", si.0, si.1),
             corner_r,
             corner_r,
             corner_through,
@@ -151,7 +151,7 @@ fn main() {
             0.0,
         );
         let corner_cyl = centered_cylinder(
-            &format!("cr_cyl_{}_{}", si.0, si.1),
+            format!("cr_cyl_{}_{}", si.0, si.1),
             corner_r,
             corner_through,
             32,
@@ -173,18 +173,14 @@ fn main() {
             let idx = row * num_cols + col;
 
             // ── Inlet well (open from top) ──
-            let inlet_well = centered_cylinder(
-                &format!("inlet_well_{idx}"),
-                well_dia / 2.0,
-                well_tool_h,
-                32,
-            )
-            .translate(cx, inlet_y, well_z);
+            let inlet_well =
+                centered_cylinder(format!("inlet_well_{idx}"), well_dia / 2.0, well_tool_h, 32)
+                    .translate(cx, inlet_y, well_z);
             plate = plate - inlet_well;
 
             // ── Outlet well (open from top) ──
             let outlet_well = centered_cylinder(
-                &format!("outlet_well_{idx}"),
+                format!("outlet_well_{idx}"),
                 well_dia / 2.0,
                 well_tool_h,
                 32,
@@ -194,19 +190,19 @@ fn main() {
 
             // ── Inlet via (from well bottom down to bottom face) ──
             let inlet_via =
-                centered_cylinder(&format!("inlet_via_{idx}"), via_dia / 2.0, via_tool_h, 24)
+                centered_cylinder(format!("inlet_via_{idx}"), via_dia / 2.0, via_tool_h, 24)
                     .translate(cx, inlet_y, via_z);
             plate = plate - inlet_via;
 
             // ── Outlet via (from well bottom down to bottom face) ──
             let outlet_via =
-                centered_cylinder(&format!("outlet_via_{idx}"), via_dia / 2.0, via_tool_h, 24)
+                centered_cylinder(format!("outlet_via_{idx}"), via_dia / 2.0, via_tool_h, 24)
                     .translate(cx, outlet_y, via_z);
             plate = plate - outlet_via;
 
             // ── BOTTOM FACE: Chamber ──
             let chamber = centered_cube(
-                &format!("chamber_{idx}"),
+                format!("chamber_{idx}"),
                 chamber_w,
                 chamber_l,
                 chamber_tool_h,
@@ -219,7 +215,7 @@ fn main() {
             let ch_inlet_center_y = (inlet_y + (cy - chamber_l / 2.0)) / 2.0;
             let ch_inlet_len = (cy - chamber_l / 2.0) - inlet_y;
             let inlet_ch = centered_cube(
-                &format!("inlet_ch_{idx}"),
+                format!("inlet_ch_{idx}"),
                 ch_w,
                 ch_inlet_len.abs(),
                 channel_tool_h,
@@ -231,7 +227,7 @@ fn main() {
             let ch_outlet_center_y = ((cy + chamber_l / 2.0) + outlet_y) / 2.0;
             let ch_outlet_len = outlet_y - (cy + chamber_l / 2.0);
             let outlet_ch = centered_cube(
-                &format!("outlet_ch_{idx}"),
+                format!("outlet_ch_{idx}"),
                 ch_w,
                 ch_outlet_len.abs(),
                 channel_tool_h,
@@ -253,9 +249,8 @@ fn main() {
     ];
 
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
-        let align_hole =
-            centered_cylinder(&format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
-                .translate(ax, ay, align_z);
+        let align_hole = centered_cylinder(format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
+            .translate(ax, ay, align_z);
         plate = plate - align_hole;
     }
 
@@ -268,7 +263,7 @@ fn main() {
     ];
 
     for (i, &(mx, my)) in mount_positions.iter().enumerate() {
-        let mount_hole = centered_cylinder(&format!("mount_{i}"), mount_dia / 2.0, through_h, 32)
+        let mount_hole = centered_cylinder(format!("mount_{i}"), mount_dia / 2.0, through_h, 32)
             .translate(mx, my, 0.0);
         plate = plate - mount_hole;
     }
@@ -288,7 +283,7 @@ fn main() {
     for &(sx, sy) in &[(1.0_f64, 1.0_f64), (1.0, -1.0), (-1.0, 1.0), (-1.0, -1.0)] {
         let si = (sx as i32, sy as i32);
         let gsq = centered_cube(
-            &format!("glass_cr_sq_{}_{}", si.0, si.1),
+            format!("glass_cr_sq_{}_{}", si.0, si.1),
             corner_r,
             corner_r,
             glass_t + 0.1,
@@ -299,7 +294,7 @@ fn main() {
             0.0,
         );
         let gcyl = centered_cylinder(
-            &format!("glass_cr_cyl_{}_{}", si.0, si.1),
+            format!("glass_cr_cyl_{}_{}", si.0, si.1),
             corner_r,
             glass_t + 0.1,
             32,

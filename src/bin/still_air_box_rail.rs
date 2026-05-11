@@ -75,7 +75,7 @@ fn build_rail(name: &str, total_length: f64) -> Vec<(String, Part)> {
                     PIN_OFFSET
                 };
                 let socket = centered_cylinder(
-                    &format!("socket_l_{pin_idx}"),
+                    format!("socket_l_{pin_idx}"),
                     PIN_SOCKET_DIAMETER / 2.0,
                     PIN_DEPTH + 0.5,
                     24,
@@ -100,7 +100,7 @@ fn build_rail(name: &str, total_length: f64) -> Vec<(String, Part)> {
                     PIN_OFFSET
                 };
                 let pin = centered_cylinder(
-                    &format!("pin_r_{pin_idx}"),
+                    format!("pin_r_{pin_idx}"),
                     PIN_DIAMETER / 2.0,
                     PIN_DEPTH,
                     24,

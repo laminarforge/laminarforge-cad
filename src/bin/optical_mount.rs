@@ -68,7 +68,7 @@ fn main() {
         // Cylinder along Y axis (rotated 90° around X)
         let led_y = -OPTICAL_MOUNT_WIDTH / 2.0 + OPTICAL_LED_HOLE_DEPTH / 2.0;
         let led = centered_cylinder(
-            &format!("led_{i}"),
+            format!("led_{i}"),
             OPTICAL_LED_HOLE_DIAMETER / 2.0,
             OPTICAL_LED_HOLE_DEPTH + 2.0, // +2mm to cut cleanly through front face
             32,
@@ -80,7 +80,7 @@ fn main() {
         // 10.4mm × 10.0mm × 5mm deep from back face
         let opt_y = OPTICAL_MOUNT_WIDTH / 2.0 - OPTICAL_OPT101_RECESS_DEPTH / 2.0;
         let opt_recess = centered_cube(
-            &format!("opt_{i}"),
+            format!("opt_{i}"),
             OPTICAL_OPT101_RECESS_X,
             OPTICAL_OPT101_RECESS_DEPTH + 1.0, // +1mm to cut through back face
             OPTICAL_OPT101_RECESS_Z,
@@ -95,7 +95,7 @@ fn main() {
         let channel_height = OPTICAL_MOUNT_HEIGHT - 3.0 + 1.0; // extends through top
         let channel_z = channel_bottom + channel_height / 2.0;
         let tube_channel = centered_cube(
-            &format!("tube_ch_{i}"),
+            format!("tube_ch_{i}"),
             OPTICAL_TUBE_CHANNEL_WIDTH,
             OPTICAL_TUBE_GAP,
             channel_height,
@@ -107,7 +107,7 @@ fn main() {
         // At the tube gap, this intersects the tube channel — light
         // passes through the PCR tube here.
         let aperture = centered_cylinder(
-            &format!("aperture_{i}"),
+            format!("aperture_{i}"),
             OPTICAL_APERTURE_DIAMETER / 2.0,
             OPTICAL_MOUNT_WIDTH + 2.0,
             24,
@@ -145,7 +145,7 @@ fn main() {
         if exit_height.abs() > 0.5 {
             let exit_z = (recess_bottom_z + channel_top_z) / 2.0;
             let wire_exit = centered_cube(
-                &format!("wire_exit_{i}"),
+                format!("wire_exit_{i}"),
                 2.5, // narrow slot for lead wires
                 OPTICAL_WIRE_CHANNEL_DEPTH + 1.0,
                 exit_height.abs() + 0.5,
@@ -160,7 +160,7 @@ fn main() {
     // Uses the X positions from BLOCK_MOUNT_HOLE_X
     for &mx in &[-BLOCK_MOUNT_HOLE_X, BLOCK_MOUNT_HOLE_X] {
         let mount_hole = centered_cylinder(
-            &format!("mount_{}", if mx < 0.0 { "l" } else { "r" }),
+            format!("mount_{}", if mx < 0.0 { "l" } else { "r" }),
             BLOCK_MOUNT_HOLE_DIAMETER / 2.0,
             OPTICAL_MOUNT_HEIGHT + 2.0,
             24,
@@ -175,7 +175,7 @@ fn main() {
     for &ax in &[-20.0, 20.0] {
         let align_y = -OPTICAL_MOUNT_WIDTH / 2.0 + 2.0; // near front face
         let align_hole = centered_cylinder(
-            &format!("align_{}", if ax < 0.0 { "l" } else { "r" }),
+            format!("align_{}", if ax < 0.0 { "l" } else { "r" }),
             align_pin_d / 2.0,
             OPTICAL_MOUNT_HEIGHT + 2.0,
             24,

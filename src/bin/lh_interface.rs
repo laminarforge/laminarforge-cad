@@ -167,7 +167,7 @@ fn main() {
         .iter()
         .enumerate()
     {
-        let k = centered_cube(&format!("knuckle_{i}"), knuckle_d, knuckle_w, knuckle_h).translate(
+        let k = centered_cube(format!("knuckle_{i}"), knuckle_d, knuckle_w, knuckle_h).translate(
             knuckle_edge_x,
             *yo,
             hatch_panel_thickness / 2.0 + knuckle_h / 2.0 - 1.0,
@@ -175,7 +175,7 @@ fn main() {
         // Drill the hinge hole through it (along Y so the pin runs parallel
         // to the hatch long edge)
         let hole = centered_cylinder(
-            &format!("kh_{i}"),
+            format!("kh_{i}"),
             hatch_hinge_dia / 2.0 + 0.1,
             knuckle_w + 2.0,
             24,
@@ -255,7 +255,7 @@ fn main() {
         ),
     ];
     for (i, (fx, fy)) in bolt_positions.iter().enumerate() {
-        let h = centered_cylinder(&format!("fh_{i}"), bolt_dia / 2.0, frame_thk + 2.0, 24)
+        let h = centered_cylinder(format!("fh_{i}"), bolt_dia / 2.0, frame_thk + 2.0, 24)
             .translate(*fx, *fy, 0.0);
         frame_holes = frame_holes + h;
     }
@@ -269,7 +269,7 @@ fn main() {
         .iter()
         .enumerate()
     {
-        let h = centered_cylinder(&format!("sh_{i}"), hatch_hinge_dia / 2.0 + 0.1, 30.0, 24)
+        let h = centered_cylinder(format!("sh_{i}"), hatch_hinge_dia / 2.0 + 0.1, 30.0, 24)
             .rotate(90.0, 0.0, 0.0)
             .translate(0.0, *yo, frame_thk / 2.0 + 3.0);
         spine_holes = spine_holes + h;
@@ -305,7 +305,7 @@ fn main() {
     .iter()
     .enumerate()
     {
-        let h = centered_cylinder(&format!("orh_{i}"), 4.4 / 2.0, rail_height + 2.0, 24)
+        let h = centered_cylinder(format!("orh_{i}"), 4.4 / 2.0, rail_height + 2.0, 24)
             .translate(0.0, *yo, 0.0);
         outer_holes = outer_holes + h;
     }
@@ -348,7 +348,7 @@ fn main() {
     .enumerate()
     {
         for &sx in &[-1.0f64, 1.0] {
-            let r = centered_cylinder(&format!("br_{i}_{}", sx as i32), 4.0 / 2.0, 3.0, 24)
+            let r = centered_cylinder(format!("br_{i}_{}", sx as i32), 4.0 / 2.0, 3.0, 24)
                 .rotate(0.0, 90.0, 0.0)
                 .translate(sx * (inner_w / 2.0 - 1.5), *yo, 0.0);
             ball_recesses = ball_recesses + r;
@@ -365,7 +365,7 @@ fn main() {
     .iter()
     .enumerate()
     {
-        let h = centered_cylinder(&format!("smh_{i}"), 4.4 / 2.0, inner_h + 2.0, 24)
+        let h = centered_cylinder(format!("smh_{i}"), 4.4 / 2.0, inner_h + 2.0, 24)
             .translate(0.0, *yo, 0.0);
         shelf_mount_holes = shelf_mount_holes + h;
     }

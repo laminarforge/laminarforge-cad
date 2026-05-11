@@ -151,7 +151,7 @@ fn main() {
                     let azimuth = dy.atan2(dx).to_degrees();
 
                     let strut = centered_cylinder(
-                        &format!("s_{iz}_{iy}_{ix}_{ci}"),
+                        format!("s_{iz}_{iy}_{ix}_{ci}"),
                         strut_radius,
                         length,
                         6, // low-poly for performance (many struts)

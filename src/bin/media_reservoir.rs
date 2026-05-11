@@ -171,7 +171,7 @@ fn main() {
         let theta = (i as f64) * std::f64::consts::PI / 6.0;
         let kx = (reservoir_od / 2.0 + 2.0) * theta.cos();
         let ky = (reservoir_od / 2.0 + 2.0) * theta.sin();
-        let pocket = centered_cube(&format!("kn{i}"), 4.0, 3.0, lid_collar_height).translate(
+        let pocket = centered_cube(format!("kn{i}"), 4.0, 3.0, lid_collar_height).translate(
             kx,
             ky,
             reservoir_outer_h / 2.0 - lid_collar_height / 2.0,
@@ -302,7 +302,7 @@ fn main() {
 
         // NEMA17 shaft/boss passthrough in plate
         let boss = centered_cylinder(
-            &format!("boss_{i}"),
+            format!("boss_{i}"),
             nema17_boss_clr / 2.0,
             manifold_plate_thickness + 2.0,
             48,
@@ -317,7 +317,7 @@ fn main() {
                 let mx = cx + dx * pump_mount_pattern;
                 let my = dy * pump_mount_pattern;
                 let m3 = centered_cylinder(
-                    &format!("m3_{i}_{}_{}", (dx * 10.0) as i32, (dy * 10.0) as i32),
+                    format!("m3_{i}_{}_{}", (dx * 10.0) as i32, (dy * 10.0) as i32),
                     pump_mount_hole_dia / 2.0,
                     manifold_plate_thickness + 2.0,
                     16,
@@ -331,7 +331,7 @@ fn main() {
         // (routing tubes flow out the -Y edge toward the container wall)
         for bd in [-1.0f64, 1.0] {
             let barb = centered_cylinder(
-                &format!("barb_{i}_{}", (bd * 10.0) as i32),
+                format!("barb_{i}_{}", (bd * 10.0) as i32),
                 5.0,
                 manifold_plate_thickness + 2.0,
                 16,
@@ -344,7 +344,7 @@ fn main() {
     // Channel ID labels (engraved front edge)
     for i in 0..pump_channels {
         let cx = pump_x_start + (i as f64) * pump_pitch;
-        let label = centered_cube(&format!("lbl_{i}"), 20.0, 5.0, 1.0).translate(
+        let label = centered_cube(format!("lbl_{i}"), 20.0, 5.0, 1.0).translate(
             cx,
             -(manifold_plate_y / 2.0) + 8.0,
             manifold_plate_thickness / 2.0 - 0.4,
@@ -419,7 +419,7 @@ fn main() {
         let theta = (i as f64) * std::f64::consts::PI / 2.0 + std::f64::consts::PI / 4.0;
         let bx = ((passthrough_od - 10.0) / 2.0) * theta.cos();
         let by = ((passthrough_od - 10.0) / 2.0) * theta.sin();
-        let bolt = centered_cylinder(&format!("ptb_{i}"), 4.2 / 2.0, 4.0 + 2.0, 16).translate(
+        let bolt = centered_cylinder(format!("ptb_{i}"), 4.2 / 2.0, 4.0 + 2.0, 16).translate(
             bx,
             by,
             4.0 / 2.0,
@@ -445,7 +445,7 @@ fn main() {
         let hx = 8.0 * theta.cos();
         let hy = 8.0 * theta.sin();
         let h = centered_cylinder(
-            &format!("gh_{i}"),
+            format!("gh_{i}"),
             grommet_hole_dia / 2.0,
             grommet_h + 2.0,
             24,
@@ -484,14 +484,14 @@ fn main() {
         let nx = nozzle_x_start + (i as f64) * drip_nozzle_pitch;
         let nz = -(drip_head_z / 2.0) - drip_nozzle_length / 2.0;
         let body = centered_cylinder(
-            &format!("noz_{i}"),
+            format!("noz_{i}"),
             drip_nozzle_od / 2.0,
             drip_nozzle_length,
             24,
         )
         .translate(nx, 0.0, nz);
         let bore = centered_cylinder(
-            &format!("nozb_{i}"),
+            format!("nozb_{i}"),
             drip_nozzle_bore / 2.0,
             drip_nozzle_length + drip_head_z,
             16,

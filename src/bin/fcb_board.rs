@@ -246,8 +246,11 @@ fn main() {
     for (i, &iy) in input_ys.iter().enumerate() {
         let feed_len = (iy - bus_y).abs();
         let feed_center_y = (iy + bus_y) / 2.0;
-        let feed = centered_cube(&format!("input_feed_{i}"), bus_w, feed_len, bus_tool_h)
-            .translate(input_x, feed_center_y, bus_z);
+        let feed = centered_cube(format!("input_feed_{i}"), bus_w, feed_len, bus_tool_h).translate(
+            input_x,
+            feed_center_y,
+            bus_z,
+        );
         bottom_plate = bottom_plate - feed;
     }
 
@@ -265,7 +268,7 @@ fn main() {
         let tap_len = tap_x_end - tap_x_start;
         if tap_len > 0.01 {
             let tap = centered_cube(
-                &format!("bus_tap_{ch_label}"),
+                format!("bus_tap_{ch_label}"),
                 tap_len + dist_w, // add overlap for connection
                 bus_w,
                 bus_tool_h,
@@ -285,7 +288,7 @@ fn main() {
         let h_bus_to_valve_len = (r.dist_x - seg_a_x).abs();
         if h_bus_to_valve_len > 0.01 {
             let h_conn = centered_cube(
-                &format!("dist_h_bus_{ch_label}"),
+                format!("dist_h_bus_{ch_label}"),
                 h_bus_to_valve_len + dist_w,
                 dist_w,
                 dist_tool_h,
@@ -294,13 +297,8 @@ fn main() {
             bottom_plate = bottom_plate - h_conn;
         }
 
-        let seg_a = centered_cube(
-            &format!("dist_a_{ch_label}"),
-            dist_w,
-            seg_a_len,
-            dist_tool_h,
-        )
-        .translate(seg_a_x, seg_a_center_y, dist_z);
+        let seg_a = centered_cube(format!("dist_a_{ch_label}"), dist_w, seg_a_len, dist_tool_h)
+            .translate(seg_a_x, seg_a_center_y, dist_z);
         bottom_plate = bottom_plate - seg_a;
 
         // Segment B: vertical channel from valve RETURN port up to chip inlet
@@ -308,20 +306,15 @@ fn main() {
         let seg_b_len = (r.inlet_y - valve_y).abs();
         let seg_b_center_y = (valve_y + r.inlet_y) / 2.0;
 
-        let seg_b = centered_cube(
-            &format!("dist_b_{ch_label}"),
-            dist_w,
-            seg_b_len,
-            dist_tool_h,
-        )
-        .translate(seg_b_x, seg_b_center_y, dist_z);
+        let seg_b = centered_cube(format!("dist_b_{ch_label}"), dist_w, seg_b_len, dist_tool_h)
+            .translate(seg_b_x, seg_b_center_y, dist_z);
         bottom_plate = bottom_plate - seg_b;
 
         // Horizontal connector from valve_ret_x to col_x at inlet_y (if they differ)
         let h_ret_to_inlet_len = (r.col_x - seg_b_x).abs();
         if h_ret_to_inlet_len > 0.01 {
             let h_conn_b = centered_cube(
-                &format!("inlet_conn_{ch_label}"),
+                format!("inlet_conn_{ch_label}"),
                 h_ret_to_inlet_len + dist_w,
                 dist_w,
                 dist_tool_h,
@@ -341,7 +334,7 @@ fn main() {
         let out_center_y = (r.outlet_y + collector_y) / 2.0;
 
         let out_ch = centered_cube(
-            &format!("outlet_{ch_label}"),
+            format!("outlet_{ch_label}"),
             out_w,
             out_vert_len,
             out_tool_h,
@@ -353,7 +346,7 @@ fn main() {
         let h_out_len = (r.col_x - r.outlet_route_x).abs();
         if h_out_len > 0.01 {
             let h_out = centered_cube(
-                &format!("outlet_h_{ch_label}"),
+                format!("outlet_h_{ch_label}"),
                 h_out_len + out_w,
                 out_w,
                 out_tool_h,
@@ -381,7 +374,7 @@ fn main() {
         if out_feed_len > 0.01 {
             let out_feed_center_y = (collector_y + oy) / 2.0;
             let out_feed =
-                centered_cube(&format!("output_feed_{i}"), out_w, out_feed_len, out_tool_h)
+                centered_cube(format!("output_feed_{i}"), out_w, out_feed_len, out_tool_h)
                     .translate(output_x, out_feed_center_y, out_z);
             bottom_plate = bottom_plate - out_feed;
         }
@@ -392,7 +385,7 @@ fn main() {
     // Input port through-holes
     for (i, &iy) in input_ys.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("input_port_bot_{i}"),
+            format!("input_port_bot_{i}"),
             input_dia / 2.0,
             through_h,
             32,
@@ -404,7 +397,7 @@ fn main() {
     // Output port through-holes
     for (i, &oy) in output_ys.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("output_port_bot_{i}"),
+            format!("output_port_bot_{i}"),
             FCB16_OUTPUT_PORT_DIAMETER / 2.0,
             through_h,
             32,
@@ -416,7 +409,7 @@ fn main() {
     // Valve port through-holes (32 total: 16 OUT + 16 RETURN)
     for (idx, vp) in valve_ports.iter().enumerate() {
         let hole_out = centered_cylinder(
-            &format!("valve_out_bot_{idx}"),
+            format!("valve_out_bot_{idx}"),
             valve_dia / 2.0,
             through_h,
             32,
@@ -424,7 +417,7 @@ fn main() {
         .translate(vp.out_x, vp.y, -plate_t / 2.0);
 
         let hole_ret = centered_cylinder(
-            &format!("valve_ret_bot_{idx}"),
+            format!("valve_ret_bot_{idx}"),
             valve_dia / 2.0,
             through_h,
             32,
@@ -437,7 +430,7 @@ fn main() {
     // Chip interface port through-holes (32 total: 16 inlet + 16 outlet)
     for (idx, r) in routes.iter().enumerate() {
         let inlet_hole = centered_cylinder(
-            &format!("chip_inlet_bot_{idx}"),
+            format!("chip_inlet_bot_{idx}"),
             port_dia / 2.0,
             through_h,
             32,
@@ -445,7 +438,7 @@ fn main() {
         .translate(r.col_x, r.inlet_y, -plate_t / 2.0);
 
         let outlet_hole = centered_cylinder(
-            &format!("chip_outlet_bot_{idx}"),
+            format!("chip_outlet_bot_{idx}"),
             port_dia / 2.0,
             through_h,
             32,
@@ -470,7 +463,7 @@ fn main() {
 
     for (i, &(mx, my)) in chip_clamp_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("clamp_mount_bot_{i}"),
+            format!("clamp_mount_bot_{i}"),
             mount_dia / 2.0,
             through_h,
             32,
@@ -489,7 +482,7 @@ fn main() {
 
     for (i, &(mx, my)) in base_mount_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("base_mount_bot_{i}"),
+            format!("base_mount_bot_{i}"),
             mount_dia / 2.0,
             through_h,
             32,
@@ -510,7 +503,7 @@ fn main() {
         for (label, py) in [("inlet", r.inlet_y), ("outlet", r.outlet_y)] {
             // Through-hole
             let hole = centered_cylinder(
-                &format!("chip_{label}_top_{idx}"),
+                format!("chip_{label}_top_{idx}"),
                 port_dia / 2.0,
                 through_h,
                 32,
@@ -519,7 +512,7 @@ fn main() {
 
             // O-ring groove (annular pocket on top face)
             let oring_outer = centered_cylinder(
-                &format!("oring_outer_{label}_{idx}"),
+                format!("oring_outer_{label}_{idx}"),
                 oring_od / 2.0,
                 oring_tool_h,
                 48,
@@ -527,7 +520,7 @@ fn main() {
             .translate(r.col_x, py, top_plate_top - oring_depth / 2.0 + 0.1);
 
             let oring_inner = centered_cylinder(
-                &format!("oring_inner_{label}_{idx}"),
+                format!("oring_inner_{label}_{idx}"),
                 oring_id / 2.0,
                 oring_tool_h + 0.2,
                 48,
@@ -542,7 +535,7 @@ fn main() {
     // ── Input port through-holes (top plate) ──
     for (i, &iy) in input_ys.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("input_port_top_{i}"),
+            format!("input_port_top_{i}"),
             input_dia / 2.0,
             through_h,
             32,
@@ -554,7 +547,7 @@ fn main() {
     // ── Output port through-holes (top plate) ──
     for (i, &oy) in output_ys.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("output_port_top_{i}"),
+            format!("output_port_top_{i}"),
             FCB16_OUTPUT_PORT_DIAMETER / 2.0,
             through_h,
             32,
@@ -566,7 +559,7 @@ fn main() {
     // ── Valve port through-holes (top plate, 32 total) ──
     for (idx, vp) in valve_ports.iter().enumerate() {
         let hole_out = centered_cylinder(
-            &format!("valve_out_top_{idx}"),
+            format!("valve_out_top_{idx}"),
             valve_dia / 2.0,
             through_h,
             32,
@@ -574,7 +567,7 @@ fn main() {
         .translate(vp.out_x, vp.y, plate_t / 2.0);
 
         let hole_ret = centered_cylinder(
-            &format!("valve_ret_top_{idx}"),
+            format!("valve_ret_top_{idx}"),
             valve_dia / 2.0,
             through_h,
             32,
@@ -587,7 +580,7 @@ fn main() {
     // ── Mounting holes (top plate) ──
     for (i, &(mx, my)) in chip_clamp_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("clamp_mount_top_{i}"),
+            format!("clamp_mount_top_{i}"),
             mount_dia / 2.0,
             through_h,
             32,
@@ -598,7 +591,7 @@ fn main() {
 
     for (i, &(mx, my)) in base_mount_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("base_mount_top_{i}"),
+            format!("base_mount_top_{i}"),
             mount_dia / 2.0,
             through_h,
             32,
@@ -622,7 +615,7 @@ fn main() {
     // Through-holes for mounting bolts (matching chip clamp positions)
     for (i, &(mx, my)) in chip_clamp_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("clamp_bolt_{i}"),
+            format!("clamp_bolt_{i}"),
             mount_dia / 2.0,
             clamp_thickness + 1.0,
             32,

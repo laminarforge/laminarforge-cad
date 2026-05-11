@@ -172,7 +172,7 @@ fn main() {
 
             // Chamber pocket: 3mm(X) x 10mm(Y) x 0.2mm deep
             let chamber = centered_cube(
-                &format!("chamber_{idx}"),
+                format!("chamber_{idx}"),
                 chamber_w,
                 chamber_l,
                 pocket_tool_h,
@@ -187,7 +187,7 @@ fn main() {
 
             let inlet_ch_center_y = (chamber_bottom_y + inlet_port_y) / 2.0;
             let inlet_channel =
-                centered_cube(&format!("inlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h).translate(
+                centered_cube(format!("inlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h).translate(
                     cx,
                     inlet_ch_center_y,
                     pocket_z,
@@ -200,7 +200,7 @@ fn main() {
 
             let outlet_ch_center_y = (chamber_top_y + outlet_port_y) / 2.0;
             let outlet_channel =
-                centered_cube(&format!("outlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h).translate(
+                centered_cube(format!("outlet_ch_{idx}"), ch_w, ch_len, pocket_tool_h).translate(
                     cx,
                     outlet_ch_center_y,
                     pocket_z,
@@ -209,13 +209,13 @@ fn main() {
 
             // Inlet port (through-hole)
             let inlet_port =
-                centered_cylinder(&format!("inlet_port_{idx}"), port_dia / 2.0, through_h, 32)
+                centered_cylinder(format!("inlet_port_{idx}"), port_dia / 2.0, through_h, 32)
                     .translate(cx, inlet_port_y, 0.0);
             channel_plate = channel_plate - inlet_port;
 
             // Outlet port (through-hole)
             let outlet_port =
-                centered_cylinder(&format!("outlet_port_{idx}"), port_dia / 2.0, through_h, 32)
+                centered_cylinder(format!("outlet_port_{idx}"), port_dia / 2.0, through_h, 32)
                     .translate(cx, outlet_port_y, 0.0);
             channel_plate = channel_plate - outlet_port;
 
@@ -234,9 +234,8 @@ fn main() {
     ];
 
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
-        let align_hole =
-            centered_cylinder(&format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
-                .translate(ax, ay, align_z);
+        let align_hole = centered_cylinder(format!("align_{i}"), align_dia / 2.0, align_tool_h, 24)
+            .translate(ax, ay, align_z);
         channel_plate = channel_plate - align_hole;
     }
 
@@ -249,7 +248,7 @@ fn main() {
     ];
 
     for (i, &(mx, my)) in mount_positions.iter().enumerate() {
-        let mount_hole = centered_cylinder(&format!("mount_{i}"), mount_dia / 2.0, through_h, 32)
+        let mount_hole = centered_cylinder(format!("mount_{i}"), mount_dia / 2.0, through_h, 32)
             .translate(mx, my, 0.0);
         channel_plate = channel_plate - mount_hole;
     }
@@ -273,7 +272,7 @@ fn main() {
     for &(sx, sy) in &[(1.0_f64, 1.0_f64), (1.0, -1.0), (-1.0, 1.0), (-1.0, -1.0)] {
         let si = (sx as i32, sy as i32);
         let corner_sq = centered_cube(
-            &format!("corner_sq_{}_{}", si.0, si.1),
+            format!("corner_sq_{}_{}", si.0, si.1),
             corner_r,
             corner_r,
             corner_through,
@@ -284,7 +283,7 @@ fn main() {
             0.0,
         );
         let corner_cyl = centered_cylinder(
-            &format!("corner_cyl_{}_{}", si.0, si.1),
+            format!("corner_cyl_{}_{}", si.0, si.1),
             corner_r,
             corner_through,
             32,
@@ -309,7 +308,7 @@ fn main() {
     let cover_through = CNC16_COVER_THICKNESS + 1.0;
     for (i, &(ax, ay)) in align_positions.iter().enumerate() {
         let align_hole = centered_cylinder(
-            &format!("cover_align_{i}"),
+            format!("cover_align_{i}"),
             align_dia / 2.0,
             cover_through,
             24,
@@ -324,7 +323,7 @@ fn main() {
     for &(sx, sy) in &[(1.0_f64, 1.0_f64), (1.0, -1.0), (-1.0, 1.0), (-1.0, -1.0)] {
         let si = (sx as i32, sy as i32);
         let csq = centered_cube(
-            &format!("cover_cr_sq_{}_{}", si.0, si.1),
+            format!("cover_cr_sq_{}_{}", si.0, si.1),
             corner_r,
             corner_r,
             cover_through,
@@ -335,7 +334,7 @@ fn main() {
             0.0,
         );
         let ccyl = centered_cylinder(
-            &format!("cover_cr_cyl_{}_{}", si.0, si.1),
+            format!("cover_cr_cyl_{}_{}", si.0, si.1),
             corner_r,
             cover_through,
             32,

@@ -107,7 +107,7 @@ fn main() {
     .enumerate()
     {
         let hole = centered_cylinder(
-            &format!("dowel_hole_{i}"),
+            format!("dowel_hole_{i}"),
             dowel_hole_d / 2.0,
             dowel_hole_depth + 1.0,
             32,
@@ -150,7 +150,7 @@ fn main() {
     for (i, (cx, cy)) in clamp_positions.iter().enumerate() {
         // Through hole
         let hole = centered_cylinder(
-            &format!("clamp_{i}"),
+            format!("clamp_{i}"),
             clamp_hole_d / 2.0,
             plate_thickness + 2.0,
             24,
@@ -159,7 +159,7 @@ fn main() {
 
         // Counterbore from bottom
         let cbore = centered_cylinder(
-            &format!("clamp_cbore_{i}"),
+            format!("clamp_cbore_{i}"),
             clamp_cbore_d / 2.0,
             clamp_cbore_depth + 0.1,
             24,
@@ -198,7 +198,7 @@ fn main() {
 
     for (i, (mx, my)) in mount_positions.iter().enumerate() {
         let hole = centered_cylinder(
-            &format!("mount_{i}"),
+            format!("mount_{i}"),
             mount_hole_d / 2.0,
             plate_thickness + 2.0,
             24,

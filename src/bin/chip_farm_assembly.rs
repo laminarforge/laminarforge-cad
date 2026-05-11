@@ -315,7 +315,7 @@ fn main() {
         for (i, &sx) in [-1.0f64, 1.0].iter().enumerate() {
             for (j, &sy) in [-1.0f64, 1.0].iter().enumerate() {
                 let p = centered_cube(
-                    &format!("rack_post_{i}_{j}"),
+                    format!("rack_post_{i}_{j}"),
                     post_side,
                     post_side,
                     post_height,
@@ -333,13 +333,8 @@ fn main() {
         let mut shelves = Part::empty("rack_shelves");
         for i in 0..num_shelves {
             let z = base_top + first_shelf_z + (i as f64) * shelf_pitch;
-            let s = centered_cube(
-                &format!("rack_shelf_{i}"),
-                shelf_x,
-                shelf_y,
-                shelf_thickness,
-            )
-            .translate(0.0, 0.0, z);
+            let s = centered_cube(format!("rack_shelf_{i}"), shelf_x, shelf_y, shelf_thickness)
+                .translate(0.0, 0.0, z);
             shelves = shelves + s;
         }
 
@@ -354,9 +349,8 @@ fn main() {
                 for ry in 0..rows {
                     let px = grid_origin_x + (cx as f64) * (pocket_x + gutter_interior);
                     let py = grid_origin_y + (ry as f64) * (pocket_y + gutter_interior);
-                    let chip =
-                        centered_cube(&format!("chip_{i}_{cx}_{ry}"), chip_x, chip_y, chip_z)
-                            .translate(px, py, chip_cz);
+                    let chip = centered_cube(format!("chip_{i}_{cx}_{ry}"), chip_x, chip_y, chip_z)
+                        .translate(px, py, chip_cz);
                     chips = chips + chip;
                 }
             }

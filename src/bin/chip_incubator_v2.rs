@@ -175,7 +175,7 @@ fn main() {
     let mut rail_slots = Part::empty("rail_slots");
     for (i, &xo) in rail_x_offsets.iter().enumerate() {
         let slot = centered_cube(
-            &format!("rail_slot_{i}"),
+            format!("rail_slot_{i}"),
             rail_slot_width,
             rail_slot_length,
             rail_slot_depth + 0.1,
@@ -344,7 +344,7 @@ fn main() {
     ];
     let mut feet_holes = Part::empty("feet_holes");
     for (i, &(fx, fy)) in foot_positions.iter().enumerate() {
-        let hole = centered_cylinder(&format!("foot_{i}"), 6.5 / 2.0, shell_wall + 4.0, 24)
+        let hole = centered_cylinder(format!("foot_{i}"), 6.5 / 2.0, shell_wall + 4.0, 24)
             .translate(fx, fy, -(shell_outer_z / 2.0) + shell_wall / 2.0);
         feet_holes = feet_holes + hole;
     }

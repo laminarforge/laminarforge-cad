@@ -128,7 +128,7 @@ fn frame() -> Part {
 
     let mut posts = Part::empty("t3_posts");
     for (i, &(px, py)) in post_positions.iter().enumerate() {
-        let p = centered_cube(&format!("t3_post_{i}"), EXT_W, EXT_W, post_h).translate(
+        let p = centered_cube(format!("t3_post_{i}"), EXT_W, EXT_W, post_h).translate(
             px,
             py,
             post_z_center,
@@ -381,7 +381,7 @@ fn rocker_bed_station(cx: f64, cy: f64) -> Part {
     ];
     let mut load_cells = Part::empty("t3_bed_lc");
     for (i, &(lcx, lcy)) in lc_positions.iter().enumerate() {
-        let lc = centered_cube(&format!("t3_lc_{i}"), lc_w, lc_w, load_cell_d).translate(
+        let lc = centered_cube(format!("t3_lc_{i}"), lc_w, lc_w, load_cell_d).translate(
             lcx,
             lcy,
             load_cell_d / 2.0,
@@ -475,7 +475,7 @@ fn zone_hvac_unit(cx: f64, cy: f64) -> Part {
     for (i, &sz) in [500.0f64, 1100.0, 1700.0].iter().enumerate() {
         // SHT45 + MH-Z19B paired on a small PCB
         let s_combo =
-            centered_cube(&format!("t3_z_s_{i}"), 40.0, 20.0, 10.0).translate(cx, cy - 200.0, sz);
+            centered_cube(format!("t3_z_s_{i}"), 40.0, 20.0, 10.0).translate(cx, cy - 200.0, sz);
         sensors = sensors + s_combo;
     }
 
@@ -541,7 +541,7 @@ fn hepa_plenum() -> Part {
     .iter()
     .enumerate()
     {
-        let d = centered_cylinder(&format!("t3_plenum_duct_{i}"), 100.0 / 2.0, duct_h, 24)
+        let d = centered_cylinder(format!("t3_plenum_duct_{i}"), 100.0 / 2.0, duct_h, 24)
             .translate(dx, dy, plenum_z - PLENUM_Z / 2.0 - duct_h / 2.0);
         ducts = ducts + d;
     }
@@ -670,7 +670,7 @@ fn service_pass_through() -> Part {
     // 4 media lines (top row)
     for i in 0..4 {
         let y = -SVC_Y / 2.0 + 50.0 + (i as f64) * 100.0;
-        let h = centered_cylinder(&format!("t3_svc_media_{i}"), 16.0 / 2.0, SVC_X + 4.0, 24)
+        let h = centered_cylinder(format!("t3_svc_media_{i}"), 16.0 / 2.0, SVC_X + 4.0, 24)
             .rotate(0.0, 90.0, 0.0)
             .translate(0.0, y, SVC_Z / 2.0 - 80.0);
         holes = holes + h;
@@ -679,7 +679,7 @@ fn service_pass_through() -> Part {
     // 4 waste lines (second row)
     for i in 0..4 {
         let y = -SVC_Y / 2.0 + 50.0 + (i as f64) * 100.0;
-        let h = centered_cylinder(&format!("t3_svc_waste_{i}"), 16.0 / 2.0, SVC_X + 4.0, 24)
+        let h = centered_cylinder(format!("t3_svc_waste_{i}"), 16.0 / 2.0, SVC_X + 4.0, 24)
             .rotate(0.0, 90.0, 0.0)
             .translate(0.0, y, SVC_Z / 2.0 - 200.0);
         holes = holes + h;
@@ -700,7 +700,7 @@ fn service_pass_through() -> Part {
     // 4 Cat6 glands
     for i in 0..4 {
         let y = -SVC_Y / 2.0 + 80.0 + (i as f64) * 50.0;
-        let h = centered_cylinder(&format!("t3_svc_cat6_{i}"), 10.0 / 2.0, SVC_X + 4.0, 24)
+        let h = centered_cylinder(format!("t3_svc_cat6_{i}"), 10.0 / 2.0, SVC_X + 4.0, 24)
             .rotate(0.0, 90.0, 0.0)
             .translate(0.0, y, SVC_Z / 2.0 - 420.0);
         holes = holes + h;
@@ -736,7 +736,7 @@ fn control_box() -> Part {
     let mut vents = Part::empty("t3_ctrl_vents");
     for i in 0..4 {
         let x = -CTRL_X / 2.0 + 80.0 + (i as f64) * 140.0;
-        let v = centered_cube(&format!("t3_ctrl_vent_{i}"), 100.0, 20.0, 10.0).translate(
+        let v = centered_cube(format!("t3_ctrl_vent_{i}"), 100.0, 20.0, 10.0).translate(
             x,
             0.0,
             CTRL_Z / 2.0,

@@ -131,7 +131,7 @@ fn main() {
     for (i, &(cx, cy)) in corner_positions.iter().enumerate() {
         // Horizontal bar of cross
         let h_bar = centered_cube(
-            &format!("cross_h_{i}"),
+            format!("cross_h_{i}"),
             align_size,
             cross_thickness,
             cross_height,
@@ -140,7 +140,7 @@ fn main() {
 
         // Vertical bar of cross
         let v_bar = centered_cube(
-            &format!("cross_v_{i}"),
+            format!("cross_v_{i}"),
             cross_thickness,
             align_size,
             cross_height,
