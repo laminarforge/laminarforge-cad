@@ -198,9 +198,13 @@ fn main() {
 
     // Per-shelf top-chip Z (for tubing drip head + imaging head clearance)
     let mut shelf_top_chip_z = [0.0f64; 5];
-    for i in 0..num_shelves as usize {
+    for (i, chip_top_z) in shelf_top_chip_z
+        .iter_mut()
+        .take(num_shelves as usize)
+        .enumerate()
+    {
         let shelf_top = rack_base_top_z + first_shelf_z + (i as f64) * shelf_pitch;
-        shelf_top_chip_z[i] = shelf_top + shelf_thickness + chip_z;
+        *chip_top_z = shelf_top + shelf_thickness + chip_z;
     }
     let _top_shelf_chip_z = shelf_top_chip_z[num_shelves as usize - 1];
 
@@ -239,14 +243,18 @@ fn main() {
     let drip_head_cy: f64 = -shelf_y / 2.0 - 30.0; // toward -Y (front), outside the rack's Y span
                                                    // Drip head Z: centered between its shelf's top chip and the shelf above
     let mut drip_head_cz = [0.0f64; 5];
-    for i in 0..num_shelves as usize {
+    for (i, drip_z) in drip_head_cz
+        .iter_mut()
+        .take(num_shelves as usize)
+        .enumerate()
+    {
         let this_chip_top = shelf_top_chip_z[i];
         let next_shelf_bottom = if i + 1 < num_shelves as usize {
             rack_base_top_z + first_shelf_z + ((i + 1) as f64) * shelf_pitch
         } else {
             this_chip_top + 25.0
         };
-        drip_head_cz[i] = (this_chip_top + next_shelf_bottom) / 2.0 + drip_head_z / 2.0;
+        *drip_z = (this_chip_top + next_shelf_bottom) / 2.0 + drip_head_z / 2.0;
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -565,7 +573,12 @@ fn main() {
 
         // Drip heads (×5) — inside container, above each shelf
         let mut drip_heads = Part::empty("drip_heads");
-        for i in 0..num_shelves as usize {
+        for (i, head_z) in drip_head_cz
+            .iter()
+            .copied()
+            .take(num_shelves as usize)
+            .enumerate()
+        {
             drip_heads = drip_heads
                 + cube(
                     &format!("drip_head_{i}"),
@@ -574,7 +587,7 @@ fn main() {
                     drip_head_z,
                     0.0,
                     drip_head_cy,
-                    drip_head_cz[i],
+                    head_z,
                 );
         }
 
@@ -775,7 +788,12 @@ fn main() {
         let bulkhead_in = (passthrough_wall_x + 5.0, passthrough_cy, passthrough_cz);
         let bulkhead_out = (passthrough_wall_x - 5.0, passthrough_cy, passthrough_cz);
 
-        for i in 0..num_shelves as usize {
+        for (i, head_z) in drip_head_cz
+            .iter()
+            .copied()
+            .take(num_shelves as usize)
+            .enumerate()
+        {
             let pz = pump_z_start + (i as f64) * pump_pitch;
             let pump_in = (manifold_cx - 30.0, 0.0, pz);
             let pump_out = (manifold_cx - 45.0, 0.0, pz);
@@ -825,7 +843,7 @@ fn main() {
                 );
 
             // Segment C: bulkhead → drip head (inside container, with slack loop)
-            let drip_pt = (0.0, drip_head_cy, drip_head_cz[i]);
+            let drip_pt = (0.0, drip_head_cy, head_z);
             // Horizontal slack loop: 30 mm radius detour in Y right after bulkhead
             let slack_1 = (bulkhead_out.0 - 20.0, bulkhead_out.1 + 30.0, bulkhead_out.2);
             let slack_2 = (bulkhead_out.0 - 40.0, bulkhead_out.1, bulkhead_out.2);
