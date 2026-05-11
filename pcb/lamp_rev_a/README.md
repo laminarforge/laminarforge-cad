@@ -16,6 +16,7 @@ workflow.
 - `placement.toml`: locked starting refs, coordinates, test points, and eight-slot optical geometry.
 - `pin_nets.toml`: conservative footprint pad-to-net assignments for known package pinouts.
 - `routing_plan.toml`: routing phase order, current unrouted count, autorouter policy, and release gates.
+- `routing_seed.toml`: DRC-clean starter traces emitted into the materialized board.
 - `lamp_rev_a.kicad_sch`: KiCad schematic shell for the one-board Rev A electrical architecture.
 - `lamp_rev_a.kicad_pcb`: materialized KiCad board with the Rev A outline, 4-layer stack, placed footprints, test points, and optical-slot guides.
 - `lamp_rev_a.kicad_pro`: KiCad project shell.
@@ -34,6 +35,7 @@ contract.toml + parts.toml
   -> placement.toml refs and zone checks
   -> pin_nets.toml trusted pad assignments
   -> cargo run --release --bin lamp_rev_a_materialize_board
+  -> cargo run --release --bin lamp_rev_a_seed_routes_from_drc when reseeding short safe traces
   -> KiCad schematic capture in lamp_rev_a.kicad_sch
   -> KiCad ERC
   -> footprint/BOM/JLC field lock
@@ -72,8 +74,8 @@ cargo run --release --bin lamp_rev_a_route_report
 The current schematic is an architecture shell, not a fabrication-ready circuit.
 The checker should not report fab-blocking part-selection gaps. The board now
 materializes all selected parts into KiCad with zero physical DRC violations
-before routing. The active work is schematic completion, routing the 93 current
-ratlines, schematic/PCB parity, and bench validation.
+and a DRC-clean starter route seed. The active work is schematic completion,
+routing the 73 remaining ratlines, schematic/PCB parity, and bench validation.
 
 Current KiCad checks:
 
@@ -89,6 +91,10 @@ kicad-cli pcb drc --format json \
 Expected DRC state at this stage: `0 violations` and unrouted connections still
 listed under `unconnected_items`. Run `lamp_rev_a_route_report` after DRC to
 see the current routing backlog by net.
+
+`lamp_rev_a_seed_routes_from_drc` is intentionally conservative: it only seeds
+short direct routes that preserve zero physical DRC violations. Longer routes
+must be added deliberately in `routing_seed.toml` or finished in KiCad.
 
 Do not accept autorouter output by itself. Use it to expose bad placement or
 constraint problems, then finish and review the layout in KiCad.

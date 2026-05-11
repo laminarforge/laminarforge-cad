@@ -11,6 +11,7 @@ const CONTRACT_PATH: &str = "pcb/lamp_rev_a/contract.toml";
 const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
 const PLACEMENT_PATH: &str = "pcb/lamp_rev_a/placement.toml";
 const PIN_NETS_PATH: &str = "pcb/lamp_rev_a/pin_nets.toml";
+const ROUTING_SEED_PATH: &str = "pcb/lamp_rev_a/routing_seed.toml";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
 
 #[derive(Debug, Deserialize)]
@@ -128,15 +129,43 @@ struct PinNetAssignment {
     pins: BTreeMap<String, String>,
 }
 
+#[derive(Debug, Deserialize)]
+struct RoutingSeed {
+    #[serde(default)]
+    segments: Vec<RouteSegment>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RouteSegment {
+    net: String,
+    layer: String,
+    #[serde(default)]
+    via_at_ends: bool,
+    width_mm: f64,
+    start_x_mm: f64,
+    start_y_mm: f64,
+    end_x_mm: f64,
+    end_y_mm: f64,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let root = std::env::current_dir()?;
     let contract = read_toml::<Contract>(&root.join(CONTRACT_PATH))?;
     let parts = read_toml::<PartsManifest>(&root.join(PARTS_PATH))?;
     let placement = read_toml::<PlacementPlan>(&root.join(PLACEMENT_PATH))?;
     let pin_nets = read_toml::<PinNetManifest>(&root.join(PIN_NETS_PATH))?;
+    let routing_seed = read_toml::<RoutingSeed>(&root.join(ROUTING_SEED_PATH))?;
     let nets = expand_nets(&contract);
 
-    let board = render_board(&root, &contract, &parts, &placement, &pin_nets, &nets)?;
+    let board = render_board(
+        &root,
+        &contract,
+        &parts,
+        &placement,
+        &pin_nets,
+        &routing_seed,
+        &nets,
+    )?;
     fs::write(root.join(BOARD_PATH), board)?;
 
     println!("Materialized LAMP Rev A KiCad board:");
@@ -145,6 +174,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("  test points: {}", placement.test_points.len());
     println!("  nets: {}", nets.len());
     println!("  assigned pad nets: {}", assigned_pad_count(&pin_nets));
+    println!("  starter route segments: {}", routing_seed.segments.len());
     Ok(())
 }
 
@@ -173,6 +203,7 @@ fn render_board(
     parts: &PartsManifest,
     placement: &PlacementPlan,
     pin_nets: &PinNetManifest,
+    routing_seed: &RoutingSeed,
     nets: &[String],
 ) -> Result<String, Box<dyn Error>> {
     let mut counter = UuidCounter::default();
@@ -216,6 +247,8 @@ fn render_board(
     for point in &placement.test_points {
         write_test_point(&mut board, point, &net_ids, &mut counter)?;
     }
+
+    write_route_segments(&mut board, contract, routing_seed, &net_ids, &mut counter)?;
 
     board.push_str(")\n");
     Ok(board)
@@ -507,6 +540,128 @@ fn write_test_point(
         counter.next(),
         net_id,
         escape(&point.net),
+        counter.next()
+    )?;
+    Ok(())
+}
+
+fn write_route_segments(
+    board: &mut String,
+    contract: &Contract,
+    routing_seed: &RoutingSeed,
+    net_ids: &BTreeMap<&str, usize>,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    for segment in &routing_seed.segments {
+        if segment.layer != "F.Cu" && segment.layer != "B.Cu" {
+            return Err(format!(
+                "route segment for {} uses unsupported layer {}",
+                segment.net, segment.layer
+            )
+            .into());
+        }
+        if segment.layer == "B.Cu" && !segment.via_at_ends {
+            return Err(format!(
+                "B.Cu route segment for {} must set via_at_ends = true",
+                segment.net
+            )
+            .into());
+        }
+        if segment.width_mm <= 0.0 {
+            return Err(format!("route segment for {} has non-positive width", segment.net).into());
+        }
+        validate_board_point(
+            segment.start_x_mm,
+            segment.start_y_mm,
+            contract,
+            &segment.net,
+        )?;
+        validate_board_point(
+            segment.end_x_mm,
+            segment.end_y_mm,
+            contract,
+            &segment.net,
+        )?;
+        let net_id = *net_ids
+            .get(segment.net.as_str())
+            .ok_or_else(|| format!("route segment references unknown net {}", segment.net))?;
+        if segment.via_at_ends {
+            write_via(
+                board,
+                segment.start_x_mm,
+                segment.start_y_mm,
+                net_id,
+                counter,
+            )?;
+            write_via(
+                board,
+                segment.end_x_mm,
+                segment.end_y_mm,
+                net_id,
+                counter,
+            )?;
+        }
+        writeln!(
+            board,
+            r#"
+  (segment
+    (start {} {})
+    (end {} {})
+    (width {})
+    (layer "{}")
+    (net {})
+    (uuid "{}")
+  )"#,
+            fmt(segment.start_x_mm),
+            fmt(segment.start_y_mm),
+            fmt(segment.end_x_mm),
+            fmt(segment.end_y_mm),
+            fmt(segment.width_mm),
+            escape(&segment.layer),
+            net_id,
+            counter.next()
+        )?;
+    }
+    Ok(())
+}
+
+fn validate_board_point(
+    x_mm: f64,
+    y_mm: f64,
+    contract: &Contract,
+    net: &str,
+) -> Result<(), Box<dyn Error>> {
+    if x_mm < 0.0
+        || y_mm < 0.0
+        || x_mm > contract.board.width_mm
+        || y_mm > contract.board.height_mm
+    {
+        return Err(format!("route segment for {net} has off-board point {x_mm},{y_mm}").into());
+    }
+    Ok(())
+}
+
+fn write_via(
+    board: &mut String,
+    x_mm: f64,
+    y_mm: f64,
+    net_id: usize,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    writeln!(
+        board,
+        r#"
+  (via
+    (at {} {})
+    (size 0.6)
+    (drill 0.3)
+    (layers "F.Cu" "B.Cu")
+    (net {})
+    (uuid "{}")
+  )"#,
+        fmt(x_mm),
+        fmt(y_mm),
+        net_id,
         counter.next()
     )?;
     Ok(())

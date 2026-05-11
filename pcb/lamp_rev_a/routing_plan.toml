@@ -1,12 +1,13 @@
 [package]
 name = "lamp_rev_a_routing"
-ticket = "T-9523CA78"
+ticket = "T-56201F4B"
 revision = "Rev A"
-source_stage = "placement_drc_clean"
+source_stage = "routing_seed_drc_clean"
 
 [current_state]
 physical_drc_violations = 0
-unconnected_items = 93
+unconnected_items = 73
+starter_route_segments = 23
 source_report = "pcb/lamp_rev_a/reports/drc.json"
 
 [[routing_phases]]
