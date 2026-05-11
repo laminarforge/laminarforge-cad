@@ -581,13 +581,13 @@ fn header_2x5_pads() -> Vec<Pad> {
         NET_INT_AD5940,
     ];
     let mut pads = Vec::with_capacity(10);
-    for i in 0..10 {
+    for (i, net) in nets.iter().enumerate() {
         let row = (i / 2) as f64;
         let col = (i % 2) as f64;
         let x = col * 2.54 - 1.27;
         let y = row * 2.54 - 5.08;
         let num = Box::leak(format!("{}", i + 1).into_boxed_str());
-        pads.push(pad_th(num, x, y, 1.7, 1.0, nets[i]));
+        pads.push(pad_th(num, x, y, 1.7, 1.0, *net));
     }
     pads
 }
@@ -602,6 +602,7 @@ fn pogo_pad(net_id: u32) -> Vec<Pad> {
 
 // ───────────────────────── Component list ─────────────────────────
 
+#[allow(clippy::vec_init_then_push)]
 fn define_components() -> Vec<Component> {
     let mut c: Vec<Component> = Vec::new();
 
@@ -1497,7 +1498,7 @@ fn main() {
     println!("Net usage: {} unique nets", used_nets.len());
     let top_n = 25;
     let mut top: Vec<(u32, usize)> = net_counts.iter().map(|(&k, &v)| (k, v)).collect();
-    top.sort_by(|a, b| b.1.cmp(&a.1));
+    top.sort_by_key(|item| std::cmp::Reverse(item.1));
     for (nid, cnt) in top.iter().take(top_n) {
         if *nid == NET_UNCONNECTED {
             continue;
