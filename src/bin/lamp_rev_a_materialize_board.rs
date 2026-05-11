@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 const CONTRACT_PATH: &str = "pcb/lamp_rev_a/contract.toml";
 const PARTS_PATH: &str = "pcb/lamp_rev_a/parts.toml";
 const PLACEMENT_PATH: &str = "pcb/lamp_rev_a/placement.toml";
+const PIN_NETS_PATH: &str = "pcb/lamp_rev_a/pin_nets.toml";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
 
 #[derive(Debug, Deserialize)]
@@ -116,14 +117,26 @@ struct OpticalSlotPlacement {
     base_resistor_ref: String,
 }
 
+#[derive(Debug, Deserialize)]
+struct PinNetManifest {
+    assignments: Vec<PinNetAssignment>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PinNetAssignment {
+    reference: String,
+    pins: BTreeMap<String, String>,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let root = std::env::current_dir()?;
     let contract = read_toml::<Contract>(&root.join(CONTRACT_PATH))?;
     let parts = read_toml::<PartsManifest>(&root.join(PARTS_PATH))?;
     let placement = read_toml::<PlacementPlan>(&root.join(PLACEMENT_PATH))?;
+    let pin_nets = read_toml::<PinNetManifest>(&root.join(PIN_NETS_PATH))?;
     let nets = expand_nets(&contract);
 
-    let board = render_board(&root, &contract, &parts, &placement, &nets)?;
+    let board = render_board(&root, &contract, &parts, &placement, &pin_nets, &nets)?;
     fs::write(root.join(BOARD_PATH), board)?;
 
     println!("Materialized LAMP Rev A KiCad board:");
@@ -131,6 +144,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("  footprints: {}", placement.placements.len());
     println!("  test points: {}", placement.test_points.len());
     println!("  nets: {}", nets.len());
+    println!("  assigned pad nets: {}", assigned_pad_count(&pin_nets));
     Ok(())
 }
 
@@ -158,6 +172,7 @@ fn render_board(
     contract: &Contract,
     parts: &PartsManifest,
     placement: &PlacementPlan,
+    pin_nets: &PinNetManifest,
     nets: &[String],
 ) -> Result<String, Box<dyn Error>> {
     let mut counter = UuidCounter::default();
@@ -166,6 +181,11 @@ fn render_board(
         .selected_parts
         .iter()
         .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let pin_nets_by_ref = pin_nets
+        .assignments
+        .iter()
+        .map(|assignment| (assignment.reference.as_str(), assignment))
         .collect::<BTreeMap<_, _>>();
 
     let mut board = String::new();
@@ -182,7 +202,15 @@ fn render_board(
                 item.reference, item.part_id
             )
         })?;
-        write_placed_footprint(&mut board, &footprint_dir, item, part, &mut counter)?;
+        write_placed_footprint(
+            &mut board,
+            &footprint_dir,
+            item,
+            part,
+            pin_nets_by_ref.get(item.reference.as_str()).copied(),
+            &net_ids,
+            &mut counter,
+        )?;
     }
 
     for point in &placement.test_points {
@@ -406,6 +434,8 @@ fn write_placed_footprint(
     footprint_dir: &Path,
     item: &FootprintPlacement,
     part: &SelectedPart,
+    pin_nets: Option<&PinNetAssignment>,
+    net_ids: &BTreeMap<&str, usize>,
     counter: &mut UuidCounter,
 ) -> Result<(), Box<dyn Error>> {
     if item.side != "top" {
@@ -429,6 +459,9 @@ fn write_placed_footprint(
     footprint = replace_property_value(&footprint, "Value", &part.value)?;
     footprint = rewrite_uuids(&footprint, counter);
     footprint = insert_placement_metadata(&footprint, item, part, counter)?;
+    if let Some(pin_nets) = pin_nets {
+        footprint = apply_pin_nets(&footprint, pin_nets, net_ids)?;
+    }
     footprint = demote_footprint_silkscreen(&footprint);
 
     board.push('\n');
@@ -620,8 +653,129 @@ fn insert_placement_metadata(
     Ok(out)
 }
 
+fn apply_pin_nets(
+    source: &str,
+    assignment: &PinNetAssignment,
+    net_ids: &BTreeMap<&str, usize>,
+) -> Result<String, Box<dyn Error>> {
+    let mut footprint = source.to_string();
+    for (pin, net) in &assignment.pins {
+        let net_id = *net_ids.get(net.as_str()).ok_or_else(|| {
+            format!(
+                "pin-net assignment {} pad {} references unknown net {}",
+                assignment.reference, pin, net
+            )
+        })?;
+        let (updated, count) = assign_pad_net(&footprint, pin, net_id, net);
+        if count == 0 {
+            return Err(format!(
+                "pin-net assignment {} pad {} did not match any pad in footprint",
+                assignment.reference, pin
+            )
+            .into());
+        }
+        footprint = updated;
+    }
+    Ok(footprint)
+}
+
+fn assign_pad_net(source: &str, pad: &str, net_id: usize, net: &str) -> (String, usize) {
+    let marker = format!("(pad \"{}\"", escape(pad));
+    let mut out = String::with_capacity(source.len());
+    let mut cursor = 0;
+    let mut count = 0;
+
+    while let Some(relative) = source[cursor..].find(&marker) {
+        let pad_start = cursor + relative;
+        let Some(pad_end) = find_matching_sexpr_end(source, pad_start) else {
+            break;
+        };
+        let pad_block = &source[pad_start..pad_end];
+        out.push_str(&source[cursor..pad_start]);
+
+        let updated_pad = if pad_block.contains("(net ") {
+            replace_pad_net(pad_block, net_id, net)
+        } else {
+            insert_pad_net(pad_block, net_id, net)
+        };
+        out.push_str(&updated_pad);
+        cursor = pad_end;
+        count += 1;
+    }
+
+    out.push_str(&source[cursor..]);
+    (out, count)
+}
+
+fn replace_pad_net(pad_block: &str, net_id: usize, net: &str) -> String {
+    let Some(net_start) = pad_block.find("(net ") else {
+        return insert_pad_net(pad_block, net_id, net);
+    };
+    let Some(net_end) = find_matching_sexpr_end(pad_block, net_start) else {
+        return insert_pad_net(pad_block, net_id, net);
+    };
+    let mut out = String::new();
+    out.push_str(&pad_block[..net_start]);
+    out.push_str(&format!(r#"(net {} "{}")"#, net_id, escape(net)));
+    out.push_str(&pad_block[net_end..]);
+    out
+}
+
+fn insert_pad_net(pad_block: &str, net_id: usize, net: &str) -> String {
+    let insert_at = pad_block
+        .find("\n\t\t(uuid ")
+        .or_else(|| pad_block.rfind('\n'))
+        .unwrap_or_else(|| pad_block.len().saturating_sub(1));
+    let mut out = String::new();
+    out.push_str(&pad_block[..insert_at]);
+    out.push_str(&format!("\n\t\t(net {} \"{}\")", net_id, escape(net)));
+    out.push_str(&pad_block[insert_at..]);
+    out
+}
+
+fn find_matching_sexpr_end(source: &str, start: usize) -> Option<usize> {
+    let mut depth = 0usize;
+    let mut in_string = false;
+    let mut escaped = false;
+
+    for (relative, ch) in source[start..].char_indices() {
+        if in_string {
+            if escaped {
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == '"' {
+                in_string = false;
+            }
+            continue;
+        }
+
+        match ch {
+            '"' => in_string = true,
+            '(' => depth += 1,
+            ')' => {
+                depth = depth.saturating_sub(1);
+                if depth == 0 {
+                    return Some(start + relative + ch.len_utf8());
+                }
+            }
+            _ => {}
+        }
+    }
+
+    None
+}
+
 fn demote_footprint_silkscreen(source: &str) -> String {
     source.replace(r#""F.SilkS""#, r#""F.Fab""#)
+}
+
+fn assigned_pad_count(pin_nets: &PinNetManifest) -> usize {
+    pin_nets
+        .assignments
+        .iter()
+        .map(|assignment| assignment.pins.len())
+        .sum()
 }
 
 fn net_ids(nets: &[String]) -> BTreeMap<&str, usize> {

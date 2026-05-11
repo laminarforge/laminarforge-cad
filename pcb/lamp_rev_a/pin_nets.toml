@@ -1,0 +1,235 @@
+[package]
+name = "lamp_rev_a_pin_nets"
+ticket = "T-5DD3D3D8"
+revision = "Rev A"
+source_stage = "pin_net_assignment"
+
+# Pin names are footprint pad numbers/names, not schematic symbol pin names.
+# Assign nets only where the package pinout is known. Leave uncertain circuit
+# details unassigned until schematic capture resolves them.
+
+[[assignments]]
+reference = "U1"
+notes = "ESP32-S3-WROOM-1 module core rails, USB, boot/reset, control GPIOs, UART, and thermal pad."
+[assignments.pins]
+"1" = "GND"
+"2" = "+3V3"
+"3" = "ESP_EN"
+"13" = "USB_DN"
+"14" = "USB_DP"
+"15" = "HEATER_PWM"
+"16" = "SDA"
+"17" = "SCL"
+"18" = "MUX_S0"
+"19" = "MUX_S1"
+"20" = "MUX_S2"
+"21" = "LED_BASE_0"
+"22" = "LED_BASE_1"
+"23" = "LED_BASE_2"
+"24" = "LED_BASE_3"
+"25" = "LED_BASE_4"
+"26" = "LED_BASE_5"
+"27" = "ESP_GPIO0"
+"28" = "LED_BASE_7"
+"30" = "LED_BASE_6"
+"35" = "ESP_GPIO_ACT"
+"36" = "UART_RX"
+"37" = "UART_TX"
+"41" = "GND"
+
+[[assignments]]
+reference = "J1"
+notes = "USB-C receptacle: USB2 pair, CC sink pull-down pins, VBUS, and shield/ground pads."
+[assignments.pins]
+"A5" = "USB_CC1"
+"B5" = "USB_CC2"
+"A6" = "USB_DP"
+"B6" = "USB_DP"
+"A7" = "USB_DN"
+"B7" = "USB_DN"
+"A9B4" = "VBUS"
+"B9A4" = "VBUS"
+"A12B1" = "GND"
+"B12A1" = "GND"
+"13" = "GND"
+"14" = "GND"
+"15" = "GND"
+"16" = "GND"
+
+[[assignments]]
+reference = "R1"
+notes = "USB-C CC1 5.1k sink pull-down resistor."
+[assignments.pins]
+"1" = "USB_CC1"
+"2" = "GND"
+
+[[assignments]]
+reference = "R2"
+notes = "USB-C CC2 5.1k sink pull-down resistor."
+[assignments.pins]
+"1" = "USB_CC2"
+"2" = "GND"
+
+[[assignments]]
+reference = "U2"
+notes = "USBLC6-2SC6 USB data/ESD protection."
+[assignments.pins]
+"1" = "USB_DP"
+"2" = "GND"
+"3" = "USB_DN"
+"4" = "USB_DN"
+"5" = "VBUS"
+"6" = "USB_DP"
+
+[[assignments]]
+reference = "D1"
+notes = "USB VBUS to protected +5V Schottky path."
+[assignments.pins]
+"1" = "VBUS"
+"2" = "+5V"
+
+[[assignments]]
+reference = "J2"
+notes = "12V DC input jack. Pad 3 is tied to ground for the switched/sleeve contact in Rev A."
+[assignments.pins]
+"1" = "+12V_RAW"
+"2" = "GND"
+"3" = "GND"
+
+[[assignments]]
+reference = "U3"
+notes = "AMS1117-3.3 SOT-223 regulator."
+[assignments.pins]
+"1" = "GND"
+"2" = "+3V3"
+"3" = "+5V"
+"4" = "+3V3"
+
+[[assignments]]
+reference = "C1"
+notes = "VBUS bulk capacitance."
+[assignments.pins]
+"1" = "VBUS"
+"2" = "GND"
+
+[[assignments]]
+reference = "C2"
+notes = "+5V bulk capacitance."
+[assignments.pins]
+"1" = "+5V"
+"2" = "GND"
+
+[[assignments]]
+reference = "C3"
+notes = "+3V3 bulk capacitance."
+[assignments.pins]
+"1" = "+3V3"
+"2" = "GND"
+
+[[assignments]]
+reference = "C4"
+notes = "+12V_RAW input bulk capacitance."
+[assignments.pins]
+"1" = "+12V_RAW"
+"2" = "GND"
+
+[[assignments]]
+reference = "U4"
+notes = "ADS1115 readout path. Only supply, I2C, address, and first analog channel are locked at this stage."
+[assignments.pins]
+"1" = "GND"
+"3" = "GND"
+"4" = "ADC_AIN1"
+"8" = "+3V3"
+"9" = "SDA"
+"10" = "SCL"
+
+[[assignments]]
+reference = "U5"
+notes = "CD74HC4051 analog mux for eight photodiode channels."
+[assignments.pins]
+"1" = "MUX_Y4"
+"2" = "MUX_Y6"
+"3" = "MUX_COM"
+"4" = "MUX_Y7"
+"5" = "MUX_Y5"
+"6" = "GND"
+"7" = "GND"
+"8" = "GND"
+"9" = "MUX_S2"
+"10" = "MUX_S1"
+"11" = "MUX_S0"
+"12" = "MUX_Y3"
+"13" = "MUX_Y0"
+"14" = "MUX_Y1"
+"15" = "MUX_Y2"
+"16" = "+3V3"
+
+[[assignments]]
+reference = "U6"
+notes = "TLV6001 single TIA stage."
+[assignments.pins]
+"1" = "ADC_AIN1"
+"2" = "GND"
+"3" = "GND"
+"4" = "MUX_COM"
+"5" = "+3V3"
+
+[[assignments]]
+reference = "R3"
+notes = "TIA feedback resistor."
+[assignments.pins]
+"1" = "MUX_COM"
+"2" = "ADC_AIN1"
+
+[[assignments]]
+reference = "C5"
+notes = "TIA feedback capacitor."
+[assignments.pins]
+"1" = "MUX_COM"
+"2" = "ADC_AIN1"
+
+[[assignments]]
+reference = "U7"
+notes = "TC4427A heater gate driver, using channel A for the Rev A heater MOSFET."
+[assignments.pins]
+"2" = "HEATER_PWM"
+"3" = "GND"
+"6" = "+12V"
+"7" = "GATE_DRV"
+
+[[assignments]]
+reference = "Q1"
+notes = "AO3400A low-side heater MOSFET."
+[assignments.pins]
+"1" = "GATE_DRV"
+"2" = "GND"
+"3" = "HEATER_P"
+
+[[assignments]]
+reference = "J3"
+notes = "External heater output terminal."
+[assignments.pins]
+"1" = "HEATER_SUPPLY"
+"2" = "HEATER_P"
+
+[[assignments]]
+reference = "F1"
+notes = "Resettable fuse in heater supply path."
+[assignments.pins]
+"1" = "+12V"
+"2" = "HEATER_SUPPLY"
+
+[[assignments]]
+reference = "D10"
+notes = "Heater supply TVS clamp."
+[assignments.pins]
+"1" = "HEATER_SUPPLY"
+"2" = "GND"
+
+[[assignments]]
+reference = "D13"
+notes = "12V reverse-protection/input Schottky path."
+[assignments.pins]
+"1" = "+12V_RAW"
+"2" = "+12V"

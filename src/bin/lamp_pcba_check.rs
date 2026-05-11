@@ -11,6 +11,7 @@ const POWER_ARCHITECTURE_PATH: &str = "pcb/lamp_rev_a/power_architecture.toml";
 const OPTICAL_ARCHITECTURE_PATH: &str = "pcb/lamp_rev_a/optical_architecture.toml";
 const OPTICAL_MODE_PATH: &str = "pcb/lamp_rev_a/optical_mode.md";
 const PLACEMENT_PATH: &str = "pcb/lamp_rev_a/placement.toml";
+const PIN_NETS_PATH: &str = "pcb/lamp_rev_a/pin_nets.toml";
 const SCHEMATIC_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch";
 const BOARD_PATH: &str = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb";
 const README_PATH: &str = "pcb/lamp_rev_a/README.md";
@@ -93,6 +94,27 @@ struct PlacementPlan {
     placements: Vec<FootprintPlacement>,
     test_points: Vec<TestPointPlacement>,
     optical_slots: Vec<OpticalSlotPlacement>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PinNetManifest {
+    package: PinNetPackage,
+    assignments: Vec<PinNetAssignment>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PinNetPackage {
+    name: String,
+    ticket: String,
+    revision: String,
+    source_stage: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct PinNetAssignment {
+    reference: String,
+    notes: String,
+    pins: BTreeMap<String, String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -339,6 +361,7 @@ fn main() {
     let power = load_power_architecture(&root.join(POWER_ARCHITECTURE_PATH));
     let optical = load_optical_architecture(&root.join(OPTICAL_ARCHITECTURE_PATH));
     let placement = load_placement(&root.join(PLACEMENT_PATH));
+    let pin_nets = load_pin_nets(&root.join(PIN_NETS_PATH));
     let mut errors = Vec::new();
     let mut warnings = Vec::new();
 
@@ -350,6 +373,7 @@ fn main() {
     require_file(&root.join(OPTICAL_ARCHITECTURE_PATH), &mut errors);
     require_file(&root.join(OPTICAL_MODE_PATH), &mut errors);
     require_file(&root.join(PLACEMENT_PATH), &mut errors);
+    require_file(&root.join(PIN_NETS_PATH), &mut errors);
     require_file(&root.join(SCHEMATIC_PATH), &mut errors);
     require_file(&root.join(SYM_LIB_TABLE_PATH), &mut errors);
     require_file(&root.join(FP_LIB_TABLE_PATH), &mut errors);
@@ -367,6 +391,7 @@ fn main() {
     validate_power_architecture(&power, &contract, &parts, &mut errors);
     validate_optical_architecture(&optical, &contract, &parts, &mut errors);
     validate_placement_plan(&placement, &parts, &contract, &nets, &mut errors);
+    validate_pin_nets(&pin_nets, &placement, &contract, &nets, &mut errors);
     validate_schematic_shell(
         &root.join(SCHEMATIC_PATH),
         &parts,
@@ -407,6 +432,14 @@ fn main() {
         println!("  selected part groups: {}", parts.selected_parts.len());
         println!("  placed footprints: {}", placement.placements.len());
         println!("  placed optical slots: {}", placement.optical_slots.len());
+        println!(
+            "  pin-net assignment groups: {}",
+            pin_nets.assignments.len()
+        );
+        println!(
+            "  assigned footprint pads: {}",
+            assigned_pin_count(&pin_nets)
+        );
         println!(
             "  external safety part groups: {}",
             parts.external_safety_parts.len()
@@ -449,6 +482,12 @@ fn load_optical_architecture(path: &Path) -> OpticalArchitecture {
 }
 
 fn load_placement(path: &Path) -> PlacementPlan {
+    let content =
+        fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
+    toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
+}
+
+fn load_pin_nets(path: &Path) -> PinNetManifest {
     let content =
         fs::read_to_string(path).unwrap_or_else(|err| panic!("read {}: {err}", path.display()));
     toml::from_str(&content).unwrap_or_else(|err| panic!("parse {}: {err}", path.display()))
@@ -1130,6 +1169,84 @@ fn validate_optical_slot_placements(
     }
 }
 
+fn validate_pin_nets(
+    pin_nets: &PinNetManifest,
+    placement: &PlacementPlan,
+    contract: &Contract,
+    nets: &[Net],
+    errors: &mut Vec<String>,
+) {
+    if pin_nets.package.name != "lamp_rev_a_pin_nets" {
+        errors.push("pin-net package name must be lamp_rev_a_pin_nets".to_string());
+    }
+    if pin_nets.package.revision != contract.package.revision {
+        errors.push("pin-net revision must match contract revision".to_string());
+    }
+    if pin_nets.package.source_stage != "pin_net_assignment" {
+        errors.push("pin-net source stage must be pin_net_assignment".to_string());
+    }
+    if !pin_nets.package.ticket.starts_with("T-") {
+        errors.push("pin-net package must reference a ticket".to_string());
+    }
+
+    let placed_refs: BTreeSet<&str> = placement
+        .placements
+        .iter()
+        .map(|item| item.reference.as_str())
+        .collect();
+    let net_names: BTreeSet<&str> = nets.iter().map(|net| net.name.as_str()).collect();
+    let mut assigned_refs = BTreeSet::new();
+
+    for assignment in &pin_nets.assignments {
+        if !assigned_refs.insert(assignment.reference.as_str()) {
+            errors.push(format!(
+                "duplicate pin-net assignment for {}",
+                assignment.reference
+            ));
+        }
+        if !placed_refs.contains(assignment.reference.as_str()) {
+            errors.push(format!(
+                "pin-net assignment references unplaced component {}",
+                assignment.reference
+            ));
+        }
+        if assignment.notes.trim().len() < 20 {
+            errors.push(format!(
+                "pin-net assignment {} needs an explicit note",
+                assignment.reference
+            ));
+        }
+        if assignment.pins.is_empty() {
+            errors.push(format!(
+                "pin-net assignment {} has no pins",
+                assignment.reference
+            ));
+        }
+        for (pin, net) in &assignment.pins {
+            if pin.trim().is_empty() {
+                errors.push(format!(
+                    "pin-net assignment {} contains an empty pin",
+                    assignment.reference
+                ));
+            }
+            if !net_names.contains(net.as_str()) {
+                errors.push(format!(
+                    "pin-net assignment {} pad {} references unknown net {}",
+                    assignment.reference, pin, net
+                ));
+            }
+        }
+    }
+
+    for required_ref in ["U1", "J1", "U3", "U4", "U5", "U6", "U7", "Q1", "J3"] {
+        if !assigned_refs.contains(required_ref) {
+            errors.push(format!(
+                "pin-net manifest must include critical component {required_ref}"
+            ));
+        }
+    }
+}
+
 fn validate_schematic_shell(
     path: &Path,
     parts: &PartsManifest,
@@ -1488,6 +1605,14 @@ fn fabrication_gap_count(parts: &PartsManifest) -> usize {
         .iter()
         .filter(|gap| gap.blocks_fabrication)
         .count()
+}
+
+fn assigned_pin_count(pin_nets: &PinNetManifest) -> usize {
+    pin_nets
+        .assignments
+        .iter()
+        .map(|assignment| assignment.pins.len())
+        .sum()
 }
 
 fn validate_kicad_seed(
