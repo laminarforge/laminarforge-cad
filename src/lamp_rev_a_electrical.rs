@@ -26,6 +26,7 @@ pub struct ElectricalOutputPaths {
     pub manufacturing_test_csv: PathBuf,
     pub calibration_readiness_csv: PathBuf,
     pub validation_traceability_csv: PathBuf,
+    pub pdn_dc_simulation_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -78,6 +79,7 @@ struct ValidationConfig {
     traceability_policy: TraceabilityPolicy,
     #[serde(default)]
     validation_traceability: Vec<ValidationTraceability>,
+    pdn_dc_simulation_policy: PdnDcSimulationPolicy,
 }
 
 #[derive(Debug, Deserialize)]
@@ -117,6 +119,7 @@ struct Outputs {
     manufacturing_test_csv: String,
     calibration_readiness_csv: String,
     validation_traceability_csv: String,
+    pdn_dc_simulation_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -257,6 +260,17 @@ struct SimulationInputPolicy {
     require_recommended_tools: bool,
     require_inputs: bool,
     require_exit_criterion: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct PdnDcSimulationPolicy {
+    max_voltage_drop_mv: f64,
+    max_voltage_drop_pct: f64,
+    max_path_power_mw: f64,
+    via_resistance_mohm: f64,
+    copper_resistivity_ohm_m: f64,
+    copper_thickness_um_per_oz: f64,
+    require_all_trace_paths: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -663,6 +677,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         manufacturing_test_csv: repo_root.join(config.outputs.manufacturing_test_csv),
         calibration_readiness_csv: repo_root.join(config.outputs.calibration_readiness_csv),
         validation_traceability_csv: repo_root.join(config.outputs.validation_traceability_csv),
+        pdn_dc_simulation_csv: repo_root.join(config.outputs.pdn_dc_simulation_csv),
     })
 }
 
@@ -729,6 +744,7 @@ pub fn validate_to_outputs(
     );
     validate_calibration_readiness(&config, &contract_nets, &mut rows, &mut errors);
     validate_simulation_inputs(&config, &mut rows, &mut errors);
+    validate_pdn_dc_simulation(&config, &routing, &contract_rails, &mut rows, &mut errors);
     let gate_categories = rows
         .iter()
         .map(|row| row.category.clone())
@@ -751,6 +767,7 @@ pub fn validate_to_outputs(
     write_calibration_readiness_handoff(&config, outputs)?;
     write_validation_traceability_handoff(&config, outputs)?;
     write_simulation_inputs_handoff(&config, outputs)?;
+    write_pdn_dc_simulation_handoff(&config, &routing, &contract_rails, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -1198,6 +1215,204 @@ fn validate_trace_current_paths(
             &path.notes,
         );
     }
+}
+
+fn validate_pdn_dc_simulation(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+    _contract_rails: &BTreeMap<&str, &ContractRail>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let rail_budgets = config
+        .rail_budgets
+        .iter()
+        .map(|rail| (rail.rail.as_str(), rail))
+        .collect::<BTreeMap<_, _>>();
+    let simulations = pdn_dc_simulation_rows(config, routing);
+    for simulation in &simulations {
+        push_gate!(
+            rows,
+            errors,
+            "pdn dc simulation",
+            format!("{} rail budget", simulation.path_id),
+            simulation.net.clone(),
+            "present in electrical rail budgets",
+            rail_budgets.contains_key(simulation.net.as_str()),
+            &simulation.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "pdn dc simulation",
+            format!("{} routed geometry", simulation.path_id),
+            format!("{} segments", simulation.segment_count),
+            "> 0 routed segments",
+            !config.pdn_dc_simulation_policy.require_all_trace_paths
+                || simulation.segment_count > 0,
+            &simulation.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "pdn dc simulation",
+            format!("{} voltage drop", simulation.path_id),
+            format!("{:.2} mV", simulation.voltage_drop_mv),
+            format!(
+                "<= {:.2} mV",
+                config.pdn_dc_simulation_policy.max_voltage_drop_mv
+            ),
+            simulation.segment_count > 0
+                && simulation.voltage_drop_mv
+                    <= config.pdn_dc_simulation_policy.max_voltage_drop_mv,
+            &simulation.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "pdn dc simulation",
+            format!("{} voltage drop percent", simulation.path_id),
+            format!("{:.3}%", simulation.voltage_drop_pct),
+            format!(
+                "<= {:.3}%",
+                config.pdn_dc_simulation_policy.max_voltage_drop_pct
+            ),
+            simulation.segment_count > 0
+                && simulation.voltage_drop_pct
+                    <= config.pdn_dc_simulation_policy.max_voltage_drop_pct,
+            &simulation.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "pdn dc simulation",
+            format!("{} I2R power", simulation.path_id),
+            format!("{:.3} mW", simulation.path_power_mw),
+            format!(
+                "<= {:.3} mW",
+                config.pdn_dc_simulation_policy.max_path_power_mw
+            ),
+            simulation.segment_count > 0
+                && simulation.path_power_mw <= config.pdn_dc_simulation_policy.max_path_power_mw,
+            &simulation.notes,
+        );
+    }
+}
+
+#[derive(Debug)]
+struct PdnDcSimulationRow {
+    path_id: String,
+    net: String,
+    current_ma: u32,
+    nominal_voltage_v: f64,
+    segment_count: usize,
+    routed_length_mm: f64,
+    minimum_width_mm: Option<f64>,
+    via_count: usize,
+    trace_resistance_mohm: f64,
+    via_resistance_mohm: f64,
+    total_resistance_mohm: f64,
+    voltage_drop_mv: f64,
+    voltage_drop_pct: f64,
+    path_power_mw: f64,
+    notes: String,
+}
+
+fn pdn_dc_simulation_rows(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+) -> Vec<PdnDcSimulationRow> {
+    let rail_budgets = config
+        .rail_budgets
+        .iter()
+        .map(|rail| (rail.rail.as_str(), rail))
+        .collect::<BTreeMap<_, _>>();
+    config
+        .trace_current_paths
+        .iter()
+        .map(|path| pdn_dc_simulation_row(config, routing, &rail_budgets, path))
+        .collect()
+}
+
+fn pdn_dc_simulation_row(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+    rail_budgets: &BTreeMap<&str, &RailBudget>,
+    path: &TraceCurrentPath,
+) -> PdnDcSimulationRow {
+    let segments = routing
+        .segments
+        .iter()
+        .filter(|segment| segment.net == path.net)
+        .collect::<Vec<_>>();
+    let mut vias = BTreeSet::new();
+    let mut trace_resistance_mohm = 0.0;
+    let mut routed_length_mm = 0.0;
+    let mut minimum_width_mm: Option<f64> = None;
+
+    for segment in &segments {
+        routed_length_mm += segment_length_mm(segment);
+        minimum_width_mm =
+            Some(minimum_width_mm.map_or(segment.width_mm, |width| width.min(segment.width_mm)));
+        trace_resistance_mohm += segment_resistance_mohm(segment, config);
+        if segment.via_at_ends || segment.via_at_start {
+            vias.insert(route_point_key(segment.start_x_mm, segment.start_y_mm));
+        }
+        if segment.via_at_ends || segment.via_at_end {
+            vias.insert(route_point_key(segment.end_x_mm, segment.end_y_mm));
+        }
+    }
+
+    let via_resistance_mohm =
+        vias.len() as f64 * config.pdn_dc_simulation_policy.via_resistance_mohm;
+    let total_resistance_mohm = trace_resistance_mohm + via_resistance_mohm;
+    let current_a = path.current_ma as f64 / 1000.0;
+    let voltage_drop_mv = current_a * total_resistance_mohm;
+    let nominal_voltage_v = rail_budgets
+        .get(path.net.as_str())
+        .map(|rail| rail.nominal_v)
+        .unwrap_or(0.0);
+    let voltage_drop_pct = if nominal_voltage_v > 0.0 {
+        voltage_drop_mv / (nominal_voltage_v * 1000.0) * 100.0
+    } else {
+        f64::INFINITY
+    };
+    let path_power_mw = current_a * current_a * total_resistance_mohm;
+
+    PdnDcSimulationRow {
+        path_id: path.id.clone(),
+        net: path.net.clone(),
+        current_ma: path.current_ma,
+        nominal_voltage_v,
+        segment_count: segments.len(),
+        routed_length_mm,
+        minimum_width_mm,
+        via_count: vias.len(),
+        trace_resistance_mohm,
+        via_resistance_mohm,
+        total_resistance_mohm,
+        voltage_drop_mv,
+        voltage_drop_pct,
+        path_power_mw,
+        notes: path.notes.clone(),
+    }
+}
+
+fn segment_resistance_mohm(segment: &RouteSegment, config: &ValidationConfig) -> f64 {
+    let length_m = segment_length_mm(segment) / 1000.0;
+    let width_m = segment.width_mm / 1000.0;
+    let copper_oz = if segment.layer.starts_with("In") {
+        config.assumptions.inner_copper_oz
+    } else {
+        config.assumptions.outer_copper_oz
+    };
+    let thickness_m = copper_oz * config.pdn_dc_simulation_policy.copper_thickness_um_per_oz * 1e-6;
+    if width_m <= 0.0 || thickness_m <= 0.0 {
+        return f64::INFINITY;
+    }
+    let resistance_ohm = config.pdn_dc_simulation_policy.copper_resistivity_ohm_m * length_m
+        / (width_m * thickness_m);
+    resistance_ohm * 1000.0
 }
 
 fn allowed_neckdown(segment: &RouteSegment, path: &TraceCurrentPath) -> bool {
@@ -3335,6 +3550,72 @@ fn write_pdn_current_paths_handoff(
     Ok(())
 }
 
+fn write_pdn_dc_simulation_handoff(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+    _contract_rails: &BTreeMap<&str, &ContractRail>,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.pdn_dc_simulation_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.pdn_dc_simulation_csv)?;
+    writer.write_record([
+        "path_id",
+        "net",
+        "current_ma",
+        "nominal_voltage_v",
+        "segment_count",
+        "routed_length_mm",
+        "minimum_width_mm",
+        "via_count",
+        "trace_resistance_mohm",
+        "via_resistance_mohm",
+        "total_resistance_mohm",
+        "voltage_drop_mv",
+        "voltage_drop_pct",
+        "path_power_mw",
+        "max_voltage_drop_mv",
+        "max_voltage_drop_pct",
+        "max_path_power_mw",
+        "status",
+        "notes",
+    ])?;
+
+    for row in pdn_dc_simulation_rows(config, routing) {
+        let pass = row.segment_count > 0
+            && row.voltage_drop_mv <= config.pdn_dc_simulation_policy.max_voltage_drop_mv
+            && row.voltage_drop_pct <= config.pdn_dc_simulation_policy.max_voltage_drop_pct
+            && row.path_power_mw <= config.pdn_dc_simulation_policy.max_path_power_mw;
+        writer.write_record([
+            row.path_id.as_str(),
+            row.net.as_str(),
+            format!("{}", row.current_ma).as_str(),
+            format!("{:.3}", row.nominal_voltage_v).as_str(),
+            format!("{}", row.segment_count).as_str(),
+            format!("{:.3}", row.routed_length_mm).as_str(),
+            format_optional_mm(row.minimum_width_mm).as_str(),
+            format!("{}", row.via_count).as_str(),
+            format!("{:.4}", row.trace_resistance_mohm).as_str(),
+            format!("{:.4}", row.via_resistance_mohm).as_str(),
+            format!("{:.4}", row.total_resistance_mohm).as_str(),
+            format!("{:.4}", row.voltage_drop_mv).as_str(),
+            format!("{:.5}", row.voltage_drop_pct).as_str(),
+            format!("{:.4}", row.path_power_mw).as_str(),
+            format!("{:.3}", config.pdn_dc_simulation_policy.max_voltage_drop_mv).as_str(),
+            format!(
+                "{:.3}",
+                config.pdn_dc_simulation_policy.max_voltage_drop_pct
+            )
+            .as_str(),
+            format!("{:.3}", config.pdn_dc_simulation_policy.max_path_power_mw).as_str(),
+            if pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_thermal_power_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -3988,6 +4269,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("pdn_current_paths.csv")
+    )?;
+    writeln!(
+        report,
+        "- DC PDN simulation table: `{}`",
+        outputs
+            .pdn_dc_simulation_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("pdn_dc_simulation.csv")
     )?;
     writeln!(
         report,

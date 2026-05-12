@@ -86,6 +86,7 @@ struct Outputs {
     manufacturing_test_file: String,
     calibration_readiness_file: String,
     validation_traceability_file: String,
+    pdn_dc_simulation_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
@@ -449,6 +450,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         manufacturing_test_csv: output_root.join(&config.outputs.manufacturing_test_file),
         calibration_readiness_csv: output_root.join(&config.outputs.calibration_readiness_file),
         validation_traceability_csv: output_root.join(&config.outputs.validation_traceability_file),
+        pdn_dc_simulation_csv: output_root.join(&config.outputs.pdn_dc_simulation_file),
     };
     validate_to_outputs(&root, &electrical_outputs)?;
     write_release_bundles(&config, &root, &output_root)?;
@@ -1277,6 +1279,11 @@ fn write_manifest(
         "pdn_current_paths: {}",
         config.outputs.pdn_current_paths_file
     )?;
+    writeln!(
+        file,
+        "pdn_dc_simulation: {}",
+        config.outputs.pdn_dc_simulation_file
+    )?;
     writeln!(file, "thermal_power: {}", config.outputs.thermal_power_file)?;
     writeln!(
         file,
@@ -1765,6 +1772,7 @@ fn write_release_bundles(
         config.outputs.manufacturing_test_file.as_str(),
         config.outputs.calibration_readiness_file.as_str(),
         config.outputs.validation_traceability_file.as_str(),
+        config.outputs.pdn_dc_simulation_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
@@ -1971,6 +1979,7 @@ fn validate_release_outputs(
         &config.outputs.manufacturing_test_file,
         &config.outputs.calibration_readiness_file,
         &config.outputs.validation_traceability_file,
+        &config.outputs.pdn_dc_simulation_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
@@ -2072,6 +2081,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.manufacturing_test_file.as_str(),
         config.outputs.calibration_readiness_file.as_str(),
         config.outputs.validation_traceability_file.as_str(),
+        config.outputs.pdn_dc_simulation_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),

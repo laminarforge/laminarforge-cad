@@ -30,9 +30,10 @@ startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
 manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv"
 calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
 validation_traceability_csv = "pcb/lamp_rev_a/reports/validation_traceability.csv"
+pdn_dc_simulation_csv = "pcb/lamp_rev_a/reports/pdn_dc_simulation.csv"
 
 [traceability_policy]
-min_items = 13
+min_items = 14
 require_output_artifact = true
 require_release_manifest_entry = true
 require_ci_step = true
@@ -80,6 +81,17 @@ ci_step = "LAMP Rev A electrical validation"
 acceptance_criterion = "Each high-current path has routed segments on allowed layers with width/capacity margin."
 blocks_release = true
 notes = "This gate is not a field solver, but it catches route-source current-path mistakes before PDN simulation."
+
+[[validation_traceability]]
+id = "pdn_dc_voltage_drop"
+validation_layer = "DC PDN voltage-drop/current-loss simulation"
+electrical_gate_category = "pdn dc simulation"
+output_artifact = "pdn_dc_simulation.csv; electrical_validation_gates.csv"
+release_manifest_entry = "pdn_dc_simulation; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "Every declared power/current path computes below the configured DC voltage-drop and copper-loss limits from routed trace geometry."
+blocks_release = true
+notes = "This is the first routed-geometry power simulation gate; it complements trace-width checks by estimating resistance, voltage drop, and I2R loss."
 
 [[validation_traceability]]
 id = "component_stress_derating"
@@ -214,6 +226,15 @@ component_power_derating = 0.80
 continuous_heater_current_ma = 1500
 protected_heater_current_ma = 3000
 first_article_current_limit_ma = 500
+
+[pdn_dc_simulation_policy]
+max_voltage_drop_mv = 150.0
+max_voltage_drop_pct = 3.0
+max_path_power_mw = 250.0
+via_resistance_mohm = 0.5
+copper_resistivity_ohm_m = 0.00000001724
+copper_thickness_um_per_oz = 34.8
+require_all_trace_paths = true
 
 [[rail_budgets]]
 rail = "VBUS"
