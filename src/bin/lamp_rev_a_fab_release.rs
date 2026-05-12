@@ -84,6 +84,7 @@ struct Outputs {
     emc_esd_file: String,
     usb_power_budget_file: String,
     procurement_readiness_file: String,
+    connector_polarity_file: String,
     i2c_bus_file: String,
     heater_protection_file: String,
     startup_safety_file: String,
@@ -470,6 +471,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         emc_esd_csv: output_root.join(&config.outputs.emc_esd_file),
         usb_power_budget_csv: output_root.join(&config.outputs.usb_power_budget_file),
         procurement_readiness_csv: output_root.join(&config.outputs.procurement_readiness_file),
+        connector_polarity_csv: output_root.join(&config.outputs.connector_polarity_file),
         i2c_bus_csv: output_root.join(&config.outputs.i2c_bus_file),
         heater_protection_csv: output_root.join(&config.outputs.heater_protection_file),
         startup_safety_csv: output_root.join(&config.outputs.startup_safety_file),
@@ -1447,6 +1449,11 @@ fn write_manifest(
         "procurement_readiness: {}",
         config.outputs.procurement_readiness_file
     )?;
+    writeln!(
+        file,
+        "connector_polarity: {}",
+        config.outputs.connector_polarity_file
+    )?;
     writeln!(file, "i2c_bus: {}", config.outputs.i2c_bus_file)?;
     writeln!(
         file,
@@ -1926,6 +1933,7 @@ fn write_release_bundles(
         config.outputs.emc_esd_file.as_str(),
         config.outputs.usb_power_budget_file.as_str(),
         config.outputs.procurement_readiness_file.as_str(),
+        config.outputs.connector_polarity_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
@@ -2158,6 +2166,7 @@ fn validate_release_outputs(
         &config.outputs.emc_esd_file,
         &config.outputs.usb_power_budget_file,
         &config.outputs.procurement_readiness_file,
+        &config.outputs.connector_polarity_file,
         &config.outputs.i2c_bus_file,
         &config.outputs.heater_protection_file,
         &config.outputs.startup_safety_file,
@@ -2282,6 +2291,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.emc_esd_file.as_str(),
         config.outputs.usb_power_budget_file.as_str(),
         config.outputs.procurement_readiness_file.as_str(),
+        config.outputs.connector_polarity_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
         config.outputs.startup_safety_file.as_str(),

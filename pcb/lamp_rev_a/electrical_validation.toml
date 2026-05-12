@@ -28,6 +28,7 @@ fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 usb_power_budget_csv = "pcb/lamp_rev_a/reports/usb_power_budget.csv"
 procurement_readiness_csv = "pcb/lamp_rev_a/reports/procurement_readiness.csv"
+connector_polarity_csv = "pcb/lamp_rev_a/reports/connector_polarity.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
@@ -279,6 +280,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Va
 acceptance_criterion = "Every selected Rev A part has quantity, LCSC order code, LCSC footprint, nets, and verification text; critical/manual/external parts have explicit assembly and procurement evidence."
 blocks_release = true
 notes = "Prevents an electrically valid design from becoming unorderable or ambiguous during JLCPCB/manual assembly."
+
+[[validation_traceability]]
+id = "connector_polarity"
+validation_layer = "Connector pinout and polarity/orientation validation"
+electrical_gate_category = "connector polarity"
+output_artifact = "connector_polarity.csv; electrical_validation_gates.csv"
+release_manifest_entry = "connector_polarity; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Validate LAMP Rev A upload bundles"
+acceptance_criterion = "Manual/external connectors and polarity-sensitive parts have expected pin-net mappings, placement records, orientation evidence, and verification methods."
+blocks_release = true
+notes = "Catches semantically wrong but DRC-clean pinout/orientation mistakes before ordering or manual assembly."
 
 [[validation_traceability]]
 id = "i2c_ads1115_bus_validation"
@@ -1626,6 +1638,235 @@ required_critical_part_ids = [
   "inline_thermal_cutoff",
 ]
 notes = "Every release-critical Rev A part must be orderable from the declared LCSC catalog source or explicitly external/manual with installation evidence."
+
+[connector_polarity_policy]
+min_checks = 12
+allowed_assembly_methods = ["machine", "manual"]
+require_pin_net_assignments = true
+require_placement = true
+require_orientation_note = true
+required_check_ids = [
+  "usb_c_receptacle_pinout",
+  "dc_input_jack_pinout",
+  "heater_terminal_pinout",
+  "vbus_schottky_polarity",
+  "input_schottky_polarity",
+  "heater_tvs_polarity",
+  "heater_mosfet_pinout",
+  "heater_gate_driver_pinout",
+  "ldo_pinout",
+  "ads1115_pinout",
+  "optical_mux_pinout",
+  "tia_opamp_pinout",
+]
+notes = "Pin-net and orientation checks for connector/manual and polarity-sensitive Rev A parts."
+
+[[connector_polarity_checks]]
+id = "usb_c_receptacle_pinout"
+part_id = "usb_c_connector"
+reference = "J1"
+role = "USB power, flashing, data, and shield/ground interface"
+assembly_method = "machine"
+polarity_type = "connector_pinout"
+required_nets = ["VBUS", "GND", "USB_DP", "USB_DN", "USB_CC1", "USB_CC2"]
+orientation_evidence = ["pin_nets.toml J1 assignment", "USB-C footprint orientation", "USB rail and enumeration first article"]
+verification_method = "Inspect J1 orientation, verify CC Rd behavior, and confirm USB enumeration plus VBUS/+5V/+3V3 first-article measurements."
+notes = "USB-C can pass ERC while mirrored or pad-mapped incorrectly; both plug orientations must map to the same DP/DN/VBUS/GND semantics."
+[connector_polarity_checks.required_pins]
+"A5" = "USB_CC1"
+"B5" = "USB_CC2"
+"A6" = "USB_DP"
+"B6" = "USB_DP"
+"A7" = "USB_DN"
+"B7" = "USB_DN"
+"A9B4" = "VBUS"
+"B9A4" = "VBUS"
+"A12B1" = "GND"
+"B12A1" = "GND"
+
+[[connector_polarity_checks]]
+id = "dc_input_jack_pinout"
+part_id = "dc_input_jack"
+reference = "J2"
+role = "External 12 V heater input"
+assembly_method = "manual"
+polarity_type = "power_connector_pinout"
+required_nets = ["+12V_RAW", "GND"]
+orientation_evidence = ["pin_nets.toml J2 assignment", "manual_install_parts.csv", "12 V polarity first-article measurement"]
+verification_method = "Continuity-check J2 center/contact pin to TP_12V and sleeve pins to TP_GND before applying heater power."
+notes = "Manual jack wiring is a high-energy polarity risk because the 12 V domain is outside USB protection."
+[connector_polarity_checks.required_pins]
+"1" = "+12V_RAW"
+"2" = "GND"
+"3" = "GND"
+
+[[connector_polarity_checks]]
+id = "heater_terminal_pinout"
+part_id = "heater_output_terminal"
+reference = "J3"
+role = "External heater supply and switched return terminal"
+assembly_method = "manual"
+polarity_type = "heater_connector_pinout"
+required_nets = ["HEATER_SUPPLY", "HEATER_P"]
+orientation_evidence = ["pin_nets.toml J3 assignment", "manual_install_parts.csv", "heater protection first-article measurements"]
+verification_method = "Continuity-check J3 pin 1 to TP_HEATER_SUPPLY and pin 2 to TP_HEATER before connecting the external heater."
+notes = "Swapping the heater terminal changes where the MOSFET and protection chain sit relative to the external heater."
+[connector_polarity_checks.required_pins]
+"1" = "HEATER_SUPPLY"
+"2" = "HEATER_P"
+
+[[connector_polarity_checks]]
+id = "vbus_schottky_polarity"
+part_id = "vbus_to_5v_schottky"
+reference = "D1"
+role = "USB VBUS to protected +5 V Schottky path"
+assembly_method = "machine"
+polarity_type = "diode_polarity"
+required_nets = ["VBUS", "+5V"]
+orientation_evidence = ["pin_nets.toml D1 assignment", "diode polarity mark", "USB 5 V first-article measurement"]
+verification_method = "Verify diode orientation from VBUS to +5V and confirm +5V rises from USB VBUS with no reverse feed."
+notes = "A reversed VBUS Schottky can block electronics power or backfeed USB."
+[connector_polarity_checks.required_pins]
+"1" = "VBUS"
+"2" = "+5V"
+
+[[connector_polarity_checks]]
+id = "input_schottky_polarity"
+part_id = "input_schottky"
+reference = "D13"
+role = "12 V reverse-protection diode into heater rail"
+assembly_method = "machine"
+polarity_type = "diode_polarity"
+required_nets = ["+12V_RAW", "+12V"]
+orientation_evidence = ["pin_nets.toml D13 assignment", "diode polarity mark", "12 V protected rail first-article measurement"]
+verification_method = "Verify D13 orientation from +12V_RAW to +12V and confirm protected 12 V appears only with correct input polarity."
+notes = "A reversed or swapped 12 V Schottky breaks or defeats heater input protection."
+[connector_polarity_checks.required_pins]
+"1" = "+12V_RAW"
+"2" = "+12V"
+
+[[connector_polarity_checks]]
+id = "heater_tvs_polarity"
+part_id = "heater_tvs"
+reference = "D10"
+role = "Heater supply transient clamp"
+assembly_method = "machine"
+polarity_type = "tvs_polarity"
+required_nets = ["HEATER_SUPPLY", "GND"]
+orientation_evidence = ["pin_nets.toml D10 assignment", "TVS polarity mark", "heater protection validation"]
+verification_method = "Inspect TVS orientation and confirm HEATER_SUPPLY is not shorted to GND before powered bring-up."
+notes = "Wrong TVS orientation can short the heater rail or leave the cable unprotected."
+[connector_polarity_checks.required_pins]
+"1" = "HEATER_SUPPLY"
+"2" = "GND"
+
+[[connector_polarity_checks]]
+id = "heater_mosfet_pinout"
+part_id = "heater_mosfet"
+reference = "Q1"
+role = "Low-side heater switch"
+assembly_method = "machine"
+polarity_type = "mosfet_pinout"
+required_nets = ["GATE_DRV", "GND", "HEATER_P"]
+orientation_evidence = ["pin_nets.toml Q1 assignment", "AO3400A SOT-23 pin-1 orientation", "heater PWM transient simulation"]
+verification_method = "Inspect Q1 orientation and verify heater return stays off until HEATER_PWM is commanded."
+notes = "MOSFET source/drain/gate pinout errors can make the heater stuck on or un-switchable."
+[connector_polarity_checks.required_pins]
+"1" = "GATE_DRV"
+"2" = "GND"
+"3" = "HEATER_P"
+
+[[connector_polarity_checks]]
+id = "heater_gate_driver_pinout"
+part_id = "heater_gate_driver"
+reference = "U7"
+role = "Heater MOSFET gate driver"
+assembly_method = "machine"
+polarity_type = "ic_pinout"
+required_nets = ["HEATER_PWM", "GND", "+12V", "GATE_DRV"]
+orientation_evidence = ["pin_nets.toml U7 assignment", "TC4427 package pin-1 orientation", "heater PWM transient simulation"]
+verification_method = "Inspect U7 orientation and verify GATE_DRV follows HEATER_PWM before connecting the heater."
+notes = "Gate-driver rotation can put 12 V on the wrong pin or defeat fail-closed heater behavior."
+[connector_polarity_checks.required_pins]
+"2" = "HEATER_PWM"
+"3" = "GND"
+"6" = "+12V"
+"7" = "GATE_DRV"
+
+[[connector_polarity_checks]]
+id = "ldo_pinout"
+part_id = "three_v_three_regulator"
+reference = "U3"
+role = "+5 V to +3.3 V regulator"
+assembly_method = "machine"
+polarity_type = "regulator_pinout"
+required_nets = ["+5V", "+3V3", "GND"]
+orientation_evidence = ["pin_nets.toml U3 assignment", "AMS1117 SOT-223 tab/pin orientation", "3.3 V first-article measurement"]
+verification_method = "Inspect U3 orientation and confirm +3V3 is in range before flashing firmware."
+notes = "A rotated regulator can put +5V on the ESP32 3.3 V domain."
+[connector_polarity_checks.required_pins]
+"1" = "GND"
+"2" = "+3V3"
+"3" = "+5V"
+"4" = "+3V3"
+
+[[connector_polarity_checks]]
+id = "ads1115_pinout"
+part_id = "adc"
+reference = "U4"
+role = "ADS1115 ADC for optical/temperature readout"
+assembly_method = "machine"
+polarity_type = "ic_pinout"
+required_nets = ["+3V3", "GND", "SDA", "SCL", "ADC_AIN1"]
+orientation_evidence = ["pin_nets.toml U4 assignment", "ADS1115 package pin-1 orientation", "I2C bus validation"]
+verification_method = "Inspect U4 pin-1 orientation, confirm I2C address, and verify ADC_AIN1 range during first article."
+notes = "ADC orientation errors can short the I2C/analog domain or make the readout path unusable."
+[connector_polarity_checks.required_pins]
+"1" = "GND"
+"3" = "GND"
+"4" = "ADC_AIN1"
+"8" = "+3V3"
+"9" = "SDA"
+"10" = "SCL"
+
+[[connector_polarity_checks]]
+id = "optical_mux_pinout"
+part_id = "optical_mux"
+reference = "U5"
+role = "Eight-channel photodiode analog mux"
+assembly_method = "machine"
+polarity_type = "ic_pinout"
+required_nets = ["MUX_COM", "MUX_S0", "MUX_S1", "MUX_S2", "+3V3", "GND"]
+orientation_evidence = ["pin_nets.toml U5 assignment", "CD74HC4051 package pin-1 orientation", "optical crosstalk validation"]
+verification_method = "Inspect U5 orientation and verify mux channel selection reaches ADC_AIN1 during calibration."
+notes = "Mux orientation errors can permute optical channels or tie analog inputs to supply/ground."
+[connector_polarity_checks.required_pins]
+"3" = "MUX_COM"
+"6" = "GND"
+"7" = "GND"
+"8" = "GND"
+"9" = "MUX_S2"
+"10" = "MUX_S1"
+"11" = "MUX_S0"
+"16" = "+3V3"
+
+[[connector_polarity_checks]]
+id = "tia_opamp_pinout"
+part_id = "optical_tia_opamp"
+reference = "U6"
+role = "Photodiode transimpedance amplifier"
+assembly_method = "machine"
+polarity_type = "ic_pinout"
+required_nets = ["ADC_AIN1", "MUX_COM", "+3V3", "GND"]
+orientation_evidence = ["pin_nets.toml U6 assignment", "TLV6001 package pin-1 orientation", "analog front-end transient simulation"]
+verification_method = "Inspect U6 orientation and verify dark/light ADC_AIN1 envelope in the analog front-end gate."
+notes = "Op-amp orientation errors can rail the analog front end or short MUX_COM/ADC_AIN1."
+[connector_polarity_checks.required_pins]
+"1" = "ADC_AIN1"
+"2" = "GND"
+"3" = "GND"
+"4" = "MUX_COM"
+"5" = "+3V3"
 
 [[procurement_critical_parts]]
 id = "mcu_module"

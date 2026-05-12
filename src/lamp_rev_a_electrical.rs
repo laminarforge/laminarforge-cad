@@ -24,6 +24,7 @@ pub struct ElectricalOutputPaths {
     pub emc_esd_csv: PathBuf,
     pub usb_power_budget_csv: PathBuf,
     pub procurement_readiness_csv: PathBuf,
+    pub connector_polarity_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
     pub heater_protection_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
@@ -78,6 +79,9 @@ struct ValidationConfig {
     procurement_readiness_policy: ProcurementReadinessPolicy,
     #[serde(default)]
     procurement_critical_parts: Vec<ProcurementCriticalPart>,
+    connector_polarity_policy: ConnectorPolarityPolicy,
+    #[serde(default)]
+    connector_polarity_checks: Vec<ConnectorPolarityCheck>,
     #[serde(default)]
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
     simulation_input_policy: SimulationInputPolicy,
@@ -158,6 +162,7 @@ struct Outputs {
     emc_esd_csv: String,
     usb_power_budget_csv: String,
     procurement_readiness_csv: String,
+    connector_polarity_csv: String,
     i2c_bus_csv: String,
     heater_protection_csv: String,
     startup_safety_csv: String,
@@ -347,6 +352,33 @@ struct ProcurementCriticalPart {
     assembly_method: String,
     risk: String,
     required_evidence: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ConnectorPolarityPolicy {
+    min_checks: usize,
+    allowed_assembly_methods: Vec<String>,
+    require_pin_net_assignments: bool,
+    require_placement: bool,
+    require_orientation_note: bool,
+    required_check_ids: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ConnectorPolarityCheck {
+    id: String,
+    part_id: String,
+    reference: String,
+    role: String,
+    assembly_method: String,
+    polarity_type: String,
+    required_pins: BTreeMap<String, String>,
+    #[serde(default)]
+    required_nets: Vec<String>,
+    orientation_evidence: Vec<String>,
+    verification_method: String,
     notes: String,
 }
 
@@ -979,7 +1011,21 @@ struct FirmwareModulePin {
 #[derive(Debug, Deserialize)]
 struct PlacementPlan {
     #[serde(default)]
+    placements: Vec<Placement>,
+    #[serde(default)]
     test_points: Vec<TestPoint>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Placement {
+    reference: String,
+    part_id: String,
+    zone: String,
+    x_mm: f64,
+    y_mm: f64,
+    rotation_deg: f64,
+    side: String,
+    locked: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -1066,6 +1112,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
         usb_power_budget_csv: repo_root.join(config.outputs.usb_power_budget_csv),
         procurement_readiness_csv: repo_root.join(config.outputs.procurement_readiness_csv),
+        connector_polarity_csv: repo_root.join(config.outputs.connector_polarity_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
@@ -1137,6 +1184,15 @@ pub fn validate_to_outputs(
     validate_usb_signal_integrity(&config, &routing, &contract_nets, &mut rows, &mut errors);
     validate_usb_power_budget(&config, &parts, &mut rows, &mut errors);
     validate_procurement_readiness(&config, &parts, &mut rows, &mut errors);
+    validate_connector_polarity(
+        &config,
+        &parts,
+        &pin_nets,
+        &placement,
+        &contract_nets,
+        &mut rows,
+        &mut errors,
+    );
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
@@ -1208,6 +1264,7 @@ pub fn validate_to_outputs(
     write_emc_esd_handoff(&config, outputs)?;
     write_usb_power_budget_handoff(&config, &parts, outputs)?;
     write_procurement_readiness_handoff(&config, &parts, outputs)?;
+    write_connector_polarity_handoff(&config, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_heater_protection_handoff(&config, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
@@ -1272,6 +1329,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.single_fault_checks.is_empty()
         || config.emc_esd_checks.is_empty()
         || config.procurement_critical_parts.is_empty()
+        || config.connector_polarity_checks.is_empty()
         || config.boot_startup_checks.is_empty()
         || config.manufacturing_test_checks.is_empty()
         || config.calibration_checks.is_empty()
@@ -4583,6 +4641,195 @@ fn validate_procurement_readiness(
                 &part.notes,
             );
         }
+    }
+}
+
+fn validate_connector_polarity(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    pin_nets: &PinNetManifest,
+    placement: &PlacementPlan,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.connector_polarity_policy;
+    let selected_parts = selected_part_ids(parts);
+    let pin_assignments = pin_nets
+        .assignments
+        .iter()
+        .map(|assignment| (assignment.reference.as_str(), assignment))
+        .collect::<BTreeMap<_, _>>();
+    let placements = placement
+        .placements
+        .iter()
+        .map(|placement| (placement.reference.as_str(), placement))
+        .collect::<BTreeMap<_, _>>();
+    let allowed_methods = policy
+        .allowed_assembly_methods
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let check_ids = config
+        .connector_polarity_checks
+        .iter()
+        .map(|check| check.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "connector polarity",
+        "minimum connector/polarity coverage",
+        format!("{} checks", config.connector_polarity_checks.len()),
+        format!(">= {} checks", policy.min_checks),
+        config.connector_polarity_checks.len() >= policy.min_checks,
+        &policy.notes,
+    );
+
+    for required_id in &policy.required_check_ids {
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{required_id} required check"),
+            required_id.clone(),
+            "declared connector_polarity_checks entry",
+            check_ids.contains(required_id.as_str()),
+            &policy.notes,
+        );
+    }
+
+    let mut ids = BTreeSet::new();
+    for check in &config.connector_polarity_checks {
+        let assignment = pin_assignments.get(check.reference.as_str());
+        let placed = placements.get(check.reference.as_str());
+
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} selected part", check.id),
+            check.part_id.clone(),
+            "selected part id",
+            selected_parts.contains(check.part_id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} assembly method", check.id),
+            check.assembly_method.clone(),
+            format!("one of {}", policy.allowed_assembly_methods.join(", ")),
+            allowed_methods.contains(check.assembly_method.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} placement", check.id),
+            check.reference.clone(),
+            "placement entry with matching part_id",
+            !policy.require_placement
+                || placed
+                    .is_some_and(|placement| placement.part_id.as_str() == check.part_id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} pin-net assignment", check.id),
+            check.reference.clone(),
+            "pin_nets.toml assignment entry",
+            !policy.require_pin_net_assignments || assignment.is_some(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} polarity type", check.id),
+            check.polarity_type.clone(),
+            "non-empty",
+            !check.polarity_type.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} role", check.id),
+            check.role.clone(),
+            "non-empty",
+            !check.role.trim().is_empty(),
+            &check.notes,
+        );
+
+        if let Some(assignment) = assignment {
+            for (pin, expected_net) in &check.required_pins {
+                let actual_net = assignment
+                    .pins
+                    .get(pin)
+                    .map(String::as_str)
+                    .unwrap_or("missing");
+                push_gate!(
+                    rows,
+                    errors,
+                    "connector polarity",
+                    format!("{} pin {} net", check.id, pin),
+                    actual_net.to_string(),
+                    expected_net.clone(),
+                    actual_net == expected_net,
+                    &check.notes,
+                );
+            }
+        }
+
+        for net in &check.required_nets {
+            push_gate!(
+                rows,
+                errors,
+                "connector polarity",
+                format!("{} required net {}", check.id, net),
+                net.clone(),
+                "known contract net",
+                contract_nets.contains(net),
+                &check.notes,
+            );
+        }
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} orientation evidence", check.id),
+            check.orientation_evidence.join("; "),
+            ">= 2 evidence items",
+            !policy.require_orientation_note || check.orientation_evidence.len() >= 2,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "connector polarity",
+            format!("{} verification method", check.id),
+            check.verification_method.clone(),
+            "non-empty",
+            !check.verification_method.trim().is_empty(),
+            &check.notes,
+        );
     }
 }
 
@@ -8818,6 +9065,63 @@ fn write_procurement_readiness_handoff(
     Ok(())
 }
 
+fn write_connector_polarity_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.connector_polarity_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.connector_polarity_csv)?;
+    writer.write_record([
+        "id",
+        "part_id",
+        "reference",
+        "role",
+        "assembly_method",
+        "polarity_type",
+        "required_pins",
+        "required_nets",
+        "orientation_evidence",
+        "verification_method",
+        "status",
+        "notes",
+    ])?;
+
+    for check in &config.connector_polarity_checks {
+        let required_pins = check
+            .required_pins
+            .iter()
+            .map(|(pin, net)| format!("{pin}={net}"))
+            .collect::<Vec<_>>()
+            .join(";");
+        let status = if !check.required_pins.is_empty()
+            && !check.required_nets.is_empty()
+            && check.orientation_evidence.len() >= 2
+            && !check.verification_method.trim().is_empty()
+        {
+            "pass"
+        } else {
+            "fail"
+        };
+        writer.write_record([
+            check.id.clone(),
+            check.part_id.clone(),
+            check.reference.clone(),
+            check.role.clone(),
+            check.assembly_method.clone(),
+            check.polarity_type.clone(),
+            required_pins,
+            check.required_nets.join(";"),
+            check.orientation_evidence.join(";"),
+            check.verification_method.clone(),
+            status.to_string(),
+            check.notes.clone(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_i2c_bus_handoff(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -9548,6 +9852,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("usb_power_budget.csv")
+    )?;
+    writeln!(
+        report,
+        "- Connector pinout/polarity table: `{}`",
+        outputs
+            .connector_polarity_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("connector_polarity.csv")
     )?;
     writeln!(
         report,
