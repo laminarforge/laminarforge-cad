@@ -38,6 +38,7 @@ pub struct ElectricalOutputPaths {
     pub rail_load_step_csv: PathBuf,
     pub analog_front_end_netlist: PathBuf,
     pub analog_front_end_csv: PathBuf,
+    pub optical_crosstalk_csv: PathBuf,
     pub thermistor_adc_transfer_csv: PathBuf,
 }
 
@@ -102,6 +103,7 @@ struct ValidationConfig {
     usb_inrush_startup_policy: UsbInrushStartupPolicy,
     rail_load_step_policy: RailLoadStepPolicy,
     analog_front_end_policy: AnalogFrontEndPolicy,
+    optical_crosstalk_policy: OpticalCrosstalkPolicy,
     thermistor_adc_policy: ThermistorAdcPolicy,
 }
 
@@ -154,6 +156,7 @@ struct Outputs {
     rail_load_step_csv: String,
     analog_front_end_netlist: String,
     analog_front_end_csv: String,
+    optical_crosstalk_csv: String,
     thermistor_adc_transfer_csv: String,
 }
 
@@ -422,6 +425,27 @@ struct AnalogFrontEndPolicy {
     min_signal_delta_v: f64,
     min_adc_voltage_v: f64,
     max_adc_voltage_v: f64,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpticalCrosstalkPolicy {
+    slot_count: usize,
+    led_net_prefix: String,
+    mux_select_nets: Vec<String>,
+    mux_common_net: String,
+    adc_net: String,
+    max_adjacent_crosstalk_pct: f64,
+    max_non_adjacent_crosstalk_pct: f64,
+    max_crosstalk_delta_v: f64,
+    mux_off_leakage_na: f64,
+    max_dark_shift_v: f64,
+    tia_output_impedance_ohm: f64,
+    adc_sample_cap_pf: f64,
+    settling_error_pct: f64,
+    sample_settle_us: f64,
+    required_measurements: Vec<String>,
+    required_outputs: Vec<String>,
     notes: String,
 }
 
@@ -921,6 +945,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         rail_load_step_csv: repo_root.join(config.outputs.rail_load_step_csv),
         analog_front_end_netlist: repo_root.join(config.outputs.analog_front_end_netlist),
         analog_front_end_csv: repo_root.join(config.outputs.analog_front_end_csv),
+        optical_crosstalk_csv: repo_root.join(config.outputs.optical_crosstalk_csv),
         thermistor_adc_transfer_csv: repo_root.join(config.outputs.thermistor_adc_transfer_csv),
     })
 }
@@ -1005,6 +1030,7 @@ pub fn validate_to_outputs(
     validate_usb_inrush_startup(&config, &contract_nets, &mut rows, &mut errors);
     validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
     validate_analog_front_end_transient(&config, &contract_nets, &mut rows, &mut errors);
+    validate_optical_crosstalk(&config, &contract_nets, &mut rows, &mut errors);
     validate_thermistor_adc_transfer(
         &config,
         &parts,
@@ -1044,6 +1070,7 @@ pub fn validate_to_outputs(
     write_usb_inrush_startup_handoff(&config, outputs)?;
     write_rail_load_step_handoff(&config, outputs)?;
     write_analog_front_end_handoff(&config, outputs)?;
+    write_optical_crosstalk_handoff(&config, outputs)?;
     write_thermistor_adc_transfer_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
@@ -2834,6 +2861,226 @@ fn analog_front_end_rows(config: &ValidationConfig) -> Vec<AnalogFrontEndRow> {
 
 fn analog_front_end_output_v(current_na: f64, policy: &AnalogFrontEndPolicy) -> f64 {
     current_na * 1.0e-9 * policy.feedback_resistor_ohm
+}
+
+fn validate_optical_crosstalk(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.optical_crosstalk_policy;
+    let analog = &config.analog_front_end_policy;
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let calibration_outputs = config
+        .calibration_checks
+        .iter()
+        .flat_map(|check| check.required_outputs.iter().map(String::as_str))
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "optical crosstalk",
+        "slot count",
+        format!("{} slots", policy.slot_count),
+        "8 slots",
+        policy.slot_count == 8,
+        &policy.notes,
+    );
+
+    for slot in 0..policy.slot_count {
+        let net = format!("{}{}", policy.led_net_prefix, slot);
+        push_gate!(
+            rows,
+            errors,
+            "optical crosstalk",
+            format!("{net} contract net"),
+            net.clone(),
+            "present in contract",
+            contract_nets.contains(&net),
+            &policy.notes,
+        );
+    }
+
+    for net in policy
+        .mux_select_nets
+        .iter()
+        .chain([&policy.mux_common_net, &policy.adc_net])
+    {
+        push_gate!(
+            rows,
+            errors,
+            "optical crosstalk",
+            format!("{net} contract net"),
+            net.clone(),
+            "present in contract",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    let signal_delta_v = analog_front_end_output_v(analog.light_current_na, analog)
+        - analog_front_end_output_v(analog.dark_current_na, analog);
+    let adjacent_delta_v = signal_delta_v * policy.max_adjacent_crosstalk_pct / 100.0;
+    let non_adjacent_delta_v = signal_delta_v * policy.max_non_adjacent_crosstalk_pct / 100.0;
+    let inactive_leakage_v = policy.mux_off_leakage_na
+        * policy.slot_count as f64
+        * 1.0e-9
+        * analog.feedback_resistor_ohm;
+    let settling_us = optical_settling_time_us(policy, analog);
+
+    push_gate!(
+        rows,
+        errors,
+        "optical crosstalk",
+        "adjacent-channel crosstalk envelope",
+        format!("{adjacent_delta_v:.4} V"),
+        format!("<= {:.4} V", policy.max_crosstalk_delta_v),
+        adjacent_delta_v <= policy.max_crosstalk_delta_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical crosstalk",
+        "non-adjacent-channel crosstalk envelope",
+        format!("{non_adjacent_delta_v:.4} V"),
+        format!("<= {:.4} V", policy.max_crosstalk_delta_v),
+        non_adjacent_delta_v <= policy.max_crosstalk_delta_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical crosstalk",
+        "mux off-leakage dark shift",
+        format!("{inactive_leakage_v:.4} V"),
+        format!("<= {:.4} V", policy.max_dark_shift_v),
+        inactive_leakage_v <= policy.max_dark_shift_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical crosstalk",
+        "mux and ADC sample settling",
+        format!("{settling_us:.3} us"),
+        format!("<= {:.3} us", policy.sample_settle_us),
+        settling_us <= policy.sample_settle_us,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical crosstalk",
+        "settling error target",
+        format!("{:.3} %", policy.settling_error_pct),
+        "0 < error < 10%",
+        policy.settling_error_pct > 0.0 && policy.settling_error_pct < 10.0,
+        &policy.notes,
+    );
+
+    for measurement in &policy.required_measurements {
+        push_gate!(
+            rows,
+            errors,
+            "optical crosstalk",
+            format!("required measurement {measurement}"),
+            measurement.clone(),
+            "present in first-article measurement plan",
+            measurement_ids.contains(measurement.as_str()),
+            &policy.notes,
+        );
+    }
+    for output in &policy.required_outputs {
+        push_gate!(
+            rows,
+            errors,
+            "optical crosstalk",
+            format!("required calibration output {output}"),
+            output.clone(),
+            "present in calibration output plan",
+            calibration_outputs.contains(output.as_str()),
+            &policy.notes,
+        );
+    }
+}
+
+#[derive(Debug)]
+struct OpticalCrosstalkRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+fn optical_crosstalk_rows(config: &ValidationConfig) -> Vec<OpticalCrosstalkRow> {
+    let policy = &config.optical_crosstalk_policy;
+    let analog = &config.analog_front_end_policy;
+    let signal_delta_v = analog_front_end_output_v(analog.light_current_na, analog)
+        - analog_front_end_output_v(analog.dark_current_na, analog);
+    let adjacent_delta_v = signal_delta_v * policy.max_adjacent_crosstalk_pct / 100.0;
+    let non_adjacent_delta_v = signal_delta_v * policy.max_non_adjacent_crosstalk_pct / 100.0;
+    let inactive_leakage_v = policy.mux_off_leakage_na
+        * policy.slot_count as f64
+        * 1.0e-9
+        * analog.feedback_resistor_ohm;
+    let settling_us = optical_settling_time_us(policy, analog);
+
+    vec![
+        OpticalCrosstalkRow {
+            id: "adjacent_crosstalk_delta",
+            measurement: "worst-case adjacent LED crosstalk ADC delta",
+            value: adjacent_delta_v,
+            units: "V",
+            limit: format!("<= {:.4} V", policy.max_crosstalk_delta_v),
+            pass: adjacent_delta_v <= policy.max_crosstalk_delta_v,
+            notes: policy.notes.clone(),
+        },
+        OpticalCrosstalkRow {
+            id: "non_adjacent_crosstalk_delta",
+            measurement: "worst-case non-adjacent LED crosstalk ADC delta",
+            value: non_adjacent_delta_v,
+            units: "V",
+            limit: format!("<= {:.4} V", policy.max_crosstalk_delta_v),
+            pass: non_adjacent_delta_v <= policy.max_crosstalk_delta_v,
+            notes: policy.notes.clone(),
+        },
+        OpticalCrosstalkRow {
+            id: "mux_off_leakage_dark_shift",
+            measurement: "estimated mux off-leakage dark shift",
+            value: inactive_leakage_v,
+            units: "V",
+            limit: format!("<= {:.4} V", policy.max_dark_shift_v),
+            pass: inactive_leakage_v <= policy.max_dark_shift_v,
+            notes: policy.notes.clone(),
+        },
+        OpticalCrosstalkRow {
+            id: "mux_adc_settling_time",
+            measurement: "estimated mux/ADC settling time",
+            value: settling_us,
+            units: "us",
+            limit: format!("<= {:.3} us", policy.sample_settle_us),
+            pass: settling_us <= policy.sample_settle_us,
+            notes: policy.notes.clone(),
+        },
+    ]
+}
+
+fn optical_settling_time_us(policy: &OpticalCrosstalkPolicy, analog: &AnalogFrontEndPolicy) -> f64 {
+    let total_resistance_ohm = analog.mux_on_resistance_ohm + policy.tia_output_impedance_ohm;
+    let total_capacitance_f =
+        (analog.feedback_cap_pf + analog.input_cap_pf + policy.adc_sample_cap_pf) * 1.0e-12;
+    let target_error = policy.settling_error_pct / 100.0;
+    -total_resistance_ohm * total_capacitance_f * target_error.ln() * 1.0e6
 }
 
 fn validate_thermistor_adc_transfer(
@@ -6103,6 +6350,40 @@ fn write_analog_front_end_spice(
     Ok(())
 }
 
+fn write_optical_crosstalk_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.optical_crosstalk_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.optical_crosstalk_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in optical_crosstalk_rows(config) {
+        writer.write_record([
+            row.id.to_string(),
+            row.measurement.to_string(),
+            format!("{:.6}", row.value),
+            row.units.to_string(),
+            row.limit,
+            if row.pass {
+                "pass".to_string()
+            } else {
+                "fail".to_string()
+            },
+            row.notes,
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_thermistor_adc_transfer_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -7027,6 +7308,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("analog_front_end_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Optical crosstalk and mux/ADC settling table: `{}`",
+        outputs
+            .optical_crosstalk_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("optical_crosstalk_validation.csv")
     )?;
     writeln!(
         report,

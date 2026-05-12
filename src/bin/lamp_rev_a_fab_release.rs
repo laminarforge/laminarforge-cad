@@ -98,6 +98,7 @@ struct Outputs {
     rail_load_step_file: String,
     analog_front_end_netlist_file: String,
     analog_front_end_file: String,
+    optical_crosstalk_file: String,
     thermistor_adc_transfer_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
@@ -477,6 +478,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         rail_load_step_csv: output_root.join(&config.outputs.rail_load_step_file),
         analog_front_end_netlist: output_root.join(&config.outputs.analog_front_end_netlist_file),
         analog_front_end_csv: output_root.join(&config.outputs.analog_front_end_file),
+        optical_crosstalk_csv: output_root.join(&config.outputs.optical_crosstalk_file),
         thermistor_adc_transfer_csv: output_root.join(&config.outputs.thermistor_adc_transfer_file),
     };
     validate_to_outputs(&root, &electrical_outputs)?;
@@ -1358,6 +1360,11 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "optical_crosstalk: {}",
+        config.outputs.optical_crosstalk_file
+    )?;
+    writeln!(
+        file,
         "thermistor_adc_transfer: {}",
         config.outputs.thermistor_adc_transfer_file
     )?;
@@ -1867,6 +1874,7 @@ fn write_release_bundles(
         config.outputs.rail_load_step_file.as_str(),
         config.outputs.analog_front_end_netlist_file.as_str(),
         config.outputs.analog_front_end_file.as_str(),
+        config.outputs.optical_crosstalk_file.as_str(),
         config.outputs.thermistor_adc_transfer_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
@@ -2086,6 +2094,7 @@ fn validate_release_outputs(
         &config.outputs.rail_load_step_file,
         &config.outputs.analog_front_end_netlist_file,
         &config.outputs.analog_front_end_file,
+        &config.outputs.optical_crosstalk_file,
         &config.outputs.thermistor_adc_transfer_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
@@ -2200,6 +2209,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.rail_load_step_file.as_str(),
         config.outputs.analog_front_end_netlist_file.as_str(),
         config.outputs.analog_front_end_file.as_str(),
+        config.outputs.optical_crosstalk_file.as_str(),
         config.outputs.thermistor_adc_transfer_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),

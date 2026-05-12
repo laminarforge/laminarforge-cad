@@ -42,6 +42,7 @@ rail_load_step_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_rail_load_step.spice
 rail_load_step_csv = "pcb/lamp_rev_a/reports/rail_load_step_simulation.csv"
 analog_front_end_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_analog_front_end.spice"
 analog_front_end_csv = "pcb/lamp_rev_a/reports/analog_front_end_simulation.csv"
+optical_crosstalk_csv = "pcb/lamp_rev_a/reports/optical_crosstalk_validation.csv"
 thermistor_adc_transfer_csv = "pcb/lamp_rev_a/reports/thermistor_adc_transfer.csv"
 
 [traceability_policy]
@@ -170,6 +171,17 @@ ci_step = "LAMP Rev A SPICE checks; Run LAMP Rev A release SPICE checks"
 acceptance_criterion = "ngspice transient measurements keep ADC_AIN1 inside the 3.3 V analog domain while producing a detectable dark-to-light signal delta."
 blocks_release = true
 notes = "This is a first-order photodiode/mux/TIA/ADC signal-envelope simulation. It does not replace optical calibration, but it catches gain/range assumptions before fab."
+
+[[validation_traceability]]
+id = "optical_crosstalk_mux_settling"
+validation_layer = "Optical channel crosstalk and mux/ADC settling validation"
+electrical_gate_category = "optical crosstalk"
+output_artifact = "optical_crosstalk_validation.csv; electrical_validation_gates.csv"
+release_manifest_entry = "optical_crosstalk; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "LED channel crosstalk, mux off-leakage, and mux/ADC settling estimates stay below configured limits and first-article optical outputs are planned."
+blocks_release = true
+notes = "This catches slot-to-slot optical false-signal risk before relying on the dry optical calibration fixture."
 
 [[validation_traceability]]
 id = "thermistor_adc_transfer"
@@ -483,6 +495,25 @@ min_signal_delta_v = 0.25
 min_adc_voltage_v = 0.0
 max_adc_voltage_v = 3.0
 notes = "First-order optical TIA signal-envelope model from SFH2704/CD74HC4051/TLV6001/ADS1115 assumptions. Bench optical calibration remains mandatory."
+
+[optical_crosstalk_policy]
+slot_count = 8
+led_net_prefix = "LED_BASE_"
+mux_select_nets = ["MUX_S0", "MUX_S1", "MUX_S2"]
+mux_common_net = "MUX_COM"
+adc_net = "ADC_AIN1"
+max_adjacent_crosstalk_pct = 5.0
+max_non_adjacent_crosstalk_pct = 1.5
+max_crosstalk_delta_v = 0.060
+mux_off_leakage_na = 1.0
+max_dark_shift_v = 0.040
+tia_output_impedance_ohm = 100.0
+adc_sample_cap_pf = 10.0
+settling_error_pct = 0.1
+sample_settle_us = 250.0
+required_measurements = ["analog_adc_idle"]
+required_outputs = ["optical_slot_response.csv", "slot_mapping_check.md"]
+notes = "First-order channel isolation and mux/ADC settling gate. It does not replace dry fixture calibration, but it keeps gross optical crosstalk assumptions inside the release package."
 
 [thermistor_adc_policy]
 adc_net = "ADC_AIN1"
