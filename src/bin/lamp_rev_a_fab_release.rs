@@ -92,6 +92,8 @@ struct Outputs {
     heater_pwm_transient_file: String,
     rail_load_step_netlist_file: String,
     rail_load_step_file: String,
+    analog_front_end_netlist_file: String,
+    analog_front_end_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
@@ -463,6 +465,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         heater_pwm_transient_csv: output_root.join(&config.outputs.heater_pwm_transient_file),
         rail_load_step_netlist: output_root.join(&config.outputs.rail_load_step_netlist_file),
         rail_load_step_csv: output_root.join(&config.outputs.rail_load_step_file),
+        analog_front_end_netlist: output_root.join(&config.outputs.analog_front_end_netlist_file),
+        analog_front_end_csv: output_root.join(&config.outputs.analog_front_end_file),
     };
     validate_to_outputs(&root, &electrical_outputs)?;
     write_release_bundles(&config, &root, &output_root)?;
@@ -1321,6 +1325,16 @@ fn write_manifest(
         "rail_load_step_simulation: {}",
         config.outputs.rail_load_step_file
     )?;
+    writeln!(
+        file,
+        "analog_front_end_netlist: {}",
+        config.outputs.analog_front_end_netlist_file
+    )?;
+    writeln!(
+        file,
+        "analog_front_end_simulation: {}",
+        config.outputs.analog_front_end_file
+    )?;
     writeln!(file, "thermal_power: {}", config.outputs.thermal_power_file)?;
     writeln!(
         file,
@@ -1815,6 +1829,8 @@ fn write_release_bundles(
         config.outputs.heater_pwm_transient_file.as_str(),
         config.outputs.rail_load_step_netlist_file.as_str(),
         config.outputs.rail_load_step_file.as_str(),
+        config.outputs.analog_front_end_netlist_file.as_str(),
+        config.outputs.analog_front_end_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
@@ -2027,6 +2043,8 @@ fn validate_release_outputs(
         &config.outputs.heater_pwm_transient_file,
         &config.outputs.rail_load_step_netlist_file,
         &config.outputs.rail_load_step_file,
+        &config.outputs.analog_front_end_netlist_file,
+        &config.outputs.analog_front_end_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
@@ -2134,6 +2152,8 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.heater_pwm_transient_file.as_str(),
         config.outputs.rail_load_step_netlist_file.as_str(),
         config.outputs.rail_load_step_file.as_str(),
+        config.outputs.analog_front_end_netlist_file.as_str(),
+        config.outputs.analog_front_end_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),

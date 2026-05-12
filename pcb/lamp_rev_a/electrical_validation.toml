@@ -36,6 +36,8 @@ heater_pwm_transient_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_heater_pwm_tra
 heater_pwm_transient_csv = "pcb/lamp_rev_a/reports/heater_pwm_transient_simulation.csv"
 rail_load_step_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_rail_load_step.spice"
 rail_load_step_csv = "pcb/lamp_rev_a/reports/rail_load_step_simulation.csv"
+analog_front_end_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_analog_front_end.spice"
+analog_front_end_csv = "pcb/lamp_rev_a/reports/analog_front_end_simulation.csv"
 
 [traceability_policy]
 min_items = 15
@@ -130,6 +132,17 @@ ci_step = "LAMP Rev A SPICE checks; Run LAMP Rev A release SPICE checks"
 acceptance_criterion = "ngspice transient measurements keep 3.3 V rail sag, recovery, and regulator/source current inside configured limits."
 blocks_release = true
 notes = "This simulates a simplified ESP32/Wi-Fi load burst on the 3.3 V rail so rail collapse is not only a static budget assumption."
+
+[[validation_traceability]]
+id = "analog_front_end_simulation"
+validation_layer = "SPICE optical analog front-end transient simulation"
+electrical_gate_category = "analog front end transient"
+output_artifact = "lamp_rev_a_analog_front_end.spice; analog_front_end_simulation.csv"
+release_manifest_entry = "analog_front_end_netlist; analog_front_end_simulation"
+ci_step = "LAMP Rev A SPICE checks; Run LAMP Rev A release SPICE checks"
+acceptance_criterion = "ngspice transient measurements keep ADC_AIN1 inside the 3.3 V analog domain while producing a detectable dark-to-light signal delta."
+blocks_release = true
+notes = "This is a first-order photodiode/mux/TIA/ADC signal-envelope simulation. It does not replace optical calibration, but it catches gain/range assumptions before fab."
 
 [[validation_traceability]]
 id = "component_stress_derating"
@@ -315,6 +328,24 @@ simulation_stop_ms = 24.0
 min_rail_voltage_v = 3.0
 max_source_current_ma = 600
 notes = "First-order ESP32-S3/Wi-Fi burst load-step model for the USB-derived 3.3 V rail. Replace with extracted PDN simulation after routed parasitics are exported."
+
+[analog_front_end_policy]
+adc_rail_v = 3.3
+feedback_resistor_ohm = 1000000.0
+feedback_cap_pf = 10.0
+mux_on_resistance_ohm = 70.0
+input_cap_pf = 5.0
+dark_current_na = 20.0
+light_current_na = 900.0
+max_photocurrent_na = 2500.0
+light_start_ms = 1.0
+light_width_ms = 3.0
+period_ms = 8.0
+simulation_stop_ms = 8.0
+min_signal_delta_v = 0.25
+min_adc_voltage_v = 0.0
+max_adc_voltage_v = 3.0
+notes = "First-order optical TIA signal-envelope model from SFH2704/CD74HC4051/TLV6001/ADS1115 assumptions. Bench optical calibration remains mandatory."
 
 [[rail_budgets]]
 rail = "VBUS"

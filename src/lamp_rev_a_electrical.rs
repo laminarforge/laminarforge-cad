@@ -32,6 +32,8 @@ pub struct ElectricalOutputPaths {
     pub heater_pwm_transient_csv: PathBuf,
     pub rail_load_step_netlist: PathBuf,
     pub rail_load_step_csv: PathBuf,
+    pub analog_front_end_netlist: PathBuf,
+    pub analog_front_end_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -88,6 +90,7 @@ struct ValidationConfig {
     thermal_margin_simulation_policy: ThermalMarginSimulationPolicy,
     heater_pwm_transient_policy: HeaterPwmTransientPolicy,
     rail_load_step_policy: RailLoadStepPolicy,
+    analog_front_end_policy: AnalogFrontEndPolicy,
 }
 
 #[derive(Debug, Deserialize)]
@@ -133,6 +136,8 @@ struct Outputs {
     heater_pwm_transient_csv: String,
     rail_load_step_netlist: String,
     rail_load_step_csv: String,
+    analog_front_end_netlist: String,
+    analog_front_end_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -331,6 +336,26 @@ struct RailLoadStepPolicy {
     simulation_stop_ms: f64,
     min_rail_voltage_v: f64,
     max_source_current_ma: u32,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct AnalogFrontEndPolicy {
+    adc_rail_v: f64,
+    feedback_resistor_ohm: f64,
+    feedback_cap_pf: f64,
+    mux_on_resistance_ohm: f64,
+    input_cap_pf: f64,
+    dark_current_na: f64,
+    light_current_na: f64,
+    max_photocurrent_na: f64,
+    light_start_ms: f64,
+    light_width_ms: f64,
+    period_ms: f64,
+    simulation_stop_ms: f64,
+    min_signal_delta_v: f64,
+    min_adc_voltage_v: f64,
+    max_adc_voltage_v: f64,
     notes: String,
 }
 
@@ -744,6 +769,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         heater_pwm_transient_csv: repo_root.join(config.outputs.heater_pwm_transient_csv),
         rail_load_step_netlist: repo_root.join(config.outputs.rail_load_step_netlist),
         rail_load_step_csv: repo_root.join(config.outputs.rail_load_step_csv),
+        analog_front_end_netlist: repo_root.join(config.outputs.analog_front_end_netlist),
+        analog_front_end_csv: repo_root.join(config.outputs.analog_front_end_csv),
     })
 }
 
@@ -814,6 +841,7 @@ pub fn validate_to_outputs(
     validate_thermal_margin_simulation(&config, &routing, &mut rows, &mut errors);
     validate_heater_pwm_transient(&config, &contract_nets, &mut rows, &mut errors);
     validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
+    validate_analog_front_end_transient(&config, &contract_nets, &mut rows, &mut errors);
     let gate_categories = rows
         .iter()
         .map(|row| row.category.clone())
@@ -840,6 +868,7 @@ pub fn validate_to_outputs(
     write_thermal_margin_simulation_handoff(&config, &routing, outputs)?;
     write_heater_pwm_transient_handoff(&config, outputs)?;
     write_rail_load_step_handoff(&config, outputs)?;
+    write_analog_front_end_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -1944,6 +1973,162 @@ fn rail_load_step_estimated_min_v(policy: &RailLoadStepPolicy) -> f64 {
 
 fn rail_load_step_baseline_drop_v(policy: &RailLoadStepPolicy) -> f64 {
     (policy.baseline_load_ma as f64 / 1000.0) * policy.source_resistance_ohm
+}
+
+fn validate_analog_front_end_transient(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.analog_front_end_policy;
+    for net in ["MUX_COM", "ADC_AIN1", "+3V3", "GND"] {
+        push_gate!(
+            rows,
+            errors,
+            "analog front end transient",
+            format!("{net} contract net"),
+            net,
+            "present in contract",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    let dark_v = analog_front_end_output_v(policy.dark_current_na, policy);
+    let light_v = analog_front_end_output_v(policy.light_current_na, policy);
+    let max_signal_v = analog_front_end_output_v(policy.max_photocurrent_na, policy);
+    push_gate!(
+        rows,
+        errors,
+        "analog front end transient",
+        "dark-to-light signal delta",
+        format!("{:.3} V", light_v - dark_v),
+        format!(">= {:.3} V", policy.min_signal_delta_v),
+        light_v - dark_v >= policy.min_signal_delta_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "analog front end transient",
+        "light-state ADC range",
+        format!("{light_v:.3} V"),
+        format!(
+            "{:.3}..{:.3} V",
+            policy.min_adc_voltage_v, policy.max_adc_voltage_v
+        ),
+        light_v >= policy.min_adc_voltage_v && light_v <= policy.max_adc_voltage_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "analog front end transient",
+        "maximum photocurrent saturation margin",
+        format!("{max_signal_v:.3} V"),
+        format!("<= {:.3} V", policy.max_adc_voltage_v),
+        max_signal_v <= policy.max_adc_voltage_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "analog front end transient",
+        "TIA compensation RC",
+        format!(
+            "{:.0} ohm / {:.3} pF",
+            policy.feedback_resistor_ohm, policy.feedback_cap_pf
+        ),
+        "positive feedback resistor and capacitor",
+        policy.feedback_resistor_ohm > 0.0 && policy.feedback_cap_pf > 0.0,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "analog front end transient",
+        "optical timing envelope",
+        format!(
+            "{:.3} ms start / {:.3} ms light / {:.3} ms period / {:.3} ms stop",
+            policy.light_start_ms,
+            policy.light_width_ms,
+            policy.period_ms,
+            policy.simulation_stop_ms
+        ),
+        "0 < start, 0 < light < period, stop >= period",
+        policy.light_start_ms > 0.0
+            && policy.light_width_ms > 0.0
+            && policy.light_width_ms < policy.period_ms
+            && policy.simulation_stop_ms >= policy.period_ms,
+        &policy.notes,
+    );
+}
+
+#[derive(Debug)]
+struct AnalogFrontEndRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+fn analog_front_end_rows(config: &ValidationConfig) -> Vec<AnalogFrontEndRow> {
+    let policy = &config.analog_front_end_policy;
+    let dark_v = analog_front_end_output_v(policy.dark_current_na, policy);
+    let light_v = analog_front_end_output_v(policy.light_current_na, policy);
+    let max_signal_v = analog_front_end_output_v(policy.max_photocurrent_na, policy);
+    vec![
+        AnalogFrontEndRow {
+            id: "dark_output_voltage",
+            measurement: "expected dark ADC_AIN1 voltage",
+            value: dark_v,
+            units: "V",
+            limit: format!(
+                "{:.3}..{:.3} V",
+                policy.min_adc_voltage_v, policy.max_adc_voltage_v
+            ),
+            pass: dark_v >= policy.min_adc_voltage_v && dark_v <= policy.max_adc_voltage_v,
+            notes: policy.notes.clone(),
+        },
+        AnalogFrontEndRow {
+            id: "light_output_voltage",
+            measurement: "expected light ADC_AIN1 voltage",
+            value: light_v,
+            units: "V",
+            limit: format!(
+                "{:.3}..{:.3} V",
+                policy.min_adc_voltage_v, policy.max_adc_voltage_v
+            ),
+            pass: light_v >= policy.min_adc_voltage_v && light_v <= policy.max_adc_voltage_v,
+            notes: policy.notes.clone(),
+        },
+        AnalogFrontEndRow {
+            id: "signal_delta_voltage",
+            measurement: "expected dark-to-light signal delta",
+            value: light_v - dark_v,
+            units: "V",
+            limit: format!(">= {:.3} V", policy.min_signal_delta_v),
+            pass: light_v - dark_v >= policy.min_signal_delta_v,
+            notes: policy.notes.clone(),
+        },
+        AnalogFrontEndRow {
+            id: "max_photocurrent_voltage",
+            measurement: "maximum modeled photocurrent ADC_AIN1 voltage",
+            value: max_signal_v,
+            units: "V",
+            limit: format!("<= {:.3} V", policy.max_adc_voltage_v),
+            pass: max_signal_v <= policy.max_adc_voltage_v,
+            notes: policy.notes.clone(),
+        },
+    ]
+}
+
+fn analog_front_end_output_v(current_na: f64, policy: &AnalogFrontEndPolicy) -> f64 {
+    current_na * 1.0e-9 * policy.feedback_resistor_ohm
 }
 
 fn allowed_neckdown(segment: &RouteSegment, path: &TraceCurrentPath) -> bool {
@@ -4444,6 +4629,137 @@ fn write_rail_load_step_spice(
     Ok(())
 }
 
+fn write_analog_front_end_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    write_analog_front_end_csv(config, outputs)?;
+    write_analog_front_end_spice(config, outputs)?;
+    Ok(())
+}
+
+fn write_analog_front_end_csv(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.analog_front_end_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.analog_front_end_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in analog_front_end_rows(config) {
+        writer.write_record([
+            row.id,
+            row.measurement,
+            format!("{:.6}", row.value).as_str(),
+            row.units,
+            row.limit.as_str(),
+            if row.pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_analog_front_end_spice(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.analog_front_end_netlist)?;
+    let policy = &config.analog_front_end_policy;
+    let rise_ms = 0.010_f64;
+    let fall_ms = 0.010_f64;
+    let mut spice = String::new();
+    writeln!(
+        spice,
+        "* LaminarForge LAMP Rev A optical analog front-end transient check"
+    )?;
+    writeln!(spice, "* Generated by lamp_rev_a_electrical_validate")?;
+    writeln!(
+        spice,
+        "* This is a first-order photodiode/mux/TIA envelope model, not optical signoff."
+    )?;
+    writeln!(
+        spice,
+        "* check_min_signal_delta_v={:.6}",
+        policy.min_signal_delta_v
+    )?;
+    writeln!(
+        spice,
+        "* check_min_adc_voltage_v={:.6}",
+        policy.min_adc_voltage_v
+    )?;
+    writeln!(
+        spice,
+        "* check_max_adc_voltage_v={:.6}",
+        policy.max_adc_voltage_v
+    )?;
+    writeln!(spice, "VREF VREF 0 DC 0")?;
+    writeln!(
+        spice,
+        "IPD VREF MUX_COM PULSE({:.12} {:.12} {:.6}m {:.6}m {:.6}m {:.6}m {:.6}m)",
+        policy.dark_current_na * 1.0e-9,
+        policy.light_current_na * 1.0e-9,
+        policy.light_start_ms,
+        rise_ms,
+        fall_ms,
+        policy.light_width_ms,
+        policy.period_ms
+    )?;
+    writeln!(
+        spice,
+        "RMUX MUX_COM ADC_AIN1 {:.6}",
+        policy.mux_on_resistance_ohm
+    )?;
+    writeln!(
+        spice,
+        "RF ADC_AIN1 VREF {:.6}",
+        policy.feedback_resistor_ohm
+    )?;
+    writeln!(
+        spice,
+        "CF ADC_AIN1 VREF {:.6}p IC=0",
+        policy.feedback_cap_pf
+    )?;
+    writeln!(spice, "CIN MUX_COM VREF {:.6}p IC=0", policy.input_cap_pf)?;
+    writeln!(spice, ".tran 1u {:.6}m uic", policy.simulation_stop_ms)?;
+    writeln!(spice, ".control")?;
+    writeln!(spice, "run")?;
+    writeln!(
+        spice,
+        "meas tran dark_v AVG v(adc_ain1) FROM={:.6}m TO={:.6}m",
+        policy.light_start_ms * 0.20,
+        policy.light_start_ms * 0.80
+    )?;
+    writeln!(
+        spice,
+        "meas tran light_v AVG v(adc_ain1) FROM={:.6}m TO={:.6}m",
+        policy.light_start_ms + policy.light_width_ms * 0.40,
+        policy.light_start_ms + policy.light_width_ms * 0.80
+    )?;
+    writeln!(
+        spice,
+        "meas tran adc_max_v MAX v(adc_ain1) FROM=0 TO={:.6}m",
+        policy.simulation_stop_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran adc_min_v MIN v(adc_ain1) FROM=0 TO={:.6}m",
+        policy.simulation_stop_ms
+    )?;
+    writeln!(spice, ".endc")?;
+    writeln!(spice, ".end")?;
+    fs::write(&outputs.analog_front_end_netlist, spice)?;
+    Ok(())
+}
+
 fn write_thermal_power_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -5095,6 +5411,15 @@ fn write_simulation_handoff(
             .and_then(|name| name.to_str())
             .unwrap_or("lamp_rev_a_rail_load_step.spice")
     )?;
+    writeln!(
+        report,
+        "- Optical analog front-end transient netlist: `{}`",
+        outputs
+            .analog_front_end_netlist
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("lamp_rev_a_analog_front_end.spice")
+    )?;
     writeln!(report)?;
     writeln!(report, "## Generated PDN / Thermal Handoffs")?;
     writeln!(report)?;
@@ -5151,6 +5476,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("rail_load_step_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Optical analog front-end result table: `{}`",
+        outputs
+            .analog_front_end_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("analog_front_end_simulation.csv")
     )?;
     writeln!(
         report,

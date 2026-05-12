@@ -22,6 +22,7 @@ enum SpiceMode {
     OperatingPoint,
     HeaterPwmTransient,
     RailLoadStep,
+    AnalogFrontEnd,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -46,6 +47,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 &default_log_path(&outputs.rail_load_step_netlist),
                 SpiceMode::RailLoadStep,
             )?;
+            run_spice_check(
+                &outputs.analog_front_end_netlist,
+                &default_log_path(&outputs.analog_front_end_netlist),
+                SpiceMode::AnalogFrontEnd,
+            )?;
             println!("LAMP Rev A SPICE checks passed.");
             return Ok(());
         }
@@ -64,6 +70,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             PathBuf::from(log),
             SpiceMode::RailLoadStep,
         ),
+        [mode, netlist, log] if mode == "analog-front-end" => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::AnalogFrontEnd,
+        ),
         [mode, netlist, log] if mode == "operating-point" => (
             PathBuf::from(netlist),
             PathBuf::from(log),
@@ -71,7 +82,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ),
         _ => {
             return Err(
-                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|rail-load-step NETLIST_PATH LOG_PATH]"
+                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|rail-load-step|analog-front-end NETLIST_PATH LOG_PATH]"
                     .into(),
             );
         }
@@ -117,6 +128,7 @@ fn run_spice_check(
         SpiceMode::OperatingPoint => validate_operating_point_log(&log)?,
         SpiceMode::HeaterPwmTransient => validate_heater_pwm_transient_log(&netlist, &log)?,
         SpiceMode::RailLoadStep => validate_rail_load_step_log(&netlist, &log)?,
+        SpiceMode::AnalogFrontEnd => validate_analog_front_end_log(&netlist, &log)?,
     }
 
     println!(
@@ -125,6 +137,7 @@ fn run_spice_check(
             SpiceMode::OperatingPoint => "operating-point",
             SpiceMode::HeaterPwmTransient => "heater PWM transient",
             SpiceMode::RailLoadStep => "rail load-step transient",
+            SpiceMode::AnalogFrontEnd => "analog front-end transient",
         }
     );
     println!("  netlist: {}", netlist_path.display());
@@ -240,6 +253,41 @@ fn validate_rail_load_step_log(netlist: &str, log: &str) -> Result<(), Box<dyn E
     if source_current_max_ma > max_source_current_ma {
         return Err(format!(
             "rail load-step source current {source_current_max_ma:.6} mA exceeds {max_source_current_ma:.6} mA"
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn validate_analog_front_end_log(netlist: &str, log: &str) -> Result<(), Box<dyn Error>> {
+    let lower = log.to_ascii_lowercase();
+    validate_no_ngspice_failure_tokens(&lower)?;
+
+    let min_signal_delta = netlist_limit(netlist, "check_min_signal_delta_v")?;
+    let min_adc_voltage = netlist_limit(netlist, "check_min_adc_voltage_v")?;
+    let max_adc_voltage = netlist_limit(netlist, "check_max_adc_voltage_v")?;
+
+    let dark_v = measurement(&lower, "dark_v")?;
+    let light_v = measurement(&lower, "light_v")?;
+    let adc_max_v = measurement(&lower, "adc_max_v")?;
+    let adc_min_v = measurement(&lower, "adc_min_v")?;
+    let signal_delta = light_v - dark_v;
+
+    if signal_delta < min_signal_delta {
+        return Err(format!(
+            "analog front-end signal delta {signal_delta:.6} V is below {min_signal_delta:.6} V"
+        )
+        .into());
+    }
+    if adc_min_v < min_adc_voltage {
+        return Err(format!(
+            "analog front-end ADC minimum {adc_min_v:.6} V is below {min_adc_voltage:.6} V"
+        )
+        .into());
+    }
+    if adc_max_v > max_adc_voltage {
+        return Err(format!(
+            "analog front-end ADC maximum {adc_max_v:.6} V exceeds {max_adc_voltage:.6} V"
         )
         .into());
     }
