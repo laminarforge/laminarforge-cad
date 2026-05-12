@@ -22,6 +22,7 @@ pub struct ElectricalOutputPaths {
     pub component_derating_csv: PathBuf,
     pub fault_fmea_csv: PathBuf,
     pub emc_esd_csv: PathBuf,
+    pub i2c_bus_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
     pub manufacturing_test_csv: PathBuf,
     pub calibration_readiness_csv: PathBuf,
@@ -74,6 +75,7 @@ struct ValidationConfig {
     emc_esd_policy: EmcEsdPolicy,
     #[serde(default)]
     emc_esd_checks: Vec<EmcEsdCheck>,
+    i2c_bus_policy: I2cBusPolicy,
     boot_startup_policy: BootStartupPolicy,
     #[serde(default)]
     boot_startup_checks: Vec<BootStartupCheck>,
@@ -126,6 +128,7 @@ struct Outputs {
     component_derating_csv: String,
     fault_fmea_csv: String,
     emc_esd_csv: String,
+    i2c_bus_csv: String,
     startup_safety_csv: String,
     manufacturing_test_csv: String,
     calibration_readiness_csv: String,
@@ -467,6 +470,26 @@ struct EmcEsdCheck {
 }
 
 #[derive(Debug, Deserialize)]
+struct I2cBusPolicy {
+    sda_net: String,
+    scl_net: String,
+    pullup_part_id: String,
+    adc_part_id: String,
+    required_device: String,
+    required_address: String,
+    pullup_ohm: f64,
+    bus_capacitance_pf: f64,
+    bus_speed_hz: u32,
+    max_bus_speed_hz: u32,
+    max_rise_time_ns: f64,
+    rail_v: f64,
+    min_idle_high_v: f64,
+    required_test_points: Vec<String>,
+    required_measurements: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct BootStartupPolicy {
     min_checks: usize,
     require_all_boot_sensitive_firmware_pins: bool,
@@ -655,12 +678,21 @@ struct PinNetAssignment {
 #[derive(Debug, Deserialize)]
 struct FirmwareHandoff {
     mcu: FirmwareMcu,
+    peripherals: FirmwarePeripherals,
     module_pins: Vec<FirmwareModulePin>,
 }
 
 #[derive(Debug, Deserialize)]
 struct FirmwareMcu {
     reference: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct FirmwarePeripherals {
+    i2c_sda_net: String,
+    i2c_scl_net: String,
+    adc_device: String,
+    adc_i2c_address: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -759,6 +791,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         component_derating_csv: repo_root.join(config.outputs.component_derating_csv),
         fault_fmea_csv: repo_root.join(config.outputs.fault_fmea_csv),
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
+        i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
         manufacturing_test_csv: repo_root.join(config.outputs.manufacturing_test_csv),
         calibration_readiness_csv: repo_root.join(config.outputs.calibration_readiness_csv),
@@ -820,6 +853,15 @@ pub fn validate_to_outputs(
     validate_component_deratings(&config, &selected_part_ids, &mut rows, &mut errors);
     validate_single_faults(&config, &parts, &mut rows, &mut errors);
     validate_emc_esd_precompliance(&config, &parts, &contract_nets, &mut rows, &mut errors);
+    validate_i2c_bus(
+        &config,
+        &parts,
+        &contract_nets,
+        &firmware,
+        &placement,
+        &mut rows,
+        &mut errors,
+    );
     validate_boot_startup_safety(
         &config,
         &parts,
@@ -859,6 +901,7 @@ pub fn validate_to_outputs(
     write_component_derating_handoff(&config, outputs)?;
     write_fault_fmea_handoff(&config, outputs)?;
     write_emc_esd_handoff(&config, outputs)?;
+    write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
     write_manufacturing_test_handoff(&config, outputs)?;
     write_calibration_readiness_handoff(&config, outputs)?;
@@ -3172,6 +3215,202 @@ fn validate_emc_esd_precompliance(
     }
 }
 
+fn validate_i2c_bus(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    contract_nets: &BTreeSet<String>,
+    firmware: &FirmwareHandoff,
+    placement: &PlacementPlan,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.i2c_bus_policy;
+    let selected_part_ids = selected_part_ids(parts);
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point))
+        .collect::<BTreeMap<_, _>>();
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let rise_time_ns = i2c_rise_time_ns(policy.pullup_ohm, policy.bus_capacitance_pf);
+    let address = parse_hex_u8(&policy.required_address);
+
+    for net in [&policy.sda_net, &policy.scl_net] {
+        push_gate!(
+            rows,
+            errors,
+            "i2c bus",
+            format!("{net} contract net"),
+            net.clone(),
+            "known contract net",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "firmware SDA net",
+        firmware.peripherals.i2c_sda_net.clone(),
+        policy.sda_net.clone(),
+        firmware.peripherals.i2c_sda_net == policy.sda_net,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "firmware SCL net",
+        firmware.peripherals.i2c_scl_net.clone(),
+        policy.scl_net.clone(),
+        firmware.peripherals.i2c_scl_net == policy.scl_net,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "required ADC device",
+        firmware.peripherals.adc_device.clone(),
+        policy.required_device.clone(),
+        firmware.peripherals.adc_device == policy.required_device,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "required ADC address",
+        firmware.peripherals.adc_i2c_address.clone(),
+        policy.required_address.clone(),
+        firmware.peripherals.adc_i2c_address == policy.required_address && address.is_some(),
+        &policy.notes,
+    );
+
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "ADC part selected",
+        policy.adc_part_id.clone(),
+        "selected in parts.toml",
+        selected_part_ids.contains(policy.adc_part_id.as_str()),
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "pull-up part selected",
+        policy.pullup_part_id.clone(),
+        "selected in parts.toml",
+        selected_part_ids.contains(policy.pullup_part_id.as_str()),
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "pull-up resistance",
+        format!("{:.0} ohm", policy.pullup_ohm),
+        "> 0 ohm",
+        policy.pullup_ohm > 0.0,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "bus capacitance estimate",
+        format!("{:.1} pF", policy.bus_capacitance_pf),
+        "> 0 pF",
+        policy.bus_capacitance_pf > 0.0,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "standard-mode bus speed",
+        format!("{} Hz", policy.bus_speed_hz),
+        format!("<= {} Hz", policy.max_bus_speed_hz),
+        policy.bus_speed_hz <= policy.max_bus_speed_hz,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "RC rise time",
+        format!("{rise_time_ns:.1} ns"),
+        format!("<= {:.1} ns", policy.max_rise_time_ns),
+        rise_time_ns <= policy.max_rise_time_ns,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "i2c bus",
+        "idle-high threshold",
+        format!("{:.3} V", policy.min_idle_high_v),
+        format!("<= {:.3} V rail", policy.rail_v),
+        policy.min_idle_high_v <= policy.rail_v,
+        &policy.notes,
+    );
+
+    for test_point in &policy.required_test_points {
+        let Some(point) = test_points.get(test_point.as_str()) else {
+            push_gate!(
+                rows,
+                errors,
+                "i2c bus",
+                format!("{test_point} test point"),
+                test_point.clone(),
+                "exists in placement.toml",
+                false,
+                &policy.notes,
+            );
+            continue;
+        };
+        let expected_net = if test_point == "TP_SDA" {
+            Some(policy.sda_net.as_str())
+        } else if test_point == "TP_SCL" {
+            Some(policy.scl_net.as_str())
+        } else {
+            None
+        };
+        push_gate!(
+            rows,
+            errors,
+            "i2c bus",
+            format!("{test_point} test point"),
+            point.net.clone(),
+            expected_net.unwrap_or("accessible support test point"),
+            expected_net.map_or(!point.net.trim().is_empty(), |net| point.net == net),
+            &policy.notes,
+        );
+    }
+
+    for measurement in &policy.required_measurements {
+        push_gate!(
+            rows,
+            errors,
+            "i2c bus",
+            format!("{measurement} first-article coverage"),
+            measurement.clone(),
+            "known first-article measurement id",
+            measurement_ids.contains(measurement.as_str()),
+            &policy.notes,
+        );
+    }
+}
+
 fn validate_boot_startup_safety(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -5055,6 +5294,91 @@ fn write_emc_esd_handoff(
     Ok(())
 }
 
+fn write_i2c_bus_handoff(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    firmware: &FirmwareHandoff,
+    placement: &PlacementPlan,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.i2c_bus_csv)?;
+    let policy = &config.i2c_bus_policy;
+    let selected_part_ids = selected_part_ids(parts);
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point))
+        .collect::<BTreeMap<_, _>>();
+    let rise_time_ns = i2c_rise_time_ns(policy.pullup_ohm, policy.bus_capacitance_pf);
+    let address = parse_hex_u8(&policy.required_address)
+        .map(|address| format!("0x{address:02X}"))
+        .unwrap_or_else(|| "invalid".to_string());
+
+    let mut writer = csv::Writer::from_path(&outputs.i2c_bus_csv)?;
+    writer.write_record([
+        "sda_net",
+        "scl_net",
+        "pullup_part_id",
+        "pullup_selected",
+        "adc_part_id",
+        "adc_selected",
+        "required_device",
+        "required_address",
+        "firmware_address",
+        "bus_speed_hz",
+        "pullup_ohm",
+        "bus_capacitance_pf",
+        "rise_time_ns",
+        "max_rise_time_ns",
+        "min_idle_high_v",
+        "required_test_points",
+        "required_measurements",
+        "notes",
+    ])?;
+    writer.write_record([
+        policy.sda_net.as_str(),
+        policy.scl_net.as_str(),
+        policy.pullup_part_id.as_str(),
+        selected_part_ids
+            .contains(policy.pullup_part_id.as_str())
+            .to_string()
+            .as_str(),
+        policy.adc_part_id.as_str(),
+        selected_part_ids
+            .contains(policy.adc_part_id.as_str())
+            .to_string()
+            .as_str(),
+        policy.required_device.as_str(),
+        address.as_str(),
+        firmware.peripherals.adc_i2c_address.as_str(),
+        policy.bus_speed_hz.to_string().as_str(),
+        format!("{:.0}", policy.pullup_ohm).as_str(),
+        format!("{:.1}", policy.bus_capacitance_pf).as_str(),
+        format!("{rise_time_ns:.1}").as_str(),
+        format!("{:.1}", policy.max_rise_time_ns).as_str(),
+        format!("{:.3}", policy.min_idle_high_v).as_str(),
+        policy
+            .required_test_points
+            .iter()
+            .map(|test_point| {
+                let status = if test_points.contains_key(test_point.as_str()) {
+                    "present"
+                } else {
+                    "missing"
+                };
+                format!("{test_point}:{status}")
+            })
+            .collect::<Vec<_>>()
+            .join(";")
+            .as_str(),
+        mitigation_list(&policy.required_measurements).as_str(),
+        policy.notes.as_str(),
+    ])?;
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_startup_safety_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -5280,6 +5604,14 @@ fn ratio_u32(operating: Option<u32>, rated: Option<u32>) -> Option<f64> {
         (Some(operating), Some(rated)) if rated > 0 => Some(operating as f64 / rated as f64),
         _ => None,
     }
+}
+
+fn i2c_rise_time_ns(pullup_ohm: f64, bus_capacitance_pf: f64) -> f64 {
+    0.8473 * pullup_ohm * bus_capacitance_pf * 1e-3
+}
+
+fn parse_hex_u8(value: &str) -> Option<u8> {
+    u8::from_str_radix(value.trim().trim_start_matches("0x"), 16).ok()
 }
 
 fn format_optional_mm(value: Option<f64>) -> String {
@@ -5530,6 +5862,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("emc_esd_precompliance.csv")
+    )?;
+    writeln!(
+        report,
+        "- I2C bus validation table: `{}`",
+        outputs
+            .i2c_bus_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("i2c_bus_validation.csv")
     )?;
     writeln!(
         report,

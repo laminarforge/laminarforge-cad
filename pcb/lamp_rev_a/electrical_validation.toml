@@ -26,6 +26,7 @@ first_article_measurements_csv = "pcb/lamp_rev_a/reports/first_article_measureme
 component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
 fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
+i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
 manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv"
 calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
@@ -165,6 +166,17 @@ ci_step = "LAMP Rev A electrical validation"
 acceptance_criterion = "USB DP/DN are known nets with top-layer route coverage, length mismatch, via, and width sanity checks."
 blocks_release = true
 notes = "This is a practical pre-SI gate for full-speed USB before any external SI tool is introduced."
+
+[[validation_traceability]]
+id = "i2c_ads1115_bus_validation"
+validation_layer = "I2C/ADS1115 bus electrical and identity validation"
+electrical_gate_category = "i2c bus"
+output_artifact = "i2c_bus_validation.csv; electrical_validation_gates.csv"
+release_manifest_entry = "i2c_bus; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "SDA/SCL pull-up, RC rise-time, bus speed, ADS1115 address, test points, and stuck-low first-article coverage are declared and pass configured limits."
+blocks_release = true
+notes = "This targets the failure mode where the analog path is electrically sane but firmware cannot read the ADS1115 over I2C."
 
 [[validation_traceability]]
 id = "startup_fail_closed"
@@ -1225,6 +1237,24 @@ max_vias_per_net = 2
 allowed_layers = ["F.Cu", "B.Cu"]
 notes = "Machine-checkable full-speed USB D+/D- route sanity gate. This is not controlled-impedance signoff; it catches obvious pre-fab routing mistakes before first-article USB enumeration."
 
+[i2c_bus_policy]
+sda_net = "SDA"
+scl_net = "SCL"
+pullup_part_id = "resistor_4k7"
+adc_part_id = "adc"
+required_device = "ADS1115"
+required_address = "0x48"
+pullup_ohm = 4700.0
+bus_capacitance_pf = 100.0
+bus_speed_hz = 100000
+max_bus_speed_hz = 100000
+max_rise_time_ns = 1000.0
+rail_v = 3.3
+min_idle_high_v = 2.31
+required_test_points = ["TP_SDA", "TP_SCL", "TP_3V3", "TP_GND"]
+required_measurements = ["i2c_sda_idle", "i2c_scl_idle", "i2c_ads1115_identity"]
+notes = "Standard-mode I2C validation for the ADS1115 bus. This catches wrong pull-up assumptions, missing bus access, and firmware/device identity gaps before first article."
+
 [[external_analysis_handoffs]]
 id = "pdn_power_integrity"
 tool_class = "PDN / power integrity"
@@ -1443,3 +1473,14 @@ max_v = 3.465
 current_limit_ma = 500
 pass_criterion = "SCL idles high on the 3.3 V domain and is not stuck low."
 notes = "A stuck-low bus blocks ADS1115 bring-up."
+
+[[first_article_measurements]]
+id = "i2c_ads1115_identity"
+stage = "firmware_idle"
+order = 125
+test_point = "TP_SDA"
+net = "SDA"
+measurement = "i2c_device_identity"
+current_limit_ma = 500
+pass_criterion = "ADS1115 responds at 0x48 and firmware refuses assay start if the device is absent."
+notes = "Device identity closes the gap between a good-looking I2C waveform and the ADC actually being available to firmware."

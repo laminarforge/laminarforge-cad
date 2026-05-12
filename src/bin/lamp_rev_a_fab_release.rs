@@ -82,6 +82,7 @@ struct Outputs {
     component_derating_file: String,
     fault_fmea_file: String,
     emc_esd_file: String,
+    i2c_bus_file: String,
     startup_safety_file: String,
     manufacturing_test_file: String,
     calibration_readiness_file: String,
@@ -453,6 +454,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         component_derating_csv: output_root.join(&config.outputs.component_derating_file),
         fault_fmea_csv: output_root.join(&config.outputs.fault_fmea_file),
         emc_esd_csv: output_root.join(&config.outputs.emc_esd_file),
+        i2c_bus_csv: output_root.join(&config.outputs.i2c_bus_file),
         startup_safety_csv: output_root.join(&config.outputs.startup_safety_file),
         manufacturing_test_csv: output_root.join(&config.outputs.manufacturing_test_file),
         calibration_readiness_csv: output_root.join(&config.outputs.calibration_readiness_file),
@@ -1348,6 +1350,7 @@ fn write_manifest(
     )?;
     writeln!(file, "fault_fmea: {}", config.outputs.fault_fmea_file)?;
     writeln!(file, "emc_esd: {}", config.outputs.emc_esd_file)?;
+    writeln!(file, "i2c_bus: {}", config.outputs.i2c_bus_file)?;
     writeln!(
         file,
         "startup_safety: {}",
@@ -1819,6 +1822,7 @@ fn write_release_bundles(
         config.outputs.component_derating_file.as_str(),
         config.outputs.fault_fmea_file.as_str(),
         config.outputs.emc_esd_file.as_str(),
+        config.outputs.i2c_bus_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
         config.outputs.manufacturing_test_file.as_str(),
         config.outputs.calibration_readiness_file.as_str(),
@@ -2033,6 +2037,7 @@ fn validate_release_outputs(
         &config.outputs.component_derating_file,
         &config.outputs.fault_fmea_file,
         &config.outputs.emc_esd_file,
+        &config.outputs.i2c_bus_file,
         &config.outputs.startup_safety_file,
         &config.outputs.manufacturing_test_file,
         &config.outputs.calibration_readiness_file,
@@ -2142,6 +2147,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.component_derating_file.as_str(),
         config.outputs.fault_fmea_file.as_str(),
         config.outputs.emc_esd_file.as_str(),
+        config.outputs.i2c_bus_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
         config.outputs.manufacturing_test_file.as_str(),
         config.outputs.calibration_readiness_file.as_str(),
