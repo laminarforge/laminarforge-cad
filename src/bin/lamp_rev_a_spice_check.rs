@@ -22,6 +22,7 @@ enum SpiceMode {
     OperatingPoint,
     HeaterPwmTransient,
     RailLoadStep,
+    PowerDomainFault,
     AnalogFrontEnd,
 }
 
@@ -48,6 +49,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 SpiceMode::RailLoadStep,
             )?;
             run_spice_check(
+                &outputs.power_domain_fault_netlist,
+                &default_log_path(&outputs.power_domain_fault_netlist),
+                SpiceMode::PowerDomainFault,
+            )?;
+            run_spice_check(
                 &outputs.analog_front_end_netlist,
                 &default_log_path(&outputs.analog_front_end_netlist),
                 SpiceMode::AnalogFrontEnd,
@@ -70,6 +76,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             PathBuf::from(log),
             SpiceMode::RailLoadStep,
         ),
+        [mode, netlist, log] if mode == "power-domain-fault" => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::PowerDomainFault,
+        ),
         [mode, netlist, log] if mode == "analog-front-end" => (
             PathBuf::from(netlist),
             PathBuf::from(log),
@@ -82,7 +93,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ),
         _ => {
             return Err(
-                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|rail-load-step|analog-front-end NETLIST_PATH LOG_PATH]"
+                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|rail-load-step|power-domain-fault|analog-front-end NETLIST_PATH LOG_PATH]"
                     .into(),
             );
         }
@@ -128,6 +139,7 @@ fn run_spice_check(
         SpiceMode::OperatingPoint => validate_operating_point_log(&log)?,
         SpiceMode::HeaterPwmTransient => validate_heater_pwm_transient_log(&netlist, &log)?,
         SpiceMode::RailLoadStep => validate_rail_load_step_log(&netlist, &log)?,
+        SpiceMode::PowerDomainFault => validate_power_domain_fault_log(&netlist, &log)?,
         SpiceMode::AnalogFrontEnd => validate_analog_front_end_log(&netlist, &log)?,
     }
 
@@ -137,6 +149,7 @@ fn run_spice_check(
             SpiceMode::OperatingPoint => "operating-point",
             SpiceMode::HeaterPwmTransient => "heater PWM transient",
             SpiceMode::RailLoadStep => "rail load-step transient",
+            SpiceMode::PowerDomainFault => "power-domain fault transient",
             SpiceMode::AnalogFrontEnd => "analog front-end transient",
         }
     );
@@ -253,6 +266,55 @@ fn validate_rail_load_step_log(netlist: &str, log: &str) -> Result<(), Box<dyn E
     if source_current_max_ma > max_source_current_ma {
         return Err(format!(
             "rail load-step source current {source_current_max_ma:.6} mA exceeds {max_source_current_ma:.6} mA"
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn validate_power_domain_fault_log(netlist: &str, log: &str) -> Result<(), Box<dyn Error>> {
+    let lower = log.to_ascii_lowercase();
+    validate_no_ngspice_failure_tokens(&lower)?;
+
+    let max_vbus_fault = netlist_limit(netlist, "check_max_vbus_fault_v")?;
+    let max_five_v_fault = netlist_limit(netlist, "check_max_5v_fault_v")?;
+    let max_three_v_three_fault = netlist_limit(netlist, "check_max_3v3_fault_v")?;
+    let max_usb_backfeed_ma = netlist_limit(netlist, "check_max_usb_backfeed_ma")?;
+    let max_regulator_reverse_ma = netlist_limit(netlist, "check_max_regulator_reverse_ma")?;
+
+    let vbus_fault_v = measurement(&lower, "vbus_fault_v")?;
+    let five_v_fault_v = measurement(&lower, "five_v_fault_v")?;
+    let three_v_three_fault_v = measurement(&lower, "three_v_three_fault_v")?;
+    let usb_backfeed_ma = measurement(&lower, "usb_backfeed_a")?.abs() * 1000.0;
+    let regulator_reverse_ma = measurement(&lower, "regulator_reverse_a")?.abs() * 1000.0;
+
+    if vbus_fault_v > max_vbus_fault {
+        return Err(format!(
+            "power-domain fault VBUS voltage {vbus_fault_v:.6} V exceeds {max_vbus_fault:.6} V"
+        )
+        .into());
+    }
+    if five_v_fault_v > max_five_v_fault {
+        return Err(format!(
+            "power-domain fault +5V voltage {five_v_fault_v:.6} V exceeds {max_five_v_fault:.6} V"
+        )
+        .into());
+    }
+    if three_v_three_fault_v > max_three_v_three_fault {
+        return Err(format!(
+            "power-domain fault +3V3 voltage {three_v_three_fault_v:.6} V exceeds {max_three_v_three_fault:.6} V"
+        )
+        .into());
+    }
+    if usb_backfeed_ma > max_usb_backfeed_ma {
+        return Err(format!(
+            "power-domain fault USB backfeed {usb_backfeed_ma:.6} mA exceeds {max_usb_backfeed_ma:.6} mA"
+        )
+        .into());
+    }
+    if regulator_reverse_ma > max_regulator_reverse_ma {
+        return Err(format!(
+            "power-domain fault regulator reverse current {regulator_reverse_ma:.6} mA exceeds {max_regulator_reverse_ma:.6} mA"
         )
         .into());
     }

@@ -38,6 +38,8 @@ heater_pwm_transient_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_heater_pwm_tra
 heater_pwm_transient_csv = "pcb/lamp_rev_a/reports/heater_pwm_transient_simulation.csv"
 heater_thermal_transient_csv = "pcb/lamp_rev_a/reports/heater_thermal_transient_simulation.csv"
 usb_inrush_startup_csv = "pcb/lamp_rev_a/reports/usb_inrush_startup_simulation.csv"
+power_domain_fault_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_power_domain_fault.spice"
+power_domain_fault_csv = "pcb/lamp_rev_a/reports/power_domain_fault_simulation.csv"
 rail_load_step_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_rail_load_step.spice"
 rail_load_step_csv = "pcb/lamp_rev_a/reports/rail_load_step_simulation.csv"
 analog_front_end_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_analog_front_end.spice"
@@ -161,6 +163,17 @@ ci_step = "LAMP Rev A SPICE checks; Run LAMP Rev A release SPICE checks"
 acceptance_criterion = "ngspice transient measurements keep 3.3 V rail sag, recovery, and regulator/source current inside configured limits."
 blocks_release = true
 notes = "This simulates a simplified ESP32/Wi-Fi load burst on the 3.3 V rail so rail collapse is not only a static budget assumption."
+
+[[validation_traceability]]
+id = "power_domain_fault_simulation"
+validation_layer = "SPICE power-domain fault/backfeed transient simulation"
+electrical_gate_category = "power domain fault simulation"
+output_artifact = "lamp_rev_a_power_domain_fault.spice; power_domain_fault_simulation.csv"
+release_manifest_entry = "power_domain_fault_netlist; power_domain_fault_simulation"
+ci_step = "LAMP Rev A SPICE checks; Run LAMP Rev A release SPICE checks"
+acceptance_criterion = "ngspice transient measurements keep 12 V heater-domain fault leakage into VBUS, +5 V, and +3V3 below configured overvoltage/backfeed limits."
+blocks_release = true
+notes = "This checks isolation/backfeed behavior between the high-energy heater domain and USB-derived electronics rails before fault-injection bench testing."
 
 [[validation_traceability]]
 id = "analog_front_end_simulation"
@@ -475,6 +488,23 @@ max_final_3v3_v = 3.35
 max_3v3_overshoot_v = 0.05
 max_startup_ms = 50.0
 notes = "First-order USB hot-plug and 3.3 V startup envelope model. Startup load excludes later ESP32 Wi-Fi burst current, which is covered by the rail load-step SPICE gate. This does not replace oscilloscope capture of first-article rail startup."
+
+[power_domain_fault_policy]
+heater_fault_voltage_v = 13.2
+vbus_load_ohm = 50.0
+five_v_load_ohm = 100.0
+three_v_three_load_ohm = 33.0
+heater_to_vbus_isolation_ohm = 10000000.0
+heater_to_five_v_isolation_ohm = 10000000.0
+heater_to_three_v_three_isolation_ohm = 20000000.0
+regulator_reverse_resistance_ohm = 1000000.0
+simulation_stop_ms = 2.0
+max_vbus_fault_v = 0.10
+max_five_v_fault_v = 0.10
+max_three_v_three_fault_v = 0.10
+max_usb_backfeed_ma = 0.010
+max_regulator_reverse_ma = 0.010
+notes = "First-order heater-domain fault/backfeed isolation model. This does not replace hipot/continuity/fault-injection bench testing, but it makes the 12 V-to-USB rail isolation assumption explicit and CI-gated."
 
 [rail_load_step_policy]
 nominal_voltage_v = 3.3

@@ -111,6 +111,9 @@ jobs:
           cargo run --release --bin lamp_rev_a_spice_check -- rail-load-step \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_rail_load_step.spice \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_rail_load_step.ngspice.log
+          cargo run --release --bin lamp_rev_a_spice_check -- power-domain-fault \
+            pcb/lamp_rev_a/fab_release/review/lamp_rev_a_power_domain_fault.spice \
+            pcb/lamp_rev_a/fab_release/review/lamp_rev_a_power_domain_fault.ngspice.log
           cargo run --release --bin lamp_rev_a_spice_check -- analog-front-end \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_analog_front_end.spice \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_analog_front_end.ngspice.log
@@ -137,6 +140,9 @@ jobs:
           test -s "$release_dir/review/lamp_rev_a_rail_load_step.spice"
           test -s "$release_dir/review/lamp_rev_a_rail_load_step.ngspice.log"
           test -s "$release_dir/review/rail_load_step_simulation.csv"
+          test -s "$release_dir/review/lamp_rev_a_power_domain_fault.spice"
+          test -s "$release_dir/review/lamp_rev_a_power_domain_fault.ngspice.log"
+          test -s "$release_dir/review/power_domain_fault_simulation.csv"
           test -s "$release_dir/review/lamp_rev_a_analog_front_end.spice"
           test -s "$release_dir/review/lamp_rev_a_analog_front_end.ngspice.log"
           test -s "$release_dir/review/analog_front_end_simulation.csv"

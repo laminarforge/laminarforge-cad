@@ -94,6 +94,8 @@ struct Outputs {
     heater_pwm_transient_file: String,
     heater_thermal_transient_file: String,
     usb_inrush_startup_file: String,
+    power_domain_fault_netlist_file: String,
+    power_domain_fault_file: String,
     rail_load_step_netlist_file: String,
     rail_load_step_file: String,
     analog_front_end_netlist_file: String,
@@ -475,6 +477,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         heater_thermal_transient_csv: output_root
             .join(&config.outputs.heater_thermal_transient_file),
         usb_inrush_startup_csv: output_root.join(&config.outputs.usb_inrush_startup_file),
+        power_domain_fault_netlist: output_root
+            .join(&config.outputs.power_domain_fault_netlist_file),
+        power_domain_fault_csv: output_root.join(&config.outputs.power_domain_fault_file),
         rail_load_step_netlist: output_root.join(&config.outputs.rail_load_step_netlist_file),
         rail_load_step_csv: output_root.join(&config.outputs.rail_load_step_file),
         analog_front_end_netlist: output_root.join(&config.outputs.analog_front_end_netlist_file),
@@ -1342,6 +1347,16 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "power_domain_fault_netlist: {}",
+        config.outputs.power_domain_fault_netlist_file
+    )?;
+    writeln!(
+        file,
+        "power_domain_fault_simulation: {}",
+        config.outputs.power_domain_fault_file
+    )?;
+    writeln!(
+        file,
         "rail_load_step_netlist: {}",
         config.outputs.rail_load_step_netlist_file
     )?;
@@ -1877,6 +1892,8 @@ fn write_release_bundles(
         config.outputs.heater_pwm_transient_file.as_str(),
         config.outputs.heater_thermal_transient_file.as_str(),
         config.outputs.usb_inrush_startup_file.as_str(),
+        config.outputs.power_domain_fault_netlist_file.as_str(),
+        config.outputs.power_domain_fault_file.as_str(),
         config.outputs.rail_load_step_netlist_file.as_str(),
         config.outputs.rail_load_step_file.as_str(),
         config.outputs.analog_front_end_netlist_file.as_str(),
@@ -2098,6 +2115,8 @@ fn validate_release_outputs(
         &config.outputs.heater_pwm_transient_file,
         &config.outputs.heater_thermal_transient_file,
         &config.outputs.usb_inrush_startup_file,
+        &config.outputs.power_domain_fault_netlist_file,
+        &config.outputs.power_domain_fault_file,
         &config.outputs.rail_load_step_netlist_file,
         &config.outputs.rail_load_step_file,
         &config.outputs.analog_front_end_netlist_file,
@@ -2214,6 +2233,8 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.heater_pwm_transient_file.as_str(),
         config.outputs.heater_thermal_transient_file.as_str(),
         config.outputs.usb_inrush_startup_file.as_str(),
+        config.outputs.power_domain_fault_netlist_file.as_str(),
+        config.outputs.power_domain_fault_file.as_str(),
         config.outputs.rail_load_step_netlist_file.as_str(),
         config.outputs.rail_load_step_file.as_str(),
         config.outputs.analog_front_end_netlist_file.as_str(),

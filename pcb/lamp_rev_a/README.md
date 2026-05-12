@@ -125,6 +125,7 @@ a lumped thermal-margin simulation CSV for component and routed-copper steady-st
 a heater/reaction-block thermal transient CSV for warm-up, hold, duty, overshoot, and energy estimates,
 a USB/VBUS hot-plug and 3.3 V startup/inrush CSV for rail startup envelope checks,
 an ngspice 3.3 V rail load-step transient netlist/CSV for ESP32 burst-load sag,
+an ngspice power-domain fault/backfeed netlist/CSV for 12 V heater-domain isolation assumptions,
 an ngspice optical analog front-end transient netlist/CSV for TIA/ADC signal-envelope range,
 an optical crosstalk/mux-settling CSV for slot isolation and ADC sampling assumptions,
 an optical signal/noise margin CSV for threshold and negative-control drift assumptions,

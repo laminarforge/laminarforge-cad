@@ -34,6 +34,8 @@ pub struct ElectricalOutputPaths {
     pub heater_pwm_transient_csv: PathBuf,
     pub heater_thermal_transient_csv: PathBuf,
     pub usb_inrush_startup_csv: PathBuf,
+    pub power_domain_fault_netlist: PathBuf,
+    pub power_domain_fault_csv: PathBuf,
     pub rail_load_step_netlist: PathBuf,
     pub rail_load_step_csv: PathBuf,
     pub analog_front_end_netlist: PathBuf,
@@ -102,6 +104,7 @@ struct ValidationConfig {
     heater_pwm_transient_policy: HeaterPwmTransientPolicy,
     heater_thermal_transient_policy: HeaterThermalTransientPolicy,
     usb_inrush_startup_policy: UsbInrushStartupPolicy,
+    power_domain_fault_policy: PowerDomainFaultPolicy,
     rail_load_step_policy: RailLoadStepPolicy,
     analog_front_end_policy: AnalogFrontEndPolicy,
     optical_crosstalk_policy: OpticalCrosstalkPolicy,
@@ -154,6 +157,8 @@ struct Outputs {
     heater_pwm_transient_csv: String,
     heater_thermal_transient_csv: String,
     usb_inrush_startup_csv: String,
+    power_domain_fault_netlist: String,
+    power_domain_fault_csv: String,
     rail_load_step_netlist: String,
     rail_load_step_csv: String,
     analog_front_end_netlist: String,
@@ -392,6 +397,25 @@ struct UsbInrushStartupPolicy {
     max_final_3v3_v: f64,
     max_3v3_overshoot_v: f64,
     max_startup_ms: f64,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct PowerDomainFaultPolicy {
+    heater_fault_voltage_v: f64,
+    vbus_load_ohm: f64,
+    five_v_load_ohm: f64,
+    three_v_three_load_ohm: f64,
+    heater_to_vbus_isolation_ohm: f64,
+    heater_to_five_v_isolation_ohm: f64,
+    heater_to_three_v_three_isolation_ohm: f64,
+    regulator_reverse_resistance_ohm: f64,
+    simulation_stop_ms: f64,
+    max_vbus_fault_v: f64,
+    max_five_v_fault_v: f64,
+    max_three_v_three_fault_v: f64,
+    max_usb_backfeed_ma: f64,
+    max_regulator_reverse_ma: f64,
     notes: String,
 }
 
@@ -960,6 +984,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         heater_pwm_transient_csv: repo_root.join(config.outputs.heater_pwm_transient_csv),
         heater_thermal_transient_csv: repo_root.join(config.outputs.heater_thermal_transient_csv),
         usb_inrush_startup_csv: repo_root.join(config.outputs.usb_inrush_startup_csv),
+        power_domain_fault_netlist: repo_root.join(config.outputs.power_domain_fault_netlist),
+        power_domain_fault_csv: repo_root.join(config.outputs.power_domain_fault_csv),
         rail_load_step_netlist: repo_root.join(config.outputs.rail_load_step_netlist),
         rail_load_step_csv: repo_root.join(config.outputs.rail_load_step_csv),
         analog_front_end_netlist: repo_root.join(config.outputs.analog_front_end_netlist),
@@ -1048,6 +1074,7 @@ pub fn validate_to_outputs(
     validate_heater_pwm_transient(&config, &contract_nets, &mut rows, &mut errors);
     validate_heater_thermal_transient(&config, &contract_nets, &mut rows, &mut errors);
     validate_usb_inrush_startup(&config, &contract_nets, &mut rows, &mut errors);
+    validate_power_domain_fault(&config, &contract_nets, &mut rows, &mut errors);
     validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
     validate_analog_front_end_transient(&config, &contract_nets, &mut rows, &mut errors);
     validate_optical_crosstalk(&config, &contract_nets, &mut rows, &mut errors);
@@ -1089,6 +1116,7 @@ pub fn validate_to_outputs(
     write_heater_pwm_transient_handoff(&config, outputs)?;
     write_heater_thermal_transient_handoff(&config, outputs)?;
     write_usb_inrush_startup_handoff(&config, outputs)?;
+    write_power_domain_fault_handoff(&config, outputs)?;
     write_rail_load_step_handoff(&config, outputs)?;
     write_analog_front_end_handoff(&config, outputs)?;
     write_optical_crosstalk_handoff(&config, outputs)?;
@@ -2587,6 +2615,173 @@ fn usb_inrush_startup_metrics(policy: &UsbInrushStartupPolicy) -> UsbInrushStart
         final_three_v_three_v: three_v_three_v,
         max_three_v_three_v,
     }
+}
+
+fn validate_power_domain_fault(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.power_domain_fault_policy;
+    for net in ["VBUS", "+5V", "+3V3", "+12V_RAW", "HEATER_SUPPLY"] {
+        push_gate!(
+            rows,
+            errors,
+            "power domain fault simulation",
+            format!("{net} contract net"),
+            net,
+            "present in contract",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "power domain fault simulation",
+        "fault/isolation model constants",
+        format!(
+            "{:.3} V fault, {:.3} ohm VBUS isolation, {:.3} ohm regulator reverse path",
+            policy.heater_fault_voltage_v,
+            policy.heater_to_vbus_isolation_ohm,
+            policy.regulator_reverse_resistance_ohm
+        ),
+        "positive fault voltage, load, isolation, and reverse resistance",
+        policy.heater_fault_voltage_v > 0.0
+            && policy.vbus_load_ohm > 0.0
+            && policy.five_v_load_ohm > 0.0
+            && policy.three_v_three_load_ohm > 0.0
+            && policy.heater_to_vbus_isolation_ohm > 0.0
+            && policy.heater_to_five_v_isolation_ohm > 0.0
+            && policy.heater_to_three_v_three_isolation_ohm > 0.0
+            && policy.regulator_reverse_resistance_ohm > 0.0
+            && policy.simulation_stop_ms > 0.0,
+        &policy.notes,
+    );
+
+    for row in power_domain_fault_rows(config) {
+        push_gate!(
+            rows,
+            errors,
+            "power domain fault simulation",
+            row.measurement,
+            format!("{:.6} {}", row.value, row.units),
+            row.limit,
+            row.pass,
+            row.notes,
+        );
+    }
+}
+
+#[derive(Debug)]
+struct PowerDomainFaultMetrics {
+    vbus_fault_v: f64,
+    five_v_fault_v: f64,
+    three_v_three_fault_v: f64,
+    usb_backfeed_ma: f64,
+    regulator_reverse_ma: f64,
+}
+
+#[derive(Debug)]
+struct PowerDomainFaultRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+fn power_domain_fault_rows(config: &ValidationConfig) -> Vec<PowerDomainFaultRow> {
+    let policy = &config.power_domain_fault_policy;
+    let metrics = power_domain_fault_metrics(policy);
+    vec![
+        PowerDomainFaultRow {
+            id: "vbus_fault_voltage",
+            measurement: "VBUS voltage during heater-domain fault",
+            value: metrics.vbus_fault_v,
+            units: "V",
+            limit: format!("<= {:.3} V", policy.max_vbus_fault_v),
+            pass: metrics.vbus_fault_v <= policy.max_vbus_fault_v,
+            notes: policy.notes.clone(),
+        },
+        PowerDomainFaultRow {
+            id: "five_v_fault_voltage",
+            measurement: "+5V voltage during heater-domain fault",
+            value: metrics.five_v_fault_v,
+            units: "V",
+            limit: format!("<= {:.3} V", policy.max_five_v_fault_v),
+            pass: metrics.five_v_fault_v <= policy.max_five_v_fault_v,
+            notes: policy.notes.clone(),
+        },
+        PowerDomainFaultRow {
+            id: "three_v_three_fault_voltage",
+            measurement: "+3V3 voltage during heater-domain fault",
+            value: metrics.three_v_three_fault_v,
+            units: "V",
+            limit: format!("<= {:.3} V", policy.max_three_v_three_fault_v),
+            pass: metrics.three_v_three_fault_v <= policy.max_three_v_three_fault_v,
+            notes: policy.notes.clone(),
+        },
+        PowerDomainFaultRow {
+            id: "usb_backfeed_current",
+            measurement: "heater-domain backfeed current into VBUS",
+            value: metrics.usb_backfeed_ma,
+            units: "mA",
+            limit: format!("<= {:.3} mA", policy.max_usb_backfeed_ma),
+            pass: metrics.usb_backfeed_ma <= policy.max_usb_backfeed_ma,
+            notes: policy.notes.clone(),
+        },
+        PowerDomainFaultRow {
+            id: "regulator_reverse_current",
+            measurement: "reverse current across +5V/+3V3 regulator path",
+            value: metrics.regulator_reverse_ma,
+            units: "mA",
+            limit: format!("<= {:.3} mA", policy.max_regulator_reverse_ma),
+            pass: metrics.regulator_reverse_ma <= policy.max_regulator_reverse_ma,
+            notes: policy.notes.clone(),
+        },
+    ]
+}
+
+fn power_domain_fault_metrics(policy: &PowerDomainFaultPolicy) -> PowerDomainFaultMetrics {
+    let vbus_fault_v = isolated_fault_voltage(
+        policy.heater_fault_voltage_v,
+        policy.heater_to_vbus_isolation_ohm,
+        policy.vbus_load_ohm,
+    );
+    let five_v_fault_v = isolated_fault_voltage(
+        policy.heater_fault_voltage_v,
+        policy.heater_to_five_v_isolation_ohm,
+        policy.five_v_load_ohm,
+    );
+    let three_v_three_fault_v = isolated_fault_voltage(
+        policy.heater_fault_voltage_v,
+        policy.heater_to_three_v_three_isolation_ohm,
+        policy.three_v_three_load_ohm,
+    );
+    let usb_backfeed_ma = ((policy.heater_fault_voltage_v - vbus_fault_v)
+        / policy.heater_to_vbus_isolation_ohm)
+        .abs()
+        * 1000.0;
+    let regulator_reverse_ma =
+        ((five_v_fault_v - three_v_three_fault_v) / policy.regulator_reverse_resistance_ohm).abs()
+            * 1000.0;
+
+    PowerDomainFaultMetrics {
+        vbus_fault_v,
+        five_v_fault_v,
+        three_v_three_fault_v,
+        usb_backfeed_ma,
+        regulator_reverse_ma,
+    }
+}
+
+fn isolated_fault_voltage(fault_voltage_v: f64, isolation_ohm: f64, load_ohm: f64) -> f64 {
+    fault_voltage_v * load_ohm / (isolation_ohm + load_ohm)
 }
 
 fn validate_rail_load_step(
@@ -6412,6 +6607,160 @@ fn write_usb_inrush_startup_handoff(
     Ok(())
 }
 
+fn write_power_domain_fault_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    write_power_domain_fault_csv(config, outputs)?;
+    write_power_domain_fault_spice(config, outputs)?;
+    Ok(())
+}
+
+fn write_power_domain_fault_csv(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.power_domain_fault_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.power_domain_fault_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in power_domain_fault_rows(config) {
+        writer.write_record([
+            row.id,
+            row.measurement,
+            format!("{:.6}", row.value).as_str(),
+            row.units,
+            row.limit.as_str(),
+            if row.pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_power_domain_fault_spice(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.power_domain_fault_netlist)?;
+    let policy = &config.power_domain_fault_policy;
+    let start_ms = policy.simulation_stop_ms * 0.50;
+    let mut spice = String::new();
+    writeln!(
+        spice,
+        "* LaminarForge LAMP Rev A power-domain fault/backfeed transient check"
+    )?;
+    writeln!(spice, "* Generated by lamp_rev_a_electrical_validate")?;
+    writeln!(
+        spice,
+        "* This is a first-order 12 V heater-domain isolation/backfeed model, not safety certification."
+    )?;
+    writeln!(
+        spice,
+        "* check_max_vbus_fault_v={:.6}",
+        policy.max_vbus_fault_v
+    )?;
+    writeln!(
+        spice,
+        "* check_max_5v_fault_v={:.6}",
+        policy.max_five_v_fault_v
+    )?;
+    writeln!(
+        spice,
+        "* check_max_3v3_fault_v={:.6}",
+        policy.max_three_v_three_fault_v
+    )?;
+    writeln!(
+        spice,
+        "* check_max_usb_backfeed_ma={:.6}",
+        policy.max_usb_backfeed_ma
+    )?;
+    writeln!(
+        spice,
+        "* check_max_regulator_reverse_ma={:.6}",
+        policy.max_regulator_reverse_ma
+    )?;
+    writeln!(
+        spice,
+        "VFAULT P12FAULT 0 DC {:.6}",
+        policy.heater_fault_voltage_v
+    )?;
+    writeln!(spice, "VISO_VBUS P12FAULT ISO_VBUS 0")?;
+    writeln!(
+        spice,
+        "RISO_VBUS ISO_VBUS VBUS {:.6}",
+        policy.heater_to_vbus_isolation_ohm
+    )?;
+    writeln!(spice, "VISO_5V P12FAULT ISO_5V 0")?;
+    writeln!(
+        spice,
+        "RISO_5V ISO_5V P5V {:.6}",
+        policy.heater_to_five_v_isolation_ohm
+    )?;
+    writeln!(spice, "VISO_3V3 P12FAULT ISO_3V3 0")?;
+    writeln!(
+        spice,
+        "RISO_3V3 ISO_3V3 P3V3 {:.6}",
+        policy.heater_to_three_v_three_isolation_ohm
+    )?;
+    writeln!(spice, "VREGREV P5V REGREV_SENSE 0")?;
+    writeln!(
+        spice,
+        "RREGREV REGREV_SENSE P3V3 {:.6}",
+        policy.regulator_reverse_resistance_ohm
+    )?;
+    writeln!(spice, "RVBUS_LOAD VBUS 0 {:.6}", policy.vbus_load_ohm)?;
+    writeln!(spice, "R5V_LOAD P5V 0 {:.6}", policy.five_v_load_ohm)?;
+    writeln!(
+        spice,
+        "R3V3_LOAD P3V3 0 {:.6}",
+        policy.three_v_three_load_ohm
+    )?;
+    writeln!(spice, "CVBUS VBUS 0 1n IC=0")?;
+    writeln!(spice, "C5V P5V 0 1n IC=0")?;
+    writeln!(spice, "C3V3 P3V3 0 1n IC=0")?;
+    writeln!(spice, ".tran 10u {:.6}m uic", policy.simulation_stop_ms)?;
+    writeln!(spice, ".control")?;
+    writeln!(spice, "run")?;
+    writeln!(
+        spice,
+        "meas tran vbus_fault_v MAX v(vbus) FROM={start_ms:.6}m TO={:.6}m",
+        policy.simulation_stop_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran five_v_fault_v MAX v(p5v) FROM={start_ms:.6}m TO={:.6}m",
+        policy.simulation_stop_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran three_v_three_fault_v MAX v(p3v3) FROM={start_ms:.6}m TO={:.6}m",
+        policy.simulation_stop_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran usb_backfeed_a MIN i(viso_vbus) FROM={start_ms:.6}m TO={:.6}m",
+        policy.simulation_stop_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran regulator_reverse_a MIN i(vregrev) FROM={start_ms:.6}m TO={:.6}m",
+        policy.simulation_stop_ms
+    )?;
+    writeln!(spice, ".endc")?;
+    writeln!(spice, ".end")?;
+    fs::write(&outputs.power_domain_fault_netlist, spice)?;
+    Ok(())
+}
+
 fn write_rail_load_step_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -7555,6 +7904,15 @@ fn write_simulation_handoff(
     )?;
     writeln!(
         report,
+        "- Power-domain fault/backfeed transient netlist: `{}`",
+        outputs
+            .power_domain_fault_netlist
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("lamp_rev_a_power_domain_fault.spice")
+    )?;
+    writeln!(
+        report,
         "- Optical analog front-end transient netlist: `{}`",
         outputs
             .analog_front_end_netlist
@@ -7636,6 +7994,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("rail_load_step_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Power-domain fault/backfeed result table: `{}`",
+        outputs
+            .power_domain_fault_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("power_domain_fault_simulation.csv")
     )?;
     writeln!(
         report,
