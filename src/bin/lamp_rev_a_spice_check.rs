@@ -21,6 +21,7 @@ const REQUIRED_OUTPUT_TOKENS: &[&str] = &[
 enum SpiceMode {
     OperatingPoint,
     HeaterPwmTransient,
+    UsbInrushStartup,
     RailLoadStep,
     PowerDomainFault,
     AnalogFrontEnd,
@@ -42,6 +43,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 &outputs.heater_pwm_transient_netlist,
                 &default_log_path(&outputs.heater_pwm_transient_netlist),
                 SpiceMode::HeaterPwmTransient,
+            )?;
+            run_spice_check(
+                &outputs.usb_inrush_startup_netlist,
+                &default_log_path(&outputs.usb_inrush_startup_netlist),
+                SpiceMode::UsbInrushStartup,
             )?;
             run_spice_check(
                 &outputs.rail_load_step_netlist,
@@ -71,6 +77,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             PathBuf::from(log),
             SpiceMode::HeaterPwmTransient,
         ),
+        [mode, netlist, log] if mode == "usb-inrush-startup" => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::UsbInrushStartup,
+        ),
         [mode, netlist, log] if mode == "rail-load-step" => (
             PathBuf::from(netlist),
             PathBuf::from(log),
@@ -93,7 +104,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ),
         _ => {
             return Err(
-                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|rail-load-step|power-domain-fault|analog-front-end NETLIST_PATH LOG_PATH]"
+                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|usb-inrush-startup|rail-load-step|power-domain-fault|analog-front-end NETLIST_PATH LOG_PATH]"
                     .into(),
             );
         }
@@ -138,6 +149,7 @@ fn run_spice_check(
     match mode {
         SpiceMode::OperatingPoint => validate_operating_point_log(&log)?,
         SpiceMode::HeaterPwmTransient => validate_heater_pwm_transient_log(&netlist, &log)?,
+        SpiceMode::UsbInrushStartup => validate_usb_inrush_startup_log(&netlist, &log)?,
         SpiceMode::RailLoadStep => validate_rail_load_step_log(&netlist, &log)?,
         SpiceMode::PowerDomainFault => validate_power_domain_fault_log(&netlist, &log)?,
         SpiceMode::AnalogFrontEnd => validate_analog_front_end_log(&netlist, &log)?,
@@ -148,6 +160,7 @@ fn run_spice_check(
         match mode {
             SpiceMode::OperatingPoint => "operating-point",
             SpiceMode::HeaterPwmTransient => "heater PWM transient",
+            SpiceMode::UsbInrushStartup => "USB/VBUS startup transient",
             SpiceMode::RailLoadStep => "rail load-step transient",
             SpiceMode::PowerDomainFault => "power-domain fault transient",
             SpiceMode::AnalogFrontEnd => "analog front-end transient",
@@ -234,6 +247,66 @@ fn validate_heater_pwm_transient_log(netlist: &str, log: &str) -> Result<(), Box
     if gate_low_min > max_gate_low {
         return Err(format!(
             "heater PWM transient gate low {gate_low_min:.6} V exceeds {max_gate_low:.6} V"
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn validate_usb_inrush_startup_log(netlist: &str, log: &str) -> Result<(), Box<dyn Error>> {
+    let lower = log.to_ascii_lowercase();
+    validate_no_ngspice_failure_tokens(&lower)?;
+
+    let max_vbus_inrush_ma = netlist_limit(netlist, "check_max_vbus_inrush_ma")?;
+    let max_five_v_inrush_ma = netlist_limit(netlist, "check_max_5v_inrush_ma")?;
+    let min_final_three_v_three = netlist_limit(netlist, "check_min_final_3v3_v")?;
+    let max_final_three_v_three = netlist_limit(netlist, "check_max_final_3v3_v")?;
+    let regulated_three_v_three = netlist_limit(netlist, "check_regulated_3v3_v")?;
+    let max_three_v_three_overshoot = netlist_limit(netlist, "check_max_3v3_overshoot_v")?;
+    let max_startup_ms = netlist_limit(netlist, "check_max_startup_ms")?;
+
+    let vbus_inrush_ma = measurement(&lower, "vbus_inrush_pos_a")?
+        .abs()
+        .max(measurement(&lower, "vbus_inrush_neg_a")?.abs())
+        * 1000.0;
+    let five_v_inrush_ma = measurement(&lower, "five_v_inrush_pos_a")?
+        .abs()
+        .max(measurement(&lower, "five_v_inrush_neg_a")?.abs())
+        * 1000.0;
+    let startup_ms = measurement(&lower, "three_v_three_startup_time_s")? * 1000.0;
+    let final_three_v_three = measurement(&lower, "three_v_three_final_v")?;
+    let max_three_v_three = measurement(&lower, "three_v_three_max_v")?;
+    let overshoot_v = (max_three_v_three - regulated_three_v_three).max(0.0);
+
+    if vbus_inrush_ma > max_vbus_inrush_ma {
+        return Err(format!(
+            "USB startup VBUS inrush {vbus_inrush_ma:.6} mA exceeds {max_vbus_inrush_ma:.6} mA"
+        )
+        .into());
+    }
+    if five_v_inrush_ma > max_five_v_inrush_ma {
+        return Err(format!(
+            "USB startup +5 V inrush {five_v_inrush_ma:.6} mA exceeds {max_five_v_inrush_ma:.6} mA"
+        )
+        .into());
+    }
+    if startup_ms > max_startup_ms {
+        return Err(format!(
+            "USB startup +3V3 valid time {startup_ms:.6} ms exceeds {max_startup_ms:.6} ms"
+        )
+        .into());
+    }
+    if final_three_v_three < min_final_three_v_three
+        || final_three_v_three > max_final_three_v_three
+    {
+        return Err(format!(
+            "USB startup final +3V3 {final_three_v_three:.6} V is outside {min_final_three_v_three:.6}..{max_final_three_v_three:.6} V"
+        )
+        .into());
+    }
+    if overshoot_v > max_three_v_three_overshoot {
+        return Err(format!(
+            "USB startup +3V3 overshoot {overshoot_v:.6} V exceeds {max_three_v_three_overshoot:.6} V"
         )
         .into());
     }

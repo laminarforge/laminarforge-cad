@@ -123,7 +123,7 @@ a simulation-input CSV for PDN, electrothermal, USB/SI, and EMC handoff readines
 the first routed-geometry DC PDN simulation CSV for voltage drop and I2R loss,
 a lumped thermal-margin simulation CSV for component and routed-copper steady-state estimates,
 a heater/reaction-block thermal transient CSV for warm-up, hold, duty, overshoot, and energy estimates,
-a USB/VBUS hot-plug and 3.3 V startup/inrush CSV for rail startup envelope checks,
+an ngspice USB/VBUS hot-plug and 3.3 V startup/inrush netlist/CSV for rail startup envelope checks,
 an ngspice 3.3 V rail load-step transient netlist/CSV for ESP32 burst-load sag,
 an ngspice power-domain fault/backfeed netlist/CSV for 12 V heater-domain isolation assumptions,
 an ngspice optical analog front-end transient netlist/CSV for TIA/ADC signal-envelope range,
