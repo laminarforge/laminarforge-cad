@@ -167,6 +167,7 @@ jobs:
           test -s "$release_dir/review/procurement_readiness.csv"
           test -s "$release_dir/review/connector_polarity.csv"
           test -s "$release_dir/review/assembly_orientation.csv"
+          test -s "$release_dir/review/assembly_parity.csv"
           test -s "$release_dir/review/simulation_handoff.md"
           (cd "$release_dir" && shasum -a 256 -c review/upload_bundle_checksums.sha256)
 

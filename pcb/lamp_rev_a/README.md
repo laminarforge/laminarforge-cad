@@ -117,6 +117,7 @@ a USB-C power-budget CSV for Rd/default-current, VBUS/+5V/+3V3 current, inrush l
 a procurement-readiness CSV for critical part ordering, machine/manual assembly, and external safety-component evidence,
 a connector/polarity CSV for USB-C, manual connectors, diodes, MOSFETs, and orientation-sensitive IC pinouts,
 an assembly-orientation CSV for machine-placed ICs, polarity-sensitive parts, CPL centroids, and pin-1 evidence,
+a machine-checked assembly-parity CSV for BOM/CPL/manual/position reference consistency,
 an I2C/ADS1115 bus validation CSV for pull-up, rise-time, device identity, and stuck-low coverage,
 a heater-protection coordination CSV for PTC, terminal, MOSFET, TVS, external cutoff, and current-limit coverage,
 an ESP32-S3 startup-safety CSV for boot straps, reset, and heater fail-closed defaults,

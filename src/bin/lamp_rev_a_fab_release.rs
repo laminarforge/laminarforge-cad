@@ -86,6 +86,7 @@ struct Outputs {
     procurement_readiness_file: String,
     connector_polarity_file: String,
     assembly_orientation_file: String,
+    assembly_parity_file: String,
     i2c_bus_file: String,
     heater_protection_file: String,
     startup_safety_file: String,
@@ -444,6 +445,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     run_gerber_export(&config, &board, &output_root)?;
     run_drill_export(&config, &board, &output_root)?;
     run_position_export(&config, &board, &output_root)?;
+    write_assembly_parity_report(&config, &parts, &placement, &output_root)?;
     if config.step.enabled {
         run_step_export(&config, &board, &output_root)?;
     }
@@ -1093,6 +1095,165 @@ fn write_manual_parts(
     Ok(())
 }
 
+fn write_assembly_parity_report(
+    config: &ReleaseConfig,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    output_root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let machine_expected = expected_machine_references(parts, placement, &config.assembly);
+    let manual_expected = expected_manual_references(placement, &config.assembly);
+    let all_expected = placement
+        .placements
+        .iter()
+        .map(|item| item.reference.clone())
+        .collect::<BTreeSet<_>>();
+
+    let bom_refs = csv_reference_values(
+        &output_root.join(&config.outputs.bom_file),
+        &["Designator"],
+        true,
+    )?;
+    let cpl_refs = csv_reference_values(
+        &output_root.join(&config.outputs.cpl_file),
+        &["Designator", "Reference", "Ref"],
+        false,
+    )?;
+    let manual_refs = csv_reference_values(
+        &output_root.join(&config.outputs.manual_file),
+        &["Designator", "Reference", "Ref"],
+        false,
+    )?;
+    let position_refs = csv_reference_values(
+        &output_root.join(&config.outputs.position_file),
+        &["Ref", "Designator", "Reference"],
+        false,
+    )?;
+
+    let (bom_set, bom_duplicates) = reference_set_and_duplicates(&bom_refs);
+    let (cpl_set, cpl_duplicates) = reference_set_and_duplicates(&cpl_refs);
+    let (manual_set, manual_duplicates) = reference_set_and_duplicates(&manual_refs);
+    let (position_set, position_duplicates) = reference_set_and_duplicates(&position_refs);
+
+    let mut rows = Vec::new();
+    let mut errors = Vec::new();
+
+    push_set_parity_row(
+        &mut rows,
+        &mut errors,
+        "assembly parity",
+        "BOM designators match machine-placement references",
+        &machine_expected,
+        &bom_set,
+        "JLCPCB BOM must cover every machine-assembled reference exactly once.",
+    );
+    push_set_parity_row(
+        &mut rows,
+        &mut errors,
+        "assembly parity",
+        "CPL designators match machine-placement references",
+        &machine_expected,
+        &cpl_set,
+        "JLCPCB CPL must cover every machine-assembled reference exactly once.",
+    );
+    push_set_parity_row(
+        &mut rows,
+        &mut errors,
+        "assembly parity",
+        "manual install references match manual-placement references",
+        &manual_expected,
+        &manual_set,
+        "Manual-install file must cover through-hole/off-machine references only.",
+    );
+    push_set_parity_row(
+        &mut rows,
+        &mut errors,
+        "assembly parity",
+        "KiCad position references match machine-placement references",
+        &machine_expected,
+        &position_set,
+        "KiCad top-side SMD position export is the independent placement source for CPL parity.",
+    );
+
+    push_duplicate_row(
+        &mut rows,
+        &mut errors,
+        "BOM duplicate designators",
+        &bom_duplicates,
+    );
+    push_duplicate_row(
+        &mut rows,
+        &mut errors,
+        "CPL duplicate designators",
+        &cpl_duplicates,
+    );
+    push_duplicate_row(
+        &mut rows,
+        &mut errors,
+        "manual duplicate designators",
+        &manual_duplicates,
+    );
+    push_duplicate_row(
+        &mut rows,
+        &mut errors,
+        "KiCad position duplicate references",
+        &position_duplicates,
+    );
+
+    let cpl_manual_overlap = cpl_set
+        .intersection(&manual_set)
+        .cloned()
+        .collect::<BTreeSet<_>>();
+    push_empty_set_row(
+        &mut rows,
+        &mut errors,
+        "assembly parity",
+        "machine/manual reference overlap",
+        &cpl_manual_overlap,
+        "A reference cannot be both machine-assembled and manually installed.",
+    );
+
+    let classified_refs = machine_expected
+        .union(&manual_expected)
+        .cloned()
+        .collect::<BTreeSet<_>>();
+    push_set_parity_row(
+        &mut rows,
+        &mut errors,
+        "assembly parity",
+        "placement classification covers all references",
+        &all_expected,
+        &classified_refs,
+        "Every placement must be classified into exactly one assembly path.",
+    );
+
+    push_part_quantity_rows(&mut rows, &mut errors, parts, placement);
+
+    let output_path = output_root.join(&config.outputs.assembly_parity_file);
+    if let Some(parent) = output_path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    let mut writer = csv::Writer::from_path(&output_path)?;
+    writer.write_record(["category", "item", "expected", "actual", "status", "notes"])?;
+    for row in rows {
+        writer.write_record([
+            row.category.as_str(),
+            row.item.as_str(),
+            row.expected.as_str(),
+            row.actual.as_str(),
+            row.status.as_str(),
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(format!("assembly parity gate failed:\n{}", errors.join("\n")).into())
+    }
+}
+
 fn is_manual_part(assembly: &AssemblyConfig, part: &SelectedPart) -> bool {
     assembly.manual_part_ids.iter().any(|id| id == &part.id)
 }
@@ -1113,6 +1274,242 @@ fn machine_part_ids<'a>(parts: &'a PartsManifest, assembly: &AssemblyConfig) -> 
         .filter(|part| !manual_part_ids.contains(part.id.as_str()))
         .map(|part| part.id.as_str())
         .collect()
+}
+
+#[derive(Debug)]
+struct AssemblyParityRow {
+    category: String,
+    item: String,
+    expected: String,
+    actual: String,
+    status: String,
+    notes: String,
+}
+
+fn expected_machine_references(
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    assembly: &AssemblyConfig,
+) -> BTreeSet<String> {
+    let machine_part_ids = machine_part_ids(parts, assembly);
+    placement
+        .placements
+        .iter()
+        .filter(|item| machine_part_ids.contains(item.part_id.as_str()))
+        .map(|item| item.reference.clone())
+        .collect()
+}
+
+fn expected_manual_references(
+    placement: &PlacementPlan,
+    assembly: &AssemblyConfig,
+) -> BTreeSet<String> {
+    let manual_part_ids = manual_part_ids(assembly);
+    placement
+        .placements
+        .iter()
+        .filter(|item| manual_part_ids.contains(item.part_id.as_str()))
+        .map(|item| item.reference.clone())
+        .collect()
+}
+
+fn csv_reference_values(
+    path: &Path,
+    column_candidates: &[&str],
+    split_commas: bool,
+) -> Result<Vec<String>, Box<dyn Error>> {
+    let mut reader = csv::Reader::from_path(path)?;
+    let headers = reader.headers()?.clone();
+    let column_index = column_candidates
+        .iter()
+        .find_map(|candidate| {
+            headers
+                .iter()
+                .position(|header| header.trim() == *candidate)
+        })
+        .ok_or_else(|| {
+            format!(
+                "{} missing reference column; expected one of {:?}",
+                path.display(),
+                column_candidates
+            )
+        })?;
+
+    let mut values = Vec::new();
+    for record in reader.records() {
+        let record = record?;
+        let raw = record
+            .get(column_index)
+            .ok_or_else(|| format!("{} has a short CSV row", path.display()))?;
+        if split_commas {
+            values.extend(
+                raw.split(',')
+                    .map(str::trim)
+                    .filter(|value| !value.is_empty())
+                    .map(ToOwned::to_owned),
+            );
+        } else {
+            let value = raw.trim();
+            if !value.is_empty() {
+                values.push(value.to_string());
+            }
+        }
+    }
+    Ok(values)
+}
+
+fn reference_set_and_duplicates(values: &[String]) -> (BTreeSet<String>, BTreeSet<String>) {
+    let mut counts = BTreeMap::<&str, usize>::new();
+    for value in values {
+        *counts.entry(value.as_str()).or_default() += 1;
+    }
+
+    let set = values.iter().cloned().collect::<BTreeSet<_>>();
+    let duplicates = counts
+        .into_iter()
+        .filter(|(_, count)| *count > 1)
+        .map(|(value, _)| value.to_string())
+        .collect::<BTreeSet<_>>();
+    (set, duplicates)
+}
+
+fn push_set_parity_row(
+    rows: &mut Vec<AssemblyParityRow>,
+    errors: &mut Vec<String>,
+    category: &str,
+    item: &str,
+    expected: &BTreeSet<String>,
+    actual: &BTreeSet<String>,
+    notes: &str,
+) {
+    let pass = expected == actual;
+    rows.push(AssemblyParityRow {
+        category: category.to_string(),
+        item: item.to_string(),
+        expected: format_reference_set(expected),
+        actual: format_set_comparison(expected, actual),
+        status: status(pass),
+        notes: notes.to_string(),
+    });
+    if !pass {
+        let missing = expected
+            .difference(actual)
+            .cloned()
+            .collect::<BTreeSet<_>>();
+        let unexpected = actual
+            .difference(expected)
+            .cloned()
+            .collect::<BTreeSet<_>>();
+        errors.push(format!(
+            "{item}: missing [{}], unexpected [{}]",
+            format_reference_items(&missing),
+            format_reference_items(&unexpected)
+        ));
+    }
+}
+
+fn push_duplicate_row(
+    rows: &mut Vec<AssemblyParityRow>,
+    errors: &mut Vec<String>,
+    item: &str,
+    duplicates: &BTreeSet<String>,
+) {
+    push_empty_set_row(
+        rows,
+        errors,
+        "assembly parity",
+        item,
+        duplicates,
+        "No reference may appear more than once in an assembly export.",
+    );
+}
+
+fn push_empty_set_row(
+    rows: &mut Vec<AssemblyParityRow>,
+    errors: &mut Vec<String>,
+    category: &str,
+    item: &str,
+    actual: &BTreeSet<String>,
+    notes: &str,
+) {
+    let pass = actual.is_empty();
+    rows.push(AssemblyParityRow {
+        category: category.to_string(),
+        item: item.to_string(),
+        expected: "none".to_string(),
+        actual: format_reference_set(actual),
+        status: status(pass),
+        notes: notes.to_string(),
+    });
+    if !pass {
+        errors.push(format!("{item}: [{}]", format_reference_items(actual)));
+    }
+}
+
+fn push_part_quantity_rows(
+    rows: &mut Vec<AssemblyParityRow>,
+    errors: &mut Vec<String>,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+) {
+    let mut by_part = BTreeMap::<&str, usize>::new();
+    for item in &placement.placements {
+        *by_part.entry(item.part_id.as_str()).or_default() += 1;
+    }
+    for part in &parts.selected_parts {
+        let actual = by_part.get(part.id.as_str()).copied().unwrap_or_default();
+        let expected = part.quantity as usize;
+        let pass = actual == expected;
+        rows.push(AssemblyParityRow {
+            category: "assembly source".to_string(),
+            item: format!("{} placement quantity", part.id),
+            expected: expected.to_string(),
+            actual: actual.to_string(),
+            status: status(pass),
+            notes: "parts.toml quantity must match placement.toml references before export parity is meaningful."
+                .to_string(),
+        });
+        if !pass {
+            errors.push(format!(
+                "{} placement quantity: expected {}, actual {}",
+                part.id, expected, actual
+            ));
+        }
+    }
+}
+
+fn format_set_comparison(expected: &BTreeSet<String>, actual: &BTreeSet<String>) -> String {
+    let missing = expected
+        .difference(actual)
+        .cloned()
+        .collect::<BTreeSet<_>>();
+    let unexpected = actual
+        .difference(expected)
+        .cloned()
+        .collect::<BTreeSet<_>>();
+    format!(
+        "{} refs: {}; missing: {}; unexpected: {}",
+        actual.len(),
+        format_reference_items(actual),
+        format_reference_items(&missing),
+        format_reference_items(&unexpected)
+    )
+}
+
+fn format_reference_set(values: &BTreeSet<String>) -> String {
+    format!("{} refs: {}", values.len(), format_reference_items(values))
+}
+
+fn format_reference_items(values: &BTreeSet<String>) -> String {
+    if values.is_empty() {
+        "none".to_string()
+    } else {
+        values.iter().cloned().collect::<Vec<_>>().join(",")
+    }
+}
+
+fn status(pass: bool) -> String {
+    if pass { "pass" } else { "fail" }.to_string()
 }
 
 fn run_gerber_export(
@@ -1460,6 +1857,11 @@ fn write_manifest(
         file,
         "assembly_orientation: {}",
         config.outputs.assembly_orientation_file
+    )?;
+    writeln!(
+        file,
+        "assembly_parity: {}",
+        config.outputs.assembly_parity_file
     )?;
     writeln!(file, "i2c_bus: {}", config.outputs.i2c_bus_file)?;
     writeln!(
@@ -1942,6 +2344,7 @@ fn write_release_bundles(
         config.outputs.procurement_readiness_file.as_str(),
         config.outputs.connector_polarity_file.as_str(),
         config.outputs.assembly_orientation_file.as_str(),
+        config.outputs.assembly_parity_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
@@ -2176,6 +2579,7 @@ fn validate_release_outputs(
         &config.outputs.procurement_readiness_file,
         &config.outputs.connector_polarity_file,
         &config.outputs.assembly_orientation_file,
+        &config.outputs.assembly_parity_file,
         &config.outputs.i2c_bus_file,
         &config.outputs.heater_protection_file,
         &config.outputs.startup_safety_file,
@@ -2302,6 +2706,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.procurement_readiness_file.as_str(),
         config.outputs.connector_polarity_file.as_str(),
         config.outputs.assembly_orientation_file.as_str(),
+        config.outputs.assembly_parity_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
