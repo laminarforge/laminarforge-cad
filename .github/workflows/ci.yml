@@ -108,6 +108,9 @@ jobs:
           cargo run --release --bin lamp_rev_a_spice_check -- heater-pwm-transient \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_heater_pwm_transient.spice \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_heater_pwm_transient.ngspice.log
+          cargo run --release --bin lamp_rev_a_spice_check -- heater-thermal-transient \
+            pcb/lamp_rev_a/fab_release/review/lamp_rev_a_heater_thermal_transient.spice \
+            pcb/lamp_rev_a/fab_release/review/lamp_rev_a_heater_thermal_transient.ngspice.log
           cargo run --release --bin lamp_rev_a_spice_check -- usb-inrush-startup \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_usb_inrush_startup.spice \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_usb_inrush_startup.ngspice.log
@@ -138,6 +141,8 @@ jobs:
           test -s "$release_dir/review/lamp_rev_a_heater_pwm_transient.spice"
           test -s "$release_dir/review/lamp_rev_a_heater_pwm_transient.ngspice.log"
           test -s "$release_dir/review/heater_pwm_transient_simulation.csv"
+          test -s "$release_dir/review/lamp_rev_a_heater_thermal_transient.spice"
+          test -s "$release_dir/review/lamp_rev_a_heater_thermal_transient.ngspice.log"
           test -s "$release_dir/review/heater_thermal_transient_simulation.csv"
           test -s "$release_dir/review/lamp_rev_a_usb_inrush_startup.spice"
           test -s "$release_dir/review/lamp_rev_a_usb_inrush_startup.ngspice.log"

@@ -21,6 +21,7 @@ const REQUIRED_OUTPUT_TOKENS: &[&str] = &[
 enum SpiceMode {
     OperatingPoint,
     HeaterPwmTransient,
+    HeaterThermalTransient,
     UsbInrushStartup,
     RailLoadStep,
     PowerDomainFault,
@@ -43,6 +44,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 &outputs.heater_pwm_transient_netlist,
                 &default_log_path(&outputs.heater_pwm_transient_netlist),
                 SpiceMode::HeaterPwmTransient,
+            )?;
+            run_spice_check(
+                &outputs.heater_thermal_transient_netlist,
+                &default_log_path(&outputs.heater_thermal_transient_netlist),
+                SpiceMode::HeaterThermalTransient,
             )?;
             run_spice_check(
                 &outputs.usb_inrush_startup_netlist,
@@ -77,6 +83,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             PathBuf::from(log),
             SpiceMode::HeaterPwmTransient,
         ),
+        [mode, netlist, log] if mode == "heater-thermal-transient" => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::HeaterThermalTransient,
+        ),
         [mode, netlist, log] if mode == "usb-inrush-startup" => (
             PathBuf::from(netlist),
             PathBuf::from(log),
@@ -104,7 +115,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ),
         _ => {
             return Err(
-                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|usb-inrush-startup|rail-load-step|power-domain-fault|analog-front-end NETLIST_PATH LOG_PATH]"
+                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|heater-thermal-transient|usb-inrush-startup|rail-load-step|power-domain-fault|analog-front-end NETLIST_PATH LOG_PATH]"
                     .into(),
             );
         }
@@ -149,6 +160,7 @@ fn run_spice_check(
     match mode {
         SpiceMode::OperatingPoint => validate_operating_point_log(&log)?,
         SpiceMode::HeaterPwmTransient => validate_heater_pwm_transient_log(&netlist, &log)?,
+        SpiceMode::HeaterThermalTransient => validate_heater_thermal_transient_log(&netlist, &log)?,
         SpiceMode::UsbInrushStartup => validate_usb_inrush_startup_log(&netlist, &log)?,
         SpiceMode::RailLoadStep => validate_rail_load_step_log(&netlist, &log)?,
         SpiceMode::PowerDomainFault => validate_power_domain_fault_log(&netlist, &log)?,
@@ -160,6 +172,7 @@ fn run_spice_check(
         match mode {
             SpiceMode::OperatingPoint => "operating-point",
             SpiceMode::HeaterPwmTransient => "heater PWM transient",
+            SpiceMode::HeaterThermalTransient => "heater thermal transient",
             SpiceMode::UsbInrushStartup => "USB/VBUS startup transient",
             SpiceMode::RailLoadStep => "rail load-step transient",
             SpiceMode::PowerDomainFault => "power-domain fault transient",
@@ -247,6 +260,60 @@ fn validate_heater_pwm_transient_log(netlist: &str, log: &str) -> Result<(), Box
     if gate_low_min > max_gate_low {
         return Err(format!(
             "heater PWM transient gate low {gate_low_min:.6} V exceeds {max_gate_low:.6} V"
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn validate_heater_thermal_transient_log(netlist: &str, log: &str) -> Result<(), Box<dyn Error>> {
+    let lower = log.to_ascii_lowercase();
+    validate_no_ngspice_failure_tokens(&lower)?;
+
+    let target_c = netlist_limit(netlist, "check_target_c")?;
+    let max_temperature_c = netlist_limit(netlist, "check_max_temperature_c")?;
+    let max_overshoot_c = netlist_limit(netlist, "check_max_overshoot_c")?;
+    let max_warmup_s = netlist_limit(netlist, "check_max_warmup_s")?;
+    let max_hold_error_c = netlist_limit(netlist, "check_max_hold_error_c")?;
+    let min_final_c = netlist_limit(netlist, "check_min_final_c")?;
+    let max_final_c = netlist_limit(netlist, "check_max_final_c")?;
+
+    let max_temp = measurement(&lower, "max_temp")?;
+    let final_temp = measurement(&lower, "final_temp")?;
+    let hold_max = measurement(&lower, "hold_max")?;
+    let hold_min = measurement(&lower, "hold_min")?;
+    let reached_time = measurement(&lower, "reached_time")?;
+
+    let overshoot_c = (max_temp - target_c).max(0.0);
+    let hold_error_c = (hold_max - target_c).abs().max((hold_min - target_c).abs());
+
+    if reached_time > max_warmup_s {
+        return Err(format!(
+            "heater thermal transient warm-up time {reached_time:.6} s exceeds {max_warmup_s:.6} s"
+        )
+        .into());
+    }
+    if max_temp > max_temperature_c {
+        return Err(format!(
+            "heater thermal transient maximum temperature {max_temp:.6} C exceeds {max_temperature_c:.6} C"
+        )
+        .into());
+    }
+    if overshoot_c > max_overshoot_c {
+        return Err(format!(
+            "heater thermal transient overshoot {overshoot_c:.6} C exceeds {max_overshoot_c:.6} C"
+        )
+        .into());
+    }
+    if hold_error_c > max_hold_error_c {
+        return Err(format!(
+            "heater thermal transient hold error {hold_error_c:.6} C exceeds {max_hold_error_c:.6} C"
+        )
+        .into());
+    }
+    if final_temp < min_final_c || final_temp > max_final_c {
+        return Err(format!(
+            "heater thermal transient final temperature {final_temp:.6} C is outside {min_final_c:.6}..{max_final_c:.6} C"
         )
         .into());
     }

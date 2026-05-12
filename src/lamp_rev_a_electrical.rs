@@ -32,6 +32,7 @@ pub struct ElectricalOutputPaths {
     pub thermal_margin_simulation_csv: PathBuf,
     pub heater_pwm_transient_netlist: PathBuf,
     pub heater_pwm_transient_csv: PathBuf,
+    pub heater_thermal_transient_netlist: PathBuf,
     pub heater_thermal_transient_csv: PathBuf,
     pub usb_inrush_startup_netlist: PathBuf,
     pub usb_inrush_startup_csv: PathBuf,
@@ -156,6 +157,7 @@ struct Outputs {
     thermal_margin_simulation_csv: String,
     heater_pwm_transient_netlist: String,
     heater_pwm_transient_csv: String,
+    heater_thermal_transient_netlist: String,
     heater_thermal_transient_csv: String,
     usb_inrush_startup_netlist: String,
     usb_inrush_startup_csv: String,
@@ -984,6 +986,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         thermal_margin_simulation_csv: repo_root.join(config.outputs.thermal_margin_simulation_csv),
         heater_pwm_transient_netlist: repo_root.join(config.outputs.heater_pwm_transient_netlist),
         heater_pwm_transient_csv: repo_root.join(config.outputs.heater_pwm_transient_csv),
+        heater_thermal_transient_netlist: repo_root
+            .join(config.outputs.heater_thermal_transient_netlist),
         heater_thermal_transient_csv: repo_root.join(config.outputs.heater_thermal_transient_csv),
         usb_inrush_startup_netlist: repo_root.join(config.outputs.usb_inrush_startup_netlist),
         usb_inrush_startup_csv: repo_root.join(config.outputs.usb_inrush_startup_csv),
@@ -6554,6 +6558,7 @@ fn write_heater_thermal_transient_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
 ) -> Result<(), Box<dyn Error>> {
+    write_heater_thermal_transient_spice(config, outputs)?;
     ensure_parent(&outputs.heater_thermal_transient_csv)?;
     let mut writer = csv::Writer::from_path(&outputs.heater_thermal_transient_csv)?;
     writer.write_record([
@@ -6578,6 +6583,141 @@ fn write_heater_thermal_transient_handoff(
     }
     writer.flush()?;
     Ok(())
+}
+
+fn write_heater_thermal_transient_spice(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    let policy = &config.heater_thermal_transient_policy;
+    ensure_parent(&outputs.heater_thermal_transient_netlist)?;
+
+    let mut spice = String::new();
+    writeln!(
+        spice,
+        "* LaminarForge LAMP Rev A heater/reaction-block thermal transient handoff"
+    )?;
+    writeln!(spice, "* Generated from `{CONFIG_PATH}`.")?;
+    writeln!(
+        spice,
+        "* Thermal analogy: volts = deg C, amps = watts, capacitance = J/deg C, resistance = deg C/W."
+    )?;
+    writeln!(spice, "* check_target_c={:.6}", policy.target_c)?;
+    writeln!(
+        spice,
+        "* check_target_reached_c={:.6}",
+        policy.target_reached_c
+    )?;
+    writeln!(
+        spice,
+        "* check_max_temperature_c={:.6}",
+        policy.max_temperature_c
+    )?;
+    writeln!(
+        spice,
+        "* check_max_overshoot_c={:.6}",
+        policy.max_overshoot_c
+    )?;
+    writeln!(spice, "* check_max_warmup_s={:.6}", policy.max_warmup_s)?;
+    writeln!(
+        spice,
+        "* check_max_hold_error_c={:.6}",
+        policy.max_hold_error_c
+    )?;
+    writeln!(
+        spice,
+        "* check_min_final_c={:.6}",
+        policy.target_c - policy.max_hold_error_c
+    )?;
+    writeln!(
+        spice,
+        "* check_max_final_c={:.6}",
+        policy.target_c + policy.max_hold_error_c
+    )?;
+    writeln!(spice, "VAMB amb 0 DC {:.6}", policy.ambient_c)?;
+    writeln!(
+        spice,
+        "RBLOCK temp amb {:.6}",
+        policy.thermal_resistance_c_per_w
+    )?;
+    writeln!(
+        spice,
+        "CBLOCK temp 0 {:.6} IC={:.6}",
+        policy.thermal_mass_j_per_c, policy.ambient_c
+    )?;
+    writeln!(spice, "IHEAT 0 temp PWL(")?;
+    let profile = heater_thermal_power_profile(policy);
+    let chunks = profile.chunks(6).collect::<Vec<_>>();
+    for (chunk_index, chunk) in chunks.iter().enumerate() {
+        write!(spice, "+")?;
+        for (time_s, power_w) in chunk.iter() {
+            write!(spice, " {:.6} {:.6}", time_s, power_w)?;
+        }
+        if chunk_index + 1 == chunks.len() {
+            write!(spice, " )")?;
+        }
+        writeln!(spice)?;
+    }
+    writeln!(
+        spice,
+        ".tran {:.6} {:.6} uic",
+        policy.timestep_s, policy.simulation_stop_s
+    )?;
+    writeln!(spice, ".control")?;
+    writeln!(spice, "run")?;
+    writeln!(
+        spice,
+        "meas tran max_temp MAX v(temp) FROM=0 TO={:.6}",
+        policy.simulation_stop_s
+    )?;
+    writeln!(
+        spice,
+        "meas tran final_temp AVG v(temp) FROM={:.6} TO={:.6}",
+        (policy.simulation_stop_s - policy.timestep_s).max(0.0),
+        policy.simulation_stop_s
+    )?;
+    writeln!(
+        spice,
+        "meas tran hold_max MAX v(temp) FROM={:.6} TO={:.6}",
+        (policy.simulation_stop_s - policy.hold_window_s).max(0.0),
+        policy.simulation_stop_s
+    )?;
+    writeln!(
+        spice,
+        "meas tran hold_min MIN v(temp) FROM={:.6} TO={:.6}",
+        (policy.simulation_stop_s - policy.hold_window_s).max(0.0),
+        policy.simulation_stop_s
+    )?;
+    writeln!(
+        spice,
+        "meas tran reached_time WHEN v(temp)={:.6} RISE=1",
+        policy.target_reached_c
+    )?;
+    writeln!(spice, ".endc")?;
+    writeln!(spice, ".end")?;
+
+    fs::write(&outputs.heater_thermal_transient_netlist, spice)?;
+    Ok(())
+}
+
+fn heater_thermal_power_profile(policy: &HeaterThermalTransientPolicy) -> Vec<(f64, f64)> {
+    let target_duty = ((policy.target_c - policy.ambient_c) / policy.thermal_resistance_c_per_w)
+        / policy.heater_power_w;
+    let mut temp_c = policy.ambient_c;
+    let mut time_s = 0.0;
+    let mut profile = Vec::new();
+
+    while time_s <= policy.simulation_stop_s + f64::EPSILON {
+        let duty = heater_thermal_control_duty(policy, target_duty, temp_c);
+        let heater_power_w = policy.heater_power_w * duty;
+        profile.push((time_s, heater_power_w));
+
+        let loss_w = (temp_c - policy.ambient_c) / policy.thermal_resistance_c_per_w;
+        temp_c += (heater_power_w - loss_w) * policy.timestep_s / policy.thermal_mass_j_per_c;
+        time_s += policy.timestep_s;
+    }
+
+    profile
 }
 
 fn write_usb_inrush_startup_handoff(
@@ -8127,6 +8267,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("heater_pwm_transient_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Heater/reaction-block thermal transient netlist: `{}`",
+        outputs
+            .heater_thermal_transient_netlist
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("lamp_rev_a_heater_thermal_transient.spice")
     )?;
     writeln!(
         report,

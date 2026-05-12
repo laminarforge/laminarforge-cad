@@ -92,6 +92,7 @@ struct Outputs {
     thermal_margin_simulation_file: String,
     heater_pwm_transient_netlist_file: String,
     heater_pwm_transient_file: String,
+    heater_thermal_transient_netlist_file: String,
     heater_thermal_transient_file: String,
     usb_inrush_startup_netlist_file: String,
     usb_inrush_startup_file: String,
@@ -475,6 +476,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         heater_pwm_transient_netlist: output_root
             .join(&config.outputs.heater_pwm_transient_netlist_file),
         heater_pwm_transient_csv: output_root.join(&config.outputs.heater_pwm_transient_file),
+        heater_thermal_transient_netlist: output_root
+            .join(&config.outputs.heater_thermal_transient_netlist_file),
         heater_thermal_transient_csv: output_root
             .join(&config.outputs.heater_thermal_transient_file),
         usb_inrush_startup_netlist: output_root
@@ -1340,6 +1343,11 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "heater_thermal_transient_netlist: {}",
+        config.outputs.heater_thermal_transient_netlist_file
+    )?;
+    writeln!(
+        file,
         "heater_thermal_transient_simulation: {}",
         config.outputs.heater_thermal_transient_file
     )?;
@@ -1898,6 +1906,10 @@ fn write_release_bundles(
         config.outputs.thermal_margin_simulation_file.as_str(),
         config.outputs.heater_pwm_transient_netlist_file.as_str(),
         config.outputs.heater_pwm_transient_file.as_str(),
+        config
+            .outputs
+            .heater_thermal_transient_netlist_file
+            .as_str(),
         config.outputs.heater_thermal_transient_file.as_str(),
         config.outputs.usb_inrush_startup_netlist_file.as_str(),
         config.outputs.usb_inrush_startup_file.as_str(),
@@ -2122,6 +2134,7 @@ fn validate_release_outputs(
         &config.outputs.thermal_margin_simulation_file,
         &config.outputs.heater_pwm_transient_netlist_file,
         &config.outputs.heater_pwm_transient_file,
+        &config.outputs.heater_thermal_transient_netlist_file,
         &config.outputs.heater_thermal_transient_file,
         &config.outputs.usb_inrush_startup_netlist_file,
         &config.outputs.usb_inrush_startup_file,
@@ -2241,6 +2254,10 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.thermal_margin_simulation_file.as_str(),
         config.outputs.heater_pwm_transient_netlist_file.as_str(),
         config.outputs.heater_pwm_transient_file.as_str(),
+        config
+            .outputs
+            .heater_thermal_transient_netlist_file
+            .as_str(),
         config.outputs.heater_thermal_transient_file.as_str(),
         config.outputs.usb_inrush_startup_netlist_file.as_str(),
         config.outputs.usb_inrush_startup_file.as_str(),
