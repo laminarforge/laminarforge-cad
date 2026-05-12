@@ -30,6 +30,8 @@ pub struct ElectricalOutputPaths {
     pub thermal_margin_simulation_csv: PathBuf,
     pub heater_pwm_transient_netlist: PathBuf,
     pub heater_pwm_transient_csv: PathBuf,
+    pub rail_load_step_netlist: PathBuf,
+    pub rail_load_step_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -85,6 +87,7 @@ struct ValidationConfig {
     pdn_dc_simulation_policy: PdnDcSimulationPolicy,
     thermal_margin_simulation_policy: ThermalMarginSimulationPolicy,
     heater_pwm_transient_policy: HeaterPwmTransientPolicy,
+    rail_load_step_policy: RailLoadStepPolicy,
 }
 
 #[derive(Debug, Deserialize)]
@@ -128,6 +131,8 @@ struct Outputs {
     thermal_margin_simulation_csv: String,
     heater_pwm_transient_netlist: String,
     heater_pwm_transient_csv: String,
+    rail_load_step_netlist: String,
+    rail_load_step_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -310,6 +315,22 @@ struct HeaterPwmTransientPolicy {
     max_off_current_ma: f64,
     min_gate_high_v: f64,
     max_gate_low_v: f64,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct RailLoadStepPolicy {
+    nominal_voltage_v: f64,
+    source_resistance_ohm: f64,
+    bulk_capacitance_u: f64,
+    baseline_load_ma: u32,
+    burst_load_ma: u32,
+    burst_start_ms: f64,
+    burst_width_ms: f64,
+    period_ms: f64,
+    simulation_stop_ms: f64,
+    min_rail_voltage_v: f64,
+    max_source_current_ma: u32,
     notes: String,
 }
 
@@ -721,6 +742,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         thermal_margin_simulation_csv: repo_root.join(config.outputs.thermal_margin_simulation_csv),
         heater_pwm_transient_netlist: repo_root.join(config.outputs.heater_pwm_transient_netlist),
         heater_pwm_transient_csv: repo_root.join(config.outputs.heater_pwm_transient_csv),
+        rail_load_step_netlist: repo_root.join(config.outputs.rail_load_step_netlist),
+        rail_load_step_csv: repo_root.join(config.outputs.rail_load_step_csv),
     })
 }
 
@@ -790,6 +813,7 @@ pub fn validate_to_outputs(
     validate_pdn_dc_simulation(&config, &routing, &contract_rails, &mut rows, &mut errors);
     validate_thermal_margin_simulation(&config, &routing, &mut rows, &mut errors);
     validate_heater_pwm_transient(&config, &contract_nets, &mut rows, &mut errors);
+    validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
     let gate_categories = rows
         .iter()
         .map(|row| row.category.clone())
@@ -815,6 +839,7 @@ pub fn validate_to_outputs(
     write_pdn_dc_simulation_handoff(&config, &routing, &contract_rails, outputs)?;
     write_thermal_margin_simulation_handoff(&config, &routing, outputs)?;
     write_heater_pwm_transient_handoff(&config, outputs)?;
+    write_rail_load_step_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -1779,6 +1804,146 @@ fn heater_pwm_off_current_ma(policy: &HeaterPwmTransientPolicy) -> f64 {
             + policy.heater_series_resistance_ohm
             + policy.mosfet_off_resistance_ohm)
         * 1000.0
+}
+
+fn validate_rail_load_step(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.rail_load_step_policy;
+    push_gate!(
+        rows,
+        errors,
+        "rail load step transient",
+        "+3V3 contract net",
+        "+3V3",
+        "present in contract",
+        contract_nets.contains("+3V3"),
+        &policy.notes,
+    );
+
+    push_gate!(
+        rows,
+        errors,
+        "rail load step transient",
+        "load-step current envelope",
+        format!(
+            "{} mA baseline -> {} mA burst",
+            policy.baseline_load_ma, policy.burst_load_ma
+        ),
+        "0 < baseline < burst <= source limit",
+        policy.baseline_load_ma > 0
+            && policy.baseline_load_ma < policy.burst_load_ma
+            && policy.burst_load_ma <= policy.max_source_current_ma,
+        &policy.notes,
+    );
+
+    push_gate!(
+        rows,
+        errors,
+        "rail load step transient",
+        "load-step timing envelope",
+        format!(
+            "{:.3} ms start / {:.3} ms burst / {:.3} ms period / {:.3} ms stop",
+            policy.burst_start_ms,
+            policy.burst_width_ms,
+            policy.period_ms,
+            policy.simulation_stop_ms
+        ),
+        "0 < start, 0 < width < period, stop >= 2 periods",
+        policy.burst_start_ms > 0.0
+            && policy.burst_width_ms > 0.0
+            && policy.burst_width_ms < policy.period_ms
+            && policy.simulation_stop_ms >= 2.0 * policy.period_ms,
+        &policy.notes,
+    );
+
+    let estimated_min_v = rail_load_step_estimated_min_v(policy);
+    push_gate!(
+        rows,
+        errors,
+        "rail load step transient",
+        "estimated burst rail sag",
+        format!("{estimated_min_v:.3} V"),
+        format!(">= {:.3} V", policy.min_rail_voltage_v),
+        estimated_min_v >= policy.min_rail_voltage_v,
+        &policy.notes,
+    );
+
+    push_gate!(
+        rows,
+        errors,
+        "rail load step transient",
+        "3.3 V bulk capacitance",
+        format!("{:.3} uF", policy.bulk_capacitance_u),
+        "> 0 uF",
+        policy.bulk_capacitance_u > 0.0,
+        &policy.notes,
+    );
+}
+
+#[derive(Debug)]
+struct RailLoadStepRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+fn rail_load_step_rows(config: &ValidationConfig) -> Vec<RailLoadStepRow> {
+    let policy = &config.rail_load_step_policy;
+    vec![
+        RailLoadStepRow {
+            id: "rail_min_voltage",
+            measurement: "estimated minimum 3.3 V rail during burst",
+            value: rail_load_step_estimated_min_v(policy),
+            units: "V",
+            limit: format!(">= {:.3} V", policy.min_rail_voltage_v),
+            pass: rail_load_step_estimated_min_v(policy) >= policy.min_rail_voltage_v,
+            notes: policy.notes.clone(),
+        },
+        RailLoadStepRow {
+            id: "burst_source_current",
+            measurement: "burst source current",
+            value: policy.burst_load_ma as f64,
+            units: "mA",
+            limit: format!("<= {} mA", policy.max_source_current_ma),
+            pass: policy.burst_load_ma <= policy.max_source_current_ma,
+            notes: policy.notes.clone(),
+        },
+        RailLoadStepRow {
+            id: "baseline_source_current",
+            measurement: "baseline source current",
+            value: policy.baseline_load_ma as f64,
+            units: "mA",
+            limit: format!("< {} mA burst", policy.burst_load_ma),
+            pass: policy.baseline_load_ma < policy.burst_load_ma,
+            notes: policy.notes.clone(),
+        },
+        RailLoadStepRow {
+            id: "rail_recovery_voltage",
+            measurement: "expected recovered rail voltage",
+            value: policy.nominal_voltage_v - rail_load_step_baseline_drop_v(policy),
+            units: "V",
+            limit: format!(">= {:.3} V", policy.min_rail_voltage_v),
+            pass: policy.nominal_voltage_v - rail_load_step_baseline_drop_v(policy)
+                >= policy.min_rail_voltage_v,
+            notes: policy.notes.clone(),
+        },
+    ]
+}
+
+fn rail_load_step_estimated_min_v(policy: &RailLoadStepPolicy) -> f64 {
+    policy.nominal_voltage_v - (policy.burst_load_ma as f64 / 1000.0) * policy.source_resistance_ohm
+}
+
+fn rail_load_step_baseline_drop_v(policy: &RailLoadStepPolicy) -> f64 {
+    (policy.baseline_load_ma as f64 / 1000.0) * policy.source_resistance_ohm
 }
 
 fn allowed_neckdown(segment: &RouteSegment, path: &TraceCurrentPath) -> bool {
@@ -4169,6 +4334,116 @@ fn write_heater_pwm_transient_spice(
     Ok(())
 }
 
+fn write_rail_load_step_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    write_rail_load_step_csv(config, outputs)?;
+    write_rail_load_step_spice(config, outputs)?;
+    Ok(())
+}
+
+fn write_rail_load_step_csv(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.rail_load_step_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.rail_load_step_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in rail_load_step_rows(config) {
+        writer.write_record([
+            row.id,
+            row.measurement,
+            format!("{:.6}", row.value).as_str(),
+            row.units,
+            row.limit.as_str(),
+            if row.pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_rail_load_step_spice(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.rail_load_step_netlist)?;
+    let policy = &config.rail_load_step_policy;
+    let rise_ms = 0.010_f64;
+    let fall_ms = 0.010_f64;
+    let mut spice = String::new();
+    writeln!(
+        spice,
+        "* LaminarForge LAMP Rev A 3.3 V rail load-step transient check"
+    )?;
+    writeln!(spice, "* Generated by lamp_rev_a_electrical_validate")?;
+    writeln!(
+        spice,
+        "* This is a first-order rail sag/load burst model, not signoff."
+    )?;
+    writeln!(
+        spice,
+        "* check_min_rail_voltage_v={:.6}",
+        policy.min_rail_voltage_v
+    )?;
+    writeln!(
+        spice,
+        "* check_max_source_current_ma={:.6}",
+        policy.max_source_current_ma as f64
+    )?;
+    writeln!(spice, "V3SRC P3SRC 0 DC {:.6}", policy.nominal_voltage_v)?;
+    writeln!(spice, "RSRC P3SRC P3V3 {:.6}", policy.source_resistance_ohm)?;
+    writeln!(
+        spice,
+        "C3V3 P3V3 0 {:.6}u IC={:.6}",
+        policy.bulk_capacitance_u, policy.nominal_voltage_v
+    )?;
+    writeln!(
+        spice,
+        "ILOAD P3V3 0 PULSE({:.6} {:.6} {:.6}m {:.6}m {:.6}m {:.6}m {:.6}m)",
+        policy.baseline_load_ma as f64 / 1000.0,
+        policy.burst_load_ma as f64 / 1000.0,
+        policy.burst_start_ms,
+        rise_ms,
+        fall_ms,
+        policy.burst_width_ms,
+        policy.period_ms
+    )?;
+    writeln!(spice, ".tran 10u {:.6}m uic", policy.simulation_stop_ms)?;
+    writeln!(spice, ".control")?;
+    writeln!(spice, "run")?;
+    writeln!(
+        spice,
+        "meas tran rail_min_v MIN v(p3v3) FROM={:.6}m TO={:.6}m",
+        policy.burst_start_ms, policy.simulation_stop_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran source_current_max MIN i(v3src) FROM={:.6}m TO={:.6}m",
+        policy.burst_start_ms, policy.simulation_stop_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran rail_recovery_v AVG v(p3v3) FROM={:.6}m TO={:.6}m",
+        policy.simulation_stop_ms - policy.period_ms * 0.50,
+        policy.simulation_stop_ms - policy.period_ms * 0.10
+    )?;
+    writeln!(spice, ".endc")?;
+    writeln!(spice, ".end")?;
+    fs::write(&outputs.rail_load_step_netlist, spice)?;
+    Ok(())
+}
+
 fn write_thermal_power_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -4811,6 +5086,15 @@ fn write_simulation_handoff(
             .and_then(|name| name.to_str())
             .unwrap_or("lamp_rev_a_heater_pwm_transient.spice")
     )?;
+    writeln!(
+        report,
+        "- 3.3 V rail load-step transient netlist: `{}`",
+        outputs
+            .rail_load_step_netlist
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("lamp_rev_a_rail_load_step.spice")
+    )?;
     writeln!(report)?;
     writeln!(report, "## Generated PDN / Thermal Handoffs")?;
     writeln!(report)?;
@@ -4858,6 +5142,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("heater_pwm_transient_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- 3.3 V rail load-step result table: `{}`",
+        outputs
+            .rail_load_step_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("rail_load_step_simulation.csv")
     )?;
     writeln!(
         report,

@@ -120,6 +120,7 @@ a validation-traceability CSV tying each gate to artifacts, manifest evidence, C
 a simulation-input CSV for PDN, electrothermal, USB/SI, and EMC handoff readiness,
 the first routed-geometry DC PDN simulation CSV for voltage drop and I2R loss,
 a lumped thermal-margin simulation CSV for component and routed-copper steady-state estimates,
+an ngspice 3.3 V rail load-step transient netlist/CSV for ESP32 burst-load sag,
 and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:

@@ -108,6 +108,9 @@ jobs:
           cargo run --release --bin lamp_rev_a_spice_check -- heater-pwm-transient \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_heater_pwm_transient.spice \
             pcb/lamp_rev_a/fab_release/review/lamp_rev_a_heater_pwm_transient.ngspice.log
+          cargo run --release --bin lamp_rev_a_spice_check -- rail-load-step \
+            pcb/lamp_rev_a/fab_release/review/lamp_rev_a_rail_load_step.spice \
+            pcb/lamp_rev_a/fab_release/review/lamp_rev_a_rail_load_step.ngspice.log
 
       - name: Validate LAMP Rev A upload bundles
         shell: bash
@@ -126,6 +129,9 @@ jobs:
           test -s "$release_dir/review/lamp_rev_a_heater_pwm_transient.spice"
           test -s "$release_dir/review/lamp_rev_a_heater_pwm_transient.ngspice.log"
           test -s "$release_dir/review/heater_pwm_transient_simulation.csv"
+          test -s "$release_dir/review/lamp_rev_a_rail_load_step.spice"
+          test -s "$release_dir/review/lamp_rev_a_rail_load_step.ngspice.log"
+          test -s "$release_dir/review/rail_load_step_simulation.csv"
           test -s "$release_dir/review/simulation_handoff.md"
           (cd "$release_dir" && shasum -a 256 -c review/upload_bundle_checksums.sha256)
 

@@ -34,6 +34,8 @@ pdn_dc_simulation_csv = "pcb/lamp_rev_a/reports/pdn_dc_simulation.csv"
 thermal_margin_simulation_csv = "pcb/lamp_rev_a/reports/thermal_margin_simulation.csv"
 heater_pwm_transient_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_heater_pwm_transient.spice"
 heater_pwm_transient_csv = "pcb/lamp_rev_a/reports/heater_pwm_transient_simulation.csv"
+rail_load_step_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_rail_load_step.spice"
+rail_load_step_csv = "pcb/lamp_rev_a/reports/rail_load_step_simulation.csv"
 
 [traceability_policy]
 min_items = 15
@@ -117,6 +119,17 @@ ci_step = "LAMP Rev A SPICE operating-point check; Run LAMP Rev A release SPICE 
 acceptance_criterion = "ngspice transient measurements keep heater on-current, off-current leakage, and gate-drive levels inside configured limits."
 blocks_release = true
 notes = "This is the first switched-heater transient simulation gate; it catches PWM/gate-drive envelope mistakes that DC checks cannot see."
+
+[[validation_traceability]]
+id = "rail_load_step_simulation"
+validation_layer = "SPICE 3.3 V rail load-step transient simulation"
+electrical_gate_category = "rail load step transient"
+output_artifact = "lamp_rev_a_rail_load_step.spice; rail_load_step_simulation.csv"
+release_manifest_entry = "rail_load_step_netlist; rail_load_step_simulation"
+ci_step = "LAMP Rev A SPICE checks; Run LAMP Rev A release SPICE checks"
+acceptance_criterion = "ngspice transient measurements keep 3.3 V rail sag, recovery, and regulator/source current inside configured limits."
+blocks_release = true
+notes = "This simulates a simplified ESP32/Wi-Fi load burst on the 3.3 V rail so rail collapse is not only a static budget assumption."
 
 [[validation_traceability]]
 id = "component_stress_derating"
@@ -288,6 +301,20 @@ max_off_current_ma = 0.005
 min_gate_high_v = 9.0
 max_gate_low_v = 0.2
 notes = "First-order switched heater path transient model for MOSFET/PWM envelope screening before first article."
+
+[rail_load_step_policy]
+nominal_voltage_v = 3.3
+source_resistance_ohm = 0.35
+bulk_capacitance_u = 47.0
+baseline_load_ma = 120
+burst_load_ma = 450
+burst_start_ms = 1.0
+burst_width_ms = 4.0
+period_ms = 8.0
+simulation_stop_ms = 24.0
+min_rail_voltage_v = 3.0
+max_source_current_ma = 600
+notes = "First-order ESP32-S3/Wi-Fi burst load-step model for the USB-derived 3.3 V rail. Replace with extracted PDN simulation after routed parasitics are exported."
 
 [[rail_budgets]]
 rail = "VBUS"

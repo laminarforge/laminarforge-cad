@@ -21,6 +21,7 @@ const REQUIRED_OUTPUT_TOKENS: &[&str] = &[
 enum SpiceMode {
     OperatingPoint,
     HeaterPwmTransient,
+    RailLoadStep,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -40,6 +41,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 &default_log_path(&outputs.heater_pwm_transient_netlist),
                 SpiceMode::HeaterPwmTransient,
             )?;
+            run_spice_check(
+                &outputs.rail_load_step_netlist,
+                &default_log_path(&outputs.rail_load_step_netlist),
+                SpiceMode::RailLoadStep,
+            )?;
             println!("LAMP Rev A SPICE checks passed.");
             return Ok(());
         }
@@ -53,6 +59,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             PathBuf::from(log),
             SpiceMode::HeaterPwmTransient,
         ),
+        [mode, netlist, log] if mode == "rail-load-step" => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::RailLoadStep,
+        ),
         [mode, netlist, log] if mode == "operating-point" => (
             PathBuf::from(netlist),
             PathBuf::from(log),
@@ -60,7 +71,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ),
         _ => {
             return Err(
-                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient NETLIST_PATH LOG_PATH]"
+                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|rail-load-step NETLIST_PATH LOG_PATH]"
                     .into(),
             );
         }
@@ -105,6 +116,7 @@ fn run_spice_check(
     match mode {
         SpiceMode::OperatingPoint => validate_operating_point_log(&log)?,
         SpiceMode::HeaterPwmTransient => validate_heater_pwm_transient_log(&netlist, &log)?,
+        SpiceMode::RailLoadStep => validate_rail_load_step_log(&netlist, &log)?,
     }
 
     println!(
@@ -112,6 +124,7 @@ fn run_spice_check(
         match mode {
             SpiceMode::OperatingPoint => "operating-point",
             SpiceMode::HeaterPwmTransient => "heater PWM transient",
+            SpiceMode::RailLoadStep => "rail load-step transient",
         }
     );
     println!("  netlist: {}", netlist_path.display());
@@ -195,6 +208,38 @@ fn validate_heater_pwm_transient_log(netlist: &str, log: &str) -> Result<(), Box
     if gate_low_min > max_gate_low {
         return Err(format!(
             "heater PWM transient gate low {gate_low_min:.6} V exceeds {max_gate_low:.6} V"
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn validate_rail_load_step_log(netlist: &str, log: &str) -> Result<(), Box<dyn Error>> {
+    let lower = log.to_ascii_lowercase();
+    validate_no_ngspice_failure_tokens(&lower)?;
+
+    let min_rail_voltage = netlist_limit(netlist, "check_min_rail_voltage_v")?;
+    let max_source_current_ma = netlist_limit(netlist, "check_max_source_current_ma")?;
+
+    let rail_min_v = measurement(&lower, "rail_min_v")?;
+    let source_current_max_ma = measurement(&lower, "source_current_max")?.abs() * 1000.0;
+    let rail_recovery_v = measurement(&lower, "rail_recovery_v")?;
+
+    if rail_min_v < min_rail_voltage {
+        return Err(format!(
+            "rail load-step minimum voltage {rail_min_v:.6} V is below {min_rail_voltage:.6} V"
+        )
+        .into());
+    }
+    if rail_recovery_v < min_rail_voltage {
+        return Err(format!(
+            "rail load-step recovery voltage {rail_recovery_v:.6} V is below {min_rail_voltage:.6} V"
+        )
+        .into());
+    }
+    if source_current_max_ma > max_source_current_ma {
+        return Err(format!(
+            "rail load-step source current {source_current_max_ma:.6} mA exceeds {max_source_current_ma:.6} mA"
         )
         .into());
     }
