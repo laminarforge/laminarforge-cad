@@ -308,6 +308,54 @@ struct GateRow {
     notes: String,
 }
 
+macro_rules! push_gate {
+    (
+        $rows:expr,
+        $errors:expr,
+        $category:expr,
+        $item:expr,
+        $measured:expr,
+        $limit:expr,
+        $pass:expr,
+        $notes:expr $(,)?
+    ) => {
+        push_gate_row(
+            $rows,
+            $errors,
+            GateSpec::new($category, $item, $measured, $limit, $pass, $notes),
+        )
+    };
+}
+
+struct GateSpec {
+    category: String,
+    item: String,
+    measured: String,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+impl GateSpec {
+    fn new(
+        category: impl Into<String>,
+        item: impl Into<String>,
+        measured: impl Into<String>,
+        limit: impl Into<String>,
+        pass: bool,
+        notes: impl Into<String>,
+    ) -> Self {
+        Self {
+            category: category.into(),
+            item: item.into(),
+            measured: measured.into(),
+            limit: limit.into(),
+            pass,
+            notes: notes.into(),
+        }
+    }
+}
+
 pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, Box<dyn Error>> {
     let config = read_validation_config(repo_root)?;
     Ok(ElectricalOutputPaths {
@@ -464,7 +512,7 @@ fn validate_assumptions(
     rows: &mut Vec<GateRow>,
     errors: &mut Vec<String>,
 ) {
-    push_gate(
+    push_gate!(
         rows,
         errors,
         "assumptions",
@@ -477,7 +525,7 @@ fn validate_assumptions(
         ),
         "Validation assumptions match the Rev A stackup.",
     );
-    push_gate(
+    push_gate!(
         rows,
         errors,
         "assumptions",
@@ -490,7 +538,7 @@ fn validate_assumptions(
         ),
         "Validation assumptions match the Rev A stackup.",
     );
-    push_gate(
+    push_gate!(
         rows,
         errors,
         "assumptions",
@@ -511,7 +559,7 @@ fn validate_rail_budgets(
 ) {
     for budget in &config.rail_budgets {
         let known_net = contract_nets.contains(&budget.rail);
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "rail budget",
@@ -522,7 +570,7 @@ fn validate_rail_budgets(
             &budget.notes,
         );
         if let Some(rail) = contract_rails.get(budget.rail.as_str()) {
-            push_gate(
+            push_gate!(
                 rows,
                 errors,
                 "rail budget",
@@ -532,7 +580,7 @@ fn validate_rail_budgets(
                 budget.expected_continuous_ma <= rail.max_current_ma,
                 &budget.notes,
             );
-            push_gate(
+            push_gate!(
                 rows,
                 errors,
                 "rail budget",
@@ -542,7 +590,7 @@ fn validate_rail_budgets(
                 budget.source_limit_ma <= rail.max_current_ma,
                 &budget.notes,
             );
-            push_gate(
+            push_gate!(
                 rows,
                 errors,
                 "rail budget",
@@ -557,7 +605,7 @@ fn validate_rail_budgets(
                 &budget.notes,
             );
         }
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "rail budget",
@@ -577,7 +625,7 @@ fn validate_linear_regulators(
     errors: &mut Vec<String>,
 ) {
     for regulator in &config.linear_regulators {
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "linear regulator",
@@ -590,7 +638,7 @@ fn validate_linear_regulators(
         let load_a = regulator.load_ma as f64 / 1000.0;
         let dissipation_w = (regulator.vin_nominal_v - regulator.vout_nominal_v).max(0.0) * load_a;
         let temp_rise_c = dissipation_w * regulator.theta_ja_c_per_w;
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "linear regulator",
@@ -600,7 +648,7 @@ fn validate_linear_regulators(
             regulator.load_ma <= regulator.current_rating_ma,
             &regulator.notes,
         );
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "linear regulator",
@@ -620,7 +668,7 @@ fn validate_protection(
     errors: &mut Vec<String>,
 ) {
     for check in &config.protection_checks {
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "protection",
@@ -632,7 +680,7 @@ fn validate_protection(
         );
         let derated_current =
             check.current_rating_ma as f64 * config.assumptions.component_current_derating;
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "protection",
@@ -644,7 +692,7 @@ fn validate_protection(
         );
         let derated_voltage =
             check.voltage_rating_v * config.assumptions.component_voltage_derating;
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "protection",
@@ -655,7 +703,7 @@ fn validate_protection(
             &check.notes,
         );
         let power_w = check.voltage_drop_v * check.current_ma as f64 / 1000.0;
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "protection",
@@ -675,7 +723,7 @@ fn validate_mosfets(
     errors: &mut Vec<String>,
 ) {
     for check in &config.mosfet_checks {
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "mosfet",
@@ -687,7 +735,7 @@ fn validate_mosfets(
         );
         let derated_current =
             check.current_rating_ma as f64 * config.assumptions.component_current_derating;
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "mosfet",
@@ -699,7 +747,7 @@ fn validate_mosfets(
         );
         let derated_voltage =
             check.voltage_rating_v * config.assumptions.component_voltage_derating;
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "mosfet",
@@ -713,7 +761,7 @@ fn validate_mosfets(
         let rds_on_ohm = check.rds_on_mohm / 1000.0;
         let power_w = current_a * current_a * rds_on_ohm;
         let temp_rise_c = power_w * check.package_theta_ja_c_per_w;
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "mosfet",
@@ -738,7 +786,7 @@ fn validate_trace_current_paths(
             .iter()
             .filter(|segment| segment.net == path.net)
             .collect::<Vec<_>>();
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "trace current",
@@ -759,7 +807,7 @@ fn validate_trace_current_paths(
                 .allowed_layers
                 .iter()
                 .any(|layer| layer == &segment.layer);
-            push_gate(
+            push_gate!(
                 rows,
                 errors,
                 "trace current",
@@ -770,7 +818,7 @@ fn validate_trace_current_paths(
                 &path.notes,
             );
             let neckdown = allowed_neckdown(segment, path);
-            push_gate(
+            push_gate!(
                 rows,
                 errors,
                 "trace current",
@@ -791,7 +839,7 @@ fn validate_trace_current_paths(
             }
         }
 
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "trace current",
@@ -864,7 +912,7 @@ fn validate_gpio_domains(
         .iter()
         .find(|assignment| assignment.reference == config.gpio_domain.mcu_reference)
     else {
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "gpio domain",
@@ -882,7 +930,7 @@ fn validate_gpio_domains(
             .pins
             .get(&pin.module_pin.to_string())
             .is_some_and(|net| net == &pin.net);
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "gpio domain",
@@ -892,7 +940,7 @@ fn validate_gpio_domains(
             in_pin_nets,
             &config.gpio_domain.notes,
         );
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "gpio domain",
@@ -912,7 +960,7 @@ fn validate_analog_ranges(
     errors: &mut Vec<String>,
 ) {
     for check in &config.analog_checks {
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "analog range",
@@ -922,7 +970,7 @@ fn validate_analog_ranges(
             contract_nets.contains(&check.net),
             &check.notes,
         );
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "analog range",
@@ -932,7 +980,7 @@ fn validate_analog_ranges(
             check.max_expected_v <= check.absolute_max_v,
             &check.notes,
         );
-        push_gate(
+        push_gate!(
             rows,
             errors,
             "analog range",
@@ -972,7 +1020,7 @@ fn add_manual_gate_rows(
         .external_safety_parts
         .iter()
         .any(|part| part.id == "inline_thermal_cutoff");
-    push_gate(
+    push_gate!(
         rows,
         errors,
         "manual gate",
@@ -999,33 +1047,21 @@ fn add_manual_gate_rows(
     }
 }
 
-fn push_gate(
-    rows: &mut Vec<GateRow>,
-    errors: &mut Vec<String>,
-    category: impl Into<String>,
-    item: impl Into<String>,
-    measured: impl Into<String>,
-    limit: impl Into<String>,
-    pass: bool,
-    notes: &str,
-) {
-    let category = category.into();
-    let item = item.into();
-    let measured = measured.into();
-    let limit = limit.into();
-    let status = if pass { "pass" } else { "fail" }.to_string();
-    if !pass {
+fn push_gate_row(rows: &mut Vec<GateRow>, errors: &mut Vec<String>, gate: GateSpec) {
+    let status = if gate.pass { "pass" } else { "fail" }.to_string();
+    if !gate.pass {
         errors.push(format!(
-            "{category}: {item} measured {measured}; limit {limit}"
+            "{}: {} measured {}; limit {}",
+            gate.category, gate.item, gate.measured, gate.limit
         ));
     }
     rows.push(GateRow {
-        category,
-        item,
-        measured,
-        limit,
+        category: gate.category,
+        item: gate.item,
+        measured: gate.measured,
+        limit: gate.limit,
         status,
-        notes: notes.to_string(),
+        notes: gate.notes,
     });
 }
 
