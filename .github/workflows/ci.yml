@@ -30,6 +30,12 @@ jobs:
         with:
           shared-key: laminarforge-cad
 
+      - name: Install ngspice
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ngspice
+          ngspice -v
+
       - name: cargo fmt --check
         run: cargo fmt --all -- --check
 
@@ -44,6 +50,9 @@ jobs:
 
       - name: LAMP Rev A electrical validation
         run: cargo run --release --bin lamp_rev_a_electrical_validate
+
+      - name: LAMP Rev A SPICE operating-point check
+        run: cargo run --release --bin lamp_rev_a_spice_check
 
       - name: LAMP Rev A PCBA contract check
         run: cargo run --release --bin lamp_pcba_check
@@ -70,7 +79,7 @@ jobs:
         with:
           shared-key: laminarforge-cad-fab-release
 
-      - name: Install KiCad CLI
+      - name: Install KiCad CLI and ngspice
         shell: bash
         run: |
           kicad_cli="/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
@@ -83,9 +92,19 @@ jobs:
           fi
           echo "$(dirname "$kicad_cli")" >> "$GITHUB_PATH"
           "$kicad_cli" --version
+          if ! command -v ngspice >/dev/null 2>&1; then
+            brew install ngspice
+          fi
+          ngspice -v
 
       - name: Generate LAMP Rev A fab release
         run: cargo run --release --bin lamp_rev_a_fab_release
+
+      - name: Run LAMP Rev A release SPICE check
+        run: |
+          cargo run --release --bin lamp_rev_a_spice_check -- \
+            pcb/lamp_rev_a/fab_release/review/lamp_rev_a_power_path.spice \
+            pcb/lamp_rev_a/fab_release/review/lamp_rev_a_power_path.ngspice.log
 
       - name: Validate LAMP Rev A upload bundles
         shell: bash
@@ -100,6 +119,7 @@ jobs:
           test -s "$release_dir/review/electrical_validation.md"
           test -s "$release_dir/review/electrical_validation_gates.csv"
           test -s "$release_dir/review/lamp_rev_a_power_path.spice"
+          test -s "$release_dir/review/lamp_rev_a_power_path.ngspice.log"
           test -s "$release_dir/review/simulation_handoff.md"
           (cd "$release_dir" && shasum -a 256 -c review/upload_bundle_checksums.sha256)
 

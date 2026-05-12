@@ -1163,6 +1163,12 @@ fn write_spice_handoff(
         .map(|rail| rail.expected_continuous_ma as f64 / 1000.0)
         .unwrap_or(0.3);
     let three_v_three_resistance = 3.3 / three_v_three_load;
+    let five_v_load = rails
+        .get("+5V")
+        .map(|rail| rail.expected_continuous_ma as f64 / 1000.0)
+        .unwrap_or(0.45);
+    let five_v_nominal = rails.get("+5V").map(|rail| rail.nominal_v).unwrap_or(4.6);
+    let five_v_resistance = five_v_nominal / five_v_load;
 
     let mut spice = String::new();
     writeln!(
@@ -1176,6 +1182,8 @@ fn write_spice_handoff(
     )?;
     writeln!(spice, "VUSB VBUS 0 DC 5.0")?;
     writeln!(spice, "DVBUS VBUS P5V SS34")?;
+    writeln!(spice, "R5V P5V 0 {five_v_resistance:.3}")?;
+    writeln!(spice, "V3V3 P3V3 0 DC 3.3")?;
     writeln!(spice, "R3V3 P3V3 0 {three_v_three_resistance:.3}")?;
     writeln!(spice, "V12 P12RAW 0 DC 12.0")?;
     writeln!(spice, "D12 P12RAW P12 SS34")?;
@@ -1231,7 +1239,7 @@ fn write_simulation_handoff(
     )?;
     writeln!(
         report,
-        "- Suggested command: `ngspice lamp_rev_a_power_path.spice`"
+        "- Suggested command: `cargo run --release --bin lamp_rev_a_spice_check`"
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())
