@@ -119,6 +119,7 @@ a procurement-substitution CSV locking safety-critical LCSC order codes and requ
 a schematic source/parity CSV tying the architecture-shell KiCad schematic to contract modules, selected parts, and required nets,
 a connector/polarity CSV for USB-C, manual connectors, diodes, MOSFETs, and orientation-sensitive IC pinouts,
 an assembly-orientation CSV for machine-placed ICs, polarity-sensitive parts, CPL centroids, and pin-1 evidence,
+an assembly-inspection CSV requiring AOI/photo evidence, linked validation gates, and stop/rework actions for critical parts,
 a machine-checked assembly-parity CSV for BOM/CPL/manual/position reference consistency,
 a fabrication-capability CSV for board-house stackup, geometry, drill, via, and routing process limits,
 an I2C/ADS1115 bus validation CSV for pull-up, rise-time, device identity, and stuck-low coverage,

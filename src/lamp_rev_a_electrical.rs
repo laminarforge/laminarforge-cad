@@ -28,6 +28,7 @@ pub struct ElectricalOutputPaths {
     pub schematic_source_parity_csv: PathBuf,
     pub connector_polarity_csv: PathBuf,
     pub assembly_orientation_csv: PathBuf,
+    pub assembly_inspection_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
     pub heater_protection_csv: PathBuf,
     pub external_harness_csv: PathBuf,
@@ -96,6 +97,9 @@ struct ValidationConfig {
     assembly_orientation_policy: AssemblyOrientationPolicy,
     #[serde(default)]
     assembly_orientation_checks: Vec<AssemblyOrientationCheck>,
+    assembly_inspection_policy: AssemblyInspectionPolicy,
+    #[serde(default)]
+    assembly_inspection_checks: Vec<AssemblyInspectionCheck>,
     #[serde(default)]
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
     simulation_input_policy: SimulationInputPolicy,
@@ -187,6 +191,7 @@ struct Outputs {
     schematic_source_parity_csv: String,
     connector_polarity_csv: String,
     assembly_orientation_csv: String,
+    assembly_inspection_csv: String,
     i2c_bus_csv: String,
     heater_protection_csv: String,
     external_harness_csv: String,
@@ -455,6 +460,38 @@ struct AssemblyOrientationCheck {
     assembly_method: String,
     pin1_evidence: Vec<String>,
     verification_method: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct AssemblyInspectionPolicy {
+    min_checks: usize,
+    min_evidence_items: usize,
+    allowed_criticalities: Vec<String>,
+    required_check_ids: Vec<String>,
+    require_reference_placement: bool,
+    require_linked_validation_gate: bool,
+    require_photo_evidence: bool,
+    require_failure_action: bool,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct AssemblyInspectionCheck {
+    id: String,
+    part_id: String,
+    reference: String,
+    inspection_stage: String,
+    criticality: String,
+    expected_marker: String,
+    expected_orientation: String,
+    #[serde(default)]
+    linked_orientation_check: Option<String>,
+    #[serde(default)]
+    linked_polarity_check: Option<String>,
+    evidence: Vec<String>,
+    verification_method: String,
+    failure_action: String,
     notes: String,
 }
 
@@ -1310,6 +1347,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         schematic_source_parity_csv: repo_root.join(config.outputs.schematic_source_parity_csv),
         connector_polarity_csv: repo_root.join(config.outputs.connector_polarity_csv),
         assembly_orientation_csv: repo_root.join(config.outputs.assembly_orientation_csv),
+        assembly_inspection_csv: repo_root.join(config.outputs.assembly_inspection_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
         external_harness_csv: repo_root.join(config.outputs.external_harness_csv),
@@ -1404,6 +1442,7 @@ pub fn validate_to_outputs(
         &mut errors,
     );
     validate_assembly_orientation(&config, &parts, &placement, &mut rows, &mut errors);
+    validate_assembly_inspection(&config, &parts, &placement, &mut rows, &mut errors);
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
@@ -1481,6 +1520,7 @@ pub fn validate_to_outputs(
     write_schematic_source_parity_handoff(&config, &contract, outputs)?;
     write_connector_polarity_handoff(&config, outputs)?;
     write_assembly_orientation_handoff(&config, &placement, outputs)?;
+    write_assembly_inspection_handoff(&config, &parts, &placement, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_heater_protection_handoff(&config, outputs)?;
     write_external_harness_handoff(&config, outputs)?;
@@ -5552,6 +5592,225 @@ fn validate_assembly_orientation(
             &check.notes,
         );
     }
+}
+
+fn validate_assembly_inspection(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.assembly_inspection_policy;
+    let selected_parts = selected_part_ids(parts);
+    let placements = placement
+        .placements
+        .iter()
+        .map(|placement| (placement.reference.as_str(), placement))
+        .collect::<BTreeMap<_, _>>();
+    let orientation_ids = config
+        .assembly_orientation_checks
+        .iter()
+        .map(|check| check.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let polarity_ids = config
+        .connector_polarity_checks
+        .iter()
+        .map(|check| check.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let allowed_criticalities = policy
+        .allowed_criticalities
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let check_ids = config
+        .assembly_inspection_checks
+        .iter()
+        .map(|check| check.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "assembly inspection",
+        "minimum assembly inspection coverage",
+        format!("{} checks", config.assembly_inspection_checks.len()),
+        format!(">= {} checks", policy.min_checks),
+        config.assembly_inspection_checks.len() >= policy.min_checks,
+        &policy.notes,
+    );
+
+    for required_id in &policy.required_check_ids {
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{required_id} required check"),
+            required_id.clone(),
+            "declared assembly_inspection_checks entry",
+            check_ids.contains(required_id.as_str()),
+            &policy.notes,
+        );
+    }
+
+    let mut ids = BTreeSet::new();
+    for check in &config.assembly_inspection_checks {
+        let placed = placements.get(check.reference.as_str());
+        let linked_orientation_ok = check
+            .linked_orientation_check
+            .as_ref()
+            .is_some_and(|id| orientation_ids.contains(id.as_str()));
+        let linked_polarity_ok = check
+            .linked_polarity_check
+            .as_ref()
+            .is_some_and(|id| polarity_ids.contains(id.as_str()));
+        let has_photo_evidence = check
+            .evidence
+            .iter()
+            .any(|item| contains_inspection_photo_evidence(item));
+
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} selected part", check.id),
+            check.part_id.clone(),
+            "selected part id",
+            selected_parts.contains(check.part_id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} placement", check.id),
+            check.reference.clone(),
+            "placement entry with matching part_id",
+            !policy.require_reference_placement
+                || placed
+                    .is_some_and(|placement| placement.part_id.as_str() == check.part_id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} criticality", check.id),
+            check.criticality.clone(),
+            format!("one of {}", policy.allowed_criticalities.join(", ")),
+            allowed_criticalities.contains(check.criticality.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} inspection stage", check.id),
+            check.inspection_stage.clone(),
+            "non-empty",
+            !check.inspection_stage.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} expected marker", check.id),
+            check.expected_marker.clone(),
+            "non-empty",
+            !check.expected_marker.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} expected orientation", check.id),
+            check.expected_orientation.clone(),
+            "non-empty",
+            !check.expected_orientation.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} linked validation gate", check.id),
+            format!(
+                "{}{}",
+                check
+                    .linked_orientation_check
+                    .as_deref()
+                    .unwrap_or("no orientation link"),
+                check
+                    .linked_polarity_check
+                    .as_deref()
+                    .map(|id| format!("; {id}"))
+                    .unwrap_or_default()
+            ),
+            "known assembly_orientation or connector_polarity gate",
+            !policy.require_linked_validation_gate || linked_orientation_ok || linked_polarity_ok,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} evidence count", check.id),
+            format!("{} evidence items", check.evidence.len()),
+            format!(">= {} evidence items", policy.min_evidence_items),
+            check.evidence.len() >= policy.min_evidence_items,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} photo evidence", check.id),
+            check.evidence.join("; "),
+            "photo/AOI/microscope evidence",
+            !policy.require_photo_evidence || has_photo_evidence,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} verification method", check.id),
+            check.verification_method.clone(),
+            "non-empty",
+            !check.verification_method.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly inspection",
+            format!("{} failure action", check.id),
+            check.failure_action.clone(),
+            "non-empty",
+            !policy.require_failure_action || !check.failure_action.trim().is_empty(),
+            &check.notes,
+        );
+    }
+}
+
+fn contains_inspection_photo_evidence(value: &str) -> bool {
+    let lower = value.to_ascii_lowercase();
+    lower.contains("photo")
+        || lower.contains("aoi")
+        || lower.contains("microscope")
+        || lower.contains("image")
 }
 
 fn rotation_delta_deg(actual: f64, expected: f64) -> f64 {
@@ -10654,6 +10913,117 @@ fn write_assembly_orientation_handoff(
     Ok(())
 }
 
+fn write_assembly_inspection_handoff(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.assembly_inspection_csv)?;
+    let selected_parts = selected_part_ids(parts);
+    let placements = placement
+        .placements
+        .iter()
+        .map(|placement| (placement.reference.as_str(), placement))
+        .collect::<BTreeMap<_, _>>();
+    let orientation_ids = config
+        .assembly_orientation_checks
+        .iter()
+        .map(|check| check.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let polarity_ids = config
+        .connector_polarity_checks
+        .iter()
+        .map(|check| check.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let allowed_criticalities = config
+        .assembly_inspection_policy
+        .allowed_criticalities
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+
+    let mut writer = csv::Writer::from_path(&outputs.assembly_inspection_csv)?;
+    writer.write_record([
+        "id",
+        "part_id",
+        "reference",
+        "inspection_stage",
+        "criticality",
+        "expected_marker",
+        "expected_orientation",
+        "linked_orientation_check",
+        "linked_polarity_check",
+        "evidence",
+        "verification_method",
+        "failure_action",
+        "status",
+        "notes",
+    ])?;
+
+    for check in &config.assembly_inspection_checks {
+        let placed = placements.get(check.reference.as_str());
+        let linked_orientation_ok = check
+            .linked_orientation_check
+            .as_ref()
+            .is_some_and(|id| orientation_ids.contains(id.as_str()));
+        let linked_polarity_ok = check
+            .linked_polarity_check
+            .as_ref()
+            .is_some_and(|id| polarity_ids.contains(id.as_str()));
+        let status = if selected_parts.contains(check.part_id.as_str())
+            && placed.is_some_and(|placement| placement.part_id.as_str() == check.part_id.as_str())
+            && allowed_criticalities.contains(check.criticality.as_str())
+            && !check.expected_marker.trim().is_empty()
+            && !check.expected_orientation.trim().is_empty()
+            && (!config
+                .assembly_inspection_policy
+                .require_linked_validation_gate
+                || linked_orientation_ok
+                || linked_polarity_ok)
+            && check.evidence.len() >= config.assembly_inspection_policy.min_evidence_items
+            && (!config.assembly_inspection_policy.require_photo_evidence
+                || check
+                    .evidence
+                    .iter()
+                    .any(|item| contains_inspection_photo_evidence(item)))
+            && !check.verification_method.trim().is_empty()
+            && (!config.assembly_inspection_policy.require_failure_action
+                || !check.failure_action.trim().is_empty())
+        {
+            "pass"
+        } else {
+            "fail"
+        };
+
+        writer.write_record([
+            check.id.clone(),
+            check.part_id.clone(),
+            check.reference.clone(),
+            check.inspection_stage.clone(),
+            check.criticality.clone(),
+            check.expected_marker.clone(),
+            check.expected_orientation.clone(),
+            check
+                .linked_orientation_check
+                .clone()
+                .unwrap_or_else(|| "n/a".to_string()),
+            check
+                .linked_polarity_check
+                .clone()
+                .unwrap_or_else(|| "n/a".to_string()),
+            check.evidence.join(";"),
+            check.verification_method.clone(),
+            check.failure_action.clone(),
+            status.to_string(),
+            check.notes.clone(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_i2c_bus_handoff(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -11564,6 +11934,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("assembly_orientation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Assembly inspection evidence table: `{}`",
+        outputs
+            .assembly_inspection_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("assembly_inspection.csv")
     )?;
     writeln!(
         report,

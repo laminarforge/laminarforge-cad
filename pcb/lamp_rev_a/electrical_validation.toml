@@ -33,6 +33,7 @@ procurement_substitution_csv = "pcb/lamp_rev_a/reports/procurement_substitution.
 schematic_source_parity_csv = "pcb/lamp_rev_a/reports/schematic_source_parity.csv"
 connector_polarity_csv = "pcb/lamp_rev_a/reports/connector_polarity.csv"
 assembly_orientation_csv = "pcb/lamp_rev_a/reports/assembly_orientation.csv"
+assembly_inspection_csv = "pcb/lamp_rev_a/reports/assembly_inspection.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
 external_harness_csv = "pcb/lamp_rev_a/reports/external_harness_safety.csv"
@@ -330,6 +331,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Va
 acceptance_criterion = "Orientation-sensitive machine-assembled parts have locked placement records, expected side/rotation, pin-1 evidence, and inspection method."
 blocks_release = true
 notes = "Catches wrong CPL/centroid/rotation assumptions before JLCPCB assembly."
+
+[[validation_traceability]]
+id = "assembly_inspection"
+validation_layer = "Assembly inspection evidence and failure disposition"
+electrical_gate_category = "assembly inspection"
+output_artifact = "assembly_inspection.csv; electrical_validation_gates.csv"
+release_manifest_entry = "assembly_inspection; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Validate LAMP Rev A upload bundles"
+acceptance_criterion = "Critical polarized or safety-relevant parts have placement-backed inspection evidence, linked validation coverage, and stop/rework actions."
+blocks_release = true
+notes = "Turns polarity/orientation checks into an explicit incoming-assembly and first-article inspection gate."
 
 [[validation_traceability]]
 id = "i2c_ads1115_bus_validation"
@@ -2576,6 +2588,208 @@ assembly_method = "machine"
 pin1_evidence = ["placement.toml U6 rotation", "TLV6001 package pin-1", "analog front-end transient gate"]
 verification_method = "Inspect U6 pin-1 mark and verify dark/light ADC_AIN1 envelope."
 notes = "Wrong op-amp orientation can rail or short the analog front end."
+
+[assembly_inspection_policy]
+min_checks = 12
+min_evidence_items = 3
+allowed_criticalities = ["safety", "power", "programming", "analog", "optical"]
+required_check_ids = [
+  "mcu_module_inspection",
+  "usb_c_connector_inspection",
+  "dc_input_jack_inspection",
+  "heater_terminal_inspection",
+  "vbus_schottky_inspection",
+  "input_schottky_inspection",
+  "heater_tvs_inspection",
+  "heater_mosfet_inspection",
+  "heater_gate_driver_inspection",
+  "ldo_inspection",
+  "ads1115_inspection",
+  "optical_mux_inspection",
+]
+require_reference_placement = true
+require_linked_validation_gate = true
+require_photo_evidence = true
+require_failure_action = true
+notes = "Critical polarized, power, protection, programming, and analog parts require documented assembly inspection evidence before first power."
+
+[[assembly_inspection_checks]]
+id = "mcu_module_inspection"
+part_id = "mcu_module"
+reference = "U1"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "programming"
+expected_marker = "ESP32-S3-WROOM antenna edge and pin-1/castellation orientation match U1 silkscreen and CPL."
+expected_orientation = "Antenna keepout faces the board edge; USB, EN, GPIO0, UART, and heater GPIO pads align with firmware handoff."
+linked_orientation_check = "mcu_module_orientation"
+linked_polarity_check = "mcu_module_pinout"
+evidence = ["AOI image of U1 orientation", "microscope photo of U1 castellated pin-1 edge", "firmware USB enumeration or UART boot identity capture"]
+verification_method = "Review AOI/microscope image, then power from current-limited USB and confirm boot identity before any heater power."
+failure_action = "Stop bring-up; quarantine board for U1 rework or scrap before applying USB or 12 V again."
+notes = "The module can be visually plausible while mapping every critical GPIO wrong if rotated."
+
+[[assembly_inspection_checks]]
+id = "usb_c_connector_inspection"
+part_id = "usb_c_connector"
+reference = "J1"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "programming"
+expected_marker = "USB-C shell mouth faces the board edge and connector body is fully seated."
+expected_orientation = "J1 orientation matches USB-C A/B pin map, CC pull-downs, VBUS, USB_DP, and USB_DN."
+linked_orientation_check = "usb_c_receptacle_orientation"
+linked_polarity_check = "usb_c_receptacle_pinout"
+evidence = ["AOI photo of J1 mouth orientation", "microscope image of J1 solder joints", "USB cable-flip enumeration result"]
+verification_method = "Inspect shell/pad orientation, then test VBUS and USB enumeration with both cable orientations."
+failure_action = "Stop USB bring-up; rework J1 or reject board if shell/pin map orientation is ambiguous."
+notes = "USB is the only normal firmware recovery path while Alex is traveling."
+
+[[assembly_inspection_checks]]
+id = "dc_input_jack_inspection"
+part_id = "dc_input_jack"
+reference = "J2"
+inspection_stage = "manual install inspection"
+criticality = "safety"
+expected_marker = "Barrel jack center-positive footprint orientation and through-hole pin seating."
+expected_orientation = "Center pin maps to +12V_RAW and sleeve maps to GND."
+linked_polarity_check = "dc_input_jack_pinout"
+evidence = ["microscope photo of J2 pin seating", "DMM continuity photo/log from center pin to TP_12V", "DMM continuity photo/log from sleeve to TP_GND"]
+verification_method = "Verify J2 physical orientation and continuity before connecting any 12 V source."
+failure_action = "Do not apply 12 V; remove and reinstall J2 or reject the board."
+notes = "A reversed or misinstalled jack can put external heater power onto the wrong domain."
+
+[[assembly_inspection_checks]]
+id = "heater_terminal_inspection"
+part_id = "heater_output_terminal"
+reference = "J3"
+inspection_stage = "manual install inspection"
+criticality = "safety"
+expected_marker = "Two-pin heater terminal labels and wire-entry orientation are readable from the board edge."
+expected_orientation = "J3 pin 1 maps to HEATER_SUPPLY and pin 2 maps to HEATER_P."
+linked_polarity_check = "heater_terminal_pinout"
+evidence = ["photo of J3 installed orientation", "DMM continuity log from J3 pin 1 to TP_HEATER_SUPPLY", "DMM continuity log from J3 pin 2 to TP_HEATER"]
+verification_method = "Inspect terminal orientation and verify both heater pins before connecting external heater wiring."
+failure_action = "Do not attach heater; rework J3 or reject board if pin order is unclear."
+notes = "This is the highest-energy off-board connector in the Rev A electronics."
+
+[[assembly_inspection_checks]]
+id = "vbus_schottky_inspection"
+part_id = "vbus_to_5v_schottky"
+reference = "D1"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "power"
+expected_marker = "D1 cathode band is visible and points from VBUS toward +5V."
+expected_orientation = "USB VBUS feeds +5V through the Schottky path without reverse backfeed."
+linked_orientation_check = "vbus_schottky_orientation"
+linked_polarity_check = "vbus_schottky_polarity"
+evidence = ["AOI image of D1 cathode band", "microscope photo of D1 polarity mark", "+5V rise measurement from current-limited USB"]
+verification_method = "Inspect D1 band and confirm +5V appears from VBUS before checking +3V3."
+failure_action = "Stop USB power tests; rework D1 if +5V polarity or diode drop is wrong."
+notes = "D1 blocks incorrect USB power behavior and feeds all electronics downstream."
+
+[[assembly_inspection_checks]]
+id = "input_schottky_inspection"
+part_id = "input_schottky"
+reference = "D13"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "safety"
+expected_marker = "D13 cathode band is visible and points from +12V_RAW toward protected +12V."
+expected_orientation = "External +12 V input passes through D13 before the protected heater rail."
+linked_orientation_check = "input_schottky_orientation"
+linked_polarity_check = "input_schottky_polarity"
+evidence = ["AOI image of D13 cathode band", "microscope photo of D13 solder joints", "+12V protected-rail diode-drop measurement"]
+verification_method = "Inspect D13 band and verify protected +12V only rises with correct input polarity."
+failure_action = "Do not connect heater load; rework D13 or reject board."
+notes = "D13 is part of the high-energy input protection chain."
+
+[[assembly_inspection_checks]]
+id = "heater_tvs_inspection"
+part_id = "heater_tvs"
+reference = "D10"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "safety"
+expected_marker = "D10 TVS polarity mark matches HEATER_SUPPLY clamp direction."
+expected_orientation = "TVS is not shorting HEATER_SUPPLY to GND at normal 12 V input."
+linked_orientation_check = "heater_tvs_orientation"
+linked_polarity_check = "heater_tvs_polarity"
+evidence = ["AOI image of D10 polarity mark", "microscope photo of D10 installation", "power-off resistance log from HEATER_SUPPLY to TP_GND"]
+verification_method = "Inspect TVS orientation and measure heater supply resistance before applying 12 V."
+failure_action = "Do not power heater rail; rework D10 or reject board if polarity is not certain."
+notes = "A wrong TVS can either short the heater rail or leave cable transients unclamped."
+
+[[assembly_inspection_checks]]
+id = "heater_mosfet_inspection"
+part_id = "heater_mosfet"
+reference = "Q1"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "safety"
+expected_marker = "Q1 SOT-23 pin-1/gate orientation matches GATE_DRV and HEATER_P."
+expected_orientation = "Gate maps to GATE_DRV, source/drain align with low-side heater return."
+linked_orientation_check = "heater_mosfet_orientation"
+linked_polarity_check = "heater_mosfet_pinout"
+evidence = ["AOI image of Q1 orientation", "microscope photo of Q1 pin-1 side", "heater-off current log before PWM command"]
+verification_method = "Inspect Q1 and verify HEATER_P remains off before any heater-enabled firmware command."
+failure_action = "Do not attach heater; rework Q1 or reject board."
+notes = "Wrong MOSFET orientation can create a stuck-on heater fault."
+
+[[assembly_inspection_checks]]
+id = "heater_gate_driver_inspection"
+part_id = "heater_gate_driver"
+reference = "U7"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "safety"
+expected_marker = "U7 SOIC pin-1 dot/notch matches TC4427 pin map."
+expected_orientation = "HEATER_PWM input and GATE_DRV output pins match the routed gate-drive path."
+linked_orientation_check = "heater_gate_driver_orientation"
+linked_polarity_check = "heater_gate_driver_pinout"
+evidence = ["AOI image of U7 pin-1 mark", "microscope photo of U7 orientation", "GATE_DRV follows HEATER_PWM low-duty bench log"]
+verification_method = "Inspect U7 pin-1 and verify gate drive with no heater load before enabling heater current."
+failure_action = "Disable heater tests; rework U7 or reject board."
+notes = "Gate-driver orientation errors can apply rail voltage to the wrong IC pins."
+
+[[assembly_inspection_checks]]
+id = "ldo_inspection"
+part_id = "three_v_three_regulator"
+reference = "U3"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "power"
+expected_marker = "U3 SOT-223 tab/output orientation matches +3V3."
+expected_orientation = "AMS1117 input, output/tab, and ground pins align with +5V/+3V3/GND nets."
+linked_orientation_check = "ldo_orientation"
+linked_polarity_check = "ldo_pinout"
+evidence = ["AOI image of U3 tab orientation", "microscope photo of U3 solder joints", "+3V3 first-power measurement log"]
+verification_method = "Inspect regulator orientation and measure +3V3 before flashing the ESP32."
+failure_action = "Stop USB power tests; rework U3 if +3V3 is outside tolerance."
+notes = "Wrong LDO orientation can overvoltage or brown out the ESP32 module."
+
+[[assembly_inspection_checks]]
+id = "ads1115_inspection"
+part_id = "adc"
+reference = "U4"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "analog"
+expected_marker = "U4 MSOP pin-1 dot maps to ADS1115 SDA/SCL/address pins."
+expected_orientation = "ADS1115 +3V3, GND, SDA, SCL, and ADC_AIN1 pins match schematic and firmware address."
+linked_orientation_check = "ads1115_orientation"
+linked_polarity_check = "ads1115_pinout"
+evidence = ["AOI image of U4 pin-1 mark", "microscope photo of U4 orientation", "I2C scan log showing ADS1115 at expected address"]
+verification_method = "Inspect U4 pin-1 and run the I2C/ADS1115 validation before optical calibration."
+failure_action = "Do not run assay firmware; rework U4 or reject board."
+notes = "A rotated ADC makes optical and temperature data unreliable or unavailable."
+
+[[assembly_inspection_checks]]
+id = "optical_mux_inspection"
+part_id = "optical_mux"
+reference = "U5"
+inspection_stage = "post-assembly incoming inspection"
+criticality = "optical"
+expected_marker = "U5 SOIC pin-1 mark maps to MUX_COM and MUX_S0/S1/S2."
+expected_orientation = "CD74HC4051 channel pins align with the eight photodiode channels."
+linked_orientation_check = "optical_mux_orientation"
+linked_polarity_check = "optical_mux_pinout"
+evidence = ["AOI image of U5 pin-1 mark", "microscope photo of U5 orientation", "eight-slot optical channel response log"]
+verification_method = "Inspect U5 and verify channel selection during optical slot calibration."
+failure_action = "Do not use optical assay data; rework U5 or reject board."
+notes = "A rotated mux can permute channels or short the optical front end."
 
 [[procurement_critical_parts]]
 id = "mcu_module"

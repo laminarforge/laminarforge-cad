@@ -90,6 +90,7 @@ struct Outputs {
     schematic_source_parity_file: String,
     connector_polarity_file: String,
     assembly_orientation_file: String,
+    assembly_inspection_file: String,
     assembly_parity_file: String,
     fabrication_capability_file: String,
     i2c_bus_file: String,
@@ -541,6 +542,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         schematic_source_parity_csv: output_root.join(&config.outputs.schematic_source_parity_file),
         connector_polarity_csv: output_root.join(&config.outputs.connector_polarity_file),
         assembly_orientation_csv: output_root.join(&config.outputs.assembly_orientation_file),
+        assembly_inspection_csv: output_root.join(&config.outputs.assembly_inspection_file),
         i2c_bus_csv: output_root.join(&config.outputs.i2c_bus_file),
         heater_protection_csv: output_root.join(&config.outputs.heater_protection_file),
         external_harness_csv: output_root.join(&config.outputs.external_harness_file),
@@ -2442,6 +2444,11 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "assembly_inspection: {}",
+        config.outputs.assembly_inspection_file
+    )?;
+    writeln!(
+        file,
         "assembly_parity: {}",
         config.outputs.assembly_parity_file
     )?;
@@ -2943,6 +2950,7 @@ fn write_release_bundles(
         config.outputs.schematic_source_parity_file.as_str(),
         config.outputs.connector_polarity_file.as_str(),
         config.outputs.assembly_orientation_file.as_str(),
+        config.outputs.assembly_inspection_file.as_str(),
         config.outputs.assembly_parity_file.as_str(),
         config.outputs.fabrication_capability_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
@@ -3183,6 +3191,7 @@ fn validate_release_outputs(
         &config.outputs.schematic_source_parity_file,
         &config.outputs.connector_polarity_file,
         &config.outputs.assembly_orientation_file,
+        &config.outputs.assembly_inspection_file,
         &config.outputs.assembly_parity_file,
         &config.outputs.fabrication_capability_file,
         &config.outputs.i2c_bus_file,
@@ -3315,6 +3324,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.schematic_source_parity_file.as_str(),
         config.outputs.connector_polarity_file.as_str(),
         config.outputs.assembly_orientation_file.as_str(),
+        config.outputs.assembly_inspection_file.as_str(),
         config.outputs.assembly_parity_file.as_str(),
         config.outputs.fabrication_capability_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
