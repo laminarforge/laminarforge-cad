@@ -79,6 +79,7 @@ struct Outputs {
     thermal_power_file: String,
     first_article_measurements_file: String,
     component_derating_file: String,
+    fault_fmea_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
@@ -435,6 +436,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         first_article_measurements_csv: output_root
             .join(&config.outputs.first_article_measurements_file),
         component_derating_csv: output_root.join(&config.outputs.component_derating_file),
+        fault_fmea_csv: output_root.join(&config.outputs.fault_fmea_file),
     };
     validate_to_outputs(&root, &electrical_outputs)?;
     write_release_bundles(&config, &root, &output_root)?;
@@ -1269,6 +1271,7 @@ fn write_manifest(
         "component_derating: {}",
         config.outputs.component_derating_file
     )?;
+    writeln!(file, "fault_fmea: {}", config.outputs.fault_fmea_file)?;
     writeln!(
         file,
         "bundle_checksums: {}",
@@ -1717,6 +1720,7 @@ fn write_release_bundles(
         config.outputs.thermal_power_file.as_str(),
         config.outputs.first_article_measurements_file.as_str(),
         config.outputs.component_derating_file.as_str(),
+        config.outputs.fault_fmea_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
@@ -1916,6 +1920,7 @@ fn validate_release_outputs(
         &config.outputs.thermal_power_file,
         &config.outputs.first_article_measurements_file,
         &config.outputs.component_derating_file,
+        &config.outputs.fault_fmea_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
@@ -2010,6 +2015,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.thermal_power_file.as_str(),
         config.outputs.first_article_measurements_file.as_str(),
         config.outputs.component_derating_file.as_str(),
+        config.outputs.fault_fmea_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),

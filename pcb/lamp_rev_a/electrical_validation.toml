@@ -23,6 +23,7 @@ pdn_current_paths_csv = "pcb/lamp_rev_a/reports/pdn_current_paths.csv"
 thermal_power_csv = "pcb/lamp_rev_a/reports/thermal_power_budget.csv"
 first_article_measurements_csv = "pcb/lamp_rev_a/reports/first_article_measurements.csv"
 component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
+fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 
 [assumptions]
 ambient_c = 35.0
@@ -319,6 +320,140 @@ rated_voltage_v = 150.0
 operating_power_w = 0.0109
 rated_power_w = 0.125
 notes = "Worst case assumes a 1k 0805 status LED resistor from +3V3 to ground."
+
+[single_fault_policy]
+max_rpn = 120
+require_detection_for_severity_at_least = 7
+require_hardware_mitigation_for_severity_at_least = 7
+require_first_article_for_severity_at_least = 7
+
+[[single_fault_checks]]
+id = "heater_mosfet_stuck_on"
+subsystem = "heater_drive"
+failure_mode = "Low-side heater MOSFET shorted on or gate driver stuck active."
+cause = "MOSFET damage, solder bridge, gate-driver fault, or firmware PWM stuck high."
+local_effect = "HEATER_P is pulled low and the external heater can energize unexpectedly."
+system_effect = "Uncontrolled heater power until supply limit, PTC behavior, or external thermal cutoff interrupts the path."
+severity = 10
+occurrence = 3
+detection = 3
+hardware_mitigations = ["heater_resettable_fuse", "inline_thermal_cutoff", "heater_supply_path", "heater_return_path", "heater_tvs"]
+firmware_mitigations = ["HEATER_PWM defaults inactive", "firmware heater_enabled interlock", "dashboard exposes heater safety state"]
+detection_methods = ["TP_HEATER PWM-off measurement", "TP_PWM idle measurement", "external heater thermal-cutoff verification"]
+verification_measurements = ["heater_return_pwm_off", "heater_pwm_idle", "heater_supply_voltage_pwm_off"]
+notes = "This is the highest-energy single fault on Rev A and must stay visible in the release package."
+
+[[single_fault_checks]]
+id = "heater_terminal_short"
+subsystem = "heater_drive"
+failure_mode = "External heater connector or cable short."
+cause = "Miswired heater, damaged cable, loose terminal strand, or enclosure pinch."
+local_effect = "HEATER_SUPPLY current rises above normal operating load."
+system_effect = "PTC, bench current limit, and external thermal cutoff must prevent connector/copper overheating."
+severity = 9
+occurrence = 3
+detection = 4
+hardware_mitigations = ["heater_resettable_fuse", "heater_output_terminal", "inline_thermal_cutoff", "twelve_v_fused_path"]
+firmware_mitigations = ["current-limited first-article bring-up", "heater command validation", "heater safety status reported before enabling"]
+detection_methods = ["Bench supply current limit", "PTC/terminal temperature measurement", "TP_HEATER_SUPPLY voltage check"]
+verification_measurements = ["heater_supply_voltage_pwm_off", "heater_raw_12v_voltage"]
+notes = "The board cannot fully control external cable faults; the release must force protected bring-up and external cutoff installation."
+
+[[single_fault_checks]]
+id = "usb_to_heater_domain_short"
+subsystem = "power"
+failure_mode = "USB/electronics rail accidentally bridged to the 12 V heater domain."
+cause = "Assembly bridge, damaged board, or wrong external connection."
+local_effect = "VBUS/+5V/+3V3 domain can see excessive voltage or current."
+system_effect = "ESP32-S3, USB host, ADC, and logic could be destroyed."
+severity = 10
+occurrence = 2
+detection = 4
+hardware_mitigations = ["usb_vbus_schottky", "heater_input_schottky", "vbus_electronics_path", "twelve_v_input_path", "gpio_domain"]
+firmware_mitigations = ["USB-only bring-up before 12 V is attached", "firmware does not require heater power for boot"]
+detection_methods = ["Power-off resistance checks", "USB current-limited bring-up", "12 V attached only after electronics rail checks pass"]
+verification_measurements = ["power_off_vbus_resistance", "power_off_3v3_resistance", "usb_vbus_voltage", "usb_5v_voltage", "usb_3v3_voltage"]
+notes = "This catches the high-consequence mixed-domain fault that ERC/DRC cannot reason about semantically."
+
+[[single_fault_checks]]
+id = "ldo_overtemperature"
+subsystem = "power"
+failure_mode = "3.3 V LDO overheats or current-limits under ESP32/Wi-Fi load."
+cause = "Unexpected sustained Wi-Fi current, excessive peripheral draw, or poor copper thermal spreading."
+local_effect = "+3V3 droops or regulator temperature rises quickly."
+system_effect = "Firmware resets, USB disconnects, or analog readings become invalid."
+severity = 7
+occurrence = 3
+detection = 4
+hardware_mitigations = ["three_v_three_regulator", "u3_ldo_derating", "three_v_three_distribution", "electrothermal"]
+firmware_mitigations = ["avoid sustained high-duty Wi-Fi during first article", "status API exposes firmware identity for tested build"]
+detection_methods = ["TP_3V3 voltage check", "regulator case temperature measurement", "electrothermal handoff"]
+verification_measurements = ["usb_3v3_voltage"]
+notes = "The LDO is intentionally simple for Rev A, so its heat budget must remain a tracked validation fault."
+
+[[single_fault_checks]]
+id = "gpio_high_voltage_exposure"
+subsystem = "mcu_usb"
+failure_mode = "ESP32-S3 GPIO connected to a high-voltage rail or heater net."
+cause = "Pin map mistake, schematic/materializer error, or route-source regression."
+local_effect = "GPIO absolute maximum rating is exceeded."
+system_effect = "MCU damage, USB disconnect, or unsafe heater-control behavior."
+severity = 9
+occurrence = 2
+detection = 3
+hardware_mitigations = ["gpio_domain", "heater_gate_driver", "heater_mosfet"]
+firmware_mitigations = ["firmware handoff pin-map validation", "Rev A firmware constants generated from handoff"]
+detection_methods = ["Machine gpio-domain validation", "firmware CAD handoff tests", "TP_PWM idle check"]
+verification_measurements = ["heater_pwm_idle"]
+notes = "This ties the CAD pin-net assignment to firmware-facing GPIO assumptions."
+
+[[single_fault_checks]]
+id = "adc_mux_overvoltage"
+subsystem = "optical_detection"
+failure_mode = "ADC/mux/TIA analog path exceeds the 3.3 V domain."
+cause = "Wrong part, wrong resistor network, solder bridge, or photodiode/TIA saturation outside expected range."
+local_effect = "ADS1115 or analog mux input exceeds allowed common-mode/input range."
+system_effect = "Invalid optical readings or damaged analog front end."
+severity = 8
+occurrence = 2
+detection = 4
+hardware_mitigations = ["ads1115_input_range", "tia_output_range", "adc_supply_derating", "analog_mux_supply_derating", "tia_opamp_supply_derating"]
+firmware_mitigations = ["firmware rejects out-of-range ADC readings before assay interpretation"]
+detection_methods = ["TP_ADC first-article check", "one-channel optical calibration", "ADC firmware sanity check"]
+verification_measurements = ["analog_adc_idle"]
+notes = "The LAMP result path depends on this analog domain staying bounded and measurable."
+
+[[single_fault_checks]]
+id = "usb_dp_dn_fault"
+subsystem = "mcu_usb"
+failure_mode = "USB D+/D- short, excessive skew, missing ESD path, or bad connector assembly."
+cause = "Assembly defect, connector damage, or routing-source regression."
+local_effect = "USB enumeration fails or stress reaches ESP32-S3 native USB pins."
+system_effect = "Board cannot be flashed or debugged over USB."
+severity = 6
+occurrence = 4
+detection = 4
+hardware_mitigations = ["usb_esd_protection", "usb_signal_integrity"]
+firmware_mitigations = ["firmware artifact package includes flash runbook and build identity"]
+detection_methods = ["USB enumeration during bring-up", "CI USB route sanity gate", "visual connector inspection"]
+verification_measurements = ["usb_vbus_voltage"]
+notes = "Full-speed USB is less safety-critical than the heater path, but it is critical to board recovery and flashing."
+
+[[single_fault_checks]]
+id = "i2c_bus_stuck_low"
+subsystem = "optical_detection"
+failure_mode = "I2C SDA/SCL stuck low or pulled to the wrong rail."
+cause = "Solder bridge, failed ADS1115, failed pull-up, or firmware pin mode error."
+local_effect = "ADS1115 is unreachable and optical/temperature readings are unavailable."
+system_effect = "Firmware must not treat missing sensor data as a valid LAMP result."
+severity = 5
+occurrence = 4
+detection = 3
+hardware_mitigations = ["i2c_pullup_power_derating", "gpio_domain"]
+firmware_mitigations = ["I2C probe timeout", "dashboard/status exposes sensor fault before test start"]
+detection_methods = ["TP_SDA and TP_SCL idle-high checks", "firmware I2C scan"]
+verification_measurements = ["i2c_sda_idle", "i2c_scl_idle"]
+notes = "This is mostly a functional safety fault: the board should fail closed instead of reporting a false assay result."
 
 [[trace_current_paths]]
 id = "vbus_electronics_path"

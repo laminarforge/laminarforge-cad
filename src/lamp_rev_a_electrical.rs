@@ -19,6 +19,7 @@ pub struct ElectricalOutputPaths {
     pub thermal_power_csv: PathBuf,
     pub first_article_measurements_csv: PathBuf,
     pub component_derating_csv: PathBuf,
+    pub fault_fmea_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -52,6 +53,9 @@ struct ValidationConfig {
     first_article_measurements: Vec<FirstArticleMeasurement>,
     #[serde(default)]
     component_deratings: Vec<ComponentDerating>,
+    single_fault_policy: SingleFaultPolicy,
+    #[serde(default)]
+    single_fault_checks: Vec<SingleFaultCheck>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -84,6 +88,7 @@ struct Outputs {
     thermal_power_csv: String,
     first_article_measurements_csv: String,
     component_derating_csv: String,
+    fault_fmea_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -269,6 +274,32 @@ struct ComponentDerating {
     estimated_temp_rise_c: Option<f64>,
     #[serde(default)]
     max_temp_rise_c: Option<f64>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SingleFaultPolicy {
+    max_rpn: u32,
+    require_detection_for_severity_at_least: u8,
+    require_hardware_mitigation_for_severity_at_least: u8,
+    require_first_article_for_severity_at_least: u8,
+}
+
+#[derive(Debug, Deserialize)]
+struct SingleFaultCheck {
+    id: String,
+    subsystem: String,
+    failure_mode: String,
+    cause: String,
+    local_effect: String,
+    system_effect: String,
+    severity: u8,
+    occurrence: u8,
+    detection: u8,
+    hardware_mitigations: Vec<String>,
+    firmware_mitigations: Vec<String>,
+    detection_methods: Vec<String>,
+    verification_measurements: Vec<String>,
     notes: String,
 }
 
@@ -465,6 +496,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         first_article_measurements_csv: repo_root
             .join(config.outputs.first_article_measurements_csv),
         component_derating_csv: repo_root.join(config.outputs.component_derating_csv),
+        fault_fmea_csv: repo_root.join(config.outputs.fault_fmea_csv),
     })
 }
 
@@ -512,6 +544,7 @@ pub fn validate_to_outputs(
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
     validate_component_deratings(&config, &selected_part_ids, &mut rows, &mut errors);
+    validate_single_faults(&config, &parts, &mut rows, &mut errors);
     add_external_analysis_rows(&config, &mut rows);
     add_manual_gate_rows(&config, &parts, &mut rows, &mut errors);
 
@@ -522,6 +555,7 @@ pub fn validate_to_outputs(
     write_thermal_power_handoff(&config, outputs)?;
     write_first_article_measurements_handoff(&config, &placement, outputs)?;
     write_component_derating_handoff(&config, outputs)?;
+    write_fault_fmea_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -564,6 +598,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.external_analysis_handoffs.is_empty()
         || config.first_article_measurements.is_empty()
         || config.component_deratings.is_empty()
+        || config.single_fault_checks.is_empty()
     {
         return Err("electrical validation config is missing required gate groups".into());
     }
@@ -1667,6 +1702,212 @@ fn validate_derating_pair(rows: &mut Vec<GateRow>, errors: &mut Vec<String>, pai
     }
 }
 
+fn validate_single_faults(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let evidence_ids = fault_evidence_ids(config, parts);
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let mut ids = BTreeSet::new();
+
+    for check in &config.single_fault_checks {
+        let rpn = fault_rpn(check);
+        push_gate!(
+            rows,
+            errors,
+            "single fault",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "single fault",
+            format!("{} score range", check.id),
+            format!(
+                "S{} O{} D{}",
+                check.severity, check.occurrence, check.detection
+            ),
+            "each 1..10",
+            valid_fmea_score(check.severity)
+                && valid_fmea_score(check.occurrence)
+                && valid_fmea_score(check.detection),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "single fault",
+            format!("{} RPN", check.id),
+            format!("{rpn}"),
+            format!("<= {}", config.single_fault_policy.max_rpn),
+            rpn <= config.single_fault_policy.max_rpn,
+            &check.notes,
+        );
+
+        let needs_hardware = check.severity
+            >= config
+                .single_fault_policy
+                .require_hardware_mitigation_for_severity_at_least;
+        push_gate!(
+            rows,
+            errors,
+            "single fault",
+            format!("{} hardware mitigation", check.id),
+            mitigation_list(&check.hardware_mitigations),
+            if needs_hardware {
+                "required and evidence-backed"
+            } else {
+                "optional"
+            },
+            !needs_hardware || !check.hardware_mitigations.is_empty(),
+            &check.notes,
+        );
+        for mitigation in &check.hardware_mitigations {
+            push_gate!(
+                rows,
+                errors,
+                "single fault",
+                format!("{} hardware evidence {}", check.id, mitigation),
+                mitigation.clone(),
+                "known validation/part/path id",
+                evidence_ids.contains(mitigation.as_str()),
+                &check.notes,
+            );
+        }
+
+        let needs_detection = check.severity
+            >= config
+                .single_fault_policy
+                .require_detection_for_severity_at_least;
+        push_gate!(
+            rows,
+            errors,
+            "single fault",
+            format!("{} detection method", check.id),
+            mitigation_list(&check.detection_methods),
+            if needs_detection {
+                "required"
+            } else {
+                "optional"
+            },
+            !needs_detection || !check.detection_methods.is_empty(),
+            &check.notes,
+        );
+
+        let needs_first_article = check.severity
+            >= config
+                .single_fault_policy
+                .require_first_article_for_severity_at_least;
+        push_gate!(
+            rows,
+            errors,
+            "single fault",
+            format!("{} first-article coverage", check.id),
+            mitigation_list(&check.verification_measurements),
+            if needs_first_article {
+                "required and in first_article_measurements"
+            } else {
+                "optional"
+            },
+            !needs_first_article || !check.verification_measurements.is_empty(),
+            &check.notes,
+        );
+        for measurement in &check.verification_measurements {
+            push_gate!(
+                rows,
+                errors,
+                "single fault",
+                format!("{} verifies {}", check.id, measurement),
+                measurement.clone(),
+                "known first-article measurement id",
+                measurement_ids.contains(measurement.as_str()),
+                &check.notes,
+            );
+        }
+
+        push_gate!(
+            rows,
+            errors,
+            "single fault",
+            format!("{} firmware mitigation", check.id),
+            mitigation_list(&check.firmware_mitigations),
+            "non-empty for traceable firmware behavior",
+            !check.firmware_mitigations.is_empty(),
+            &check.notes,
+        );
+    }
+}
+
+fn valid_fmea_score(value: u8) -> bool {
+    (1..=10).contains(&value)
+}
+
+fn fault_rpn(check: &SingleFaultCheck) -> u32 {
+    u32::from(check.severity) * u32::from(check.occurrence) * u32::from(check.detection)
+}
+
+fn mitigation_list(values: &[String]) -> String {
+    if values.is_empty() {
+        "none".to_string()
+    } else {
+        values.join(";")
+    }
+}
+
+fn fault_evidence_ids<'a>(
+    config: &'a ValidationConfig,
+    parts: &'a PartsManifest,
+) -> BTreeSet<&'a str> {
+    let mut ids = BTreeSet::new();
+    ids.extend(parts.selected_parts.iter().map(|part| part.id.as_str()));
+    ids.extend(
+        parts
+            .external_safety_parts
+            .iter()
+            .map(|part| part.id.as_str()),
+    );
+    ids.extend(config.rail_budgets.iter().map(|rail| rail.rail.as_str()));
+    ids.extend(
+        config
+            .trace_current_paths
+            .iter()
+            .map(|path| path.id.as_str()),
+    );
+    ids.extend(
+        config
+            .protection_checks
+            .iter()
+            .map(|check| check.id.as_str()),
+    );
+    ids.extend(config.mosfet_checks.iter().map(|check| check.id.as_str()));
+    ids.extend(config.analog_checks.iter().map(|check| check.id.as_str()));
+    ids.extend(
+        config
+            .component_deratings
+            .iter()
+            .map(|derating| derating.id.as_str()),
+    );
+    ids.extend(
+        config
+            .external_analysis_handoffs
+            .iter()
+            .map(|handoff| handoff.id.as_str()),
+    );
+    ids.insert("gpio_domain");
+    ids.insert("usb_signal_integrity");
+    ids
+}
+
 fn add_external_analysis_rows(config: &ValidationConfig, rows: &mut Vec<GateRow>) {
     for handoff in &config.external_analysis_handoffs {
         rows.push(GateRow {
@@ -2081,6 +2322,54 @@ fn write_component_derating_handoff(
     Ok(())
 }
 
+fn write_fault_fmea_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.fault_fmea_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.fault_fmea_csv)?;
+    writer.write_record([
+        "id",
+        "subsystem",
+        "failure_mode",
+        "cause",
+        "local_effect",
+        "system_effect",
+        "severity",
+        "occurrence",
+        "detection",
+        "rpn",
+        "hardware_mitigations",
+        "firmware_mitigations",
+        "detection_methods",
+        "verification_measurements",
+        "notes",
+    ])?;
+
+    for check in &config.single_fault_checks {
+        writer.write_record([
+            check.id.as_str(),
+            check.subsystem.as_str(),
+            check.failure_mode.as_str(),
+            check.cause.as_str(),
+            check.local_effect.as_str(),
+            check.system_effect.as_str(),
+            format!("{}", check.severity).as_str(),
+            format!("{}", check.occurrence).as_str(),
+            format!("{}", check.detection).as_str(),
+            format!("{}", fault_rpn(check)).as_str(),
+            mitigation_list(&check.hardware_mitigations).as_str(),
+            mitigation_list(&check.firmware_mitigations).as_str(),
+            mitigation_list(&check.detection_methods).as_str(),
+            mitigation_list(&check.verification_measurements).as_str(),
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
@@ -2268,6 +2557,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("component_derating.csv")
+    )?;
+    writeln!(
+        report,
+        "- Single-fault FMEA table: `{}`",
+        outputs
+            .fault_fmea_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("fault_fmea.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())
