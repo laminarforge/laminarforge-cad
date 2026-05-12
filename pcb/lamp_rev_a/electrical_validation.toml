@@ -19,6 +19,7 @@ report_md = "pcb/lamp_rev_a/reports/electrical_validation.md"
 gates_csv = "pcb/lamp_rev_a/reports/electrical_validation_gates.csv"
 spice_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_power_path.spice"
 simulation_handoff_md = "pcb/lamp_rev_a/reports/simulation_handoff.md"
+simulation_inputs_csv = "pcb/lamp_rev_a/reports/simulation_inputs.csv"
 pdn_current_paths_csv = "pcb/lamp_rev_a/reports/pdn_current_paths.csv"
 thermal_power_csv = "pcb/lamp_rev_a/reports/thermal_power_budget.csv"
 first_article_measurements_csv = "pcb/lamp_rev_a/reports/first_article_measurements.csv"
@@ -31,7 +32,7 @@ calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
 validation_traceability_csv = "pcb/lamp_rev_a/reports/validation_traceability.csv"
 
 [traceability_policy]
-min_items = 12
+min_items = 13
 require_output_artifact = true
 require_release_manifest_entry = true
 require_ci_step = true
@@ -168,6 +169,17 @@ blocks_release = true
 notes = "This is the first actual simulation gate and will be replaced or complemented by richer PDN/thermal simulation."
 
 [[validation_traceability]]
+id = "simulation_input_package"
+validation_layer = "Simulation input package completeness"
+electrical_gate_category = "simulation inputs"
+output_artifact = "simulation_inputs.csv; simulation_handoff.md"
+release_manifest_entry = "simulation_inputs; simulation_handoff"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "Required PDN, electrothermal, USB/SI, and EMC handoffs declare tools, inputs, and exit criteria."
+blocks_release = true
+notes = "This is the bridge from checklist gates to actual solver work."
+
+[[validation_traceability]]
 id = "firmware_flash_artifact"
 validation_layer = "Firmware handoff and flashable artifact traceability"
 output_artifact = "firmware_handoff.md; source snapshot bundle"
@@ -176,6 +188,18 @@ ci_step = "LAMP Rev A firmware CI; Generate LAMP Rev A fab release"
 acceptance_criterion = "Board pin map, firmware handoff, source snapshot, and firmware CI artifact identity are traceable."
 blocks_release = true
 notes = "This keeps the CAD release tied to the firmware image and pin map used during bring-up."
+
+[simulation_input_policy]
+min_handoffs = 4
+required_handoff_ids = [
+  "pdn_power_integrity",
+  "electrothermal",
+  "usb_signal_integrity",
+  "emc_esd_precompliance",
+]
+require_recommended_tools = true
+require_inputs = true
+require_exit_criterion = true
 
 [assumptions]
 ambient_c = 35.0

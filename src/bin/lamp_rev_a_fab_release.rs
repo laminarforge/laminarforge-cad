@@ -75,6 +75,7 @@ struct Outputs {
     electrical_validation_gates_file: String,
     spice_netlist_file: String,
     simulation_handoff_file: String,
+    simulation_inputs_file: String,
     pdn_current_paths_file: String,
     thermal_power_file: String,
     first_article_measurements_file: String,
@@ -436,6 +437,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         gates_csv: output_root.join(&config.outputs.electrical_validation_gates_file),
         spice_netlist: output_root.join(&config.outputs.spice_netlist_file),
         simulation_handoff_md: output_root.join(&config.outputs.simulation_handoff_file),
+        simulation_inputs_csv: output_root.join(&config.outputs.simulation_inputs_file),
         pdn_current_paths_csv: output_root.join(&config.outputs.pdn_current_paths_file),
         thermal_power_csv: output_root.join(&config.outputs.thermal_power_file),
         first_article_measurements_csv: output_root
@@ -1267,6 +1269,11 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "simulation_inputs: {}",
+        config.outputs.simulation_inputs_file
+    )?;
+    writeln!(
+        file,
         "pdn_current_paths: {}",
         config.outputs.pdn_current_paths_file
     )?;
@@ -1747,6 +1754,7 @@ fn write_release_bundles(
         config.outputs.electrical_validation_gates_file.as_str(),
         config.outputs.spice_netlist_file.as_str(),
         config.outputs.simulation_handoff_file.as_str(),
+        config.outputs.simulation_inputs_file.as_str(),
         config.outputs.pdn_current_paths_file.as_str(),
         config.outputs.thermal_power_file.as_str(),
         config.outputs.first_article_measurements_file.as_str(),
@@ -1952,6 +1960,7 @@ fn validate_release_outputs(
         &config.outputs.electrical_validation_gates_file,
         &config.outputs.spice_netlist_file,
         &config.outputs.simulation_handoff_file,
+        &config.outputs.simulation_inputs_file,
         &config.outputs.pdn_current_paths_file,
         &config.outputs.thermal_power_file,
         &config.outputs.first_article_measurements_file,
@@ -2052,6 +2061,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.electrical_validation_gates_file.as_str(),
         config.outputs.spice_netlist_file.as_str(),
         config.outputs.simulation_handoff_file.as_str(),
+        config.outputs.simulation_inputs_file.as_str(),
         config.outputs.pdn_current_paths_file.as_str(),
         config.outputs.thermal_power_file.as_str(),
         config.outputs.first_article_measurements_file.as_str(),

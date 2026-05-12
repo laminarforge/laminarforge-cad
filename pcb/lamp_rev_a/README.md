@@ -117,6 +117,7 @@ an ESP32-S3 startup-safety CSV for boot straps, reset, and heater fail-closed de
 a manufacturing-test coverage CSV for critical test points, firmware diagnostics, and release traceability,
 a calibration-readiness CSV for heater, ADC, optical, sensor-bus, negative-control, and firmware identity records,
 a validation-traceability CSV tying each gate to artifacts, manifest evidence, CI steps, and pass criteria,
+a simulation-input CSV for PDN, electrothermal, USB/SI, and EMC handoff readiness,
 and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:

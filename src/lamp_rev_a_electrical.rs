@@ -15,6 +15,7 @@ pub struct ElectricalOutputPaths {
     pub gates_csv: PathBuf,
     pub spice_netlist: PathBuf,
     pub simulation_handoff_md: PathBuf,
+    pub simulation_inputs_csv: PathBuf,
     pub pdn_current_paths_csv: PathBuf,
     pub thermal_power_csv: PathBuf,
     pub first_article_measurements_csv: PathBuf,
@@ -52,6 +53,7 @@ struct ValidationConfig {
     usb_signal_integrity: UsbSignalIntegrity,
     #[serde(default)]
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
+    simulation_input_policy: SimulationInputPolicy,
     #[serde(default)]
     manual_first_article_gates: Vec<ManualFirstArticleGate>,
     #[serde(default)]
@@ -104,6 +106,7 @@ struct Outputs {
     gates_csv: String,
     spice_netlist: String,
     simulation_handoff_md: String,
+    simulation_inputs_csv: String,
     pdn_current_paths_csv: String,
     thermal_power_csv: String,
     first_article_measurements_csv: String,
@@ -245,6 +248,15 @@ struct ExternalAnalysisHandoff {
     recommended_tools: Vec<String>,
     inputs: Vec<String>,
     exit_criterion: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SimulationInputPolicy {
+    min_handoffs: usize,
+    required_handoff_ids: Vec<String>,
+    require_recommended_tools: bool,
+    require_inputs: bool,
+    require_exit_criterion: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -639,6 +651,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         gates_csv: repo_root.join(config.outputs.gates_csv),
         spice_netlist: repo_root.join(config.outputs.spice_netlist),
         simulation_handoff_md: repo_root.join(config.outputs.simulation_handoff_md),
+        simulation_inputs_csv: repo_root.join(config.outputs.simulation_inputs_csv),
         pdn_current_paths_csv: repo_root.join(config.outputs.pdn_current_paths_csv),
         thermal_power_csv: repo_root.join(config.outputs.thermal_power_csv),
         first_article_measurements_csv: repo_root
@@ -715,6 +728,7 @@ pub fn validate_to_outputs(
         &mut errors,
     );
     validate_calibration_readiness(&config, &contract_nets, &mut rows, &mut errors);
+    validate_simulation_inputs(&config, &mut rows, &mut errors);
     let gate_categories = rows
         .iter()
         .map(|row| row.category.clone())
@@ -736,6 +750,7 @@ pub fn validate_to_outputs(
     write_manufacturing_test_handoff(&config, outputs)?;
     write_calibration_readiness_handoff(&config, outputs)?;
     write_validation_traceability_handoff(&config, outputs)?;
+    write_simulation_inputs_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -2804,6 +2819,110 @@ fn validate_calibration_readiness(
     }
 }
 
+fn validate_simulation_inputs(
+    config: &ValidationConfig,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let handoff_ids = config
+        .external_analysis_handoffs
+        .iter()
+        .map(|handoff| handoff.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "simulation inputs",
+        "minimum external analysis handoffs",
+        format!("{} handoffs", config.external_analysis_handoffs.len()),
+        format!(">= {} handoffs", config.simulation_input_policy.min_handoffs),
+        config.external_analysis_handoffs.len() >= config.simulation_input_policy.min_handoffs,
+        "Simulation-ready release packages must declare the solver classes and inputs before external analysis starts.",
+    );
+
+    for required_id in &config.simulation_input_policy.required_handoff_ids {
+        push_gate!(
+            rows,
+            errors,
+            "simulation inputs",
+            format!("required handoff {}", required_id),
+            required_id.clone(),
+            "present",
+            handoff_ids.contains(required_id.as_str()),
+            "Required external analysis handoffs must be present before treating the gate stack as simulation-ready.",
+        );
+    }
+
+    let mut ids = BTreeSet::new();
+    for handoff in &config.external_analysis_handoffs {
+        push_gate!(
+            rows,
+            errors,
+            "simulation inputs",
+            format!("{} unique id", handoff.id),
+            handoff.id.clone(),
+            "unique",
+            ids.insert(handoff.id.as_str()),
+            &handoff.exit_criterion,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "simulation inputs",
+            format!("{} tool class", handoff.id),
+            handoff.tool_class.clone(),
+            "non-empty",
+            !handoff.tool_class.trim().is_empty(),
+            &handoff.exit_criterion,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "simulation inputs",
+            format!("{} recommended tools", handoff.id),
+            mitigation_list(&handoff.recommended_tools),
+            if config.simulation_input_policy.require_recommended_tools {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.simulation_input_policy.require_recommended_tools
+                || !handoff.recommended_tools.is_empty(),
+            &handoff.exit_criterion,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "simulation inputs",
+            format!("{} inputs", handoff.id),
+            mitigation_list(&handoff.inputs),
+            if config.simulation_input_policy.require_inputs {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.simulation_input_policy.require_inputs || !handoff.inputs.is_empty(),
+            &handoff.exit_criterion,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "simulation inputs",
+            format!("{} exit criterion", handoff.id),
+            handoff.exit_criterion.clone(),
+            if config.simulation_input_policy.require_exit_criterion {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.simulation_input_policy.require_exit_criterion
+                || !handoff.exit_criterion.trim().is_empty(),
+            &handoff.exit_criterion,
+        );
+    }
+}
+
 fn validate_validation_traceability(
     config: &ValidationConfig,
     gate_categories: &BTreeSet<String>,
@@ -3672,6 +3791,34 @@ fn write_validation_traceability_handoff(
     Ok(())
 }
 
+fn write_simulation_inputs_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.simulation_inputs_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.simulation_inputs_csv)?;
+    writer.write_record([
+        "id",
+        "tool_class",
+        "recommended_tools",
+        "inputs",
+        "exit_criterion",
+    ])?;
+
+    for handoff in &config.external_analysis_handoffs {
+        writer.write_record([
+            handoff.id.as_str(),
+            handoff.tool_class.as_str(),
+            mitigation_list(&handoff.recommended_tools).as_str(),
+            mitigation_list(&handoff.inputs).as_str(),
+            handoff.exit_criterion.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
@@ -3824,6 +3971,15 @@ fn write_simulation_handoff(
     writeln!(report)?;
     writeln!(report, "## Generated PDN / Thermal Handoffs")?;
     writeln!(report)?;
+    writeln!(
+        report,
+        "- Simulation input package: `{}`",
+        outputs
+            .simulation_inputs_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("simulation_inputs.csv")
+    )?;
     writeln!(
         report,
         "- PDN current-path table: `{}`",
