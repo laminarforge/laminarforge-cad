@@ -23,6 +23,7 @@ pub struct ElectricalOutputPaths {
     pub fault_fmea_csv: PathBuf,
     pub emc_esd_csv: PathBuf,
     pub usb_power_budget_csv: PathBuf,
+    pub procurement_readiness_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
     pub heater_protection_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
@@ -74,6 +75,9 @@ struct ValidationConfig {
     spice_exports: Vec<SpiceExport>,
     usb_signal_integrity: UsbSignalIntegrity,
     usb_power_budget_policy: UsbPowerBudgetPolicy,
+    procurement_readiness_policy: ProcurementReadinessPolicy,
+    #[serde(default)]
+    procurement_critical_parts: Vec<ProcurementCriticalPart>,
     #[serde(default)]
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
     simulation_input_policy: SimulationInputPolicy,
@@ -153,6 +157,7 @@ struct Outputs {
     fault_fmea_csv: String,
     emc_esd_csv: String,
     usb_power_budget_csv: String,
+    procurement_readiness_csv: String,
     i2c_bus_csv: String,
     heater_protection_csv: String,
     startup_safety_csv: String,
@@ -319,6 +324,29 @@ struct UsbPowerBudgetPolicy {
     max_steady_utilization: f64,
     max_vbus_bulk_cap_u: f64,
     required_first_article_measurements: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ProcurementReadinessPolicy {
+    min_selected_parts: usize,
+    require_lcsc_for_selected_parts: bool,
+    lcsc_prefix: String,
+    footprint_prefix: String,
+    require_verification_text: bool,
+    required_manual_install_part_ids: Vec<String>,
+    required_external_safety_part_ids: Vec<String>,
+    required_critical_part_ids: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ProcurementCriticalPart {
+    id: String,
+    role: String,
+    assembly_method: String,
+    risk: String,
+    required_evidence: Vec<String>,
     notes: String,
 }
 
@@ -865,14 +893,23 @@ struct PartsManifest {
 #[derive(Debug, Deserialize)]
 struct SelectedPart {
     id: String,
+    module: String,
+    quantity: u32,
+    reference_prefix: String,
     value: String,
+    footprint: String,
     lcsc_part: String,
+    nets: Vec<String>,
+    verification: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct ExternalSafetyPart {
     id: String,
+    module: String,
+    quantity: u32,
     value: String,
+    lcsc_part: String,
     role: String,
     installation: String,
 }
@@ -1028,6 +1065,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         fault_fmea_csv: repo_root.join(config.outputs.fault_fmea_csv),
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
         usb_power_budget_csv: repo_root.join(config.outputs.usb_power_budget_csv),
+        procurement_readiness_csv: repo_root.join(config.outputs.procurement_readiness_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
@@ -1098,6 +1136,7 @@ pub fn validate_to_outputs(
     validate_trace_current_paths(&config, &routing, &mut rows, &mut errors);
     validate_usb_signal_integrity(&config, &routing, &contract_nets, &mut rows, &mut errors);
     validate_usb_power_budget(&config, &parts, &mut rows, &mut errors);
+    validate_procurement_readiness(&config, &parts, &mut rows, &mut errors);
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
@@ -1168,6 +1207,7 @@ pub fn validate_to_outputs(
     write_fault_fmea_handoff(&config, outputs)?;
     write_emc_esd_handoff(&config, outputs)?;
     write_usb_power_budget_handoff(&config, &parts, outputs)?;
+    write_procurement_readiness_handoff(&config, &parts, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_heater_protection_handoff(&config, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
@@ -1231,6 +1271,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.component_deratings.is_empty()
         || config.single_fault_checks.is_empty()
         || config.emc_esd_checks.is_empty()
+        || config.procurement_critical_parts.is_empty()
         || config.boot_startup_checks.is_empty()
         || config.manufacturing_test_checks.is_empty()
         || config.calibration_checks.is_empty()
@@ -4307,6 +4348,241 @@ fn validate_usb_power_budget(
             measurement_ids.contains(measurement_id.as_str()),
             &policy.notes,
         );
+    }
+}
+
+fn validate_procurement_readiness(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.procurement_readiness_policy;
+    let selected_parts = parts
+        .selected_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let external_parts = parts
+        .external_safety_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let critical_ids = config
+        .procurement_critical_parts
+        .iter()
+        .map(|part| part.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "procurement readiness",
+        "selected part count",
+        format!("{} selected parts", parts.selected_parts.len()),
+        format!(">= {} selected parts", policy.min_selected_parts),
+        parts.selected_parts.len() >= policy.min_selected_parts,
+        &policy.notes,
+    );
+
+    for part in &parts.selected_parts {
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} positive quantity", part.id),
+            part.quantity.to_string(),
+            "> 0",
+            part.quantity > 0,
+            &policy.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} LCSC order code", part.id),
+            part.lcsc_part.clone(),
+            format!("starts with {}", policy.lcsc_prefix),
+            !policy.require_lcsc_for_selected_parts
+                || part.lcsc_part.starts_with(&policy.lcsc_prefix),
+            &policy.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} footprint library", part.id),
+            part.footprint.clone(),
+            format!("starts with {}", policy.footprint_prefix),
+            part.footprint.starts_with(&policy.footprint_prefix),
+            &policy.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} reference/value metadata", part.id),
+            format!("{} / {}", part.reference_prefix, part.value),
+            "reference prefix and value present",
+            !part.reference_prefix.trim().is_empty() && !part.value.trim().is_empty(),
+            &policy.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} connected nets", part.id),
+            format!("{} nets", part.nets.len()),
+            ">= 1 net",
+            !part.nets.is_empty(),
+            &policy.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} verification note", part.id),
+            part.verification.clone(),
+            "non-empty",
+            !policy.require_verification_text || !part.verification.trim().is_empty(),
+            &policy.notes,
+        );
+    }
+
+    for part_id in &policy.required_manual_install_part_ids {
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{part_id} manual-install part exists"),
+            part_id.clone(),
+            "selected in parts.toml",
+            selected_parts.contains_key(part_id.as_str()),
+            &policy.notes,
+        );
+    }
+
+    for part_id in &policy.required_external_safety_part_ids {
+        let part = external_parts.get(part_id.as_str());
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{part_id} external safety part exists"),
+            part_id.clone(),
+            "external_safety_parts entry",
+            part.is_some(),
+            &policy.notes,
+        );
+        if let Some(part) = part {
+            push_gate!(
+                rows,
+                errors,
+                "procurement readiness",
+                format!("{part_id} external order code"),
+                part.lcsc_part.clone(),
+                format!("starts with {}", policy.lcsc_prefix),
+                part.lcsc_part.starts_with(&policy.lcsc_prefix),
+                &policy.notes,
+            );
+            push_gate!(
+                rows,
+                errors,
+                "procurement readiness",
+                format!("{part_id} external installation note"),
+                part.installation.clone(),
+                "non-empty",
+                !part.installation.trim().is_empty() && !part.role.trim().is_empty(),
+                &policy.notes,
+            );
+        }
+    }
+
+    for part_id in &policy.required_critical_part_ids {
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{part_id} critical-part review entry"),
+            part_id.clone(),
+            "procurement_critical_parts entry",
+            critical_ids.contains(part_id.as_str()),
+            &policy.notes,
+        );
+    }
+
+    for part in &config.procurement_critical_parts {
+        let selected = selected_parts.contains_key(part.id.as_str());
+        let external = external_parts.contains_key(part.id.as_str());
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} critical part source", part.id),
+            if selected {
+                "selected part".to_string()
+            } else if external {
+                "external safety part".to_string()
+            } else {
+                "missing".to_string()
+            },
+            "selected or external safety part",
+            selected || external,
+            &part.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} assembly method", part.id),
+            part.assembly_method.clone(),
+            "machine | manual | external",
+            matches!(
+                part.assembly_method.as_str(),
+                "machine" | "manual" | "external"
+            ),
+            &part.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement readiness",
+            format!("{} procurement evidence", part.id),
+            part.required_evidence.join("; "),
+            ">= 2 evidence items",
+            part.required_evidence.len() >= 2,
+            &part.notes,
+        );
+        if part.assembly_method == "manual" {
+            push_gate!(
+                rows,
+                errors,
+                "procurement readiness",
+                format!("{} manual assembly linkage", part.id),
+                part.id.clone(),
+                "required_manual_install_part_ids",
+                policy
+                    .required_manual_install_part_ids
+                    .iter()
+                    .any(|id| id == &part.id),
+                &part.notes,
+            );
+        }
+        if part.assembly_method == "external" {
+            push_gate!(
+                rows,
+                errors,
+                "procurement readiness",
+                format!("{} external safety linkage", part.id),
+                part.id.clone(),
+                "required_external_safety_part_ids",
+                policy
+                    .required_external_safety_part_ids
+                    .iter()
+                    .any(|id| id == &part.id),
+                &part.notes,
+            );
+        }
     }
 }
 
@@ -8434,6 +8710,111 @@ fn write_usb_power_row(
         if pass { "pass" } else { "fail" },
         notes,
     ])?;
+    Ok(())
+}
+
+fn write_procurement_readiness_handoff(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.procurement_readiness_csv)?;
+    let policy = &config.procurement_readiness_policy;
+    let critical_parts = config
+        .procurement_critical_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let mut writer = csv::Writer::from_path(&outputs.procurement_readiness_csv)?;
+    writer.write_record([
+        "id",
+        "source",
+        "module",
+        "quantity",
+        "value",
+        "footprint_or_installation",
+        "lcsc_part",
+        "assembly_method",
+        "critical_role",
+        "risk",
+        "required_evidence",
+        "status",
+        "notes",
+    ])?;
+
+    for part in &parts.selected_parts {
+        let critical = critical_parts.get(part.id.as_str());
+        let status = if part.quantity > 0
+            && part.lcsc_part.starts_with(&policy.lcsc_prefix)
+            && part.footprint.starts_with(&policy.footprint_prefix)
+            && !part.verification.trim().is_empty()
+        {
+            "pass"
+        } else {
+            "fail"
+        };
+        writer.write_record([
+            part.id.as_str(),
+            "selected_parts",
+            part.module.as_str(),
+            part.quantity.to_string().as_str(),
+            part.value.as_str(),
+            part.footprint.as_str(),
+            part.lcsc_part.as_str(),
+            critical
+                .map(|part| part.assembly_method.as_str())
+                .unwrap_or("machine"),
+            critical
+                .map(|part| part.role.as_str())
+                .unwrap_or("standard"),
+            critical
+                .map(|part| part.risk.as_str())
+                .unwrap_or("standard"),
+            critical
+                .map(|part| part.required_evidence.join("; "))
+                .unwrap_or_else(|| part.verification.clone())
+                .as_str(),
+            status,
+            part.verification.as_str(),
+        ])?;
+    }
+
+    for part in &parts.external_safety_parts {
+        let critical = critical_parts.get(part.id.as_str());
+        let status = if part.quantity > 0
+            && part.lcsc_part.starts_with(&policy.lcsc_prefix)
+            && !part.role.trim().is_empty()
+            && !part.installation.trim().is_empty()
+        {
+            "pass"
+        } else {
+            "fail"
+        };
+        writer.write_record([
+            part.id.as_str(),
+            "external_safety_parts",
+            part.module.as_str(),
+            part.quantity.to_string().as_str(),
+            part.value.as_str(),
+            part.installation.as_str(),
+            part.lcsc_part.as_str(),
+            "external",
+            critical
+                .map(|part| part.role.as_str())
+                .unwrap_or(part.role.as_str()),
+            critical
+                .map(|part| part.risk.as_str())
+                .unwrap_or("external"),
+            critical
+                .map(|part| part.required_evidence.join("; "))
+                .unwrap_or_else(|| part.role.clone())
+                .as_str(),
+            status,
+            part.role.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
     Ok(())
 }
 

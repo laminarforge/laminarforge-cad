@@ -27,6 +27,7 @@ component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
 fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 usb_power_budget_csv = "pcb/lamp_rev_a/reports/usb_power_budget.csv"
+procurement_readiness_csv = "pcb/lamp_rev_a/reports/procurement_readiness.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
@@ -267,6 +268,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
 acceptance_criterion = "USB-C sink Rd, selected protection/current-path parts, VBUS/+5V/+3V3 load budgets, startup/inrush linkage, and first-article USB rail measurements are declared and inside configured limits."
 blocks_release = true
 notes = "Prevents Rev A from silently assuming more USB bus power than the USB-C sink/default-current setup permits."
+
+[[validation_traceability]]
+id = "procurement_readiness"
+validation_layer = "Procurement and manufacturing readiness"
+electrical_gate_category = "procurement readiness"
+output_artifact = "procurement_readiness.csv; electrical_validation_gates.csv"
+release_manifest_entry = "procurement_readiness; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Validate LAMP Rev A upload bundles"
+acceptance_criterion = "Every selected Rev A part has quantity, LCSC order code, LCSC footprint, nets, and verification text; critical/manual/external parts have explicit assembly and procurement evidence."
+blocks_release = true
+notes = "Prevents an electrically valid design from becoming unorderable or ambiguous during JLCPCB/manual assembly."
 
 [[validation_traceability]]
 id = "i2c_ads1115_bus_validation"
@@ -1582,6 +1594,198 @@ max_steady_utilization = 1.0
 max_vbus_bulk_cap_u = 10.0
 required_first_article_measurements = ["usb_vbus_voltage", "usb_5v_voltage", "usb_3v3_voltage"]
 notes = "Rev A is a USB-C sink with Rd only and no PD negotiation; design to USB 2.0/default current until first article confirms host behavior."
+
+[procurement_readiness_policy]
+min_selected_parts = 28
+require_lcsc_for_selected_parts = true
+lcsc_prefix = "C"
+footprint_prefix = "lcsc:"
+require_verification_text = true
+required_manual_install_part_ids = ["dc_input_jack", "heater_output_terminal"]
+required_external_safety_part_ids = ["inline_thermal_cutoff"]
+required_critical_part_ids = [
+  "mcu_module",
+  "usb_c_connector",
+  "usb_c_cc_resistors",
+  "usb_esd_protection",
+  "vbus_to_5v_schottky",
+  "dc_input_jack",
+  "three_v_three_regulator",
+  "regulator_bulk_caps",
+  "adc",
+  "optical_mux",
+  "turbidity_emitters",
+  "photodiodes",
+  "optical_tia_opamp",
+  "heater_gate_driver",
+  "heater_mosfet",
+  "heater_output_terminal",
+  "heater_resettable_fuse",
+  "heater_tvs",
+  "input_schottky",
+  "inline_thermal_cutoff",
+]
+notes = "Every release-critical Rev A part must be orderable from the declared LCSC catalog source or explicitly external/manual with installation evidence."
+
+[[procurement_critical_parts]]
+id = "mcu_module"
+role = "ESP32-S3 compute, USB device, Wi-Fi, and firmware control"
+assembly_method = "machine"
+risk = "Wrong module variant or unavailable module blocks firmware, USB, Wi-Fi, and all control bring-up."
+required_evidence = ["lcsc_part", "footprint", "firmware_handoff", "ESP32-S3-WROOM datasheet pin map"]
+notes = "Use the ESP32-S3-WROOM-1-N8 module variant matched by the firmware handoff."
+
+[[procurement_critical_parts]]
+id = "usb_c_connector"
+role = "USB power input and firmware flashing/debug connection"
+assembly_method = "machine"
+risk = "Wrong connector footprint or unavailable connector prevents power, flashing, and recovery."
+required_evidence = ["lcsc_part", "footprint", "USB-C sink CC validation", "first-article USB rail measurements"]
+notes = "USB-C connector availability and footprint are order-critical for Rev A."
+
+[[procurement_critical_parts]]
+id = "usb_c_cc_resistors"
+role = "USB-C sink default-current advertisement"
+assembly_method = "machine"
+risk = "Wrong value can prevent USB-C VBUS attachment or overstate available current."
+required_evidence = ["lcsc_part", "footprint", "5.1k value", "usb_power_budget gate"]
+notes = "Both CC pull-downs must be populated."
+
+[[procurement_critical_parts]]
+id = "usb_esd_protection"
+role = "USB D+/D-/VBUS ESD clamp near the user-accessible connector"
+assembly_method = "machine"
+risk = "Missing ESD part leaves ESP32-S3 native USB pins exposed during handling."
+required_evidence = ["lcsc_part", "footprint", "emc_esd_precompliance gate", "USB route sanity gate"]
+notes = "This part protects the main firmware recovery interface."
+
+[[procurement_critical_parts]]
+id = "vbus_to_5v_schottky"
+role = "USB VBUS to electronics +5 V isolation path"
+assembly_method = "machine"
+risk = "Wrong diode rating or polarity can drop electronics power or backfeed USB."
+required_evidence = ["lcsc_part", "footprint", "component_derating gate", "SPICE power-path gate"]
+notes = "Rev A electronics power source depends on this diode."
+
+[[procurement_critical_parts]]
+id = "dc_input_jack"
+role = "Manual-install external 12 V heater power input"
+assembly_method = "manual"
+risk = "Wrong jack or missing manual install step blocks heater power and can create unsafe cabling."
+required_evidence = ["lcsc_part", "footprint", "manual install list", "heater protection gate"]
+notes = "Through-hole/manual installation must remain explicit in the fab package."
+
+[[procurement_critical_parts]]
+id = "three_v_three_regulator"
+role = "USB-derived +3.3 V regulator for ESP32, ADC, mux, and logic"
+assembly_method = "machine"
+risk = "Wrong regulator or unavailable package can cause boot failures or overheating."
+required_evidence = ["lcsc_part", "footprint", "thermal_margin_simulation gate", "rail_load_step simulation"]
+notes = "LDO thermal margin is tracked elsewhere; this gate keeps ordering/footprint evidence present."
+
+[[procurement_critical_parts]]
+id = "regulator_bulk_caps"
+role = "Bulk capacitance for VBUS, +5 V, +3.3 V, and 12 V input rails"
+assembly_method = "machine"
+risk = "Wrong capacitance or missing parts can create startup droop, USB inrush, or regulator instability."
+required_evidence = ["lcsc_part", "footprint", "usb_inrush_startup simulation", "rail_load_step simulation"]
+notes = "Bulk capacitance links directly to startup and load-step simulations."
+
+[[procurement_critical_parts]]
+id = "adc"
+role = "ADS1115 optical/thermal measurement ADC"
+assembly_method = "machine"
+risk = "Wrong ADC or address variant breaks the measurement path and firmware identity check."
+required_evidence = ["lcsc_part", "footprint", "i2c_bus_validation gate", "analog_front_end simulation"]
+notes = "The assay signal chain depends on this part being the expected I2C device."
+
+[[procurement_critical_parts]]
+id = "optical_mux"
+role = "Eight-channel optical detector multiplexing"
+assembly_method = "machine"
+risk = "Wrong mux leakage/on-resistance can hide or distort optical signal."
+required_evidence = ["lcsc_part", "footprint", "analog range gate", "optical noise/crosstalk gates"]
+notes = "Mux procurement ties directly to optical calibration readiness."
+
+[[procurement_critical_parts]]
+id = "turbidity_emitters"
+role = "650 nm turbidity LED emitters"
+assembly_method = "machine"
+risk = "Wrong wavelength, polarity, or availability invalidates optical response assumptions."
+required_evidence = ["lcsc_part", "footprint", "optical architecture", "calibration readiness gate"]
+notes = "Emitter group must match optical architecture and calibration plan."
+
+[[procurement_critical_parts]]
+id = "photodiodes"
+role = "Turbidity detector photodiodes"
+assembly_method = "machine"
+risk = "Wrong detector package or spectral response invalidates the optical readout path."
+required_evidence = ["lcsc_part", "footprint", "optical architecture", "analog front-end simulation"]
+notes = "Detector orientation and package are first-article calibration risks."
+
+[[procurement_critical_parts]]
+id = "optical_tia_opamp"
+role = "Shared transimpedance amplifier"
+assembly_method = "machine"
+risk = "Wrong op amp input bias/output swing can saturate or bury the optical signal."
+required_evidence = ["lcsc_part", "footprint", "component_derating gate", "analog front-end simulation"]
+notes = "TIA op amp procurement is critical for measurable optical output."
+
+[[procurement_critical_parts]]
+id = "heater_gate_driver"
+role = "12 V MOSFET gate driver"
+assembly_method = "machine"
+risk = "Wrong gate-driver threshold or package can leave heater control inactive or unsafe."
+required_evidence = ["lcsc_part", "footprint", "heater PWM transient simulation", "startup safety gate"]
+notes = "This part bridges ESP32 logic and the high-energy heater MOSFET."
+
+[[procurement_critical_parts]]
+id = "heater_mosfet"
+role = "Low-side switched heater current path"
+assembly_method = "machine"
+risk = "Wrong MOSFET Rds(on), package, or polarity can overheat or fail unsafe."
+required_evidence = ["lcsc_part", "footprint", "thermal_margin_simulation gate", "single_fault_fmea gate"]
+notes = "This is one of the highest-energy components on Rev A."
+
+[[procurement_critical_parts]]
+id = "heater_output_terminal"
+role = "Manual-install external heater terminal"
+assembly_method = "manual"
+risk = "Wrong terminal pitch/current rating or missing manual install can make heater wiring unsafe."
+required_evidence = ["lcsc_part", "footprint", "manual install list", "heater protection gate"]
+notes = "The terminal is manually installed and must remain visible in procurement and assembly docs."
+
+[[procurement_critical_parts]]
+id = "heater_resettable_fuse"
+role = "PTC/resettable fuse for heater supply"
+assembly_method = "machine"
+risk = "Wrong hold/trip current can nuisance trip or fail to protect heater wiring."
+required_evidence = ["lcsc_part", "footprint", "heater protection gate", "component_derating gate"]
+notes = "Protection coordination depends on this exact part class."
+
+[[procurement_critical_parts]]
+id = "heater_tvs"
+role = "Heater supply transient clamp"
+assembly_method = "machine"
+risk = "Wrong clamp voltage or package leaves heater cable transients unbounded."
+required_evidence = ["lcsc_part", "footprint", "emc_esd_precompliance gate", "heater protection gate"]
+notes = "TVS choice is part of heater-cable transient control."
+
+[[procurement_critical_parts]]
+id = "input_schottky"
+role = "12 V input reverse/backfeed protection path"
+assembly_method = "machine"
+risk = "Wrong diode rating or polarity can disable heater power or overheat on current draw."
+required_evidence = ["lcsc_part", "footprint", "component_derating gate", "heater protection gate"]
+notes = "This part sits in the high-current 12 V input path."
+
+[[procurement_critical_parts]]
+id = "inline_thermal_cutoff"
+role = "External normally-closed thermal cutoff in series with heater assembly"
+assembly_method = "external"
+risk = "Missing external cutoff removes the physical last-resort heater safety layer."
+required_evidence = ["external_safety_part", "lcsc_part", "installation note", "first-article heater safety check"]
+notes = "This is intentionally external to the PCB and must be installed on the heater block/carrier."
 
 [i2c_bus_policy]
 sda_net = "SDA"
