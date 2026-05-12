@@ -27,6 +27,7 @@ component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
 fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
+heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
 manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv"
 calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
@@ -179,6 +180,17 @@ blocks_release = true
 notes = "This targets the failure mode where the analog path is electrically sane but firmware cannot read the ADS1115 over I2C."
 
 [[validation_traceability]]
+id = "heater_protection_coordination"
+validation_layer = "Heater protection coordination"
+electrical_gate_category = "heater protection"
+output_artifact = "heater_protection_coordination.csv; electrical_validation_gates.csv"
+release_manifest_entry = "heater_protection; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "Heater current limits, PTC/fuse, terminal, MOSFET, TVS, external thermal cutoff, high-current paths, and first-article verification measurements are all declared and evidence-backed."
+blocks_release = true
+notes = "This makes the high-energy heater safety chain explicit instead of relying only on FMEA and derating rows."
+
+[[validation_traceability]]
 id = "startup_fail_closed"
 validation_layer = "ESP32-S3 startup and fail-closed behavior"
 electrical_gate_category = "startup safety"
@@ -289,6 +301,38 @@ component_power_derating = 0.80
 continuous_heater_current_ma = 1500
 protected_heater_current_ma = 3000
 first_article_current_limit_ma = 500
+
+[heater_protection_policy]
+min_checks = 4
+continuous_current_ma = 1500
+protected_current_ma = 3000
+max_fault_current_ma = 3000
+require_external_cutoff = true
+required_evidence_ids = [
+  "input_schottky",
+  "heater_resettable_fuse",
+  "heater_output_terminal",
+  "heater_tvs",
+  "heater_gate_driver",
+  "heater_mosfet",
+  "inline_thermal_cutoff",
+  "heater_input_schottky_derating",
+  "heater_ptc_derating",
+  "heater_terminal_derating",
+  "heater_mosfet_derating",
+  "heater_tvs_derating",
+  "twelve_v_input_path",
+  "twelve_v_fused_path",
+  "heater_supply_path",
+  "heater_return_path",
+]
+required_measurements = [
+  "heater_raw_12v_voltage",
+  "heater_supply_voltage_pwm_off",
+  "heater_return_pwm_off",
+  "heater_pwm_idle",
+]
+notes = "Coordinates the high-energy heater protection chain: 12 V input diode, PTC, terminal, TVS, gate driver, low-side MOSFET, external thermal cutoff, routed high-current paths, and first-article measurements."
 
 [pdn_dc_simulation_policy]
 max_voltage_drop_mv = 150.0
@@ -1200,6 +1244,50 @@ current_ma = 1500
 min_width_mm = 2.00
 allowed_layers = ["F.Cu", "B.Cu"]
 notes = "Switched heater return path from J3 to MOSFET drain."
+
+[[heater_protection_checks]]
+id = "normal_heater_pwm_chain"
+stage = "normal_pwm_operation"
+current_ma = 1500
+required_parts = ["input_schottky", "heater_resettable_fuse", "heater_output_terminal", "heater_tvs", "heater_gate_driver", "heater_mosfet", "inline_thermal_cutoff"]
+required_paths = ["twelve_v_input_path", "twelve_v_fused_path", "heater_supply_path", "heater_return_path"]
+required_measurements = ["heater_raw_12v_voltage", "heater_supply_voltage_pwm_off", "heater_return_pwm_off", "heater_pwm_idle"]
+trip_or_limit = "Normal heater current must stay at or below the continuous 1.5 A validation budget before any higher-power profile is allowed."
+pass_criterion = "All heater-chain protection parts and routed current paths are present, and PWM-off first-article measurements pass before heater enable."
+notes = "This is the nominal heater chain check for controlled PWM operation."
+
+[[heater_protection_checks]]
+id = "protected_heater_fault_chain"
+stage = "current_limited_fault_screen"
+current_ma = 3000
+required_parts = ["heater_resettable_fuse", "heater_output_terminal", "heater_tvs", "inline_thermal_cutoff"]
+required_paths = ["twelve_v_fused_path", "heater_supply_path", "heater_return_path"]
+required_measurements = ["heater_raw_12v_voltage", "heater_supply_voltage_pwm_off"]
+trip_or_limit = "Bench supply current limit and PTC protected-current budget must be at or below 3 A during first article."
+pass_criterion = "A heater-terminal short or low-resistance load cannot be tested without current limiting, PTC evidence, and external thermal cutoff installed."
+notes = "This covers cable/terminal shorts and excessive heater warm-up current."
+
+[[heater_protection_checks]]
+id = "external_thermal_cutoff_required"
+stage = "manual_install_before_12v"
+current_ma = 0
+required_parts = ["inline_thermal_cutoff", "heater_output_terminal"]
+required_paths = ["heater_supply_path", "heater_return_path"]
+required_measurements = ["heater_supply_voltage_pwm_off"]
+trip_or_limit = "External normally-closed thermal cutoff must be installed in series with the heater assembly before 12 V power."
+pass_criterion = "Manual-install inspection confirms the cutoff is physically mounted on the heater block/carrier, not just declared in the schematic."
+notes = "The PCB alone cannot make the external heater safe; the release must block unprotected heater bring-up."
+
+[[heater_protection_checks]]
+id = "mosfet_fail_closed_detection"
+stage = "heater_power_present_pwm_off"
+current_ma = 1500
+required_parts = ["heater_gate_driver", "heater_mosfet", "heater_resettable_fuse", "inline_thermal_cutoff"]
+required_paths = ["heater_supply_path", "heater_return_path"]
+required_measurements = ["heater_return_pwm_off", "heater_pwm_idle", "heater_supply_voltage_pwm_off"]
+trip_or_limit = "PWM-off HEATER_P and GATE_DRV checks must detect a stuck-on MOSFET or active gate before connecting a high-power heater load."
+pass_criterion = "Gate drive remains low and the switched heater return remains inactive with 12 V present and heater_enabled false."
+notes = "This catches the most dangerous single-board heater-control fault before a real assay run."
 
 [gpio_domain]
 mcu_reference = "U1"

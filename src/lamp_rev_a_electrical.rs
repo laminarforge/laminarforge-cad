@@ -23,6 +23,7 @@ pub struct ElectricalOutputPaths {
     pub fault_fmea_csv: PathBuf,
     pub emc_esd_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
+    pub heater_protection_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
     pub manufacturing_test_csv: PathBuf,
     pub calibration_readiness_csv: PathBuf,
@@ -76,6 +77,9 @@ struct ValidationConfig {
     #[serde(default)]
     emc_esd_checks: Vec<EmcEsdCheck>,
     i2c_bus_policy: I2cBusPolicy,
+    heater_protection_policy: HeaterProtectionPolicy,
+    #[serde(default)]
+    heater_protection_checks: Vec<HeaterProtectionCheck>,
     boot_startup_policy: BootStartupPolicy,
     #[serde(default)]
     boot_startup_checks: Vec<BootStartupCheck>,
@@ -129,6 +133,7 @@ struct Outputs {
     fault_fmea_csv: String,
     emc_esd_csv: String,
     i2c_bus_csv: String,
+    heater_protection_csv: String,
     startup_safety_csv: String,
     manufacturing_test_csv: String,
     calibration_readiness_csv: String,
@@ -490,6 +495,31 @@ struct I2cBusPolicy {
 }
 
 #[derive(Debug, Deserialize)]
+struct HeaterProtectionPolicy {
+    min_checks: usize,
+    continuous_current_ma: u32,
+    protected_current_ma: u32,
+    max_fault_current_ma: u32,
+    require_external_cutoff: bool,
+    required_evidence_ids: Vec<String>,
+    required_measurements: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct HeaterProtectionCheck {
+    id: String,
+    stage: String,
+    current_ma: u32,
+    required_parts: Vec<String>,
+    required_paths: Vec<String>,
+    required_measurements: Vec<String>,
+    trip_or_limit: String,
+    pass_criterion: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct BootStartupPolicy {
     min_checks: usize,
     require_all_boot_sensitive_firmware_pins: bool,
@@ -792,6 +822,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         fault_fmea_csv: repo_root.join(config.outputs.fault_fmea_csv),
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
+        heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
         manufacturing_test_csv: repo_root.join(config.outputs.manufacturing_test_csv),
         calibration_readiness_csv: repo_root.join(config.outputs.calibration_readiness_csv),
@@ -862,6 +893,7 @@ pub fn validate_to_outputs(
         &mut rows,
         &mut errors,
     );
+    validate_heater_protection(&config, &parts, &mut rows, &mut errors);
     validate_boot_startup_safety(
         &config,
         &parts,
@@ -902,6 +934,7 @@ pub fn validate_to_outputs(
     write_fault_fmea_handoff(&config, outputs)?;
     write_emc_esd_handoff(&config, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
+    write_heater_protection_handoff(&config, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
     write_manufacturing_test_handoff(&config, outputs)?;
     write_calibration_readiness_handoff(&config, outputs)?;
@@ -3411,6 +3444,172 @@ fn validate_i2c_bus(
     }
 }
 
+fn validate_heater_protection(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.heater_protection_policy;
+    let evidence_ids = fault_evidence_ids(config, parts);
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "heater protection",
+        "minimum heater protection coverage",
+        format!("{} checks", config.heater_protection_checks.len()),
+        format!(">= {} checks", policy.min_checks),
+        config.heater_protection_checks.len() >= policy.min_checks,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "heater protection",
+        "protected current budget",
+        format!("{} mA", policy.protected_current_ma),
+        format!("<= {} mA fault budget", policy.max_fault_current_ma),
+        policy.protected_current_ma <= policy.max_fault_current_ma,
+        &policy.notes,
+    );
+
+    for evidence in &policy.required_evidence_ids {
+        push_gate!(
+            rows,
+            errors,
+            "heater protection",
+            format!("required evidence {evidence}"),
+            evidence.clone(),
+            "known selected/external part, path, derating, or analysis id",
+            evidence_ids.contains(evidence.as_str()),
+            &policy.notes,
+        );
+    }
+    if policy.require_external_cutoff {
+        push_gate!(
+            rows,
+            errors,
+            "heater protection",
+            "external thermal cutoff evidence",
+            "inline_thermal_cutoff",
+            "required",
+            evidence_ids.contains("inline_thermal_cutoff"),
+            &policy.notes,
+        );
+    }
+    for measurement in &policy.required_measurements {
+        push_gate!(
+            rows,
+            errors,
+            "heater protection",
+            format!("required measurement {measurement}"),
+            measurement.clone(),
+            "known first-article measurement id",
+            measurement_ids.contains(measurement.as_str()),
+            &policy.notes,
+        );
+    }
+
+    let mut ids = BTreeSet::new();
+    for check in &config.heater_protection_checks {
+        push_gate!(
+            rows,
+            errors,
+            "heater protection",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "heater protection",
+            format!("{} current budget", check.id),
+            format!("{} mA", check.current_ma),
+            format!("<= {} mA protected current", policy.protected_current_ma),
+            check.current_ma <= policy.protected_current_ma,
+            &check.notes,
+        );
+        if check.stage.contains("normal") || check.stage.contains("pwm") {
+            push_gate!(
+                rows,
+                errors,
+                "heater protection",
+                format!("{} normal current budget", check.id),
+                format!("{} mA", check.current_ma),
+                format!("<= {} mA continuous current", policy.continuous_current_ma),
+                check.current_ma <= policy.continuous_current_ma,
+                &check.notes,
+            );
+        }
+        push_gate!(
+            rows,
+            errors,
+            "heater protection",
+            format!("{} trip/limit", check.id),
+            check.trip_or_limit.clone(),
+            "non-empty",
+            !check.trip_or_limit.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "heater protection",
+            format!("{} pass criterion", check.id),
+            check.pass_criterion.clone(),
+            "non-empty",
+            !check.pass_criterion.trim().is_empty(),
+            &check.notes,
+        );
+
+        for part_id in &check.required_parts {
+            push_gate!(
+                rows,
+                errors,
+                "heater protection",
+                format!("{} part {}", check.id, part_id),
+                part_id.clone(),
+                "known selected/external part id",
+                evidence_ids.contains(part_id.as_str()),
+                &check.notes,
+            );
+        }
+        for path_id in &check.required_paths {
+            push_gate!(
+                rows,
+                errors,
+                "heater protection",
+                format!("{} path {}", check.id, path_id),
+                path_id.clone(),
+                "known current path id",
+                evidence_ids.contains(path_id.as_str()),
+                &check.notes,
+            );
+        }
+        for measurement in &check.required_measurements {
+            push_gate!(
+                rows,
+                errors,
+                "heater protection",
+                format!("{} measurement {}", check.id, measurement),
+                measurement.clone(),
+                "known first-article measurement id",
+                measurement_ids.contains(measurement.as_str()),
+                &check.notes,
+            );
+        }
+    }
+}
+
 fn validate_boot_startup_safety(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -5379,6 +5578,54 @@ fn write_i2c_bus_handoff(
     Ok(())
 }
 
+fn write_heater_protection_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.heater_protection_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.heater_protection_csv)?;
+    writer.write_record([
+        "id",
+        "stage",
+        "current_ma",
+        "continuous_current_ma",
+        "protected_current_ma",
+        "required_parts",
+        "required_paths",
+        "required_measurements",
+        "trip_or_limit",
+        "pass_criterion",
+        "notes",
+    ])?;
+
+    for check in &config.heater_protection_checks {
+        writer.write_record([
+            check.id.as_str(),
+            check.stage.as_str(),
+            check.current_ma.to_string().as_str(),
+            config
+                .heater_protection_policy
+                .continuous_current_ma
+                .to_string()
+                .as_str(),
+            config
+                .heater_protection_policy
+                .protected_current_ma
+                .to_string()
+                .as_str(),
+            mitigation_list(&check.required_parts).as_str(),
+            mitigation_list(&check.required_paths).as_str(),
+            mitigation_list(&check.required_measurements).as_str(),
+            check.trip_or_limit.as_str(),
+            check.pass_criterion.as_str(),
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_startup_safety_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -5871,6 +6118,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("i2c_bus_validation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Heater protection coordination table: `{}`",
+        outputs
+            .heater_protection_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("heater_protection_coordination.csv")
     )?;
     writeln!(
         report,
