@@ -112,6 +112,7 @@ a machine-checked full-speed USB DP/DN routing sanity gate, a
 simulation/analysis handoff, generated PDN current-path and thermal power CSVs,
 a structured first-article measurement CSV for current-limited rail bring-up,
 component derating/stress CSVs for the high-risk electrical parts,
+an EMC/ESD pre-compliance CSV for USB, heater, 12 V, Wi-Fi, and analog noise risks,
 and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:

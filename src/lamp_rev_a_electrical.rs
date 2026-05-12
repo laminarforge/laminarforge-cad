@@ -20,6 +20,7 @@ pub struct ElectricalOutputPaths {
     pub first_article_measurements_csv: PathBuf,
     pub component_derating_csv: PathBuf,
     pub fault_fmea_csv: PathBuf,
+    pub emc_esd_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -56,6 +57,9 @@ struct ValidationConfig {
     single_fault_policy: SingleFaultPolicy,
     #[serde(default)]
     single_fault_checks: Vec<SingleFaultCheck>,
+    emc_esd_policy: EmcEsdPolicy,
+    #[serde(default)]
+    emc_esd_checks: Vec<EmcEsdCheck>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -89,6 +93,7 @@ struct Outputs {
     first_article_measurements_csv: String,
     component_derating_csv: String,
     fault_fmea_csv: String,
+    emc_esd_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -304,6 +309,32 @@ struct SingleFaultCheck {
 }
 
 #[derive(Debug, Deserialize)]
+struct EmcEsdPolicy {
+    min_checks: usize,
+    max_risk_score: u32,
+    require_protection_for_risk_at_least: u32,
+    require_measurement_for_risk_at_least: u32,
+    require_external_analysis_for_risk_at_least: u32,
+    require_return_path_strategy: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct EmcEsdCheck {
+    id: String,
+    interface: String,
+    exposure_class: String,
+    nets: Vec<String>,
+    risk_score: u32,
+    protection_part_ids: Vec<String>,
+    return_path_strategy: String,
+    grounding_strategy: String,
+    verification_methods: Vec<String>,
+    verification_measurements: Vec<String>,
+    external_analysis: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct Contract {
     stackup: Stackup,
     rails: Vec<ContractRail>,
@@ -497,6 +528,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
             .join(config.outputs.first_article_measurements_csv),
         component_derating_csv: repo_root.join(config.outputs.component_derating_csv),
         fault_fmea_csv: repo_root.join(config.outputs.fault_fmea_csv),
+        emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
     })
 }
 
@@ -545,6 +577,7 @@ pub fn validate_to_outputs(
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
     validate_component_deratings(&config, &selected_part_ids, &mut rows, &mut errors);
     validate_single_faults(&config, &parts, &mut rows, &mut errors);
+    validate_emc_esd_precompliance(&config, &parts, &contract_nets, &mut rows, &mut errors);
     add_external_analysis_rows(&config, &mut rows);
     add_manual_gate_rows(&config, &parts, &mut rows, &mut errors);
 
@@ -556,6 +589,7 @@ pub fn validate_to_outputs(
     write_first_article_measurements_handoff(&config, &placement, outputs)?;
     write_component_derating_handoff(&config, outputs)?;
     write_fault_fmea_handoff(&config, outputs)?;
+    write_emc_esd_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -599,6 +633,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.first_article_measurements.is_empty()
         || config.component_deratings.is_empty()
         || config.single_fault_checks.is_empty()
+        || config.emc_esd_checks.is_empty()
     {
         return Err("electrical validation config is missing required gate groups".into());
     }
@@ -1848,6 +1883,199 @@ fn validate_single_faults(
     }
 }
 
+fn validate_emc_esd_precompliance(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let evidence_ids = fault_evidence_ids(config, parts);
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let external_analysis_ids = config
+        .external_analysis_handoffs
+        .iter()
+        .map(|handoff| handoff.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "emc esd",
+        "minimum interface coverage",
+        format!("{} checks", config.emc_esd_checks.len()),
+        format!(">= {} checks", config.emc_esd_policy.min_checks),
+        config.emc_esd_checks.len() >= config.emc_esd_policy.min_checks,
+        "EMC/ESD pre-compliance must cover each exposed/noisy interface, not just one rail.",
+    );
+
+    let mut ids = BTreeSet::new();
+    for check in &config.emc_esd_checks {
+        push_gate!(
+            rows,
+            errors,
+            "emc esd",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "emc esd",
+            format!("{} risk score", check.id),
+            format!("{}", check.risk_score),
+            format!("1..={}", config.emc_esd_policy.max_risk_score),
+            (1..=config.emc_esd_policy.max_risk_score).contains(&check.risk_score),
+            &check.notes,
+        );
+
+        for net in &check.nets {
+            push_gate!(
+                rows,
+                errors,
+                "emc esd",
+                format!("{} net {}", check.id, net),
+                net.clone(),
+                "known contract net",
+                contract_nets.contains(net),
+                &check.notes,
+            );
+        }
+
+        let needs_protection =
+            check.risk_score >= config.emc_esd_policy.require_protection_for_risk_at_least;
+        push_gate!(
+            rows,
+            errors,
+            "emc esd",
+            format!("{} protection coverage", check.id),
+            mitigation_list(&check.protection_part_ids),
+            if needs_protection {
+                "required and evidence-backed"
+            } else {
+                "optional"
+            },
+            !needs_protection || !check.protection_part_ids.is_empty(),
+            &check.notes,
+        );
+        for part_id in &check.protection_part_ids {
+            push_gate!(
+                rows,
+                errors,
+                "emc esd",
+                format!("{} protection evidence {}", check.id, part_id),
+                part_id.clone(),
+                "known selected/external part or validation id",
+                evidence_ids.contains(part_id.as_str()),
+                &check.notes,
+            );
+        }
+
+        push_gate!(
+            rows,
+            errors,
+            "emc esd",
+            format!("{} return path", check.id),
+            check.return_path_strategy.clone(),
+            if config.emc_esd_policy.require_return_path_strategy {
+                "non-empty strategy"
+            } else {
+                "documented"
+            },
+            !config.emc_esd_policy.require_return_path_strategy
+                || !check.return_path_strategy.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "emc esd",
+            format!("{} grounding/shielding", check.id),
+            check.grounding_strategy.clone(),
+            "non-empty strategy",
+            !check.grounding_strategy.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "emc esd",
+            format!("{} verification methods", check.id),
+            mitigation_list(&check.verification_methods),
+            "non-empty",
+            !check.verification_methods.is_empty(),
+            &check.notes,
+        );
+
+        let needs_measurement =
+            check.risk_score >= config.emc_esd_policy.require_measurement_for_risk_at_least;
+        push_gate!(
+            rows,
+            errors,
+            "emc esd",
+            format!("{} first-article coverage", check.id),
+            mitigation_list(&check.verification_measurements),
+            if needs_measurement {
+                "required and in first_article_measurements"
+            } else {
+                "optional"
+            },
+            !needs_measurement || !check.verification_measurements.is_empty(),
+            &check.notes,
+        );
+        for measurement in &check.verification_measurements {
+            push_gate!(
+                rows,
+                errors,
+                "emc esd",
+                format!("{} verifies {}", check.id, measurement),
+                measurement.clone(),
+                "known first-article measurement id",
+                measurement_ids.contains(measurement.as_str()),
+                &check.notes,
+            );
+        }
+
+        let needs_external_analysis = check.risk_score
+            >= config
+                .emc_esd_policy
+                .require_external_analysis_for_risk_at_least;
+        push_gate!(
+            rows,
+            errors,
+            "emc esd",
+            format!("{} external analysis", check.id),
+            mitigation_list(&check.external_analysis),
+            if needs_external_analysis {
+                "required and in external_analysis_handoffs"
+            } else {
+                "optional"
+            },
+            !needs_external_analysis || !check.external_analysis.is_empty(),
+            &check.notes,
+        );
+        for analysis_id in &check.external_analysis {
+            push_gate!(
+                rows,
+                errors,
+                "emc esd",
+                format!("{} analysis evidence {}", check.id, analysis_id),
+                analysis_id.clone(),
+                "known external analysis handoff id",
+                external_analysis_ids.contains(analysis_id.as_str()),
+                &check.notes,
+            );
+        }
+    }
+}
+
 fn valid_fmea_score(value: u8) -> bool {
     (1..=10).contains(&value)
 }
@@ -2370,6 +2598,48 @@ fn write_fault_fmea_handoff(
     Ok(())
 }
 
+fn write_emc_esd_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.emc_esd_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.emc_esd_csv)?;
+    writer.write_record([
+        "id",
+        "interface",
+        "exposure_class",
+        "nets",
+        "risk_score",
+        "protection_part_ids",
+        "return_path_strategy",
+        "grounding_strategy",
+        "verification_methods",
+        "verification_measurements",
+        "external_analysis",
+        "notes",
+    ])?;
+
+    for check in &config.emc_esd_checks {
+        writer.write_record([
+            check.id.as_str(),
+            check.interface.as_str(),
+            check.exposure_class.as_str(),
+            check.nets.join(";").as_str(),
+            format!("{}", check.risk_score).as_str(),
+            mitigation_list(&check.protection_part_ids).as_str(),
+            check.return_path_strategy.as_str(),
+            check.grounding_strategy.as_str(),
+            mitigation_list(&check.verification_methods).as_str(),
+            mitigation_list(&check.verification_measurements).as_str(),
+            mitigation_list(&check.external_analysis).as_str(),
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
@@ -2566,6 +2836,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("fault_fmea.csv")
+    )?;
+    writeln!(
+        report,
+        "- EMC/ESD pre-compliance table: `{}`",
+        outputs
+            .emc_esd_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("emc_esd_precompliance.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())

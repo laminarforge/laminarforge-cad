@@ -24,6 +24,7 @@ thermal_power_csv = "pcb/lamp_rev_a/reports/thermal_power_budget.csv"
 first_article_measurements_csv = "pcb/lamp_rev_a/reports/first_article_measurements.csv"
 component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
 fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
+emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 
 [assumptions]
 ambient_c = 35.0
@@ -327,6 +328,84 @@ require_detection_for_severity_at_least = 7
 require_hardware_mitigation_for_severity_at_least = 7
 require_first_article_for_severity_at_least = 7
 
+[emc_esd_policy]
+min_checks = 5
+max_risk_score = 100
+require_protection_for_risk_at_least = 50
+require_measurement_for_risk_at_least = 50
+require_external_analysis_for_risk_at_least = 70
+require_return_path_strategy = true
+
+[[emc_esd_checks]]
+id = "usb_c_esd_immunity"
+interface = "USB-C programming/power connector"
+exposure_class = "IEC 61000-4-2 touch/user ESD and USB cable surge exposure"
+nets = ["USB_DP", "USB_DN", "USB_CC1", "USB_CC2", "VBUS", "GND"]
+risk_score = 90
+protection_part_ids = ["usb_c_connector", "usb_esd_protection", "usb_c_cc_resistors", "vbus_to_5v_schottky", "usb_signal_integrity"]
+return_path_strategy = "USBLC6 clamps D+/D- to the local GND plane next to the USB-C connector before the pair reaches the ESP32-S3 module."
+grounding_strategy = "Connector shell/ground pads bond into the board GND pour; first article must inspect solder wetting and ESD-device placement."
+verification_methods = ["USB enumeration and flashing after contact-discharge handling", "visual inspection of USBLC6 placement and connector shield pads", "bench ESD/pre-compliance pass before production release"]
+verification_measurements = ["usb_vbus_voltage", "usb_5v_voltage", "usb_3v3_voltage"]
+external_analysis = ["usb_signal_integrity", "emc_esd_precompliance"]
+notes = "USB is the main user-accessible ESD path and the recovery path for flashing firmware."
+
+[[emc_esd_checks]]
+id = "dc_input_conducted_transient"
+interface = "External 12 V barrel input"
+exposure_class = "bench supply hot-plug, cable inductance, reverse/overvoltage, conducted transient"
+nets = ["+12V_RAW", "+12V", "GND"]
+risk_score = 82
+protection_part_ids = ["dc_input_jack", "input_schottky", "heater_resettable_fuse", "heater_tvs", "twelve_v_input_path", "twelve_v_fused_path"]
+return_path_strategy = "12 V input current returns through the GND plane and stays isolated from the USB-derived electronics rails except at the common board ground."
+grounding_strategy = "Use short 12 V/GND loop during bring-up; route external supply wiring away from USB and analog optical test cabling."
+verification_methods = ["current-limited 12 V attach with heater PWM off", "scope +12V_RAW/+12V during hot-plug if equipment is available", "external conducted-transient review before production"]
+verification_measurements = ["heater_raw_12v_voltage", "heater_supply_voltage_pwm_off", "power_off_vbus_resistance"]
+external_analysis = ["pdn_power_integrity", "emc_esd_precompliance"]
+notes = "The 12 V input is physically separate from USB but can inject conducted noise into the heater/ground system."
+
+[[emc_esd_checks]]
+id = "heater_cable_inductive_transient"
+interface = "External heater terminal and cable"
+exposure_class = "external cable inductive kick, load disconnect, ESD to heater wiring, PWM edge emissions"
+nets = ["HEATER_SUPPLY", "HEATER_P", "GATE_DRV", "HEATER_PWM", "GND"]
+risk_score = 95
+protection_part_ids = ["heater_output_terminal", "heater_resettable_fuse", "heater_tvs", "heater_mosfet", "heater_gate_driver", "inline_thermal_cutoff", "heater_supply_path", "heater_return_path"]
+return_path_strategy = "Heater supply and return are explicit high-current paths; external heater cable should be twisted or routed as a tight pair to reduce loop area."
+grounding_strategy = "Heater current returns through HEATER_P/MOSFET/GND path; keep heater wiring and thermally noisy nodes away from USB and optical analog cabling."
+verification_methods = ["scope HEATER_P and GATE_DRV during low-duty PWM into dummy load", "thermal/current bring-up with external thermal cutoff installed", "EMI sniff around heater cable before assay testing"]
+verification_measurements = ["heater_supply_voltage_pwm_off", "heater_return_pwm_off", "heater_pwm_idle"]
+external_analysis = ["pdn_power_integrity", "electrothermal", "emc_esd_precompliance"]
+notes = "The heater path is the dominant energy and emissions source on Rev A."
+
+[[emc_esd_checks]]
+id = "esp32_rf_and_wifi_emissions"
+interface = "ESP32-S3 module antenna / Wi-Fi radio"
+exposure_class = "2.4 GHz intentional radiator coupling into analog front end and USB cable"
+nets = ["+3V3", "GND", "ADC_AIN1", "MUX_COM", "SDA", "SCL"]
+risk_score = 70
+protection_part_ids = ["mcu_module", "decoupling_caps", "three_v_three_distribution", "analog_mux_supply_derating", "tia_opamp_supply_derating"]
+return_path_strategy = "ESP32-S3 module uses local +3V3 decoupling and the continuous ground plane; analog front-end rails stay on the same 3.3 V domain."
+grounding_strategy = "Keep Wi-Fi high-duty testing separate from optical calibration until ADC noise baseline is measured."
+verification_methods = ["record ADC idle noise with Wi-Fi active and inactive", "confirm +3V3 rail stability during Wi-Fi association", "pre-compliance radiated scan if enclosure/cable geometry changes"]
+verification_measurements = ["usb_3v3_voltage", "analog_adc_idle", "i2c_sda_idle", "i2c_scl_idle"]
+external_analysis = ["electrothermal", "emc_esd_precompliance"]
+notes = "The ESP32 module is certified as a module, but system-level emissions and analog susceptibility still depend on board/enclosure/cabling."
+
+[[emc_esd_checks]]
+id = "analog_optical_susceptibility"
+interface = "Optical TIA / mux / ADS1115 sensing path"
+exposure_class = "heater PWM noise, ESD/noise pickup through test leads, mux charge injection, I2C digital coupling"
+nets = ["ADC_AIN1", "MUX_COM", "SDA", "SCL", "+3V3", "GND"]
+risk_score = 72
+protection_part_ids = ["adc", "optical_mux", "optical_tia_opamp", "tia_feedback_resistor", "tia_feedback_cap", "resistor_4k7", "adc_supply_derating", "analog_mux_supply_derating", "tia_opamp_supply_derating"]
+return_path_strategy = "Analog front end uses the common GND plane and short local feedback path; first article must establish dark/noise baseline before wet assay interpretation."
+grounding_strategy = "Keep optical test wiring short and avoid routing heater cable over the analog region during calibration."
+verification_methods = ["dark ADC noise baseline", "single-channel LED on/off slope check", "repeat ADC baseline with heater PWM disabled/enabled at low power"]
+verification_measurements = ["analog_adc_idle", "i2c_sda_idle", "i2c_scl_idle"]
+external_analysis = ["emc_esd_precompliance"]
+notes = "This catches false-positive/false-negative assay risk from EMC/noise, not just hardware damage."
+
 [[single_fault_checks]]
 id = "heater_mosfet_stuck_on"
 subsystem = "heater_drive"
@@ -569,6 +648,13 @@ tool_class = "signal integrity"
 recommended_tools = ["KiCad impedance calculator", "Saturn PCB Toolkit", "HyperLynx", "oscilloscope eye/edge check"]
 inputs = ["USB_DP", "USB_DN", "4-layer stackup"]
 exit_criterion = "USB D+/D- routing has controlled-enough geometry for full-speed USB and passes firmware enumeration on first article."
+
+[[external_analysis_handoffs]]
+id = "emc_esd_precompliance"
+tool_class = "EMC / ESD pre-compliance"
+recommended_tools = ["ESD simulator", "near-field EMI probe", "spectrum analyzer", "oscilloscope transient capture", "IEC 61000-4-2 pre-scan"]
+inputs = ["USB-C connector", "12 V input cable", "heater cable", "ESP32-S3 Wi-Fi active state", "analog ADC baseline"]
+exit_criterion = "USB, 12 V input, heater wiring, Wi-Fi activity, and optical analog front end survive/operate through pre-compliance stress without rail latchup, unsafe heater state, USB loss requiring rework, or invalid ADC baseline drift."
 
 [[manual_first_article_gates]]
 id = "unpowered_resistance"
