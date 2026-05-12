@@ -165,6 +165,7 @@ jobs:
           test -s "$release_dir/review/thermistor_adc_transfer.csv"
           test -s "$release_dir/review/usb_power_budget.csv"
           test -s "$release_dir/review/procurement_readiness.csv"
+          test -s "$release_dir/review/procurement_substitution.csv"
           test -s "$release_dir/review/connector_polarity.csv"
           test -s "$release_dir/review/assembly_orientation.csv"
           test -s "$release_dir/review/assembly_parity.csv"

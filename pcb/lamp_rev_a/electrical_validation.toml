@@ -28,6 +28,7 @@ fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 usb_power_budget_csv = "pcb/lamp_rev_a/reports/usb_power_budget.csv"
 procurement_readiness_csv = "pcb/lamp_rev_a/reports/procurement_readiness.csv"
+procurement_substitution_csv = "pcb/lamp_rev_a/reports/procurement_substitution.csv"
 connector_polarity_csv = "pcb/lamp_rev_a/reports/connector_polarity.csv"
 assembly_orientation_csv = "pcb/lamp_rev_a/reports/assembly_orientation.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
@@ -281,6 +282,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Va
 acceptance_criterion = "Every selected Rev A part has quantity, LCSC order code, LCSC footprint, nets, and verification text; critical/manual/external parts have explicit assembly and procurement evidence."
 blocks_release = true
 notes = "Prevents an electrically valid design from becoming unorderable or ambiguous during JLCPCB/manual assembly."
+
+[[validation_traceability]]
+id = "procurement_substitution_control"
+validation_layer = "Procurement substitution and approved-vendor lock validation"
+electrical_gate_category = "procurement substitution"
+output_artifact = "procurement_substitution.csv; electrical_validation_gates.csv"
+release_manifest_entry = "procurement_substitution; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Validate LAMP Rev A upload bundles"
+acceptance_criterion = "Every procurement-critical Rev A part has an approved LCSC lock or external-safety lock, and any substitution requires engineering review before ordering."
+blocks_release = true
+notes = "Prevents JLCPCB/manual-order substitutions from silently changing safety-critical electrical behavior."
 
 [[validation_traceability]]
 id = "connector_polarity"
@@ -1650,6 +1662,194 @@ required_critical_part_ids = [
   "inline_thermal_cutoff",
 ]
 notes = "Every release-critical Rev A part must be orderable from the declared LCSC catalog source or explicitly external/manual with installation evidence."
+
+[procurement_substitution_policy]
+min_rules = 20
+require_rules_for_critical_parts = true
+allowed_modes = ["locked_exact", "external_exact"]
+require_lcsc_match = true
+require_engineering_review_flag = true
+notes = "Safety-critical Rev A parts are locked to approved LCSC order codes; any substitution requires engineering review before ordering."
+
+[[procurement_substitution_rules]]
+id = "mcu_module_exact_lock"
+part_id = "mcu_module"
+source = "selected_parts"
+approved_lcsc_part = "C2913198"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "ESP32-S3 module variant is locked to the firmware handoff."
+
+[[procurement_substitution_rules]]
+id = "usb_c_connector_exact_lock"
+part_id = "usb_c_connector"
+source = "selected_parts"
+approved_lcsc_part = "C168688"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "USB-C connector footprint and pinout must not be swapped at order time."
+
+[[procurement_substitution_rules]]
+id = "usb_c_cc_resistors_exact_lock"
+part_id = "usb_c_cc_resistors"
+source = "selected_parts"
+approved_lcsc_part = "C27834"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "CC resistor value controls USB-C sink behavior."
+
+[[procurement_substitution_rules]]
+id = "usb_esd_protection_exact_lock"
+part_id = "usb_esd_protection"
+source = "selected_parts"
+approved_lcsc_part = "C7519"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "USB ESD device protects firmware recovery interface."
+
+[[procurement_substitution_rules]]
+id = "vbus_to_5v_schottky_exact_lock"
+part_id = "vbus_to_5v_schottky"
+source = "selected_parts"
+approved_lcsc_part = "C8678"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "USB-derived electronics rail depends on this diode."
+
+[[procurement_substitution_rules]]
+id = "dc_input_jack_exact_lock"
+part_id = "dc_input_jack"
+source = "selected_parts"
+approved_lcsc_part = "C381116"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "Manual 12 V input connector must match enclosure and heater-current assumptions."
+
+[[procurement_substitution_rules]]
+id = "three_v_three_regulator_exact_lock"
+part_id = "three_v_three_regulator"
+source = "selected_parts"
+approved_lcsc_part = "C6186"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "3.3 V regulator substitution affects thermal and load-step margins."
+
+[[procurement_substitution_rules]]
+id = "regulator_bulk_caps_exact_lock"
+part_id = "regulator_bulk_caps"
+source = "selected_parts"
+approved_lcsc_part = "C5672"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "Bulk capacitance substitution affects startup and load-step simulations."
+
+[[procurement_substitution_rules]]
+id = "adc_exact_lock"
+part_id = "adc"
+source = "selected_parts"
+approved_lcsc_part = "C37593"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "ADS1115 identity and address are assumed by firmware and validation gates."
+
+[[procurement_substitution_rules]]
+id = "optical_mux_exact_lock"
+part_id = "optical_mux"
+source = "selected_parts"
+approved_lcsc_part = "C139301"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "Mux leakage/on-resistance changes optical signal assumptions."
+
+[[procurement_substitution_rules]]
+id = "turbidity_emitters_exact_lock"
+part_id = "turbidity_emitters"
+source = "selected_parts"
+approved_lcsc_part = "C2286"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "Emitter wavelength/package substitution invalidates calibration assumptions."
+
+[[procurement_substitution_rules]]
+id = "photodiodes_exact_lock"
+part_id = "photodiodes"
+source = "selected_parts"
+approved_lcsc_part = "C2833005"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "Photodiode spectral/package substitution invalidates analog response assumptions."
+
+[[procurement_substitution_rules]]
+id = "optical_tia_opamp_exact_lock"
+part_id = "optical_tia_opamp"
+source = "selected_parts"
+approved_lcsc_part = "C179174"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "TIA op amp substitution changes bias, swing, and bandwidth assumptions."
+
+[[procurement_substitution_rules]]
+id = "heater_gate_driver_exact_lock"
+part_id = "heater_gate_driver"
+source = "selected_parts"
+approved_lcsc_part = "C636886"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "Gate-driver substitution changes heater MOSFET switching behavior."
+
+[[procurement_substitution_rules]]
+id = "heater_mosfet_exact_lock"
+part_id = "heater_mosfet"
+source = "selected_parts"
+approved_lcsc_part = "C20917"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "MOSFET substitution changes Rds(on), thermal margin, and fail-safe behavior."
+
+[[procurement_substitution_rules]]
+id = "heater_output_terminal_exact_lock"
+part_id = "heater_output_terminal"
+source = "selected_parts"
+approved_lcsc_part = "C430605"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "Heater terminal substitution changes pitch/current/manual-install assumptions."
+
+[[procurement_substitution_rules]]
+id = "heater_resettable_fuse_exact_lock"
+part_id = "heater_resettable_fuse"
+source = "selected_parts"
+approved_lcsc_part = "C47002401"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "PTC substitution changes protection coordination."
+
+[[procurement_substitution_rules]]
+id = "heater_tvs_exact_lock"
+part_id = "heater_tvs"
+source = "selected_parts"
+approved_lcsc_part = "C6937298"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "TVS substitution changes heater cable transient clamp behavior."
+
+[[procurement_substitution_rules]]
+id = "input_schottky_exact_lock"
+part_id = "input_schottky"
+source = "selected_parts"
+approved_lcsc_part = "C8678"
+substitution_mode = "locked_exact"
+requires_engineering_review = true
+notes = "12 V input diode substitution changes voltage drop and thermal behavior."
+
+[[procurement_substitution_rules]]
+id = "inline_thermal_cutoff_external_lock"
+part_id = "inline_thermal_cutoff"
+source = "external_safety_parts"
+approved_lcsc_part = "C156519"
+substitution_mode = "external_exact"
+requires_engineering_review = true
+notes = "External thermal cutoff is the last-resort heater safety layer."
 
 [connector_polarity_policy]
 min_checks = 12

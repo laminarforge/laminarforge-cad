@@ -86,6 +86,7 @@ struct Outputs {
     emc_esd_file: String,
     usb_power_budget_file: String,
     procurement_readiness_file: String,
+    procurement_substitution_file: String,
     connector_polarity_file: String,
     assembly_orientation_file: String,
     assembly_parity_file: String,
@@ -532,6 +533,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         emc_esd_csv: output_root.join(&config.outputs.emc_esd_file),
         usb_power_budget_csv: output_root.join(&config.outputs.usb_power_budget_file),
         procurement_readiness_csv: output_root.join(&config.outputs.procurement_readiness_file),
+        procurement_substitution_csv: output_root
+            .join(&config.outputs.procurement_substitution_file),
         connector_polarity_csv: output_root.join(&config.outputs.connector_polarity_file),
         assembly_orientation_csv: output_root.join(&config.outputs.assembly_orientation_file),
         i2c_bus_csv: output_root.join(&config.outputs.i2c_bus_file),
@@ -2413,6 +2416,11 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "procurement_substitution: {}",
+        config.outputs.procurement_substitution_file
+    )?;
+    writeln!(
+        file,
         "connector_polarity: {}",
         config.outputs.connector_polarity_file
     )?;
@@ -2910,6 +2918,7 @@ fn write_release_bundles(
         config.outputs.emc_esd_file.as_str(),
         config.outputs.usb_power_budget_file.as_str(),
         config.outputs.procurement_readiness_file.as_str(),
+        config.outputs.procurement_substitution_file.as_str(),
         config.outputs.connector_polarity_file.as_str(),
         config.outputs.assembly_orientation_file.as_str(),
         config.outputs.assembly_parity_file.as_str(),
@@ -3146,6 +3155,7 @@ fn validate_release_outputs(
         &config.outputs.emc_esd_file,
         &config.outputs.usb_power_budget_file,
         &config.outputs.procurement_readiness_file,
+        &config.outputs.procurement_substitution_file,
         &config.outputs.connector_polarity_file,
         &config.outputs.assembly_orientation_file,
         &config.outputs.assembly_parity_file,
@@ -3274,6 +3284,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.emc_esd_file.as_str(),
         config.outputs.usb_power_budget_file.as_str(),
         config.outputs.procurement_readiness_file.as_str(),
+        config.outputs.procurement_substitution_file.as_str(),
         config.outputs.connector_polarity_file.as_str(),
         config.outputs.assembly_orientation_file.as_str(),
         config.outputs.assembly_parity_file.as_str(),

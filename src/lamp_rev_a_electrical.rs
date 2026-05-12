@@ -24,6 +24,7 @@ pub struct ElectricalOutputPaths {
     pub emc_esd_csv: PathBuf,
     pub usb_power_budget_csv: PathBuf,
     pub procurement_readiness_csv: PathBuf,
+    pub procurement_substitution_csv: PathBuf,
     pub connector_polarity_csv: PathBuf,
     pub assembly_orientation_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
@@ -80,6 +81,9 @@ struct ValidationConfig {
     procurement_readiness_policy: ProcurementReadinessPolicy,
     #[serde(default)]
     procurement_critical_parts: Vec<ProcurementCriticalPart>,
+    procurement_substitution_policy: ProcurementSubstitutionPolicy,
+    #[serde(default)]
+    procurement_substitution_rules: Vec<ProcurementSubstitutionRule>,
     connector_polarity_policy: ConnectorPolarityPolicy,
     #[serde(default)]
     connector_polarity_checks: Vec<ConnectorPolarityCheck>,
@@ -166,6 +170,7 @@ struct Outputs {
     emc_esd_csv: String,
     usb_power_budget_csv: String,
     procurement_readiness_csv: String,
+    procurement_substitution_csv: String,
     connector_polarity_csv: String,
     assembly_orientation_csv: String,
     i2c_bus_csv: String,
@@ -357,6 +362,27 @@ struct ProcurementCriticalPart {
     assembly_method: String,
     risk: String,
     required_evidence: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ProcurementSubstitutionPolicy {
+    min_rules: usize,
+    require_rules_for_critical_parts: bool,
+    allowed_modes: Vec<String>,
+    require_lcsc_match: bool,
+    require_engineering_review_flag: bool,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ProcurementSubstitutionRule {
+    id: String,
+    part_id: String,
+    source: String,
+    approved_lcsc_part: String,
+    substitution_mode: String,
+    requires_engineering_review: bool,
     notes: String,
 }
 
@@ -1146,6 +1172,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
         usb_power_budget_csv: repo_root.join(config.outputs.usb_power_budget_csv),
         procurement_readiness_csv: repo_root.join(config.outputs.procurement_readiness_csv),
+        procurement_substitution_csv: repo_root.join(config.outputs.procurement_substitution_csv),
         connector_polarity_csv: repo_root.join(config.outputs.connector_polarity_csv),
         assembly_orientation_csv: repo_root.join(config.outputs.assembly_orientation_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
@@ -1219,6 +1246,7 @@ pub fn validate_to_outputs(
     validate_usb_signal_integrity(&config, &routing, &contract_nets, &mut rows, &mut errors);
     validate_usb_power_budget(&config, &parts, &mut rows, &mut errors);
     validate_procurement_readiness(&config, &parts, &mut rows, &mut errors);
+    validate_procurement_substitutions(&config, &parts, &mut rows, &mut errors);
     validate_connector_polarity(
         &config,
         &parts,
@@ -1300,6 +1328,7 @@ pub fn validate_to_outputs(
     write_emc_esd_handoff(&config, outputs)?;
     write_usb_power_budget_handoff(&config, &parts, outputs)?;
     write_procurement_readiness_handoff(&config, &parts, outputs)?;
+    write_procurement_substitution_handoff(&config, &parts, outputs)?;
     write_connector_polarity_handoff(&config, outputs)?;
     write_assembly_orientation_handoff(&config, &placement, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
@@ -4679,6 +4708,143 @@ fn validate_procurement_readiness(
                 &part.notes,
             );
         }
+    }
+}
+
+fn validate_procurement_substitutions(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.procurement_substitution_policy;
+    let selected_parts = parts
+        .selected_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let external_parts = parts
+        .external_safety_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let allowed_modes = policy
+        .allowed_modes
+        .iter()
+        .map(|mode| mode.as_str())
+        .collect::<BTreeSet<_>>();
+    let rule_part_ids = config
+        .procurement_substitution_rules
+        .iter()
+        .map(|rule| rule.part_id.as_str())
+        .collect::<BTreeSet<_>>();
+    let mut rule_id_counts: BTreeMap<&str, usize> = BTreeMap::new();
+    for rule in &config.procurement_substitution_rules {
+        *rule_id_counts.entry(rule.id.as_str()).or_default() += 1;
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "procurement substitution",
+        "substitution rule count",
+        format!("{} rules", config.procurement_substitution_rules.len()),
+        format!(">= {} rules", policy.min_rules),
+        config.procurement_substitution_rules.len() >= policy.min_rules,
+        &policy.notes,
+    );
+
+    for (rule_id, count) in rule_id_counts {
+        push_gate!(
+            rows,
+            errors,
+            "procurement substitution",
+            format!("{rule_id} unique rule id"),
+            format!("{count} definitions"),
+            "exactly 1 definition",
+            count == 1,
+            &policy.notes,
+        );
+    }
+
+    if policy.require_rules_for_critical_parts {
+        for part in &config.procurement_critical_parts {
+            push_gate!(
+                rows,
+                errors,
+                "procurement substitution",
+                format!("{} critical part substitution rule", part.id),
+                part.id.clone(),
+                "procurement_substitution_rules entry",
+                rule_part_ids.contains(part.id.as_str()),
+                &part.notes,
+            );
+        }
+    }
+
+    for rule in &config.procurement_substitution_rules {
+        let actual_lcsc = match rule.source.as_str() {
+            "selected_parts" => selected_parts
+                .get(rule.part_id.as_str())
+                .map(|part| part.lcsc_part.as_str()),
+            "external_safety_parts" => external_parts
+                .get(rule.part_id.as_str())
+                .map(|part| part.lcsc_part.as_str()),
+            _ => None,
+        };
+        push_gate!(
+            rows,
+            errors,
+            "procurement substitution",
+            format!("{} source", rule.id),
+            format!("{} / {}", rule.source, rule.part_id),
+            "selected_parts or external_safety_parts entry",
+            actual_lcsc.is_some(),
+            &rule.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement substitution",
+            format!("{} approved LCSC lock", rule.id),
+            actual_lcsc.unwrap_or("missing").to_string(),
+            rule.approved_lcsc_part.clone(),
+            !policy.require_lcsc_match
+                || actual_lcsc
+                    .map(|actual| actual == rule.approved_lcsc_part)
+                    .unwrap_or(false),
+            &rule.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement substitution",
+            format!("{} substitution mode", rule.id),
+            rule.substitution_mode.clone(),
+            policy.allowed_modes.join(" | "),
+            allowed_modes.contains(rule.substitution_mode.as_str()),
+            &rule.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement substitution",
+            format!("{} engineering review", rule.id),
+            rule.requires_engineering_review.to_string(),
+            "true",
+            !policy.require_engineering_review_flag || rule.requires_engineering_review,
+            &rule.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "procurement substitution",
+            format!("{} substitution note", rule.id),
+            rule.notes.clone(),
+            "non-empty",
+            !rule.notes.trim().is_empty(),
+            &policy.notes,
+        );
     }
 }
 
@@ -9309,6 +9475,80 @@ fn write_procurement_readiness_handoff(
     Ok(())
 }
 
+fn write_procurement_substitution_handoff(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.procurement_substitution_csv)?;
+    let policy = &config.procurement_substitution_policy;
+    let selected_parts = parts
+        .selected_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let external_parts = parts
+        .external_safety_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let allowed_modes = policy
+        .allowed_modes
+        .iter()
+        .map(|mode| mode.as_str())
+        .collect::<BTreeSet<_>>();
+
+    let mut writer = csv::Writer::from_path(&outputs.procurement_substitution_csv)?;
+    writer.write_record([
+        "id",
+        "part_id",
+        "source",
+        "approved_lcsc_part",
+        "actual_lcsc_part",
+        "substitution_mode",
+        "requires_engineering_review",
+        "status",
+        "notes",
+    ])?;
+
+    for rule in &config.procurement_substitution_rules {
+        let actual_lcsc = match rule.source.as_str() {
+            "selected_parts" => selected_parts
+                .get(rule.part_id.as_str())
+                .map(|part| part.lcsc_part.as_str()),
+            "external_safety_parts" => external_parts
+                .get(rule.part_id.as_str())
+                .map(|part| part.lcsc_part.as_str()),
+            _ => None,
+        };
+        let status = if actual_lcsc
+            .map(|actual| !policy.require_lcsc_match || actual == rule.approved_lcsc_part)
+            .unwrap_or(false)
+            && allowed_modes.contains(rule.substitution_mode.as_str())
+            && (!policy.require_engineering_review_flag || rule.requires_engineering_review)
+            && !rule.notes.trim().is_empty()
+        {
+            "pass"
+        } else {
+            "fail"
+        };
+        writer.write_record([
+            rule.id.as_str(),
+            rule.part_id.as_str(),
+            rule.source.as_str(),
+            rule.approved_lcsc_part.as_str(),
+            actual_lcsc.unwrap_or("missing"),
+            rule.substitution_mode.as_str(),
+            rule.requires_engineering_review.to_string().as_str(),
+            status,
+            rule.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_connector_polarity_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -10177,6 +10417,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("usb_power_budget.csv")
+    )?;
+    writeln!(
+        report,
+        "- Procurement substitution table: `{}`",
+        outputs
+            .procurement_substitution_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("procurement_substitution.csv")
     )?;
     writeln!(
         report,
