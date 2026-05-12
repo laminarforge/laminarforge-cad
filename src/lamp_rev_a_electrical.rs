@@ -25,6 +25,7 @@ pub struct ElectricalOutputPaths {
     pub usb_power_budget_csv: PathBuf,
     pub procurement_readiness_csv: PathBuf,
     pub procurement_substitution_csv: PathBuf,
+    pub schematic_source_parity_csv: PathBuf,
     pub connector_polarity_csv: PathBuf,
     pub assembly_orientation_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
@@ -84,6 +85,9 @@ struct ValidationConfig {
     procurement_substitution_policy: ProcurementSubstitutionPolicy,
     #[serde(default)]
     procurement_substitution_rules: Vec<ProcurementSubstitutionRule>,
+    schematic_source_parity_policy: SchematicSourceParityPolicy,
+    #[serde(default)]
+    schematic_source_parity_checks: Vec<SchematicSourceParityCheck>,
     connector_polarity_policy: ConnectorPolarityPolicy,
     #[serde(default)]
     connector_polarity_checks: Vec<ConnectorPolarityCheck>,
@@ -145,6 +149,7 @@ struct Package {
 
 #[derive(Debug, Deserialize)]
 struct Inputs {
+    schematic: String,
     contract: String,
     parts: String,
     routing_seed: String,
@@ -171,6 +176,7 @@ struct Outputs {
     usb_power_budget_csv: String,
     procurement_readiness_csv: String,
     procurement_substitution_csv: String,
+    schematic_source_parity_csv: String,
     connector_polarity_csv: String,
     assembly_orientation_csv: String,
     i2c_bus_csv: String,
@@ -458,6 +464,28 @@ struct SimulationInputPolicy {
     require_recommended_tools: bool,
     require_inputs: bool,
     require_exit_criterion: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct SchematicSourceParityPolicy {
+    min_checks: usize,
+    require_architecture_shell_marker: bool,
+    require_contract_module: bool,
+    require_schematic_text: bool,
+    require_required_parts: bool,
+    require_required_nets: bool,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct SchematicSourceParityCheck {
+    id: String,
+    contract_module: String,
+    schematic_text: String,
+    source_authority: String,
+    required_parts: Vec<String>,
+    required_nets: Vec<String>,
+    notes: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -944,11 +972,21 @@ struct ValidationTraceability {
 
 #[derive(Debug, Deserialize)]
 struct Contract {
+    #[serde(default)]
+    modules: Vec<ContractModule>,
     stackup: Stackup,
     rails: Vec<ContractRail>,
     nets: Vec<ContractNet>,
     #[serde(default)]
     net_groups: Vec<ContractNetGroup>,
+}
+
+#[derive(Debug, Deserialize)]
+struct ContractModule {
+    name: String,
+    status: String,
+    owner: String,
+    deliverable: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -1173,6 +1211,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         usb_power_budget_csv: repo_root.join(config.outputs.usb_power_budget_csv),
         procurement_readiness_csv: repo_root.join(config.outputs.procurement_readiness_csv),
         procurement_substitution_csv: repo_root.join(config.outputs.procurement_substitution_csv),
+        schematic_source_parity_csv: repo_root.join(config.outputs.schematic_source_parity_csv),
         connector_polarity_csv: repo_root.join(config.outputs.connector_polarity_csv),
         assembly_orientation_csv: repo_root.join(config.outputs.assembly_orientation_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
@@ -1223,6 +1262,7 @@ pub fn validate_to_outputs(
     let pin_nets = read_toml::<PinNetManifest>(&repo_root.join(&config.inputs.pin_nets))?;
     let firmware = read_toml::<FirmwareHandoff>(&repo_root.join(&config.inputs.firmware_handoff))?;
     let placement = read_toml::<PlacementPlan>(&repo_root.join(&config.inputs.placement))?;
+    let schematic = fs::read_to_string(repo_root.join(&config.inputs.schematic))?;
 
     let selected_part_ids = selected_part_ids(&parts);
     let contract_rails = contract_rails(&contract);
@@ -1247,6 +1287,15 @@ pub fn validate_to_outputs(
     validate_usb_power_budget(&config, &parts, &mut rows, &mut errors);
     validate_procurement_readiness(&config, &parts, &mut rows, &mut errors);
     validate_procurement_substitutions(&config, &parts, &mut rows, &mut errors);
+    validate_schematic_source_parity(
+        &config,
+        &contract,
+        &parts,
+        &contract_nets,
+        &schematic,
+        &mut rows,
+        &mut errors,
+    );
     validate_connector_polarity(
         &config,
         &parts,
@@ -1329,6 +1378,7 @@ pub fn validate_to_outputs(
     write_usb_power_budget_handoff(&config, &parts, outputs)?;
     write_procurement_readiness_handoff(&config, &parts, outputs)?;
     write_procurement_substitution_handoff(&config, &parts, outputs)?;
+    write_schematic_source_parity_handoff(&config, &contract, outputs)?;
     write_connector_polarity_handoff(&config, outputs)?;
     write_assembly_orientation_handoff(&config, &placement, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
@@ -1395,6 +1445,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.single_fault_checks.is_empty()
         || config.emc_esd_checks.is_empty()
         || config.procurement_critical_parts.is_empty()
+        || config.schematic_source_parity_checks.is_empty()
         || config.connector_polarity_checks.is_empty()
         || config.assembly_orientation_checks.is_empty()
         || config.boot_startup_checks.is_empty()
@@ -1409,6 +1460,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
 
 fn ensure_inputs(repo_root: &Path, inputs: &Inputs) -> Result<(), Box<dyn Error>> {
     for relative in [
+        &inputs.schematic,
         &inputs.contract,
         &inputs.parts,
         &inputs.routing_seed,
@@ -4845,6 +4897,168 @@ fn validate_procurement_substitutions(
             !rule.notes.trim().is_empty(),
             &policy.notes,
         );
+    }
+}
+
+fn validate_schematic_source_parity(
+    config: &ValidationConfig,
+    contract: &Contract,
+    parts: &PartsManifest,
+    contract_nets: &BTreeSet<String>,
+    schematic: &str,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.schematic_source_parity_policy;
+    let selected_parts = selected_part_ids(parts);
+    let modules = contract
+        .modules
+        .iter()
+        .map(|module| (module.name.as_str(), module))
+        .collect::<BTreeMap<_, _>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "schematic source parity",
+        "minimum parity checks",
+        format!("{} checks", config.schematic_source_parity_checks.len()),
+        format!(">= {} checks", policy.min_checks),
+        config.schematic_source_parity_checks.len() >= policy.min_checks,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "schematic source parity",
+        "KiCad schematic root",
+        if schematic.contains("(kicad_sch") {
+            "present"
+        } else {
+            "missing"
+        },
+        "present",
+        schematic.contains("(kicad_sch"),
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "schematic source parity",
+        "Rev A title block",
+        if schematic.contains("LaminarForge LAMP Rev A PCBA") {
+            "present"
+        } else {
+            "missing"
+        },
+        "present",
+        schematic.contains("LaminarForge LAMP Rev A PCBA"),
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "schematic source parity",
+        "source authority marker",
+        if schematic.contains("Contract and parts manifests are validated") {
+            "present"
+        } else {
+            "missing"
+        },
+        "present",
+        !policy.require_architecture_shell_marker
+            || schematic.contains("Contract and parts manifests are validated"),
+        &policy.notes,
+    );
+
+    for check in &config.schematic_source_parity_checks {
+        let module = modules.get(check.contract_module.as_str());
+        push_gate!(
+            rows,
+            errors,
+            "schematic source parity",
+            format!("{} contract module", check.id),
+            check.contract_module.clone(),
+            "present in contract.toml",
+            !policy.require_contract_module || module.is_some(),
+            &check.notes,
+        );
+        if let Some(module) = module {
+            push_gate!(
+                rows,
+                errors,
+                "schematic source parity",
+                format!("{} module status", check.id),
+                module.status.clone(),
+                "required",
+                module.status == "required",
+                &check.notes,
+            );
+            push_gate!(
+                rows,
+                errors,
+                "schematic source parity",
+                format!("{} module owner", check.id),
+                module.owner.clone(),
+                "schematic or layout",
+                matches!(module.owner.as_str(), "schematic" | "layout"),
+                &check.notes,
+            );
+            push_gate!(
+                rows,
+                errors,
+                "schematic source parity",
+                format!("{} module deliverable", check.id),
+                module.deliverable.clone(),
+                "non-empty",
+                !module.deliverable.trim().is_empty(),
+                &check.notes,
+            );
+        }
+        push_gate!(
+            rows,
+            errors,
+            "schematic source parity",
+            format!("{} schematic text", check.id),
+            check.schematic_text.clone(),
+            "present in lamp_rev_a.kicad_sch",
+            !policy.require_schematic_text || schematic.contains(&check.schematic_text),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "schematic source parity",
+            format!("{} source authority", check.id),
+            check.source_authority.clone(),
+            "non-empty",
+            !check.source_authority.trim().is_empty(),
+            &check.notes,
+        );
+        for part_id in &check.required_parts {
+            push_gate!(
+                rows,
+                errors,
+                "schematic source parity",
+                format!("{} required part {}", check.id, part_id),
+                part_id.clone(),
+                "selected in parts.toml",
+                !policy.require_required_parts || selected_parts.contains(part_id.as_str()),
+                &check.notes,
+            );
+        }
+        for net in &check.required_nets {
+            push_gate!(
+                rows,
+                errors,
+                "schematic source parity",
+                format!("{} required net {}", check.id, net),
+                net.clone(),
+                "present in contract.toml",
+                !policy.require_required_nets || contract_nets.contains(net),
+                &check.notes,
+            );
+        }
     }
 }
 
@@ -9549,6 +9763,64 @@ fn write_procurement_substitution_handoff(
     Ok(())
 }
 
+fn write_schematic_source_parity_handoff(
+    config: &ValidationConfig,
+    contract: &Contract,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.schematic_source_parity_csv)?;
+    let modules = contract
+        .modules
+        .iter()
+        .map(|module| (module.name.as_str(), module))
+        .collect::<BTreeMap<_, _>>();
+    let mut writer = csv::Writer::from_path(&outputs.schematic_source_parity_csv)?;
+    writer.write_record([
+        "id",
+        "contract_module",
+        "module_owner",
+        "module_status",
+        "schematic_text",
+        "source_authority",
+        "required_parts",
+        "required_nets",
+        "status",
+        "notes",
+    ])?;
+
+    for check in &config.schematic_source_parity_checks {
+        let module = modules.get(check.contract_module.as_str());
+        let status = if module.is_some()
+            && !check.schematic_text.trim().is_empty()
+            && !check.source_authority.trim().is_empty()
+            && (!check.required_parts.is_empty() || !check.required_nets.is_empty())
+        {
+            "pass"
+        } else {
+            "fail"
+        };
+        writer.write_record([
+            check.id.as_str(),
+            check.contract_module.as_str(),
+            module
+                .map(|module| module.owner.as_str())
+                .unwrap_or("missing"),
+            module
+                .map(|module| module.status.as_str())
+                .unwrap_or("missing"),
+            check.schematic_text.as_str(),
+            check.source_authority.as_str(),
+            check.required_parts.join(";").as_str(),
+            check.required_nets.join(";").as_str(),
+            status,
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_connector_polarity_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -10426,6 +10698,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("procurement_substitution.csv")
+    )?;
+    writeln!(
+        report,
+        "- Schematic source/parity table: `{}`",
+        outputs
+            .schematic_source_parity_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("schematic_source_parity.csv")
     )?;
     writeln!(
         report,

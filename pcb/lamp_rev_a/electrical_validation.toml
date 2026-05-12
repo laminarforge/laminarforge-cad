@@ -5,6 +5,7 @@ revision = "Rev A"
 source_stage = "pre_fab_electrical_safety_gate"
 
 [inputs]
+schematic = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch"
 contract = "pcb/lamp_rev_a/contract.toml"
 parts = "pcb/lamp_rev_a/parts.toml"
 routing_seed = "pcb/lamp_rev_a/routing_seed.toml"
@@ -29,6 +30,7 @@ emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 usb_power_budget_csv = "pcb/lamp_rev_a/reports/usb_power_budget.csv"
 procurement_readiness_csv = "pcb/lamp_rev_a/reports/procurement_readiness.csv"
 procurement_substitution_csv = "pcb/lamp_rev_a/reports/procurement_substitution.csv"
+schematic_source_parity_csv = "pcb/lamp_rev_a/reports/schematic_source_parity.csv"
 connector_polarity_csv = "pcb/lamp_rev_a/reports/connector_polarity.csv"
 assembly_orientation_csv = "pcb/lamp_rev_a/reports/assembly_orientation.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
@@ -293,6 +295,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Va
 acceptance_criterion = "Every procurement-critical Rev A part has an approved LCSC lock or external-safety lock, and any substitution requires engineering review before ordering."
 blocks_release = true
 notes = "Prevents JLCPCB/manual-order substitutions from silently changing safety-critical electrical behavior."
+
+[[validation_traceability]]
+id = "schematic_source_parity"
+validation_layer = "Schematic source and contract/parts parity"
+electrical_gate_category = "schematic source parity"
+output_artifact = "schematic_source_parity.csv; electrical_validation_gates.csv"
+release_manifest_entry = "schematic_source_parity; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Validate LAMP Rev A upload bundles"
+acceptance_criterion = "The Rev A schematic shell title/authority markers, contract modules, selected parts, and required nets remain aligned with the source manifests used for layout and fab release."
+blocks_release = true
+notes = "Prevents the architecture-shell schematic from drifting away from contract.toml, parts.toml, and the release source package before full schematic capture is complete."
 
 [[validation_traceability]]
 id = "connector_polarity"
@@ -1850,6 +1863,78 @@ approved_lcsc_part = "C156519"
 substitution_mode = "external_exact"
 requires_engineering_review = true
 notes = "External thermal cutoff is the last-resort heater safety layer."
+
+[schematic_source_parity_policy]
+min_checks = 7
+require_architecture_shell_marker = true
+require_contract_module = true
+require_schematic_text = true
+require_required_parts = true
+require_required_nets = true
+notes = "The current KiCad schematic is an architecture shell; this gate keeps that shell synchronized with contract.toml, parts.toml, and required Rev A nets until full schematic capture replaces it."
+
+[[schematic_source_parity_checks]]
+id = "mcu_usb_programming_shell"
+contract_module = "esp32_s3"
+schematic_text = "MCU / USB / Programming"
+source_authority = "contract.toml + parts.toml + pin_nets.toml + firmware_handoff.toml"
+required_parts = ["mcu_module", "usb_c_connector", "usb_c_cc_resistors", "usb_esd_protection"]
+required_nets = ["+3V3", "GND", "USB_DP", "USB_DN", "USB_CC1", "USB_CC2", "VBUS", "ESP_EN", "ESP_GPIO0", "UART_TX", "UART_RX"]
+notes = "ESP32-S3, USB-C, boot/reset, and debug nets must stay covered by the schematic shell and locked source manifests."
+
+[[schematic_source_parity_checks]]
+id = "power_shell"
+contract_module = "power"
+schematic_text = "Power:"
+source_authority = "contract.toml + parts.toml + power_architecture.toml + routing_seed.toml"
+required_parts = ["vbus_to_5v_schottky", "dc_input_jack", "three_v_three_regulator", "regulator_bulk_caps", "input_schottky"]
+required_nets = ["+12V_RAW", "+12V", "+5V", "+3V3", "VBUS", "GND"]
+notes = "Power tree shell coverage must match the Rev A rails, selected protection/regulator parts, and routed source package."
+
+[[schematic_source_parity_checks]]
+id = "heater_drive_shell"
+contract_module = "heater_drive"
+schematic_text = "Heater Drive:"
+source_authority = "contract.toml + parts.toml + power_architecture.toml + electrical_validation.toml"
+required_parts = ["heater_gate_driver", "heater_mosfet", "heater_output_terminal", "heater_resettable_fuse", "heater_tvs"]
+required_nets = ["HEATER_SUPPLY", "HEATER_P", "HEATER_PWM", "GATE_DRV", "GND"]
+notes = "Heater-drive shell coverage must include the high-current external heater path and fail-closed control parts."
+
+[[schematic_source_parity_checks]]
+id = "temperature_sense_shell"
+contract_module = "temperature_sense"
+schematic_text = "Temperature Sense:"
+source_authority = "contract.toml + parts.toml + electrical_validation.toml"
+required_parts = ["adc", "resistor_10k"]
+required_nets = ["ADC_AIN1", "+3V3", "GND"]
+notes = "Temperature-sense shell coverage must include the ADC path and bias network used by thermistor transfer validation."
+
+[[schematic_source_parity_checks]]
+id = "optical_detection_shell"
+contract_module = "optical_detection"
+schematic_text = "Optical Detection:"
+source_authority = "contract.toml + parts.toml + optical_architecture.toml + firmware_handoff.toml"
+required_parts = ["optical_mux", "turbidity_emitters", "photodiodes", "optical_tia_opamp", "tia_feedback_resistor", "tia_feedback_cap"]
+required_nets = ["MUX_COM", "MUX_S0", "MUX_S1", "MUX_S2", "ADC_AIN1", "LED_PWR_ANODE", "LED_BASE_0"]
+notes = "Optical detection shell coverage must match the selected 650 nm turbidimetry front end and firmware slot map."
+
+[[schematic_source_parity_checks]]
+id = "firmware_debug_shell"
+contract_module = "firmware_debug"
+schematic_text = "UART/JTAG"
+source_authority = "contract.toml + firmware_handoff.toml + pin_nets.toml"
+required_parts = ["mcu_module"]
+required_nets = ["UART_TX", "UART_RX", "ESP_EN", "ESP_GPIO0", "GND"]
+notes = "Debug/programming shell coverage must preserve recoverability for firmware bring-up."
+
+[[schematic_source_parity_checks]]
+id = "manufacturing_test_shell"
+contract_module = "manufacturing_test"
+schematic_text = "Manufacturing Test:"
+source_authority = "contract.toml + placement.toml + electrical_validation.toml"
+required_parts = []
+required_nets = ["VBUS", "+3V3", "+12V_RAW", "HEATER_PWM", "ADC_AIN1", "SDA", "SCL", "MUX_COM", "GND"]
+notes = "Manufacturing-test shell coverage must reflect accessible test points and bring-up measurements."
 
 [connector_polarity_policy]
 min_checks = 12

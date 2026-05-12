@@ -116,6 +116,7 @@ an EMC/ESD pre-compliance CSV for USB, heater, 12 V, Wi-Fi, and analog noise ris
 a USB-C power-budget CSV for Rd/default-current, VBUS/+5V/+3V3 current, inrush linkage, and first-article rail coverage,
 a procurement-readiness CSV for critical part ordering, machine/manual assembly, and external safety-component evidence,
 a procurement-substitution CSV locking safety-critical LCSC order codes and requiring engineering review for swaps,
+a schematic source/parity CSV tying the architecture-shell KiCad schematic to contract modules, selected parts, and required nets,
 a connector/polarity CSV for USB-C, manual connectors, diodes, MOSFETs, and orientation-sensitive IC pinouts,
 an assembly-orientation CSV for machine-placed ICs, polarity-sensitive parts, CPL centroids, and pin-1 evidence,
 a machine-checked assembly-parity CSV for BOM/CPL/manual/position reference consistency,
