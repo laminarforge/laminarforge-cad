@@ -18,6 +18,7 @@ pub struct ElectricalOutputPaths {
     pub pdn_current_paths_csv: PathBuf,
     pub thermal_power_csv: PathBuf,
     pub first_article_measurements_csv: PathBuf,
+    pub component_derating_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -49,6 +50,8 @@ struct ValidationConfig {
     manual_first_article_gates: Vec<ManualFirstArticleGate>,
     #[serde(default)]
     first_article_measurements: Vec<FirstArticleMeasurement>,
+    #[serde(default)]
+    component_deratings: Vec<ComponentDerating>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -80,6 +83,7 @@ struct Outputs {
     pdn_current_paths_csv: String,
     thermal_power_csv: String,
     first_article_measurements_csv: String,
+    component_derating_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -92,6 +96,7 @@ struct Assumptions {
     trace_current_derating: f64,
     component_current_derating: f64,
     component_voltage_derating: f64,
+    component_power_derating: f64,
     continuous_heater_current_ma: u32,
     protected_heater_current_ma: u32,
     first_article_current_limit_ma: u32,
@@ -234,6 +239,36 @@ struct FirstArticleMeasurement {
     #[serde(default)]
     current_limit_ma: Option<u32>,
     pass_criterion: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ComponentDerating {
+    id: String,
+    part_id: String,
+    stress_class: String,
+    #[serde(default)]
+    operating_voltage_v: Option<f64>,
+    #[serde(default)]
+    rated_voltage_v: Option<f64>,
+    #[serde(default)]
+    max_voltage_utilization: Option<f64>,
+    #[serde(default)]
+    operating_current_ma: Option<u32>,
+    #[serde(default)]
+    rated_current_ma: Option<u32>,
+    #[serde(default)]
+    max_current_utilization: Option<f64>,
+    #[serde(default)]
+    operating_power_w: Option<f64>,
+    #[serde(default)]
+    rated_power_w: Option<f64>,
+    #[serde(default)]
+    max_power_utilization: Option<f64>,
+    #[serde(default)]
+    estimated_temp_rise_c: Option<f64>,
+    #[serde(default)]
+    max_temp_rise_c: Option<f64>,
     notes: String,
 }
 
@@ -429,6 +464,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         thermal_power_csv: repo_root.join(config.outputs.thermal_power_csv),
         first_article_measurements_csv: repo_root
             .join(config.outputs.first_article_measurements_csv),
+        component_derating_csv: repo_root.join(config.outputs.component_derating_csv),
     })
 }
 
@@ -475,6 +511,7 @@ pub fn validate_to_outputs(
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
+    validate_component_deratings(&config, &selected_part_ids, &mut rows, &mut errors);
     add_external_analysis_rows(&config, &mut rows);
     add_manual_gate_rows(&config, &parts, &mut rows, &mut errors);
 
@@ -484,6 +521,7 @@ pub fn validate_to_outputs(
     write_pdn_current_paths_handoff(&config, &routing, outputs)?;
     write_thermal_power_handoff(&config, outputs)?;
     write_first_article_measurements_handoff(&config, &placement, outputs)?;
+    write_component_derating_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -525,6 +563,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.trace_current_paths.is_empty()
         || config.external_analysis_handoffs.is_empty()
         || config.first_article_measurements.is_empty()
+        || config.component_deratings.is_empty()
     {
         return Err("electrical validation config is missing required gate groups".into());
     }
@@ -1462,6 +1501,172 @@ fn validate_measurement_current_limit(
     );
 }
 
+fn validate_component_deratings(
+    config: &ValidationConfig,
+    selected_part_ids: &BTreeSet<&str>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let mut ids = BTreeSet::new();
+    for derating in &config.component_deratings {
+        push_gate!(
+            rows,
+            errors,
+            "component derating",
+            format!("{} unique id", derating.id),
+            derating.id.clone(),
+            "unique",
+            ids.insert(derating.id.as_str()),
+            &derating.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "component derating",
+            format!("{} part exists", derating.id),
+            derating.part_id.clone(),
+            "selected part id",
+            selected_part_ids.contains(derating.part_id.as_str()),
+            &derating.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "component derating",
+            format!("{} stress class", derating.id),
+            derating.stress_class.clone(),
+            "non-empty",
+            !derating.stress_class.trim().is_empty(),
+            &derating.notes,
+        );
+
+        validate_derating_pair(
+            rows,
+            errors,
+            DeratingPair {
+                id: &derating.id,
+                label: "voltage",
+                operating: derating.operating_voltage_v,
+                rated: derating.rated_voltage_v,
+                limit: derating
+                    .max_voltage_utilization
+                    .unwrap_or(config.assumptions.component_voltage_derating),
+                unit: "V",
+                notes: &derating.notes,
+            },
+        );
+        validate_derating_pair(
+            rows,
+            errors,
+            DeratingPair {
+                id: &derating.id,
+                label: "current",
+                operating: derating.operating_current_ma.map(|value| value as f64),
+                rated: derating.rated_current_ma.map(|value| value as f64),
+                limit: derating
+                    .max_current_utilization
+                    .unwrap_or(config.assumptions.component_current_derating),
+                unit: "mA",
+                notes: &derating.notes,
+            },
+        );
+        validate_derating_pair(
+            rows,
+            errors,
+            DeratingPair {
+                id: &derating.id,
+                label: "power",
+                operating: derating.operating_power_w,
+                rated: derating.rated_power_w,
+                limit: derating
+                    .max_power_utilization
+                    .unwrap_or(config.assumptions.component_power_derating),
+                unit: "W",
+                notes: &derating.notes,
+            },
+        );
+
+        if let (Some(estimated), Some(limit)) =
+            (derating.estimated_temp_rise_c, derating.max_temp_rise_c)
+        {
+            push_gate!(
+                rows,
+                errors,
+                "component derating",
+                format!("{} temperature rise", derating.id),
+                format!("{estimated:.2} C"),
+                format!("<= {limit:.2} C"),
+                estimated <= limit,
+                &derating.notes,
+            );
+        } else {
+            push_gate!(
+                rows,
+                errors,
+                "component derating",
+                format!("{} temperature rise", derating.id),
+                "not modeled",
+                "allowed when power/thermal stress is not primary",
+                true,
+                &derating.notes,
+            );
+        }
+    }
+}
+
+struct DeratingPair<'a> {
+    id: &'a str,
+    label: &'a str,
+    operating: Option<f64>,
+    rated: Option<f64>,
+    limit: f64,
+    unit: &'a str,
+    notes: &'a str,
+}
+
+fn validate_derating_pair(rows: &mut Vec<GateRow>, errors: &mut Vec<String>, pair: DeratingPair) {
+    match (pair.operating, pair.rated) {
+        (Some(operating), Some(rated)) if rated > 0.0 => {
+            let utilization = operating / rated;
+            push_gate!(
+                rows,
+                errors,
+                "component derating",
+                format!("{} {} utilization", pair.id, pair.label),
+                format!(
+                    "{operating:.3} {} / {rated:.3} {} = {:.1}%",
+                    pair.unit,
+                    pair.unit,
+                    utilization * 100.0
+                ),
+                format!("<= {:.1}%", pair.limit * 100.0),
+                utilization <= pair.limit,
+                pair.notes,
+            );
+        }
+        (None, None) => push_gate!(
+            rows,
+            errors,
+            "component derating",
+            format!("{} {} utilization", pair.id, pair.label),
+            "not applicable",
+            "allowed when not a stress axis",
+            true,
+            pair.notes,
+        ),
+        _ => push_gate!(
+            rows,
+            errors,
+            "component derating",
+            format!("{} {} utilization", pair.id, pair.label),
+            "partial rating data",
+            "operating and rated values",
+            false,
+            pair.notes,
+        ),
+    }
+}
+
 fn add_external_analysis_rows(config: &ValidationConfig, rows: &mut Vec<GateRow>) {
     for handoff in &config.external_analysis_handoffs {
         rows.push(GateRow {
@@ -1820,9 +2025,77 @@ fn write_first_article_measurements_handoff(
     Ok(())
 }
 
+fn write_component_derating_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.component_derating_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.component_derating_csv)?;
+    writer.write_record([
+        "id",
+        "part_id",
+        "stress_class",
+        "operating_voltage_v",
+        "rated_voltage_v",
+        "voltage_utilization_pct",
+        "operating_current_ma",
+        "rated_current_ma",
+        "current_utilization_pct",
+        "operating_power_w",
+        "rated_power_w",
+        "power_utilization_pct",
+        "estimated_temp_rise_c",
+        "max_temp_rise_c",
+        "notes",
+    ])?;
+
+    for derating in &config.component_deratings {
+        writer.write_record([
+            derating.id.as_str(),
+            derating.part_id.as_str(),
+            derating.stress_class.as_str(),
+            format_optional_v(derating.operating_voltage_v).as_str(),
+            format_optional_v(derating.rated_voltage_v).as_str(),
+            format_optional_pct(ratio(
+                derating.operating_voltage_v,
+                derating.rated_voltage_v,
+            ))
+            .as_str(),
+            format_optional_u32(derating.operating_current_ma).as_str(),
+            format_optional_u32(derating.rated_current_ma).as_str(),
+            format_optional_pct(ratio_u32(
+                derating.operating_current_ma,
+                derating.rated_current_ma,
+            ))
+            .as_str(),
+            format_optional_w(derating.operating_power_w).as_str(),
+            format_optional_w(derating.rated_power_w).as_str(),
+            format_optional_pct(ratio(derating.operating_power_w, derating.rated_power_w)).as_str(),
+            format_optional_v(derating.estimated_temp_rise_c).as_str(),
+            format_optional_v(derating.max_temp_rise_c).as_str(),
+            derating.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
+        .unwrap_or_else(|| "n/a".to_string())
+}
+
+fn format_optional_w(value: Option<f64>) -> String {
+    value
+        .map(|value| format!("{value:.4}"))
+        .unwrap_or_else(|| "n/a".to_string())
+}
+
+fn format_optional_pct(value: Option<f64>) -> String {
+    value
+        .map(|value| format!("{:.1}", value * 100.0))
         .unwrap_or_else(|| "n/a".to_string())
 }
 
@@ -1830,6 +2103,20 @@ fn format_optional_u32(value: Option<u32>) -> String {
     value
         .map(|value| value.to_string())
         .unwrap_or_else(|| "n/a".to_string())
+}
+
+fn ratio(operating: Option<f64>, rated: Option<f64>) -> Option<f64> {
+    match (operating, rated) {
+        (Some(operating), Some(rated)) if rated > 0.0 => Some(operating / rated),
+        _ => None,
+    }
+}
+
+fn ratio_u32(operating: Option<u32>, rated: Option<u32>) -> Option<f64> {
+    match (operating, rated) {
+        (Some(operating), Some(rated)) if rated > 0 => Some(operating as f64 / rated as f64),
+        _ => None,
+    }
 }
 
 fn format_optional_mm(value: Option<f64>) -> String {
@@ -1972,6 +2259,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("first_article_measurements.csv")
+    )?;
+    writeln!(
+        report,
+        "- Component derating table: `{}`",
+        outputs
+            .component_derating_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("component_derating.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())

@@ -22,6 +22,7 @@ simulation_handoff_md = "pcb/lamp_rev_a/reports/simulation_handoff.md"
 pdn_current_paths_csv = "pcb/lamp_rev_a/reports/pdn_current_paths.csv"
 thermal_power_csv = "pcb/lamp_rev_a/reports/thermal_power_budget.csv"
 first_article_measurements_csv = "pcb/lamp_rev_a/reports/first_article_measurements.csv"
+component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
 
 [assumptions]
 ambient_c = 35.0
@@ -32,6 +33,7 @@ inner_copper_oz = 0.5
 trace_current_derating = 0.70
 component_current_derating = 0.80
 component_voltage_derating = 0.70
+component_power_derating = 0.80
 continuous_heater_current_ma = 1500
 protected_heater_current_ma = 3000
 first_article_current_limit_ma = 500
@@ -172,6 +174,151 @@ voltage_rating_v = 30.0
 package_theta_ja_c_per_w = 125.0
 max_temp_rise_c = 35.0
 notes = "AO3400A loss estimate at 10-12 V gate drive from TC4427; prototype must measure MOSFET case temperature."
+
+[[component_deratings]]
+id = "u3_ldo_derating"
+part_id = "three_v_three_regulator"
+stress_class = "linear regulator thermal/current"
+operating_voltage_v = 4.6
+rated_voltage_v = 15.0
+operating_current_ma = 300
+rated_current_ma = 1000
+operating_power_w = 0.390
+rated_power_w = 0.538
+estimated_temp_rise_c = 25.35
+max_temp_rise_c = 35.0
+notes = "AMS1117 stress uses the same 300 mA electronics load and 65 C/W thermal model as the thermal table."
+
+[[component_deratings]]
+id = "vbus_schottky_derating"
+part_id = "vbus_to_5v_schottky"
+stress_class = "USB input isolation diode"
+operating_voltage_v = 5.25
+rated_voltage_v = 40.0
+operating_current_ma = 500
+rated_current_ma = 3000
+operating_power_w = 0.250
+rated_power_w = 1.0
+notes = "SS34 VBUS diode derating at the first-article USB current limit."
+
+[[component_deratings]]
+id = "heater_input_schottky_derating"
+part_id = "input_schottky"
+stress_class = "heater input isolation diode"
+operating_voltage_v = 13.2
+rated_voltage_v = 40.0
+operating_current_ma = 1500
+rated_current_ma = 3000
+operating_power_w = 0.750
+rated_power_w = 1.5
+notes = "SS34 12 V input diode derating at normal heater current, not the protected fault limit."
+
+[[component_deratings]]
+id = "heater_ptc_derating"
+part_id = "heater_resettable_fuse"
+stress_class = "heater resettable fuse"
+operating_voltage_v = 13.2
+rated_voltage_v = 36.0
+operating_current_ma = 1500
+rated_current_ma = 3000
+operating_power_w = 0.225
+rated_power_w = 0.6
+notes = "PTC check treats 1.5 A as normal current and 3 A as the first-article current-limit ceiling."
+
+[[component_deratings]]
+id = "heater_terminal_derating"
+part_id = "heater_output_terminal"
+stress_class = "manual heater connector"
+operating_voltage_v = 13.2
+rated_voltage_v = 250.0
+operating_current_ma = 3000
+rated_current_ma = 16000
+operating_power_w = 0.0
+rated_power_w = 0.2
+notes = "Connector has large electrical margin; torque, wire gauge, and manual installation remain physical bring-up checks."
+
+[[component_deratings]]
+id = "heater_mosfet_derating"
+part_id = "heater_mosfet"
+stress_class = "low-side heater MOSFET"
+operating_voltage_v = 13.2
+rated_voltage_v = 30.0
+operating_current_ma = 1500
+rated_current_ma = 5700
+operating_power_w = 0.117
+rated_power_w = 0.280
+estimated_temp_rise_c = 14.63
+max_temp_rise_c = 35.0
+notes = "AO3400A stress assumes 52 mOhm Rds(on) and continuous 1.5 A heater current."
+
+[[component_deratings]]
+id = "heater_tvs_derating"
+part_id = "heater_tvs"
+stress_class = "heater transient clamp"
+operating_voltage_v = 13.2
+rated_voltage_v = 18.0
+max_voltage_utilization = 0.80
+notes = "TVS uses reverse-working-voltage utilization; 18 V clamp is intentionally closer than passive derating limits."
+
+[[component_deratings]]
+id = "bulk_cap_voltage_derating"
+part_id = "regulator_bulk_caps"
+stress_class = "bulk capacitor voltage"
+operating_voltage_v = 13.2
+rated_voltage_v = 25.0
+notes = "The highest-stress bulk capacitor is the 12 V input capacitor."
+
+[[component_deratings]]
+id = "decoupling_cap_voltage_derating"
+part_id = "decoupling_caps"
+stress_class = "logic decoupling capacitor voltage"
+operating_voltage_v = 5.1
+rated_voltage_v = 50.0
+notes = "Worst decoupling exposure is the local +5 V electronics rail."
+
+[[component_deratings]]
+id = "adc_supply_derating"
+part_id = "adc"
+stress_class = "ADS1115 supply and input domain"
+operating_voltage_v = 3.3
+rated_voltage_v = 5.5
+notes = "ADC supply and input handoff stay inside the 3.3 V logic/analog domain."
+
+[[component_deratings]]
+id = "analog_mux_supply_derating"
+part_id = "optical_mux"
+stress_class = "CD74HC4051 supply and analog domain"
+operating_voltage_v = 3.3
+rated_voltage_v = 6.0
+notes = "Analog mux rails and signal range are limited to the +3V3 domain."
+
+[[component_deratings]]
+id = "tia_opamp_supply_derating"
+part_id = "optical_tia_opamp"
+stress_class = "TIA op amp supply and input domain"
+operating_voltage_v = 3.3
+rated_voltage_v = 5.5
+notes = "TLV6001 operates from +3V3 and feeds the ADS1115 input range."
+
+[[component_deratings]]
+id = "i2c_pullup_power_derating"
+part_id = "resistor_4k7"
+stress_class = "I2C pull-up resistor power"
+operating_voltage_v = 3.3
+rated_voltage_v = 150.0
+operating_power_w = 0.0024
+rated_power_w = 0.125
+notes = "Worst case assumes one I2C line held low continuously through a 4.7k pull-up."
+
+[[component_deratings]]
+id = "status_led_resistor_power_derating"
+part_id = "resistor_1k"
+stress_class = "status LED resistor power"
+operating_voltage_v = 3.3
+rated_voltage_v = 150.0
+operating_power_w = 0.0109
+rated_power_w = 0.125
+notes = "Worst case assumes a 1k 0805 status LED resistor from +3V3 to ground."
 
 [[trace_current_paths]]
 id = "vbus_electronics_path"
