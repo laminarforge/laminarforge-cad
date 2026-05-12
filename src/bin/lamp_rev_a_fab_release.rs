@@ -20,6 +20,7 @@ struct ReleaseConfig {
     assembly: AssemblyConfig,
     review: ReviewConfig,
     bringup: BringupConfig,
+    fabrication_capability: FabricationCapabilityConfig,
     source_snapshot: SourceSnapshotConfig,
     gerbers: GerberConfig,
     drills: DrillConfig,
@@ -49,6 +50,7 @@ struct Inputs {
     pin_nets: String,
     firmware_handoff: String,
     electrical_validation: String,
+    routing_seed: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -87,6 +89,7 @@ struct Outputs {
     connector_polarity_file: String,
     assembly_orientation_file: String,
     assembly_parity_file: String,
+    fabrication_capability_file: String,
     i2c_bus_file: String,
     heater_protection_file: String,
     startup_safety_file: String,
@@ -125,6 +128,28 @@ struct AssemblyConfig {
     machine_side: String,
     manual_part_ids: Vec<String>,
     require_cpl_matches_kicad_position: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct FabricationCapabilityConfig {
+    vendor_profile: String,
+    manufacturer_class: String,
+    board_count: usize,
+    layer_count: usize,
+    thickness_mm: f64,
+    max_width_mm: f64,
+    max_height_mm: f64,
+    min_outer_copper_oz: f64,
+    min_inner_copper_oz: f64,
+    min_clearance_mm: f64,
+    min_signal_track_mm: f64,
+    min_via_drill_mm: f64,
+    min_via_annular_ring_mm: f64,
+    min_plated_drill_mm: f64,
+    required_copper_layers: Vec<String>,
+    require_pth_drill: bool,
+    require_npth_drill: bool,
+    require_board_outline_matches_contract: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -238,6 +263,7 @@ struct TestPoint {
 #[derive(Debug, Deserialize)]
 struct Contract {
     board: BoardContract,
+    stackup: StackupContract,
     nets: Vec<ContractNet>,
     #[serde(default)]
     net_groups: Vec<ContractNetGroup>,
@@ -246,13 +272,41 @@ struct Contract {
 
 #[derive(Debug, Deserialize)]
 struct BoardContract {
+    physical_board_count: usize,
+    width_mm: f64,
+    height_mm: f64,
+    thickness_mm: f64,
+    layer_count: usize,
     slot_count: usize,
     primary_mcu: String,
+    manufacturer_class: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct StackupContract {
+    copper_layers: Vec<String>,
+    outer_copper_oz: f64,
+    inner_copper_oz: f64,
+    min_clearance_mm: f64,
+    min_signal_track_mm: f64,
+    min_via_drill_mm: f64,
 }
 
 #[derive(Debug, Deserialize)]
 struct ContractNet {
     name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct RoutingSeed {
+    #[serde(default)]
+    segments: Vec<RouteSegment>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RouteSegment {
+    layer: String,
+    width_mm: f64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -388,6 +442,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let pin_nets_path = root.join(&config.inputs.pin_nets);
     let firmware_handoff_path = root.join(&config.inputs.firmware_handoff);
     let electrical_validation_path = root.join(&config.inputs.electrical_validation);
+    let routing_seed_path = root.join(&config.inputs.routing_seed);
     ensure_file(&board)?;
     ensure_file(&schematic)?;
     ensure_file(&contract_path)?;
@@ -396,6 +451,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     ensure_file(&pin_nets_path)?;
     ensure_file(&firmware_handoff_path)?;
     ensure_file(&electrical_validation_path)?;
+    ensure_file(&routing_seed_path)?;
 
     validate_kicad_version(config.toolchain.min_kicad_major)?;
 
@@ -420,6 +476,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let contract = read_toml::<Contract>(&contract_path)?;
     let pin_nets = read_toml::<PinNetManifest>(&pin_nets_path)?;
     let firmware_handoff = read_toml::<FirmwareHandoff>(&firmware_handoff_path)?;
+    let routing = read_toml::<RoutingSeed>(&routing_seed_path)?;
     validate_assembly_sources(&parts, &placement)?;
     validate_bringup_sources(&config.bringup, &placement)?;
     validate_firmware_handoff_sources(&contract, &pin_nets, &firmware_handoff)?;
@@ -446,6 +503,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     run_drill_export(&config, &board, &output_root)?;
     run_position_export(&config, &board, &output_root)?;
     write_assembly_parity_report(&config, &parts, &placement, &output_root)?;
+    write_fabrication_capability_report(&config, &contract, &routing, &board, &output_root)?;
     if config.step.enabled {
         run_step_export(&config, &board, &output_root)?;
     }
@@ -1254,6 +1312,511 @@ fn write_assembly_parity_report(
     }
 }
 
+macro_rules! push_fabrication_row {
+    ($rows:expr, $errors:expr, $category:expr, $item:expr, $measured:expr, $limit:expr, $pass:expr, $notes:expr $(,)?) => {{
+        let pass = $pass;
+        $rows.push(FabricationCapabilityRow {
+            category: $category.to_string(),
+            item: $item.to_string(),
+            measured: $measured.into(),
+            limit: $limit.into(),
+            status: status(pass),
+            notes: $notes.to_string(),
+        });
+        if !pass {
+            $errors.push(format!("{} / {} failed", $category, $item));
+        }
+    }};
+}
+
+fn write_fabrication_capability_report(
+    config: &ReleaseConfig,
+    contract: &Contract,
+    routing: &RoutingSeed,
+    board_path: &Path,
+    output_root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let board_text = fs::read_to_string(board_path)?;
+    let outline = kicad_edge_rect_outline(&board_text);
+    let via_geometries = kicad_via_geometries(&board_text);
+    let drill_diameters = kicad_drill_diameters(&board_text);
+    let routing_min_width = routing
+        .segments
+        .iter()
+        .map(|segment| segment.width_mm)
+        .min_by(f64::total_cmp);
+    let routing_layers = routing
+        .segments
+        .iter()
+        .map(|segment| segment.layer.as_str())
+        .collect::<BTreeSet<_>>();
+    let required_layers = config
+        .fabrication_capability
+        .required_copper_layers
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let stackup_layers = contract
+        .stackup
+        .copper_layers
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let gerber_layers = config
+        .gerbers
+        .layers
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let min_via_drill = via_geometries
+        .iter()
+        .map(|geometry| geometry.drill_mm)
+        .min_by(f64::total_cmp);
+    let min_via_annular_ring = via_geometries
+        .iter()
+        .map(|geometry| (geometry.size_mm - geometry.drill_mm) / 2.0)
+        .min_by(f64::total_cmp);
+    let min_plated_drill = drill_diameters.iter().copied().min_by(f64::total_cmp);
+
+    let mut rows = Vec::new();
+    let mut errors = Vec::new();
+    let fab = &config.fabrication_capability;
+
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "vendor profile",
+        "manufacturer class",
+        contract.board.manufacturer_class.clone(),
+        fab.manufacturer_class.clone(),
+        contract.board.manufacturer_class == fab.manufacturer_class,
+        &format!("Release target profile: {}.", fab.vendor_profile),
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "board geometry",
+        "physical board count",
+        contract.board.physical_board_count.to_string(),
+        fab.board_count.to_string(),
+        contract.board.physical_board_count == fab.board_count,
+        "Fabrication package must describe one physical PCB, not a panelized surrogate.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "board geometry",
+        "contract board width",
+        format!("{:.3} mm", contract.board.width_mm),
+        format!("<= {:.3} mm", fab.max_width_mm),
+        contract.board.width_mm <= fab.max_width_mm,
+        "Board width must stay inside the selected board-house capability envelope.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "board geometry",
+        "contract board height",
+        format!("{:.3} mm", contract.board.height_mm),
+        format!("<= {:.3} mm", fab.max_height_mm),
+        contract.board.height_mm <= fab.max_height_mm,
+        "Board height must stay inside the selected board-house capability envelope.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "board geometry",
+        "contract board thickness",
+        format!("{:.3} mm", contract.board.thickness_mm),
+        format!("{:.3} mm", fab.thickness_mm),
+        approximately_equal(contract.board.thickness_mm, fab.thickness_mm, 0.001),
+        "Board thickness must match the release order profile.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "board geometry",
+        "KiCad Edge.Cuts outline",
+        outline
+            .map(|outline| format!("{:.3} x {:.3} mm", outline.width_mm, outline.height_mm))
+            .unwrap_or_else(|| "missing".to_string()),
+        format!(
+            "{:.3} x {:.3} mm",
+            contract.board.width_mm, contract.board.height_mm
+        ),
+        !fab.require_board_outline_matches_contract
+            || outline.is_some_and(|outline| {
+                approximately_equal(outline.width_mm, contract.board.width_mm, 0.001)
+                    && approximately_equal(outline.height_mm, contract.board.height_mm, 0.001)
+            }),
+        "Generated board outline must match the release contract dimensions.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "stackup",
+        "copper layer count",
+        contract.board.layer_count.to_string(),
+        fab.layer_count.to_string(),
+        contract.board.layer_count == fab.layer_count,
+        "Layer count must match the selected 4-layer fabrication profile.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "stackup",
+        "contract copper layers",
+        format_string_set(&stackup_layers),
+        format_string_set(&required_layers),
+        stackup_layers == required_layers,
+        "Contract stackup must name the expected copper layers.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "stackup",
+        "Gerber copper layers",
+        format_string_set(
+            &gerber_layers
+                .intersection(&required_layers)
+                .copied()
+                .collect(),
+        ),
+        format_string_set(&required_layers),
+        required_layers.is_subset(&gerber_layers),
+        "Release Gerber export must include every required copper layer.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "stackup",
+        "outer copper",
+        format!("{:.3} oz", contract.stackup.outer_copper_oz),
+        format!(">= {:.3} oz", fab.min_outer_copper_oz),
+        contract.stackup.outer_copper_oz >= fab.min_outer_copper_oz,
+        "Outer copper assumption feeds routed-current and thermal checks.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "stackup",
+        "inner copper",
+        format!("{:.3} oz", contract.stackup.inner_copper_oz),
+        format!(">= {:.3} oz", fab.min_inner_copper_oz),
+        contract.stackup.inner_copper_oz >= fab.min_inner_copper_oz,
+        "Inner copper assumption feeds routed-current and thermal checks.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "design rules",
+        "contract clearance",
+        format!("{:.3} mm", contract.stackup.min_clearance_mm),
+        format!(">= {:.3} mm", fab.min_clearance_mm),
+        contract.stackup.min_clearance_mm >= fab.min_clearance_mm,
+        "Contract clearance must stay inside the selected board-house process limit.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "design rules",
+        "contract minimum signal track",
+        format!("{:.3} mm", contract.stackup.min_signal_track_mm),
+        format!(">= {:.3} mm", fab.min_signal_track_mm),
+        contract.stackup.min_signal_track_mm >= fab.min_signal_track_mm,
+        "Contract minimum signal width must stay inside the selected board-house process limit.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "design rules",
+        "routed minimum track",
+        format_optional_mm(routing_min_width),
+        format!(">= {:.3} mm", fab.min_signal_track_mm),
+        routing_min_width.is_some_and(|width| width >= fab.min_signal_track_mm),
+        "Route seed is the source for generated routed copper; every routed segment must clear process minimum width.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "design rules",
+        "routed copper layers",
+        format_string_set(&routing_layers),
+        format!("subset of {}", format_string_set(&required_layers)),
+        routing_layers.is_subset(&required_layers),
+        "Generated routing must stay on copper layers included in the fabrication profile.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "vias and drills",
+        "contract via drill",
+        format!("{:.3} mm", contract.stackup.min_via_drill_mm),
+        format!(">= {:.3} mm", fab.min_via_drill_mm),
+        contract.stackup.min_via_drill_mm >= fab.min_via_drill_mm,
+        "Contract via drill must stay inside the selected board-house process limit.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "vias and drills",
+        "generated via drill",
+        format_optional_mm(min_via_drill),
+        format!(">= {:.3} mm", fab.min_via_drill_mm),
+        min_via_drill.is_some_and(|drill| drill >= fab.min_via_drill_mm),
+        "Generated KiCad vias must clear the selected board-house minimum via drill.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "vias and drills",
+        "generated via annular ring",
+        format_optional_mm(min_via_annular_ring),
+        format!(">= {:.3} mm", fab.min_via_annular_ring_mm),
+        min_via_annular_ring.is_some_and(|ring| ring >= fab.min_via_annular_ring_mm),
+        "Generated KiCad vias must leave enough annular ring for the release process profile.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "vias and drills",
+        "minimum generated drill",
+        format_optional_mm(min_plated_drill),
+        format!(">= {:.3} mm", fab.min_plated_drill_mm),
+        min_plated_drill.is_some_and(|drill| drill >= fab.min_plated_drill_mm),
+        "Generated plated holes and vias must clear the selected drill limit.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "fabrication outputs",
+        "PTH drill file",
+        file_presence(
+            &output_root
+                .join(&config.outputs.drills_dir)
+                .join("lamp_rev_a-PTH.drl"),
+        ),
+        "present and non-empty",
+        !fab.require_pth_drill
+            || nonempty_path(
+                &output_root
+                    .join(&config.outputs.drills_dir)
+                    .join("lamp_rev_a-PTH.drl"),
+            ),
+        "PTH drill output must exist before fabrication upload.",
+    );
+    push_fabrication_row!(
+        &mut rows,
+        &mut errors,
+        "fabrication outputs",
+        "NPTH drill file",
+        file_presence(
+            &output_root
+                .join(&config.outputs.drills_dir)
+                .join("lamp_rev_a-NPTH.drl"),
+        ),
+        "present and non-empty",
+        !fab.require_npth_drill
+            || nonempty_path(
+                &output_root
+                    .join(&config.outputs.drills_dir)
+                    .join("lamp_rev_a-NPTH.drl"),
+            ),
+        "NPTH drill output must exist before fabrication upload.",
+    );
+
+    let output_path = output_root.join(&config.outputs.fabrication_capability_file);
+    if let Some(parent) = output_path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    let mut writer = csv::Writer::from_path(&output_path)?;
+    writer.write_record(["category", "item", "measured", "limit", "status", "notes"])?;
+    for row in rows {
+        writer.write_record([
+            row.category.as_str(),
+            row.item.as_str(),
+            row.measured.as_str(),
+            row.limit.as_str(),
+            row.status.as_str(),
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(format!("fabrication capability gate failed:\n{}", errors.join("\n")).into())
+    }
+}
+
+#[derive(Debug)]
+struct FabricationCapabilityRow {
+    category: String,
+    item: String,
+    measured: String,
+    limit: String,
+    status: String,
+    notes: String,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct BoardOutline {
+    width_mm: f64,
+    height_mm: f64,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct ViaGeometry {
+    size_mm: f64,
+    drill_mm: f64,
+}
+
+fn kicad_edge_rect_outline(board_text: &str) -> Option<BoardOutline> {
+    let mut in_rect = false;
+    let mut start = None;
+    let mut end = None;
+    let mut on_edge_cuts = false;
+
+    for line in board_text.lines() {
+        let trimmed = line.trim();
+        if trimmed == "(gr_rect" {
+            in_rect = true;
+            start = None;
+            end = None;
+            on_edge_cuts = false;
+            continue;
+        }
+        if !in_rect {
+            continue;
+        }
+        if let Some(point) = parse_kicad_point(trimmed, "(start ") {
+            start = Some(point);
+        } else if let Some(point) = parse_kicad_point(trimmed, "(end ") {
+            end = Some(point);
+        } else if trimmed == "(layer \"Edge.Cuts\")" {
+            on_edge_cuts = true;
+        } else if trimmed == ")" {
+            if let (true, Some((x1, y1)), Some((x2, y2))) = (on_edge_cuts, start, end) {
+                return Some(BoardOutline {
+                    width_mm: (x2 - x1).abs(),
+                    height_mm: (y2 - y1).abs(),
+                });
+            }
+            in_rect = false;
+        }
+    }
+    None
+}
+
+fn kicad_via_geometries(board_text: &str) -> Vec<ViaGeometry> {
+    let mut geometries = Vec::new();
+    let mut in_via = false;
+    let mut size = None;
+    let mut drill = None;
+
+    for line in board_text.lines() {
+        let trimmed = line.trim();
+        if trimmed == "(via" {
+            in_via = true;
+            size = None;
+            drill = None;
+            continue;
+        }
+        if !in_via {
+            continue;
+        }
+        if let Some(value) = parse_kicad_float(trimmed, "(size ") {
+            size = Some(value);
+        } else if let Some(value) = parse_kicad_float(trimmed, "(drill ") {
+            drill = Some(value);
+        } else if trimmed == ")" {
+            if let (Some(size_mm), Some(drill_mm)) = (size, drill) {
+                geometries.push(ViaGeometry { size_mm, drill_mm });
+            }
+            in_via = false;
+        }
+    }
+    geometries
+}
+
+fn kicad_drill_diameters(board_text: &str) -> Vec<f64> {
+    board_text
+        .lines()
+        .filter_map(|line| {
+            let trimmed = line.trim();
+            if !trimmed.starts_with("(drill ") {
+                return None;
+            }
+            numeric_tokens(trimmed).into_iter().min_by(f64::total_cmp)
+        })
+        .collect()
+}
+
+fn parse_kicad_point(line: &str, prefix: &str) -> Option<(f64, f64)> {
+    let values = numeric_values_after_prefix(line, prefix);
+    if values.len() >= 2 {
+        Some((values[0], values[1]))
+    } else {
+        None
+    }
+}
+
+fn parse_kicad_float(line: &str, prefix: &str) -> Option<f64> {
+    numeric_values_after_prefix(line, prefix).into_iter().next()
+}
+
+fn numeric_values_after_prefix(line: &str, prefix: &str) -> Vec<f64> {
+    line.strip_prefix(prefix)
+        .map(numeric_tokens)
+        .unwrap_or_default()
+}
+
+fn numeric_tokens(value: &str) -> Vec<f64> {
+    value
+        .split_whitespace()
+        .filter_map(|token| {
+            token
+                .trim_end_matches(')')
+                .trim_end_matches('(')
+                .parse::<f64>()
+                .ok()
+        })
+        .collect()
+}
+
+fn approximately_equal(left: f64, right: f64, tolerance: f64) -> bool {
+    (left - right).abs() <= tolerance
+}
+
+fn format_optional_mm(value: Option<f64>) -> String {
+    value
+        .map(|value| format!("{value:.3} mm"))
+        .unwrap_or_else(|| "missing".to_string())
+}
+
+fn format_string_set(values: &BTreeSet<&str>) -> String {
+    if values.is_empty() {
+        "none".to_string()
+    } else {
+        values.iter().copied().collect::<Vec<_>>().join(",")
+    }
+}
+
+fn file_presence(path: &Path) -> String {
+    if nonempty_path(path) {
+        "present".to_string()
+    } else {
+        "missing".to_string()
+    }
+}
+
+fn nonempty_path(path: &Path) -> bool {
+    path.metadata()
+        .map(|metadata| metadata.is_file() && metadata.len() > 0)
+        .unwrap_or(false)
+}
+
 fn is_manual_part(assembly: &AssemblyConfig, part: &SelectedPart) -> bool {
     assembly.manual_part_ids.iter().any(|id| id == &part.id)
 }
@@ -1863,6 +2426,11 @@ fn write_manifest(
         "assembly_parity: {}",
         config.outputs.assembly_parity_file
     )?;
+    writeln!(
+        file,
+        "fabrication_capability: {}",
+        config.outputs.fabrication_capability_file
+    )?;
     writeln!(file, "i2c_bus: {}", config.outputs.i2c_bus_file)?;
     writeln!(
         file,
@@ -2345,6 +2913,7 @@ fn write_release_bundles(
         config.outputs.connector_polarity_file.as_str(),
         config.outputs.assembly_orientation_file.as_str(),
         config.outputs.assembly_parity_file.as_str(),
+        config.outputs.fabrication_capability_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
@@ -2580,6 +3149,7 @@ fn validate_release_outputs(
         &config.outputs.connector_polarity_file,
         &config.outputs.assembly_orientation_file,
         &config.outputs.assembly_parity_file,
+        &config.outputs.fabrication_capability_file,
         &config.outputs.i2c_bus_file,
         &config.outputs.heater_protection_file,
         &config.outputs.startup_safety_file,
@@ -2707,6 +3277,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.connector_polarity_file.as_str(),
         config.outputs.assembly_orientation_file.as_str(),
         config.outputs.assembly_parity_file.as_str(),
+        config.outputs.fabrication_capability_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
         config.outputs.startup_safety_file.as_str(),

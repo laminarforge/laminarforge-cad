@@ -16,6 +16,7 @@ placement = "pcb/lamp_rev_a/placement.toml"
 pin_nets = "pcb/lamp_rev_a/pin_nets.toml"
 firmware_handoff = "pcb/lamp_rev_a/firmware_handoff.toml"
 electrical_validation = "pcb/lamp_rev_a/electrical_validation.toml"
+routing_seed = "pcb/lamp_rev_a/routing_seed.toml"
 
 [outputs]
 root_dir = "pcb/lamp_rev_a/fab_release"
@@ -52,6 +53,7 @@ procurement_readiness_file = "review/procurement_readiness.csv"
 connector_polarity_file = "review/connector_polarity.csv"
 assembly_orientation_file = "review/assembly_orientation.csv"
 assembly_parity_file = "review/assembly_parity.csv"
+fabrication_capability_file = "review/fabrication_capability.csv"
 i2c_bus_file = "review/i2c_bus_validation.csv"
 heater_protection_file = "review/heater_protection_coordination.csv"
 startup_safety_file = "review/startup_safety.csv"
@@ -91,6 +93,26 @@ manual_part_ids = [
   "heater_output_terminal",
 ]
 require_cpl_matches_kicad_position = true
+
+[fabrication_capability]
+vendor_profile = "JLCPCB 4-layer standard"
+manufacturer_class = "JLCPCB 4-layer standard"
+board_count = 1
+layer_count = 4
+thickness_mm = 1.6
+max_width_mm = 100.0
+max_height_mm = 100.0
+min_outer_copper_oz = 1.0
+min_inner_copper_oz = 0.5
+min_clearance_mm = 0.15
+min_signal_track_mm = 0.20
+min_via_drill_mm = 0.30
+min_via_annular_ring_mm = 0.15
+min_plated_drill_mm = 0.30
+required_copper_layers = ["F.Cu", "In1.Cu", "In2.Cu", "B.Cu"]
+require_pth_drill = true
+require_npth_drill = true
+require_board_outline_matches_contract = true
 
 [review]
 remaining_gates = [
