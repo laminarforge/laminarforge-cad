@@ -122,6 +122,7 @@ a validation-traceability CSV tying each gate to artifacts, manifest evidence, C
 a simulation-input CSV for PDN, electrothermal, USB/SI, and EMC handoff readiness,
 the first routed-geometry DC PDN simulation CSV for voltage drop and I2R loss,
 a lumped thermal-margin simulation CSV for component and routed-copper steady-state estimates,
+a heater/reaction-block thermal transient CSV for warm-up, hold, duty, overshoot, and energy estimates,
 an ngspice 3.3 V rail load-step transient netlist/CSV for ESP32 burst-load sag,
 an ngspice optical analog front-end transient netlist/CSV for TIA/ADC signal-envelope range,
 and a checksum manifest for the fabrication, assembly, and source bundles.

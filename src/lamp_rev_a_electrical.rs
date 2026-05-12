@@ -32,6 +32,7 @@ pub struct ElectricalOutputPaths {
     pub thermal_margin_simulation_csv: PathBuf,
     pub heater_pwm_transient_netlist: PathBuf,
     pub heater_pwm_transient_csv: PathBuf,
+    pub heater_thermal_transient_csv: PathBuf,
     pub rail_load_step_netlist: PathBuf,
     pub rail_load_step_csv: PathBuf,
     pub analog_front_end_netlist: PathBuf,
@@ -95,6 +96,7 @@ struct ValidationConfig {
     pdn_dc_simulation_policy: PdnDcSimulationPolicy,
     thermal_margin_simulation_policy: ThermalMarginSimulationPolicy,
     heater_pwm_transient_policy: HeaterPwmTransientPolicy,
+    heater_thermal_transient_policy: HeaterThermalTransientPolicy,
     rail_load_step_policy: RailLoadStepPolicy,
     analog_front_end_policy: AnalogFrontEndPolicy,
 }
@@ -142,6 +144,7 @@ struct Outputs {
     thermal_margin_simulation_csv: String,
     heater_pwm_transient_netlist: String,
     heater_pwm_transient_csv: String,
+    heater_thermal_transient_csv: String,
     rail_load_step_netlist: String,
     rail_load_step_csv: String,
     analog_front_end_netlist: String,
@@ -328,6 +331,30 @@ struct HeaterPwmTransientPolicy {
     max_off_current_ma: f64,
     min_gate_high_v: f64,
     max_gate_low_v: f64,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct HeaterThermalTransientPolicy {
+    ambient_c: f64,
+    target_c: f64,
+    target_reached_c: f64,
+    max_temperature_c: f64,
+    max_overshoot_c: f64,
+    max_warmup_s: f64,
+    max_hold_error_c: f64,
+    hold_window_s: f64,
+    simulation_stop_s: f64,
+    timestep_s: f64,
+    heater_power_w: f64,
+    thermal_mass_j_per_c: f64,
+    thermal_resistance_c_per_w: f64,
+    controller_band_c: f64,
+    proportional_gain_per_c: f64,
+    max_duty: f64,
+    min_hold_duty: f64,
+    max_hold_duty: f64,
+    max_energy_wh: f64,
     notes: String,
 }
 
@@ -831,6 +858,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         thermal_margin_simulation_csv: repo_root.join(config.outputs.thermal_margin_simulation_csv),
         heater_pwm_transient_netlist: repo_root.join(config.outputs.heater_pwm_transient_netlist),
         heater_pwm_transient_csv: repo_root.join(config.outputs.heater_pwm_transient_csv),
+        heater_thermal_transient_csv: repo_root.join(config.outputs.heater_thermal_transient_csv),
         rail_load_step_netlist: repo_root.join(config.outputs.rail_load_step_netlist),
         rail_load_step_csv: repo_root.join(config.outputs.rail_load_step_csv),
         analog_front_end_netlist: repo_root.join(config.outputs.analog_front_end_netlist),
@@ -914,6 +942,7 @@ pub fn validate_to_outputs(
     validate_pdn_dc_simulation(&config, &routing, &contract_rails, &mut rows, &mut errors);
     validate_thermal_margin_simulation(&config, &routing, &mut rows, &mut errors);
     validate_heater_pwm_transient(&config, &contract_nets, &mut rows, &mut errors);
+    validate_heater_thermal_transient(&config, &contract_nets, &mut rows, &mut errors);
     validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
     validate_analog_front_end_transient(&config, &contract_nets, &mut rows, &mut errors);
     let gate_categories = rows
@@ -943,6 +972,7 @@ pub fn validate_to_outputs(
     write_pdn_dc_simulation_handoff(&config, &routing, &contract_rails, outputs)?;
     write_thermal_margin_simulation_handoff(&config, &routing, outputs)?;
     write_heater_pwm_transient_handoff(&config, outputs)?;
+    write_heater_thermal_transient_handoff(&config, outputs)?;
     write_rail_load_step_handoff(&config, outputs)?;
     write_analog_front_end_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
@@ -1909,6 +1939,285 @@ fn heater_pwm_off_current_ma(policy: &HeaterPwmTransientPolicy) -> f64 {
             + policy.heater_series_resistance_ohm
             + policy.mosfet_off_resistance_ohm)
         * 1000.0
+}
+
+fn validate_heater_thermal_transient(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.heater_thermal_transient_policy;
+    for net in ["HEATER_SUPPLY", "HEATER_P", "ADC_AIN1"] {
+        push_gate!(
+            rows,
+            errors,
+            "heater thermal transient",
+            format!("{net} contract net"),
+            net,
+            "present in contract",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "heater thermal transient",
+        "thermal model constants",
+        format!(
+            "{:.3} W, {:.3} J/C, {:.3} C/W",
+            policy.heater_power_w, policy.thermal_mass_j_per_c, policy.thermal_resistance_c_per_w
+        ),
+        "positive power, thermal mass, and thermal resistance",
+        policy.heater_power_w > 0.0
+            && policy.thermal_mass_j_per_c > 0.0
+            && policy.thermal_resistance_c_per_w > 0.0,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "heater thermal transient",
+        "temperature envelope",
+        format!(
+            "{:.2} C target, {:.2} C reached, {:.2} C max",
+            policy.target_c, policy.target_reached_c, policy.max_temperature_c
+        ),
+        "ambient < reached <= target < max",
+        policy.ambient_c < policy.target_reached_c
+            && policy.target_reached_c <= policy.target_c
+            && policy.target_c < policy.max_temperature_c,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "heater thermal transient",
+        "control envelope",
+        format!(
+            "{:.3}..{:.3} hold duty, {:.3} max duty",
+            policy.min_hold_duty, policy.max_hold_duty, policy.max_duty
+        ),
+        "0 <= min <= max hold <= max duty <= 1",
+        policy.min_hold_duty >= 0.0
+            && policy.min_hold_duty <= policy.max_hold_duty
+            && policy.max_hold_duty <= policy.max_duty
+            && policy.max_duty <= 1.0,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "heater thermal transient",
+        "simulation timing",
+        format!(
+            "{:.3} s step / {:.1} s stop / {:.1} s hold window",
+            policy.timestep_s, policy.simulation_stop_s, policy.hold_window_s
+        ),
+        "0 < step, hold window < stop",
+        policy.timestep_s > 0.0
+            && policy.hold_window_s > 0.0
+            && policy.hold_window_s < policy.simulation_stop_s,
+        &policy.notes,
+    );
+
+    for row in heater_thermal_transient_rows(config) {
+        push_gate!(
+            rows,
+            errors,
+            "heater thermal transient",
+            row.measurement,
+            format!("{:.6} {}", row.value, row.units),
+            row.limit,
+            row.pass,
+            row.notes,
+        );
+    }
+}
+
+#[derive(Debug)]
+struct HeaterThermalTransientRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+#[derive(Debug)]
+struct HeaterThermalTransientMetrics {
+    reached_target_s: Option<f64>,
+    max_temp_c: f64,
+    final_temp_c: f64,
+    hold_error_c: f64,
+    average_hold_duty: f64,
+    energy_wh: f64,
+    full_power_steady_temp_c: f64,
+    thermal_time_constant_s: f64,
+}
+
+fn heater_thermal_transient_rows(config: &ValidationConfig) -> Vec<HeaterThermalTransientRow> {
+    let policy = &config.heater_thermal_transient_policy;
+    let metrics = heater_thermal_transient_metrics(policy);
+    let reached_s = metrics.reached_target_s.unwrap_or(f64::INFINITY);
+    vec![
+        HeaterThermalTransientRow {
+            id: "full_power_steady_state",
+            measurement: "full-power steady-state temperature",
+            value: metrics.full_power_steady_temp_c,
+            units: "C",
+            limit: format!(">= {:.3} C target", policy.target_c),
+            pass: metrics.full_power_steady_temp_c >= policy.target_c,
+            notes: policy.notes.clone(),
+        },
+        HeaterThermalTransientRow {
+            id: "thermal_time_constant",
+            measurement: "thermal time constant",
+            value: metrics.thermal_time_constant_s,
+            units: "s",
+            limit: "> 0 s".to_string(),
+            pass: metrics.thermal_time_constant_s > 0.0,
+            notes: policy.notes.clone(),
+        },
+        HeaterThermalTransientRow {
+            id: "target_reach_time",
+            measurement: "time to reach target threshold",
+            value: reached_s,
+            units: "s",
+            limit: format!("<= {:.3} s", policy.max_warmup_s),
+            pass: reached_s <= policy.max_warmup_s,
+            notes: policy.notes.clone(),
+        },
+        HeaterThermalTransientRow {
+            id: "max_temperature",
+            measurement: "maximum simulated reaction-block temperature",
+            value: metrics.max_temp_c,
+            units: "C",
+            limit: format!("<= {:.3} C", policy.max_temperature_c),
+            pass: metrics.max_temp_c <= policy.max_temperature_c,
+            notes: policy.notes.clone(),
+        },
+        HeaterThermalTransientRow {
+            id: "overshoot",
+            measurement: "maximum target overshoot",
+            value: (metrics.max_temp_c - policy.target_c).max(0.0),
+            units: "C",
+            limit: format!("<= {:.3} C", policy.max_overshoot_c),
+            pass: (metrics.max_temp_c - policy.target_c).max(0.0) <= policy.max_overshoot_c,
+            notes: policy.notes.clone(),
+        },
+        HeaterThermalTransientRow {
+            id: "hold_error",
+            measurement: "maximum hold-window error",
+            value: metrics.hold_error_c,
+            units: "C",
+            limit: format!("<= {:.3} C", policy.max_hold_error_c),
+            pass: metrics.hold_error_c <= policy.max_hold_error_c,
+            notes: policy.notes.clone(),
+        },
+        HeaterThermalTransientRow {
+            id: "final_temperature",
+            measurement: "final simulated reaction-block temperature",
+            value: metrics.final_temp_c,
+            units: "C",
+            limit: format!(
+                "{:.3}..{:.3} C",
+                policy.target_c - policy.max_hold_error_c,
+                policy.target_c + policy.max_hold_error_c
+            ),
+            pass: (metrics.final_temp_c - policy.target_c).abs() <= policy.max_hold_error_c,
+            notes: policy.notes.clone(),
+        },
+        HeaterThermalTransientRow {
+            id: "average_hold_duty",
+            measurement: "average hold-window heater duty",
+            value: metrics.average_hold_duty,
+            units: "ratio",
+            limit: format!("{:.3}..{:.3}", policy.min_hold_duty, policy.max_hold_duty),
+            pass: metrics.average_hold_duty >= policy.min_hold_duty
+                && metrics.average_hold_duty <= policy.max_hold_duty,
+            notes: policy.notes.clone(),
+        },
+        HeaterThermalTransientRow {
+            id: "thermal_energy",
+            measurement: "heater energy over simulated profile",
+            value: metrics.energy_wh,
+            units: "Wh",
+            limit: format!("<= {:.3} Wh", policy.max_energy_wh),
+            pass: metrics.energy_wh <= policy.max_energy_wh,
+            notes: policy.notes.clone(),
+        },
+    ]
+}
+
+fn heater_thermal_transient_metrics(
+    policy: &HeaterThermalTransientPolicy,
+) -> HeaterThermalTransientMetrics {
+    let target_duty = ((policy.target_c - policy.ambient_c) / policy.thermal_resistance_c_per_w)
+        / policy.heater_power_w;
+    let mut temp_c = policy.ambient_c;
+    let mut max_temp_c = temp_c;
+    let mut reached_target_s = None;
+    let mut energy_j = 0.0;
+    let mut hold_error_c = 0.0;
+    let mut hold_duty_sum = 0.0;
+    let mut hold_duty_count = 0.0;
+    let mut time_s = 0.0;
+
+    while time_s <= policy.simulation_stop_s + f64::EPSILON {
+        let duty = heater_thermal_control_duty(policy, target_duty, temp_c);
+        let heater_power_w = policy.heater_power_w * duty;
+        let loss_w = (temp_c - policy.ambient_c) / policy.thermal_resistance_c_per_w;
+        temp_c += (heater_power_w - loss_w) * policy.timestep_s / policy.thermal_mass_j_per_c;
+        energy_j += heater_power_w * policy.timestep_s;
+        time_s += policy.timestep_s;
+
+        if temp_c > max_temp_c {
+            max_temp_c = temp_c;
+        }
+        if reached_target_s.is_none() && temp_c >= policy.target_reached_c {
+            reached_target_s = Some(time_s);
+        }
+        if time_s >= policy.simulation_stop_s - policy.hold_window_s {
+            hold_error_c = f64::max(hold_error_c, (temp_c - policy.target_c).abs());
+            hold_duty_sum += duty;
+            hold_duty_count += 1.0;
+        }
+    }
+
+    HeaterThermalTransientMetrics {
+        reached_target_s,
+        max_temp_c,
+        final_temp_c: temp_c,
+        hold_error_c,
+        average_hold_duty: if hold_duty_count > 0.0 {
+            hold_duty_sum / hold_duty_count
+        } else {
+            f64::INFINITY
+        },
+        energy_wh: energy_j / 3600.0,
+        full_power_steady_temp_c: policy.ambient_c
+            + policy.heater_power_w * policy.thermal_resistance_c_per_w,
+        thermal_time_constant_s: policy.thermal_mass_j_per_c * policy.thermal_resistance_c_per_w,
+    }
+}
+
+fn heater_thermal_control_duty(
+    policy: &HeaterThermalTransientPolicy,
+    target_duty: f64,
+    temp_c: f64,
+) -> f64 {
+    if temp_c < policy.target_c - policy.controller_band_c {
+        return policy.max_duty;
+    }
+    let commanded = target_duty + policy.proportional_gain_per_c * (policy.target_c - temp_c);
+    commanded
+        .clamp(policy.min_hold_duty, policy.max_hold_duty)
+        .min(policy.max_duty)
 }
 
 fn validate_rail_load_step(
@@ -4957,6 +5266,36 @@ fn write_heater_pwm_transient_spice(
     Ok(())
 }
 
+fn write_heater_thermal_transient_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.heater_thermal_transient_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.heater_thermal_transient_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in heater_thermal_transient_rows(config) {
+        writer.write_record([
+            row.id,
+            row.measurement,
+            format!("{:.6}", row.value).as_str(),
+            row.units,
+            row.limit.as_str(),
+            if row.pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_rail_load_step_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -6046,6 +6385,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("heater_pwm_transient_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Heater/reaction-block thermal transient table: `{}`",
+        outputs
+            .heater_thermal_transient_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("heater_thermal_transient_simulation.csv")
     )?;
     writeln!(
         report,

@@ -36,6 +36,7 @@ pdn_dc_simulation_csv = "pcb/lamp_rev_a/reports/pdn_dc_simulation.csv"
 thermal_margin_simulation_csv = "pcb/lamp_rev_a/reports/thermal_margin_simulation.csv"
 heater_pwm_transient_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_heater_pwm_transient.spice"
 heater_pwm_transient_csv = "pcb/lamp_rev_a/reports/heater_pwm_transient_simulation.csv"
+heater_thermal_transient_csv = "pcb/lamp_rev_a/reports/heater_thermal_transient_simulation.csv"
 rail_load_step_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_rail_load_step.spice"
 rail_load_step_csv = "pcb/lamp_rev_a/reports/rail_load_step_simulation.csv"
 analog_front_end_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_analog_front_end.spice"
@@ -123,6 +124,17 @@ ci_step = "LAMP Rev A SPICE operating-point check; Run LAMP Rev A release SPICE 
 acceptance_criterion = "ngspice transient measurements keep heater on-current, off-current leakage, and gate-drive levels inside configured limits."
 blocks_release = true
 notes = "This is the first switched-heater transient simulation gate; it catches PWM/gate-drive envelope mistakes that DC checks cannot see."
+
+[[validation_traceability]]
+id = "heater_thermal_transient_simulation"
+validation_layer = "First-order heater/reaction-block thermal transient simulation"
+electrical_gate_category = "heater thermal transient"
+output_artifact = "heater_thermal_transient_simulation.csv; electrical_validation_gates.csv"
+release_manifest_entry = "heater_thermal_transient_simulation; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "Numerical thermal model reaches LAMP target temperature in time, stays below maximum/overshoot limits, and holds target inside configured error, duty, and energy limits."
+blocks_release = true
+notes = "This turns heater warm-up and hold behavior into a CI-gated transient model before physical thermal logging."
 
 [[validation_traceability]]
 id = "rail_load_step_simulation"
@@ -370,6 +382,28 @@ max_off_current_ma = 0.005
 min_gate_high_v = 9.0
 max_gate_low_v = 0.2
 notes = "First-order switched heater path transient model for MOSFET/PWM envelope screening before first article."
+
+[heater_thermal_transient_policy]
+ambient_c = 35.0
+target_c = 65.0
+target_reached_c = 63.0
+max_temperature_c = 70.0
+max_overshoot_c = 2.0
+max_warmup_s = 420.0
+max_hold_error_c = 1.0
+hold_window_s = 180.0
+simulation_stop_s = 900.0
+timestep_s = 0.5
+heater_power_w = 17.4
+thermal_mass_j_per_c = 80.0
+thermal_resistance_c_per_w = 3.5
+controller_band_c = 1.5
+proportional_gain_per_c = 0.08
+max_duty = 1.0
+min_hold_duty = 0.0
+max_hold_duty = 0.85
+max_energy_wh = 4.0
+notes = "First-order reaction-block/heater thermal transient model for pre-fab screening. This does not replace first-article thermal logging or enclosure-coupled FEA."
 
 [rail_load_step_policy]
 nominal_voltage_v = 3.3
