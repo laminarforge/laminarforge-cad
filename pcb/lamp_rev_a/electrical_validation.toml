@@ -27,6 +27,7 @@ fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
 manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv"
+calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
 
 [assumptions]
 ambient_c = 35.0
@@ -350,6 +351,97 @@ min_checks = 8
 require_test_points = true
 require_pass_criterion = true
 require_measurement_or_firmware_test = true
+
+[calibration_policy]
+min_checks = 6
+require_control_conditions = true
+require_acceptance_criterion = true
+require_firmware_dependency = true
+require_output_artifacts = true
+
+[[calibration_checks]]
+id = "heater_ramp_calibration"
+subsystem = "heater_control"
+calibrated_item = "Heater power ramp and fail-closed cutoff behavior"
+dependent_nets = ["HEATER_SUPPLY", "HEATER_P", "HEATER_PWM", "GATE_DRV", "GND"]
+preconditions = ["External inline thermal cutoff installed", "Bench supply current limit <= 3000 mA", "Firmware build identity recorded"]
+procedure = "Run low-duty heater PWM into the real heater or dummy load, log rail voltage, return voltage, PWM state, current, MOSFET case temperature, and heater temperature."
+acceptance_criterion = "Temperature ramp is monotonic and controllable; heater output returns off when heater_enabled is false; MOSFET/diode/terminal temperatures remain inside derating budget."
+control_data = ["ambient temperature", "heater load resistance", "current limit", "firmware commit"]
+required_outputs = ["heater_ramp_log.csv", "heater_thermal_photo_or_case_temp_log", "tested_firmware_identity"]
+verification_measurements = ["heater_supply_voltage_pwm_off", "heater_return_pwm_off", "heater_pwm_idle"]
+firmware_dependency = "Rev A firmware heater_enabled interlock and status API."
+notes = "This is the calibration bridge between electrical safety gates and actual LAMP incubation control."
+
+[[calibration_checks]]
+id = "adc_dark_baseline"
+subsystem = "optical_detection"
+calibrated_item = "ADC/TIA dark baseline"
+dependent_nets = ["ADC_AIN1", "MUX_COM", "+3V3", "GND"]
+preconditions = ["USB-only electronics rail validated", "LED emitters disabled", "Optical path covered or dark"]
+procedure = "Record ADC_AIN1 dark readings with all emitters disabled and mux states stable."
+acceptance_criterion = "Dark baseline stays inside the ADC 3.3 V domain, does not saturate, and has repeatable noise low enough for later on/off slope testing."
+control_data = ["dark optical state", "sample count", "firmware commit", "ADC gain/data rate"]
+required_outputs = ["adc_dark_baseline.csv", "adc_noise_summary.md"]
+verification_measurements = ["analog_adc_idle", "usb_3v3_voltage"]
+firmware_dependency = "Firmware ADC sampling path and out-of-range rejection."
+notes = "A quiet dark baseline is required before interpreting optical LAMP signal slope."
+
+[[calibration_checks]]
+id = "eight_slot_optical_response"
+subsystem = "optical_detection"
+calibrated_item = "Eight-slot LED/photodiode response"
+dependent_nets = ["LED_BASE_0", "LED_BASE_1", "LED_BASE_2", "LED_BASE_3", "LED_BASE_4", "LED_BASE_5", "LED_BASE_6", "LED_BASE_7", "MUX_COM", "ADC_AIN1", "+3V3", "GND"]
+preconditions = ["ADC dark baseline recorded", "Emitter current limited", "Known optical fixture/tube state"]
+procedure = "Cycle one LED channel at a time, capture dark/on ADC readings per slot, and confirm channel mapping matches the firmware handoff."
+acceptance_criterion = "All eight slots show detectable on/off delta without ADC saturation and without adjacent-channel gross crosstalk."
+control_data = ["slot map", "LED drive setting", "tube/fixture condition", "firmware commit"]
+required_outputs = ["optical_slot_response.csv", "slot_mapping_check.md"]
+verification_measurements = ["analog_adc_idle"]
+firmware_dependency = "Firmware optical diagnostic that cycles all eight LED channels."
+notes = "This validates that the board can produce usable optical data before any wet assay claims."
+
+[[calibration_checks]]
+id = "i2c_adc_device_identity"
+subsystem = "sensor_bus"
+calibrated_item = "ADS1115 bus identity and I2C idle behavior"
+dependent_nets = ["SDA", "SCL", "+3V3", "GND"]
+preconditions = ["USB-only +3V3 validated", "SDA/SCL idle-high measured", "No heater PWM activity"]
+procedure = "Run firmware I2C scan and capture ADS1115 address, bus idle state, and timeout/fail-closed behavior."
+acceptance_criterion = "ADS1115 responds at the expected address and firmware refuses assay start if I2C is stuck low or the ADC is absent."
+control_data = ["expected address", "I2C pull-up value", "firmware commit"]
+required_outputs = ["i2c_scan_log.txt", "sensor_fault_behavior.md"]
+verification_measurements = ["i2c_sda_idle", "i2c_scl_idle", "usb_3v3_voltage"]
+firmware_dependency = "Firmware I2C scan, timeout handling, and status reporting."
+notes = "This keeps a sensor-bus failure from becoming a false diagnostic result."
+
+[[calibration_checks]]
+id = "negative_control_assay_baseline"
+subsystem = "assay_readout"
+calibrated_item = "Negative-control optical/thermal baseline"
+dependent_nets = ["ADC_AIN1", "MUX_COM", "HEATER_PWM", "HEATER_SUPPLY", "HEATER_P", "+3V3", "GND"]
+preconditions = ["Heater ramp calibration complete", "Eight-slot optical response complete", "No-template control sample available"]
+procedure = "Run a dry or no-template-control profile and log temperature proxy, heater duty, and optical signal over the intended assay window."
+acceptance_criterion = "Negative-control signal remains stable enough to define threshold margins and does not show heater-induced false-positive drift."
+control_data = ["control sample identity", "ambient temperature", "firmware commit", "assay duration"]
+required_outputs = ["negative_control_run.csv", "threshold_margin_notes.md"]
+verification_measurements = ["analog_adc_idle", "heater_pwm_idle"]
+firmware_dependency = "Firmware test-run logging and threshold computation path."
+notes = "This is still not final wet validation; it is the board-level baseline before real HSV-2 chemistry claims."
+
+[[calibration_checks]]
+id = "firmware_identity_traceability"
+subsystem = "release_traceability"
+calibrated_item = "Firmware/build identity tied to board calibration records"
+dependent_nets = ["VBUS", "+3V3", "UART_TX", "UART_RX", "USB_DP", "USB_DN"]
+preconditions = ["Firmware CI artifact flashed", "USB or UART diagnostics available", "Fab release checksum manifest saved"]
+procedure = "Record firmware version/commit from the status API or UART diagnostic output alongside fab release checksum and board serial/lot."
+acceptance_criterion = "Every calibration output references the exact firmware commit and fab release bundle checksum used for the test."
+control_data = ["firmware commit", "fab bundle checksum", "board serial or build label"]
+required_outputs = ["calibration_traceability_record.md", "firmware_identity_capture.txt"]
+verification_measurements = ["usb_3v3_voltage"]
+firmware_dependency = "Firmware status API exposes version and source commit."
+notes = "This prevents a passing calibration from becoming unusable because the tested hardware/firmware version is ambiguous."
 
 [[manufacturing_test_checks]]
 id = "power_off_rail_short_screen"

@@ -23,6 +23,7 @@ pub struct ElectricalOutputPaths {
     pub emc_esd_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
     pub manufacturing_test_csv: PathBuf,
+    pub calibration_readiness_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -68,6 +69,9 @@ struct ValidationConfig {
     manufacturing_test_policy: ManufacturingTestPolicy,
     #[serde(default)]
     manufacturing_test_checks: Vec<ManufacturingTestCheck>,
+    calibration_policy: CalibrationPolicy,
+    #[serde(default)]
+    calibration_checks: Vec<CalibrationCheck>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -104,6 +108,7 @@ struct Outputs {
     emc_esd_csv: String,
     startup_safety_csv: String,
     manufacturing_test_csv: String,
+    calibration_readiness_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -393,6 +398,31 @@ struct ManufacturingTestCheck {
 }
 
 #[derive(Debug, Deserialize)]
+struct CalibrationPolicy {
+    min_checks: usize,
+    require_control_conditions: bool,
+    require_acceptance_criterion: bool,
+    require_firmware_dependency: bool,
+    require_output_artifacts: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct CalibrationCheck {
+    id: String,
+    subsystem: String,
+    calibrated_item: String,
+    dependent_nets: Vec<String>,
+    preconditions: Vec<String>,
+    procedure: String,
+    acceptance_criterion: String,
+    control_data: Vec<String>,
+    required_outputs: Vec<String>,
+    verification_measurements: Vec<String>,
+    firmware_dependency: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct Contract {
     stackup: Stackup,
     rails: Vec<ContractRail>,
@@ -589,6 +619,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
         manufacturing_test_csv: repo_root.join(config.outputs.manufacturing_test_csv),
+        calibration_readiness_csv: repo_root.join(config.outputs.calibration_readiness_csv),
     })
 }
 
@@ -653,6 +684,7 @@ pub fn validate_to_outputs(
         &mut rows,
         &mut errors,
     );
+    validate_calibration_readiness(&config, &contract_nets, &mut rows, &mut errors);
     add_external_analysis_rows(&config, &mut rows);
     add_manual_gate_rows(&config, &parts, &mut rows, &mut errors);
 
@@ -667,6 +699,7 @@ pub fn validate_to_outputs(
     write_emc_esd_handoff(&config, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
     write_manufacturing_test_handoff(&config, outputs)?;
+    write_calibration_readiness_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -713,6 +746,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.emc_esd_checks.is_empty()
         || config.boot_startup_checks.is_empty()
         || config.manufacturing_test_checks.is_empty()
+        || config.calibration_checks.is_empty()
     {
         return Err("electrical validation config is missing required gate groups".into());
     }
@@ -2566,6 +2600,173 @@ fn validate_manufacturing_test_coverage(
     }
 }
 
+fn validate_calibration_readiness(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "calibration readiness",
+        "minimum calibration coverage",
+        format!("{} checks", config.calibration_checks.len()),
+        format!(">= {} checks", config.calibration_policy.min_checks),
+        config.calibration_checks.len() >= config.calibration_policy.min_checks,
+        "Calibration readiness must cover heater behavior, optical baseline, sensor bus, assay baseline, and traceability.",
+    );
+
+    let mut ids = BTreeSet::new();
+    for check in &config.calibration_checks {
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} subsystem", check.id),
+            check.subsystem.clone(),
+            "non-empty",
+            !check.subsystem.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} calibrated item", check.id),
+            check.calibrated_item.clone(),
+            "non-empty",
+            !check.calibrated_item.trim().is_empty(),
+            &check.notes,
+        );
+        for net in &check.dependent_nets {
+            push_gate!(
+                rows,
+                errors,
+                "calibration readiness",
+                format!("{} net {}", check.id, net),
+                net.clone(),
+                "known contract net",
+                contract_nets.contains(net),
+                &check.notes,
+            );
+        }
+
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} preconditions", check.id),
+            mitigation_list(&check.preconditions),
+            if config.calibration_policy.require_control_conditions {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.calibration_policy.require_control_conditions
+                || !check.preconditions.is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} procedure", check.id),
+            check.procedure.clone(),
+            "non-empty",
+            !check.procedure.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} acceptance criterion", check.id),
+            check.acceptance_criterion.clone(),
+            if config.calibration_policy.require_acceptance_criterion {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.calibration_policy.require_acceptance_criterion
+                || !check.acceptance_criterion.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} control data", check.id),
+            mitigation_list(&check.control_data),
+            if config.calibration_policy.require_control_conditions {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.calibration_policy.require_control_conditions || !check.control_data.is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} required outputs", check.id),
+            mitigation_list(&check.required_outputs),
+            if config.calibration_policy.require_output_artifacts {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.calibration_policy.require_output_artifacts
+                || !check.required_outputs.is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "calibration readiness",
+            format!("{} firmware dependency", check.id),
+            check.firmware_dependency.clone(),
+            if config.calibration_policy.require_firmware_dependency {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.calibration_policy.require_firmware_dependency
+                || !check.firmware_dependency.trim().is_empty(),
+            &check.notes,
+        );
+        for measurement in &check.verification_measurements {
+            push_gate!(
+                rows,
+                errors,
+                "calibration readiness",
+                format!("{} verifies {}", check.id, measurement),
+                measurement.clone(),
+                "known first-article measurement id",
+                measurement_ids.contains(measurement.as_str()),
+                &check.notes,
+            );
+        }
+    }
+}
+
 fn valid_fmea_score(value: u8) -> bool {
     (1..=10).contains(&value)
 }
@@ -3228,6 +3429,48 @@ fn write_manufacturing_test_handoff(
     Ok(())
 }
 
+fn write_calibration_readiness_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.calibration_readiness_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.calibration_readiness_csv)?;
+    writer.write_record([
+        "id",
+        "subsystem",
+        "calibrated_item",
+        "dependent_nets",
+        "preconditions",
+        "procedure",
+        "acceptance_criterion",
+        "control_data",
+        "required_outputs",
+        "verification_measurements",
+        "firmware_dependency",
+        "notes",
+    ])?;
+
+    for check in &config.calibration_checks {
+        writer.write_record([
+            check.id.as_str(),
+            check.subsystem.as_str(),
+            check.calibrated_item.as_str(),
+            mitigation_list(&check.dependent_nets).as_str(),
+            mitigation_list(&check.preconditions).as_str(),
+            check.procedure.as_str(),
+            check.acceptance_criterion.as_str(),
+            mitigation_list(&check.control_data).as_str(),
+            mitigation_list(&check.required_outputs).as_str(),
+            mitigation_list(&check.verification_measurements).as_str(),
+            check.firmware_dependency.as_str(),
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
@@ -3451,6 +3694,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("manufacturing_test_coverage.csv")
+    )?;
+    writeln!(
+        report,
+        "- Calibration readiness table: `{}`",
+        outputs
+            .calibration_readiness_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("calibration_readiness.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())

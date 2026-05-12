@@ -83,6 +83,7 @@ struct Outputs {
     emc_esd_file: String,
     startup_safety_file: String,
     manufacturing_test_file: String,
+    calibration_readiness_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
@@ -443,6 +444,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         emc_esd_csv: output_root.join(&config.outputs.emc_esd_file),
         startup_safety_csv: output_root.join(&config.outputs.startup_safety_file),
         manufacturing_test_csv: output_root.join(&config.outputs.manufacturing_test_file),
+        calibration_readiness_csv: output_root.join(&config.outputs.calibration_readiness_file),
     };
     validate_to_outputs(&root, &electrical_outputs)?;
     write_release_bundles(&config, &root, &output_root)?;
@@ -1291,6 +1293,11 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "calibration_readiness: {}",
+        config.outputs.calibration_readiness_file
+    )?;
+    writeln!(
+        file,
         "bundle_checksums: {}",
         config.outputs.bundle_checksums_file
     )?;
@@ -1741,6 +1748,7 @@ fn write_release_bundles(
         config.outputs.emc_esd_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
         config.outputs.manufacturing_test_file.as_str(),
+        config.outputs.calibration_readiness_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
@@ -1944,6 +1952,7 @@ fn validate_release_outputs(
         &config.outputs.emc_esd_file,
         &config.outputs.startup_safety_file,
         &config.outputs.manufacturing_test_file,
+        &config.outputs.calibration_readiness_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
@@ -2042,6 +2051,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.emc_esd_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
         config.outputs.manufacturing_test_file.as_str(),
+        config.outputs.calibration_readiness_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
