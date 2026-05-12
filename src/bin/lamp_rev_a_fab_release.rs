@@ -94,6 +94,8 @@ struct Outputs {
     heater_pwm_transient_file: String,
     heater_thermal_transient_netlist_file: String,
     heater_thermal_transient_file: String,
+    boot_strap_timing_netlist_file: String,
+    boot_strap_timing_file: String,
     usb_inrush_startup_netlist_file: String,
     usb_inrush_startup_file: String,
     power_domain_fault_netlist_file: String,
@@ -480,6 +482,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             .join(&config.outputs.heater_thermal_transient_netlist_file),
         heater_thermal_transient_csv: output_root
             .join(&config.outputs.heater_thermal_transient_file),
+        boot_strap_timing_netlist: output_root.join(&config.outputs.boot_strap_timing_netlist_file),
+        boot_strap_timing_csv: output_root.join(&config.outputs.boot_strap_timing_file),
         usb_inrush_startup_netlist: output_root
             .join(&config.outputs.usb_inrush_startup_netlist_file),
         usb_inrush_startup_csv: output_root.join(&config.outputs.usb_inrush_startup_file),
@@ -1353,6 +1357,16 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "boot_strap_timing_netlist: {}",
+        config.outputs.boot_strap_timing_netlist_file
+    )?;
+    writeln!(
+        file,
+        "boot_strap_timing_simulation: {}",
+        config.outputs.boot_strap_timing_file
+    )?;
+    writeln!(
+        file,
         "usb_inrush_startup_netlist: {}",
         config.outputs.usb_inrush_startup_netlist_file
     )?;
@@ -1911,6 +1925,8 @@ fn write_release_bundles(
             .heater_thermal_transient_netlist_file
             .as_str(),
         config.outputs.heater_thermal_transient_file.as_str(),
+        config.outputs.boot_strap_timing_netlist_file.as_str(),
+        config.outputs.boot_strap_timing_file.as_str(),
         config.outputs.usb_inrush_startup_netlist_file.as_str(),
         config.outputs.usb_inrush_startup_file.as_str(),
         config.outputs.power_domain_fault_netlist_file.as_str(),
@@ -2136,6 +2152,8 @@ fn validate_release_outputs(
         &config.outputs.heater_pwm_transient_file,
         &config.outputs.heater_thermal_transient_netlist_file,
         &config.outputs.heater_thermal_transient_file,
+        &config.outputs.boot_strap_timing_netlist_file,
+        &config.outputs.boot_strap_timing_file,
         &config.outputs.usb_inrush_startup_netlist_file,
         &config.outputs.usb_inrush_startup_file,
         &config.outputs.power_domain_fault_netlist_file,
@@ -2259,6 +2277,8 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
             .heater_thermal_transient_netlist_file
             .as_str(),
         config.outputs.heater_thermal_transient_file.as_str(),
+        config.outputs.boot_strap_timing_netlist_file.as_str(),
+        config.outputs.boot_strap_timing_file.as_str(),
         config.outputs.usb_inrush_startup_netlist_file.as_str(),
         config.outputs.usb_inrush_startup_file.as_str(),
         config.outputs.power_domain_fault_netlist_file.as_str(),

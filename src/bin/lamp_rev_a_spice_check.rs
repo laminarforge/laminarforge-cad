@@ -22,6 +22,7 @@ enum SpiceMode {
     OperatingPoint,
     HeaterPwmTransient,
     HeaterThermalTransient,
+    BootStrapTiming,
     UsbInrushStartup,
     RailLoadStep,
     PowerDomainFault,
@@ -49,6 +50,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 &outputs.heater_thermal_transient_netlist,
                 &default_log_path(&outputs.heater_thermal_transient_netlist),
                 SpiceMode::HeaterThermalTransient,
+            )?;
+            run_spice_check(
+                &outputs.boot_strap_timing_netlist,
+                &default_log_path(&outputs.boot_strap_timing_netlist),
+                SpiceMode::BootStrapTiming,
             )?;
             run_spice_check(
                 &outputs.usb_inrush_startup_netlist,
@@ -88,6 +94,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             PathBuf::from(log),
             SpiceMode::HeaterThermalTransient,
         ),
+        [mode, netlist, log] if mode == "boot-strap-timing" => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::BootStrapTiming,
+        ),
         [mode, netlist, log] if mode == "usb-inrush-startup" => (
             PathBuf::from(netlist),
             PathBuf::from(log),
@@ -115,7 +126,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ),
         _ => {
             return Err(
-                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|heater-thermal-transient|usb-inrush-startup|rail-load-step|power-domain-fault|analog-front-end NETLIST_PATH LOG_PATH]"
+                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient|heater-thermal-transient|boot-strap-timing|usb-inrush-startup|rail-load-step|power-domain-fault|analog-front-end NETLIST_PATH LOG_PATH]"
                     .into(),
             );
         }
@@ -161,6 +172,7 @@ fn run_spice_check(
         SpiceMode::OperatingPoint => validate_operating_point_log(&log)?,
         SpiceMode::HeaterPwmTransient => validate_heater_pwm_transient_log(&netlist, &log)?,
         SpiceMode::HeaterThermalTransient => validate_heater_thermal_transient_log(&netlist, &log)?,
+        SpiceMode::BootStrapTiming => validate_boot_strap_timing_log(&netlist, &log)?,
         SpiceMode::UsbInrushStartup => validate_usb_inrush_startup_log(&netlist, &log)?,
         SpiceMode::RailLoadStep => validate_rail_load_step_log(&netlist, &log)?,
         SpiceMode::PowerDomainFault => validate_power_domain_fault_log(&netlist, &log)?,
@@ -173,6 +185,7 @@ fn run_spice_check(
             SpiceMode::OperatingPoint => "operating-point",
             SpiceMode::HeaterPwmTransient => "heater PWM transient",
             SpiceMode::HeaterThermalTransient => "heater thermal transient",
+            SpiceMode::BootStrapTiming => "ESP32 boot strap timing transient",
             SpiceMode::UsbInrushStartup => "USB/VBUS startup transient",
             SpiceMode::RailLoadStep => "rail load-step transient",
             SpiceMode::PowerDomainFault => "power-domain fault transient",
@@ -316,6 +329,56 @@ fn validate_heater_thermal_transient_log(netlist: &str, log: &str) -> Result<(),
             "heater thermal transient final temperature {final_temp:.6} C is outside {min_final_c:.6}..{max_final_c:.6} C"
         )
         .into());
+    }
+    Ok(())
+}
+
+fn validate_boot_strap_timing_log(netlist: &str, log: &str) -> Result<(), Box<dyn Error>> {
+    let lower = log.to_ascii_lowercase();
+    validate_no_ngspice_failure_tokens(&lower)?;
+
+    let max_en_valid_ms = netlist_limit(netlist, "check_max_en_valid_ms")?;
+    let min_bootstrap_high = netlist_limit(netlist, "check_min_bootstrap_high_v")?;
+    let max_boot_sensitive_leakage_ma =
+        netlist_limit(netlist, "check_max_boot_sensitive_leakage_ma")?;
+
+    let en_valid_ms = measurement(&lower, "en_valid_time_s")? * 1000.0;
+    let gpio0_boot_v = measurement(&lower, "gpio0_boot_v")?;
+    let sda_boot_v = measurement(&lower, "sda_boot_v")?;
+    let led4_boot_v = measurement(&lower, "led4_boot_v")?;
+    let led5_boot_v = measurement(&lower, "led5_boot_v")?;
+    let led4_leakage_ma = measurement(&lower, "led4_leakage_a")?.abs() * 1000.0;
+    let led5_leakage_ma = measurement(&lower, "led5_leakage_a")?.abs() * 1000.0;
+
+    if en_valid_ms > max_en_valid_ms {
+        return Err(format!(
+            "boot strap EN valid time {en_valid_ms:.6} ms exceeds {max_en_valid_ms:.6} ms"
+        )
+        .into());
+    }
+    for (name, value) in [
+        ("GPIO0", gpio0_boot_v),
+        ("SDA", sda_boot_v),
+        ("LED_BASE_4", led4_boot_v),
+        ("LED_BASE_5", led5_boot_v),
+    ] {
+        if value < min_bootstrap_high {
+            return Err(format!(
+                "boot strap {name} sample voltage {value:.6} V is below {min_bootstrap_high:.6} V"
+            )
+            .into());
+        }
+    }
+    for (name, value) in [
+        ("LED_BASE_4", led4_leakage_ma),
+        ("LED_BASE_5", led5_leakage_ma),
+    ] {
+        if value > max_boot_sensitive_leakage_ma {
+            return Err(format!(
+                "boot strap {name} leakage {value:.6} mA exceeds {max_boot_sensitive_leakage_ma:.6} mA"
+            )
+            .into());
+        }
     }
     Ok(())
 }

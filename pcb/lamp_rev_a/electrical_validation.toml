@@ -38,6 +38,8 @@ heater_pwm_transient_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_heater_pwm_tra
 heater_pwm_transient_csv = "pcb/lamp_rev_a/reports/heater_pwm_transient_simulation.csv"
 heater_thermal_transient_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_heater_thermal_transient.spice"
 heater_thermal_transient_csv = "pcb/lamp_rev_a/reports/heater_thermal_transient_simulation.csv"
+boot_strap_timing_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_boot_strap_timing.spice"
+boot_strap_timing_csv = "pcb/lamp_rev_a/reports/boot_strap_timing_simulation.csv"
 usb_inrush_startup_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_usb_inrush_startup.spice"
 usb_inrush_startup_csv = "pcb/lamp_rev_a/reports/usb_inrush_startup_simulation.csv"
 power_domain_fault_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_power_domain_fault.spice"
@@ -143,6 +145,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
 acceptance_criterion = "Numerical thermal model reaches LAMP target temperature in time, stays below maximum/overshoot limits, and holds target inside configured error, duty, and energy limits."
 blocks_release = true
 notes = "This turns heater warm-up and hold behavior into a CI-gated transient model before physical thermal logging."
+
+[[validation_traceability]]
+id = "boot_strap_timing_simulation"
+validation_layer = "SPICE ESP32-S3 reset and boot strap timing simulation"
+electrical_gate_category = "boot strap timing"
+output_artifact = "lamp_rev_a_boot_strap_timing.spice; boot_strap_timing_simulation.csv; electrical_validation_gates.csv"
+release_manifest_entry = "boot_strap_timing_netlist; boot_strap_timing_simulation; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; LAMP Rev A SPICE checks; Run LAMP Rev A release SPICE checks"
+acceptance_criterion = "ngspice transient measurements show EN reaches a valid reset-release threshold in time and GPIO0/SDA/boot-sensitive outputs are high and low-leakage at the ESP32 boot sample point."
+blocks_release = true
+notes = "This catches reset RC, boot-loader strap, and safety-output startup timing mistakes before first-article oscilloscope capture."
 
 [[validation_traceability]]
 id = "usb_inrush_startup_simulation"
@@ -467,6 +480,27 @@ min_hold_duty = 0.0
 max_hold_duty = 0.85
 max_energy_wh = 4.0
 notes = "First-order reaction-block/heater thermal transient model for pre-fab screening. This does not replace first-article thermal logging or enclosure-coupled FEA."
+
+[boot_strap_timing_policy]
+supply_v = 3.3
+en_pullup_ohm = 10000.0
+en_cap_nf = 100.0
+gpio0_pullup_ohm = 10000.0
+gpio0_cap_pf = 25.0
+sda_pullup_ohm = 4700.0
+sda_bus_cap_pf = 100.0
+boot_sensitive_pullup_ohm = 10000.0
+boot_sensitive_cap_pf = 25.0
+boot_sensitive_leakage_ohm = 1000000.0
+boot_sample_ms = 3.0
+simulation_stop_ms = 30.0
+timestep_ms = 0.01
+min_en_valid_v = 2.4
+max_en_valid_ms = 25.0
+min_bootstrap_high_v = 2.475
+max_bootstrap_rise_ms = 1.0
+max_boot_sensitive_leakage_ma = 0.05
+notes = "First-order ESP32-S3 EN/GPIO0/GPIO45/GPIO46/GPIO48 reset/strap timing model; not a replacement for oscilloscope startup capture."
 
 [usb_inrush_startup_policy]
 vbus_nominal_v = 5.0

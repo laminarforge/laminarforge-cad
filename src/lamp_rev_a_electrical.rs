@@ -34,6 +34,8 @@ pub struct ElectricalOutputPaths {
     pub heater_pwm_transient_csv: PathBuf,
     pub heater_thermal_transient_netlist: PathBuf,
     pub heater_thermal_transient_csv: PathBuf,
+    pub boot_strap_timing_netlist: PathBuf,
+    pub boot_strap_timing_csv: PathBuf,
     pub usb_inrush_startup_netlist: PathBuf,
     pub usb_inrush_startup_csv: PathBuf,
     pub power_domain_fault_netlist: PathBuf,
@@ -105,6 +107,7 @@ struct ValidationConfig {
     thermal_margin_simulation_policy: ThermalMarginSimulationPolicy,
     heater_pwm_transient_policy: HeaterPwmTransientPolicy,
     heater_thermal_transient_policy: HeaterThermalTransientPolicy,
+    boot_strap_timing_policy: BootStrapTimingPolicy,
     usb_inrush_startup_policy: UsbInrushStartupPolicy,
     power_domain_fault_policy: PowerDomainFaultPolicy,
     rail_load_step_policy: RailLoadStepPolicy,
@@ -159,6 +162,8 @@ struct Outputs {
     heater_pwm_transient_csv: String,
     heater_thermal_transient_netlist: String,
     heater_thermal_transient_csv: String,
+    boot_strap_timing_netlist: String,
+    boot_strap_timing_csv: String,
     usb_inrush_startup_netlist: String,
     usb_inrush_startup_csv: String,
     power_domain_fault_netlist: String,
@@ -376,6 +381,29 @@ struct HeaterThermalTransientPolicy {
     min_hold_duty: f64,
     max_hold_duty: f64,
     max_energy_wh: f64,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct BootStrapTimingPolicy {
+    supply_v: f64,
+    en_pullup_ohm: f64,
+    en_cap_nf: f64,
+    gpio0_pullup_ohm: f64,
+    gpio0_cap_pf: f64,
+    sda_pullup_ohm: f64,
+    sda_bus_cap_pf: f64,
+    boot_sensitive_pullup_ohm: f64,
+    boot_sensitive_cap_pf: f64,
+    boot_sensitive_leakage_ohm: f64,
+    boot_sample_ms: f64,
+    simulation_stop_ms: f64,
+    timestep_ms: f64,
+    min_en_valid_v: f64,
+    max_en_valid_ms: f64,
+    min_bootstrap_high_v: f64,
+    max_bootstrap_rise_ms: f64,
+    max_boot_sensitive_leakage_ma: f64,
     notes: String,
 }
 
@@ -989,6 +1017,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         heater_thermal_transient_netlist: repo_root
             .join(config.outputs.heater_thermal_transient_netlist),
         heater_thermal_transient_csv: repo_root.join(config.outputs.heater_thermal_transient_csv),
+        boot_strap_timing_netlist: repo_root.join(config.outputs.boot_strap_timing_netlist),
+        boot_strap_timing_csv: repo_root.join(config.outputs.boot_strap_timing_csv),
         usb_inrush_startup_netlist: repo_root.join(config.outputs.usb_inrush_startup_netlist),
         usb_inrush_startup_csv: repo_root.join(config.outputs.usb_inrush_startup_csv),
         power_domain_fault_netlist: repo_root.join(config.outputs.power_domain_fault_netlist),
@@ -1080,6 +1110,7 @@ pub fn validate_to_outputs(
     validate_thermal_margin_simulation(&config, &routing, &mut rows, &mut errors);
     validate_heater_pwm_transient(&config, &contract_nets, &mut rows, &mut errors);
     validate_heater_thermal_transient(&config, &contract_nets, &mut rows, &mut errors);
+    validate_boot_strap_timing(&config, &contract_nets, &mut rows, &mut errors);
     validate_usb_inrush_startup(&config, &contract_nets, &mut rows, &mut errors);
     validate_power_domain_fault(&config, &contract_nets, &mut rows, &mut errors);
     validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
@@ -1122,6 +1153,7 @@ pub fn validate_to_outputs(
     write_thermal_margin_simulation_handoff(&config, &routing, outputs)?;
     write_heater_pwm_transient_handoff(&config, outputs)?;
     write_heater_thermal_transient_handoff(&config, outputs)?;
+    write_boot_strap_timing_handoff(&config, outputs)?;
     write_usb_inrush_startup_handoff(&config, outputs)?;
     write_power_domain_fault_handoff(&config, outputs)?;
     write_rail_load_step_handoff(&config, outputs)?;
@@ -2372,6 +2404,217 @@ fn heater_thermal_control_duty(
     commanded
         .clamp(policy.min_hold_duty, policy.max_hold_duty)
         .min(policy.max_duty)
+}
+
+fn validate_boot_strap_timing(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.boot_strap_timing_policy;
+    for net in ["ESP_EN", "ESP_GPIO0", "SDA", "LED_BASE_4", "LED_BASE_5"] {
+        push_gate!(
+            rows,
+            errors,
+            "boot strap timing",
+            format!("{net} contract net"),
+            net,
+            "present in contract",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "boot strap timing",
+        "EN reset RC constants",
+        format!(
+            "{:.0} ohm, {:.1} nF",
+            policy.en_pullup_ohm, policy.en_cap_nf
+        ),
+        "positive pull-up and capacitor",
+        policy.en_pullup_ohm > 0.0 && policy.en_cap_nf > 0.0,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "boot strap timing",
+        "boot sample timing",
+        format!("{:.3} ms", policy.boot_sample_ms),
+        "0 < sample < simulation stop",
+        policy.boot_sample_ms > 0.0 && policy.boot_sample_ms < policy.simulation_stop_ms,
+        &policy.notes,
+    );
+
+    for row in boot_strap_timing_rows(config) {
+        push_gate!(
+            rows,
+            errors,
+            "boot strap timing",
+            row.measurement,
+            format!("{:.6} {}", row.value, row.units),
+            row.limit,
+            row.pass,
+            row.notes,
+        );
+    }
+}
+
+#[derive(Debug)]
+struct BootStrapTimingRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+fn boot_strap_timing_rows(config: &ValidationConfig) -> Vec<BootStrapTimingRow> {
+    let policy = &config.boot_strap_timing_policy;
+    let sample_s = policy.boot_sample_ms / 1000.0;
+    let en_valid_ms = rc_time_to_threshold(
+        policy.supply_v,
+        policy.en_pullup_ohm,
+        policy.en_cap_nf * 1e-9,
+        policy.min_en_valid_v,
+    ) * 1000.0;
+    let gpio0_sample_v = rc_voltage(
+        policy.supply_v,
+        policy.gpio0_pullup_ohm,
+        policy.gpio0_cap_pf * 1e-12,
+        sample_s,
+    );
+    let sda_sample_v = rc_voltage(
+        policy.supply_v,
+        policy.sda_pullup_ohm,
+        policy.sda_bus_cap_pf * 1e-12,
+        sample_s,
+    );
+    let boot_sensitive_final_v = divider_voltage(
+        policy.supply_v,
+        policy.boot_sensitive_pullup_ohm,
+        policy.boot_sensitive_leakage_ohm,
+    );
+    let boot_sensitive_r_ohm = parallel_resistance(
+        policy.boot_sensitive_pullup_ohm,
+        policy.boot_sensitive_leakage_ohm,
+    );
+    let led4_sample_v = rc_voltage(
+        boot_sensitive_final_v,
+        boot_sensitive_r_ohm,
+        policy.boot_sensitive_cap_pf * 1e-12,
+        sample_s,
+    );
+    let led5_sample_v = led4_sample_v;
+    let gpio0_rise_ms = rc_time_to_threshold(
+        policy.supply_v,
+        policy.gpio0_pullup_ohm,
+        policy.gpio0_cap_pf * 1e-12,
+        policy.min_bootstrap_high_v,
+    ) * 1000.0;
+    let leakage_ma = boot_sensitive_final_v / policy.boot_sensitive_leakage_ohm * 1000.0;
+
+    vec![
+        BootStrapTimingRow {
+            id: "en_valid_time",
+            measurement: "ESP_EN valid reset-release time",
+            value: en_valid_ms,
+            units: "ms",
+            limit: format!("<= {:.3} ms", policy.max_en_valid_ms),
+            pass: en_valid_ms <= policy.max_en_valid_ms,
+            notes: policy.notes.clone(),
+        },
+        BootStrapTimingRow {
+            id: "gpio0_boot_sample_voltage",
+            measurement: "GPIO0 boot-sample voltage",
+            value: gpio0_sample_v,
+            units: "V",
+            limit: format!(">= {:.3} V", policy.min_bootstrap_high_v),
+            pass: gpio0_sample_v >= policy.min_bootstrap_high_v,
+            notes: policy.notes.clone(),
+        },
+        BootStrapTimingRow {
+            id: "sda_boot_sample_voltage",
+            measurement: "SDA boot-sample voltage",
+            value: sda_sample_v,
+            units: "V",
+            limit: format!(">= {:.3} V", policy.min_bootstrap_high_v),
+            pass: sda_sample_v >= policy.min_bootstrap_high_v,
+            notes: policy.notes.clone(),
+        },
+        BootStrapTimingRow {
+            id: "led_base4_boot_sample_voltage",
+            measurement: "LED_BASE_4 boot-sample voltage",
+            value: led4_sample_v,
+            units: "V",
+            limit: format!(">= {:.3} V", policy.min_bootstrap_high_v),
+            pass: led4_sample_v >= policy.min_bootstrap_high_v,
+            notes: policy.notes.clone(),
+        },
+        BootStrapTimingRow {
+            id: "led_base5_boot_sample_voltage",
+            measurement: "LED_BASE_5 boot-sample voltage",
+            value: led5_sample_v,
+            units: "V",
+            limit: format!(">= {:.3} V", policy.min_bootstrap_high_v),
+            pass: led5_sample_v >= policy.min_bootstrap_high_v,
+            notes: policy.notes.clone(),
+        },
+        BootStrapTimingRow {
+            id: "gpio0_bootstrap_rise_time",
+            measurement: "GPIO0 high-threshold rise time",
+            value: gpio0_rise_ms,
+            units: "ms",
+            limit: format!("<= {:.3} ms", policy.max_bootstrap_rise_ms),
+            pass: gpio0_rise_ms <= policy.max_bootstrap_rise_ms,
+            notes: policy.notes.clone(),
+        },
+        BootStrapTimingRow {
+            id: "boot_sensitive_leakage",
+            measurement: "boot-sensitive output leakage",
+            value: leakage_ma,
+            units: "mA",
+            limit: format!("<= {:.3} mA", policy.max_boot_sensitive_leakage_ma),
+            pass: leakage_ma <= policy.max_boot_sensitive_leakage_ma,
+            notes: policy.notes.clone(),
+        },
+    ]
+}
+
+fn rc_voltage(final_v: f64, resistance_ohm: f64, capacitance_f: f64, time_s: f64) -> f64 {
+    if resistance_ohm <= 0.0 || capacitance_f <= 0.0 {
+        return final_v;
+    }
+    final_v * (1.0 - (-time_s / (resistance_ohm * capacitance_f)).exp())
+}
+
+fn rc_time_to_threshold(
+    final_v: f64,
+    resistance_ohm: f64,
+    capacitance_f: f64,
+    threshold_v: f64,
+) -> f64 {
+    if resistance_ohm <= 0.0 || capacitance_f <= 0.0 {
+        return 0.0;
+    }
+    if threshold_v >= final_v {
+        return f64::INFINITY;
+    }
+    -resistance_ohm * capacitance_f * (1.0 - threshold_v / final_v).ln()
+}
+
+fn divider_voltage(supply_v: f64, pullup_ohm: f64, leakage_ohm: f64) -> f64 {
+    supply_v * leakage_ohm / (pullup_ohm + leakage_ohm)
+}
+
+fn parallel_resistance(left_ohm: f64, right_ohm: f64) -> f64 {
+    (left_ohm * right_ohm) / (left_ohm + right_ohm)
 }
 
 fn validate_usb_inrush_startup(
@@ -6720,6 +6963,165 @@ fn heater_thermal_power_profile(policy: &HeaterThermalTransientPolicy) -> Vec<(f
     profile
 }
 
+fn write_boot_strap_timing_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    write_boot_strap_timing_csv(config, outputs)?;
+    write_boot_strap_timing_spice(config, outputs)?;
+    Ok(())
+}
+
+fn write_boot_strap_timing_csv(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.boot_strap_timing_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.boot_strap_timing_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in boot_strap_timing_rows(config) {
+        writer.write_record([
+            row.id,
+            row.measurement,
+            format!("{:.6}", row.value).as_str(),
+            row.units,
+            row.limit.as_str(),
+            if row.pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_boot_strap_timing_spice(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.boot_strap_timing_netlist)?;
+    let policy = &config.boot_strap_timing_policy;
+    let mut spice = String::new();
+    writeln!(
+        spice,
+        "* LaminarForge LAMP Rev A ESP32-S3 reset and boot strap timing transient check"
+    )?;
+    writeln!(spice, "* Generated by lamp_rev_a_electrical_validate")?;
+    writeln!(
+        spice,
+        "* This is a first-order RC/strap startup model, not oscilloscope signoff."
+    )?;
+    writeln!(
+        spice,
+        "* check_max_en_valid_ms={:.6}",
+        policy.max_en_valid_ms
+    )?;
+    writeln!(
+        spice,
+        "* check_min_bootstrap_high_v={:.6}",
+        policy.min_bootstrap_high_v
+    )?;
+    writeln!(
+        spice,
+        "* check_max_boot_sensitive_leakage_ma={:.6}",
+        policy.max_boot_sensitive_leakage_ma
+    )?;
+    writeln!(
+        spice,
+        "V3 P3SRC 0 PULSE(0 {:.6} 0 0.001m 0.001m {:.6}m {:.6}m)",
+        policy.supply_v,
+        policy.simulation_stop_ms,
+        policy.simulation_stop_ms * 2.0
+    )?;
+    writeln!(spice, "REN P3SRC ESP_EN {:.6}", policy.en_pullup_ohm)?;
+    writeln!(spice, "CEN ESP_EN 0 {:.6}n IC=0", policy.en_cap_nf)?;
+    writeln!(
+        spice,
+        "RGPIO0 P3SRC ESP_GPIO0 {:.6}",
+        policy.gpio0_pullup_ohm
+    )?;
+    writeln!(spice, "CGPIO0 ESP_GPIO0 0 {:.6}p IC=0", policy.gpio0_cap_pf)?;
+    writeln!(spice, "RSDA P3SRC SDA {:.6}", policy.sda_pullup_ohm)?;
+    writeln!(spice, "CSDA SDA 0 {:.6}p IC=0", policy.sda_bus_cap_pf)?;
+    writeln!(
+        spice,
+        "RLED4UP P3SRC LED_BASE_4 {:.6}",
+        policy.boot_sensitive_pullup_ohm
+    )?;
+    writeln!(
+        spice,
+        "CLED4 LED_BASE_4 0 {:.6}p IC=0",
+        policy.boot_sensitive_cap_pf
+    )?;
+    writeln!(spice, "VLED4SENSE LED_BASE_4 LED4_LEAK 0")?;
+    writeln!(
+        spice,
+        "RLED4LEAK LED4_LEAK 0 {:.6}",
+        policy.boot_sensitive_leakage_ohm
+    )?;
+    writeln!(
+        spice,
+        "RLED5UP P3SRC LED_BASE_5 {:.6}",
+        policy.boot_sensitive_pullup_ohm
+    )?;
+    writeln!(
+        spice,
+        "CLED5 LED_BASE_5 0 {:.6}p IC=0",
+        policy.boot_sensitive_cap_pf
+    )?;
+    writeln!(spice, "VLED5SENSE LED_BASE_5 LED5_LEAK 0")?;
+    writeln!(
+        spice,
+        "RLED5LEAK LED5_LEAK 0 {:.6}",
+        policy.boot_sensitive_leakage_ohm
+    )?;
+    writeln!(
+        spice,
+        ".tran {:.6}m {:.6}m uic",
+        policy.timestep_ms, policy.simulation_stop_ms
+    )?;
+    writeln!(spice, ".control")?;
+    writeln!(spice, "run")?;
+    writeln!(
+        spice,
+        "meas tran en_valid_time_s WHEN v(esp_en)={:.6} RISE=1",
+        policy.min_en_valid_v
+    )?;
+    writeln!(
+        spice,
+        "meas tran gpio0_boot_v FIND v(esp_gpio0) AT={:.6}m",
+        policy.boot_sample_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran sda_boot_v FIND v(sda) AT={:.6}m",
+        policy.boot_sample_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran led4_boot_v FIND v(led_base_4) AT={:.6}m",
+        policy.boot_sample_ms
+    )?;
+    writeln!(
+        spice,
+        "meas tran led5_boot_v FIND v(led_base_5) AT={:.6}m",
+        policy.boot_sample_ms
+    )?;
+    writeln!(spice, "meas tran led4_leakage_a MAX i(vled4sense)")?;
+    writeln!(spice, "meas tran led5_leakage_a MAX i(vled5sense)")?;
+    writeln!(spice, ".endc")?;
+    writeln!(spice, ".end")?;
+    fs::write(&outputs.boot_strap_timing_netlist, spice)?;
+    Ok(())
+}
+
 fn write_usb_inrush_startup_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -8195,6 +8597,15 @@ fn write_simulation_handoff(
     )?;
     writeln!(
         report,
+        "- ESP32-S3 reset and boot strap timing transient netlist: `{}`",
+        outputs
+            .boot_strap_timing_netlist
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("lamp_rev_a_boot_strap_timing.spice")
+    )?;
+    writeln!(
+        report,
         "- 3.3 V rail load-step transient netlist: `{}`",
         outputs
             .rail_load_step_netlist
@@ -8294,6 +8705,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("usb_inrush_startup_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- ESP32-S3 reset and boot strap timing table: `{}`",
+        outputs
+            .boot_strap_timing_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("boot_strap_timing_simulation.csv")
     )?;
     writeln!(
         report,
