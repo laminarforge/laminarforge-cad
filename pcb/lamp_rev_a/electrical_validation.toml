@@ -25,6 +25,7 @@ first_article_measurements_csv = "pcb/lamp_rev_a/reports/first_article_measureme
 component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
 fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
+startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
 
 [assumptions]
 ambient_c = 35.0
@@ -335,6 +336,103 @@ require_protection_for_risk_at_least = 50
 require_measurement_for_risk_at_least = 50
 require_external_analysis_for_risk_at_least = 70
 require_return_path_strategy = true
+
+[boot_startup_policy]
+min_checks = 6
+require_all_boot_sensitive_firmware_pins = true
+require_evidence_for_boot_sensitive = true
+require_measurement_for_safety_critical = true
+forbid_active_safety_outputs_at_reset = true
+
+[[boot_startup_checks]]
+id = "esp_en_reset_release"
+net = "ESP_EN"
+module_pin = 3
+function = "ESP32-S3 chip enable/reset"
+expected_power_on_state = "Held in the valid 3.3 V logic domain after USB power is stable and reset is released."
+safe_state = "Reset test point is accessible; board can be held in reset during bring-up."
+boot_sensitive = true
+safety_critical = false
+allowed_active_at_reset = true
+evidence_ids = ["resistor_10k", "gpio_domain", "firmware_handoff"]
+verification_methods = ["Measure TP_EN during USB-only bring-up.", "Confirm reset control does not couple into the heater domain."]
+verification_measurements = ["esp_en_idle"]
+notes = "A missing or wrong EN pull state can make the ESP32-S3 appear dead even when rails are correct."
+
+[[boot_startup_checks]]
+id = "esp_gpio0_normal_boot"
+net = "ESP_GPIO0"
+module_pin = 27
+function = "ESP32-S3 boot strap"
+expected_power_on_state = "Pulled high for normal boot; intentionally pulled low only during bootloader entry."
+safe_state = "Normal boot strap state is visible at TP_BOOT before flashing."
+boot_sensitive = true
+safety_critical = false
+allowed_active_at_reset = false
+evidence_ids = ["resistor_10k", "gpio_domain", "firmware_handoff"]
+verification_methods = ["Measure TP_BOOT during USB-only bring-up.", "Confirm bootloader entry still works without forcing other strap pins."]
+verification_measurements = ["esp_gpio0_boot_idle"]
+notes = "GPIO0 is the recovery path for firmware flashing and must not be accidentally held low or hard-driven."
+
+[[boot_startup_checks]]
+id = "sda_gpio46_strap_idle"
+net = "SDA"
+module_pin = 16
+function = "I2C SDA on ESP32-S3 boot-sensitive GPIO46"
+expected_power_on_state = "Pulled high through the I2C pull-up and not driven low by attached devices during reset."
+safe_state = "I2C bus idles high before firmware probes the ADS1115."
+boot_sensitive = true
+safety_critical = false
+allowed_active_at_reset = false
+evidence_ids = ["resistor_4k7", "gpio_domain", "firmware_handoff"]
+verification_methods = ["Measure TP_SDA idle-high before starting a test.", "Confirm ADS1115 bring-up fails closed if the bus is stuck low."]
+verification_measurements = ["i2c_sda_idle"]
+notes = "GPIO46 is boot-sensitive on ESP32-S3, so the I2C bus must not hold it in an invalid reset state."
+
+[[boot_startup_checks]]
+id = "led_base4_gpio48_strap_load"
+net = "LED_BASE_4"
+module_pin = 25
+function = "Optical slot 4 LED drive on ESP32-S3 boot-sensitive GPIO48"
+expected_power_on_state = "High impedance during reset; external LED base network must not force an invalid strap state."
+safe_state = "Emitter remains off until firmware deliberately enables the optical channel."
+boot_sensitive = true
+safety_critical = false
+allowed_active_at_reset = false
+evidence_ids = ["led_low_side_drivers", "resistor_1k", "firmware_handoff"]
+verification_methods = ["Inspect the LED base resistor/transistor orientation.", "During optical calibration, confirm slot 4 emitter is off before firmware command."]
+verification_measurements = []
+notes = "This explicitly tracks the ESP32-S3 boot-sensitive LED drive assignment even though Rev A has no dedicated test point on this net."
+
+[[boot_startup_checks]]
+id = "led_base5_gpio45_strap_load"
+net = "LED_BASE_5"
+module_pin = 26
+function = "Optical slot 5 LED drive on ESP32-S3 boot-sensitive GPIO45"
+expected_power_on_state = "High impedance during reset; external LED base network must not force an invalid strap state."
+safe_state = "Emitter remains off until firmware deliberately enables the optical channel."
+boot_sensitive = true
+safety_critical = false
+allowed_active_at_reset = false
+evidence_ids = ["led_low_side_drivers", "resistor_1k", "firmware_handoff"]
+verification_methods = ["Inspect the LED base resistor/transistor orientation.", "During optical calibration, confirm slot 5 emitter is off before firmware command."]
+verification_measurements = []
+notes = "GPIO45 strap handling must be visible in the release package because optical drive hardware loads this net."
+
+[[boot_startup_checks]]
+id = "heater_pwm_reset_inactive"
+net = "HEATER_PWM"
+module_pin = 15
+function = "Heater gate-drive PWM command"
+expected_power_on_state = "Low/inactive through reset and firmware boot."
+safe_state = "Heater gate driver and MOSFET stay off until validated firmware enables heating."
+boot_sensitive = false
+safety_critical = true
+allowed_active_at_reset = false
+evidence_ids = ["heater_gate_driver", "heater_mosfet", "gpio_domain", "firmware_handoff"]
+verification_methods = ["Measure TP_PWM before attaching a high-power heater load.", "Confirm TP_HEATER remains off with PWM inactive."]
+verification_measurements = ["heater_pwm_idle", "heater_return_pwm_off"]
+notes = "This is the fail-closed startup gate for the highest-energy Rev A output."
 
 [[emc_esd_checks]]
 id = "usb_c_esd_immunity"
@@ -729,6 +827,32 @@ max_v = 3.465
 current_limit_ma = 500
 pass_criterion = "+3V3 regulator is in range before flashing or enabling heater firmware."
 notes = "Stop if AMS1117 temperature rises quickly during this low-current step."
+
+[[first_article_measurements]]
+id = "esp_en_idle"
+stage = "usb_power_only"
+order = 52
+test_point = "TP_EN"
+net = "ESP_EN"
+measurement = "logic_level"
+min_v = 3.00
+max_v = 3.465
+current_limit_ma = 500
+pass_criterion = "ESP_EN is in a valid released/reset-testable state before flashing."
+notes = "A bad EN state can look like a power failure even when +3V3 is correct."
+
+[[first_article_measurements]]
+id = "esp_gpio0_boot_idle"
+stage = "usb_power_only"
+order = 54
+test_point = "TP_BOOT"
+net = "ESP_GPIO0"
+measurement = "logic_level"
+min_v = 3.00
+max_v = 3.465
+current_limit_ma = 500
+pass_criterion = "GPIO0 idles high for normal boot and can still be forced low only for bootloader entry."
+notes = "This protects the firmware recovery path before relying on USB flashing."
 
 [[first_article_measurements]]
 id = "heater_raw_12v_voltage"

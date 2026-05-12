@@ -21,6 +21,7 @@ pub struct ElectricalOutputPaths {
     pub component_derating_csv: PathBuf,
     pub fault_fmea_csv: PathBuf,
     pub emc_esd_csv: PathBuf,
+    pub startup_safety_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -60,6 +61,9 @@ struct ValidationConfig {
     emc_esd_policy: EmcEsdPolicy,
     #[serde(default)]
     emc_esd_checks: Vec<EmcEsdCheck>,
+    boot_startup_policy: BootStartupPolicy,
+    #[serde(default)]
+    boot_startup_checks: Vec<BootStartupCheck>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -94,6 +98,7 @@ struct Outputs {
     component_derating_csv: String,
     fault_fmea_csv: String,
     emc_esd_csv: String,
+    startup_safety_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -335,6 +340,32 @@ struct EmcEsdCheck {
 }
 
 #[derive(Debug, Deserialize)]
+struct BootStartupPolicy {
+    min_checks: usize,
+    require_all_boot_sensitive_firmware_pins: bool,
+    require_evidence_for_boot_sensitive: bool,
+    require_measurement_for_safety_critical: bool,
+    forbid_active_safety_outputs_at_reset: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct BootStartupCheck {
+    id: String,
+    net: String,
+    module_pin: u32,
+    function: String,
+    expected_power_on_state: String,
+    safe_state: String,
+    boot_sensitive: bool,
+    safety_critical: bool,
+    allowed_active_at_reset: bool,
+    evidence_ids: Vec<String>,
+    verification_methods: Vec<String>,
+    verification_measurements: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct Contract {
     stackup: Stackup,
     rails: Vec<ContractRail>,
@@ -529,6 +560,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         component_derating_csv: repo_root.join(config.outputs.component_derating_csv),
         fault_fmea_csv: repo_root.join(config.outputs.fault_fmea_csv),
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
+        startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
     })
 }
 
@@ -578,6 +610,14 @@ pub fn validate_to_outputs(
     validate_component_deratings(&config, &selected_part_ids, &mut rows, &mut errors);
     validate_single_faults(&config, &parts, &mut rows, &mut errors);
     validate_emc_esd_precompliance(&config, &parts, &contract_nets, &mut rows, &mut errors);
+    validate_boot_startup_safety(
+        &config,
+        &parts,
+        &contract_nets,
+        &firmware,
+        &mut rows,
+        &mut errors,
+    );
     add_external_analysis_rows(&config, &mut rows);
     add_manual_gate_rows(&config, &parts, &mut rows, &mut errors);
 
@@ -590,6 +630,7 @@ pub fn validate_to_outputs(
     write_component_derating_handoff(&config, outputs)?;
     write_fault_fmea_handoff(&config, outputs)?;
     write_emc_esd_handoff(&config, outputs)?;
+    write_startup_safety_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -634,6 +675,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.component_deratings.is_empty()
         || config.single_fault_checks.is_empty()
         || config.emc_esd_checks.is_empty()
+        || config.boot_startup_checks.is_empty()
     {
         return Err("electrical validation config is missing required gate groups".into());
     }
@@ -2076,6 +2118,230 @@ fn validate_emc_esd_precompliance(
     }
 }
 
+fn validate_boot_startup_safety(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    contract_nets: &BTreeSet<String>,
+    firmware: &FirmwareHandoff,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let evidence_ids = startup_evidence_ids(config, parts);
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let firmware_by_net = firmware
+        .module_pins
+        .iter()
+        .map(|pin| (pin.net.as_str(), pin))
+        .collect::<BTreeMap<_, _>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "startup safety",
+        "minimum startup coverage",
+        format!("{} checks", config.boot_startup_checks.len()),
+        format!(">= {} checks", config.boot_startup_policy.min_checks),
+        config.boot_startup_checks.len() >= config.boot_startup_policy.min_checks,
+        "Startup validation must cover ESP32 boot straps plus fail-closed heater control.",
+    );
+
+    let mut ids = BTreeSet::new();
+    let mut covered_boot_pins = BTreeSet::new();
+    for check in &config.boot_startup_checks {
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} net", check.id),
+            check.net.clone(),
+            "known contract net",
+            contract_nets.contains(&check.net),
+            &check.notes,
+        );
+
+        let firmware_pin = firmware_by_net.get(check.net.as_str()).copied();
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} firmware net", check.id),
+            check.net.clone(),
+            "present in firmware handoff",
+            firmware_pin.is_some(),
+            &check.notes,
+        );
+        if let Some(pin) = firmware_pin {
+            push_gate!(
+                rows,
+                errors,
+                "startup safety",
+                format!("{} module pin", check.id),
+                format!("{}", check.module_pin),
+                format!("{}", pin.module_pin),
+                check.module_pin == pin.module_pin,
+                &check.notes,
+            );
+            push_gate!(
+                rows,
+                errors,
+                "startup safety",
+                format!("{} boot-sensitive flag", check.id),
+                format!("{}", check.boot_sensitive),
+                format!("{}", pin.boot_sensitive),
+                check.boot_sensitive == pin.boot_sensitive,
+                &check.notes,
+            );
+            if pin.boot_sensitive {
+                covered_boot_pins.insert((pin.module_pin, pin.net.as_str()));
+            }
+        }
+
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} expected power-on state", check.id),
+            check.expected_power_on_state.clone(),
+            "non-empty",
+            !check.expected_power_on_state.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} safe state", check.id),
+            check.safe_state.clone(),
+            "non-empty",
+            !check.safe_state.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} verification methods", check.id),
+            mitigation_list(&check.verification_methods),
+            "non-empty",
+            !check.verification_methods.is_empty(),
+            &check.notes,
+        );
+
+        let needs_evidence = check.boot_sensitive
+            && config
+                .boot_startup_policy
+                .require_evidence_for_boot_sensitive;
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} evidence coverage", check.id),
+            mitigation_list(&check.evidence_ids),
+            if needs_evidence {
+                "required and evidence-backed"
+            } else {
+                "documented"
+            },
+            !needs_evidence || !check.evidence_ids.is_empty(),
+            &check.notes,
+        );
+        for evidence_id in &check.evidence_ids {
+            push_gate!(
+                rows,
+                errors,
+                "startup safety",
+                format!("{} evidence {}", check.id, evidence_id),
+                evidence_id.clone(),
+                "known selected/external part, validation id, or firmware handoff",
+                evidence_ids.contains(evidence_id.as_str()),
+                &check.notes,
+            );
+        }
+
+        let needs_measurement = check.safety_critical
+            && config
+                .boot_startup_policy
+                .require_measurement_for_safety_critical;
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} first-article coverage", check.id),
+            mitigation_list(&check.verification_measurements),
+            if needs_measurement {
+                "required and in first_article_measurements"
+            } else {
+                "optional"
+            },
+            !needs_measurement || !check.verification_measurements.is_empty(),
+            &check.notes,
+        );
+        for measurement in &check.verification_measurements {
+            push_gate!(
+                rows,
+                errors,
+                "startup safety",
+                format!("{} verifies {}", check.id, measurement),
+                measurement.clone(),
+                "known first-article measurement id",
+                measurement_ids.contains(measurement.as_str()),
+                &check.notes,
+            );
+        }
+
+        let must_be_inactive = check.safety_critical
+            && config
+                .boot_startup_policy
+                .forbid_active_safety_outputs_at_reset;
+        push_gate!(
+            rows,
+            errors,
+            "startup safety",
+            format!("{} active at reset", check.id),
+            format!("{}", check.allowed_active_at_reset),
+            if must_be_inactive {
+                "false for safety-critical outputs"
+            } else {
+                "documented"
+            },
+            !must_be_inactive || !check.allowed_active_at_reset,
+            &check.notes,
+        );
+    }
+
+    if config
+        .boot_startup_policy
+        .require_all_boot_sensitive_firmware_pins
+    {
+        for pin in firmware.module_pins.iter().filter(|pin| pin.boot_sensitive) {
+            push_gate!(
+                rows,
+                errors,
+                "startup safety",
+                format!("boot-sensitive pin {} {}", pin.module_pin, pin.net),
+                pin.net.clone(),
+                "covered by boot_startup_checks",
+                covered_boot_pins.contains(&(pin.module_pin, pin.net.as_str())),
+                "Every ESP32-S3 boot-sensitive assignment must have an explicit reset/startup safety check.",
+            );
+        }
+    }
+}
+
 fn valid_fmea_score(value: u8) -> bool {
     (1..=10).contains(&value)
 }
@@ -2133,6 +2399,22 @@ fn fault_evidence_ids<'a>(
     );
     ids.insert("gpio_domain");
     ids.insert("usb_signal_integrity");
+    ids
+}
+
+fn startup_evidence_ids<'a>(
+    config: &'a ValidationConfig,
+    parts: &'a PartsManifest,
+) -> BTreeSet<&'a str> {
+    let mut ids = fault_evidence_ids(config, parts);
+    ids.extend(
+        config
+            .first_article_measurements
+            .iter()
+            .map(|measurement| measurement.id.as_str()),
+    );
+    ids.insert("firmware_handoff");
+    ids.insert("boot_startup_policy");
     ids
 }
 
@@ -2640,6 +2922,50 @@ fn write_emc_esd_handoff(
     Ok(())
 }
 
+fn write_startup_safety_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.startup_safety_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.startup_safety_csv)?;
+    writer.write_record([
+        "id",
+        "net",
+        "module_pin",
+        "function",
+        "expected_power_on_state",
+        "safe_state",
+        "boot_sensitive",
+        "safety_critical",
+        "allowed_active_at_reset",
+        "evidence_ids",
+        "verification_methods",
+        "verification_measurements",
+        "notes",
+    ])?;
+
+    for check in &config.boot_startup_checks {
+        writer.write_record([
+            check.id.as_str(),
+            check.net.as_str(),
+            format!("{}", check.module_pin).as_str(),
+            check.function.as_str(),
+            check.expected_power_on_state.as_str(),
+            check.safe_state.as_str(),
+            format!("{}", check.boot_sensitive).as_str(),
+            format!("{}", check.safety_critical).as_str(),
+            format!("{}", check.allowed_active_at_reset).as_str(),
+            mitigation_list(&check.evidence_ids).as_str(),
+            mitigation_list(&check.verification_methods).as_str(),
+            mitigation_list(&check.verification_measurements).as_str(),
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
@@ -2845,6 +3171,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("emc_esd_precompliance.csv")
+    )?;
+    writeln!(
+        report,
+        "- Startup safety table: `{}`",
+        outputs
+            .startup_safety_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("startup_safety.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())
