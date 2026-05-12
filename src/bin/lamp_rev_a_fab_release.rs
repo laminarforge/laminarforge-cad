@@ -94,6 +94,7 @@ struct Outputs {
     fabrication_capability_file: String,
     i2c_bus_file: String,
     heater_protection_file: String,
+    external_harness_file: String,
     startup_safety_file: String,
     manufacturing_test_file: String,
     calibration_readiness_file: String,
@@ -541,6 +542,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         assembly_orientation_csv: output_root.join(&config.outputs.assembly_orientation_file),
         i2c_bus_csv: output_root.join(&config.outputs.i2c_bus_file),
         heater_protection_csv: output_root.join(&config.outputs.heater_protection_file),
+        external_harness_csv: output_root.join(&config.outputs.external_harness_file),
         startup_safety_csv: output_root.join(&config.outputs.startup_safety_file),
         manufacturing_test_csv: output_root.join(&config.outputs.manufacturing_test_file),
         calibration_readiness_csv: output_root.join(&config.outputs.calibration_readiness_file),
@@ -2454,6 +2456,11 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "external_harness: {}",
+        config.outputs.external_harness_file
+    )?;
+    writeln!(
+        file,
         "startup_safety: {}",
         config.outputs.startup_safety_file
     )?;
@@ -2933,6 +2940,7 @@ fn write_release_bundles(
         config.outputs.fabrication_capability_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
+        config.outputs.external_harness_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
         config.outputs.manufacturing_test_file.as_str(),
         config.outputs.calibration_readiness_file.as_str(),
@@ -3171,6 +3179,7 @@ fn validate_release_outputs(
         &config.outputs.fabrication_capability_file,
         &config.outputs.i2c_bus_file,
         &config.outputs.heater_protection_file,
+        &config.outputs.external_harness_file,
         &config.outputs.startup_safety_file,
         &config.outputs.manufacturing_test_file,
         &config.outputs.calibration_readiness_file,
@@ -3301,6 +3310,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.fabrication_capability_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
+        config.outputs.external_harness_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
         config.outputs.manufacturing_test_file.as_str(),
         config.outputs.calibration_readiness_file.as_str(),

@@ -123,6 +123,7 @@ a machine-checked assembly-parity CSV for BOM/CPL/manual/position reference cons
 a fabrication-capability CSV for board-house stackup, geometry, drill, via, and routing process limits,
 an I2C/ADS1115 bus validation CSV for pull-up, rise-time, device identity, and stuck-low coverage,
 a heater-protection coordination CSV for PTC, terminal, MOSFET, TVS, external cutoff, and current-limit coverage,
+an external-harness safety CSV for 12 V adapter, heater leads, inline cutoff, wire gauge, polarity, and strain relief,
 an ESP32-S3 startup-safety CSV for boot straps, reset, and heater fail-closed defaults,
 a manufacturing-test coverage CSV for critical test points, firmware diagnostics, and release traceability,
 a calibration-readiness CSV for heater, ADC, optical, sensor-bus, negative-control, and firmware identity records,

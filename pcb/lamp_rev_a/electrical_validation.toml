@@ -35,6 +35,7 @@ connector_polarity_csv = "pcb/lamp_rev_a/reports/connector_polarity.csv"
 assembly_orientation_csv = "pcb/lamp_rev_a/reports/assembly_orientation.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
+external_harness_csv = "pcb/lamp_rev_a/reports/external_harness_safety.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
 manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv"
 calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
@@ -350,6 +351,17 @@ ci_step = "LAMP Rev A electrical validation"
 acceptance_criterion = "Heater current limits, PTC/fuse, terminal, MOSFET, TVS, external thermal cutoff, high-current paths, and first-article verification measurements are all declared and evidence-backed."
 blocks_release = true
 notes = "This makes the high-energy heater safety chain explicit instead of relying only on FMEA and derating rows."
+
+[[validation_traceability]]
+id = "external_harness_safety"
+validation_layer = "External harness and off-board heater safety"
+electrical_gate_category = "external harness"
+output_artifact = "external_harness_safety.csv; electrical_validation_gates.csv"
+release_manifest_entry = "external_harness; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "12 V adapter, heater leads, inline cutoff, polarity marking, wire gauge, current/voltage/temperature ratings, strain relief, and first-article checks are declared and evidence-backed."
+blocks_release = true
+notes = "This covers dangerous off-board installation mistakes that ERC/DRC and on-board heater protection cannot catch."
 
 [[validation_traceability]]
 id = "startup_fail_closed"
@@ -1589,6 +1601,85 @@ required_measurements = ["heater_return_pwm_off", "heater_pwm_idle", "heater_sup
 trip_or_limit = "PWM-off HEATER_P and GATE_DRV checks must detect a stuck-on MOSFET or active gate before connecting a high-power heater load."
 pass_criterion = "Gate drive remains low and the switched heater return remains inactive with 12 V present and heater_enabled false."
 notes = "This catches the most dangerous single-board heater-control fault before a real assay run."
+
+[external_harness_policy]
+min_checks = 4
+require_wire_gauge = true
+require_current_rating = true
+require_voltage_rating = true
+require_temperature_rating = true
+require_polarity_marking = true
+require_strain_relief = true
+require_first_article_measurements = true
+required_evidence_ids = [
+  "dc_input_jack",
+  "heater_output_terminal",
+  "heater_resettable_fuse",
+  "heater_tvs",
+  "inline_thermal_cutoff",
+  "heater_protection_coordination",
+]
+notes = "External 12 V and heater wiring must be treated as part of the safety system before heater power is applied."
+
+[[external_harness_checks]]
+id = "dc_adapter_input_harness"
+interface = "12 V DC input adapter and barrel plug"
+nets = ["+12V_RAW", "GND"]
+required_parts = ["dc_input_jack", "input_schottky", "heater_resettable_fuse", "heater_tvs"]
+required_measurements = ["heater_raw_12v_voltage"]
+wire_gauge_awg = 20
+current_rating_ma = 3000
+voltage_rating_v = 24.0
+temperature_rating_c = 105.0
+polarity_marking = "12 V center-positive supply verified before plug-in; bench supply polarity checked against TP_12V/TP_GND."
+strain_relief = "Adapter lead must be supported so the barrel jack is not carrying cable load during heater testing."
+pass_criterion = "12 V source polarity, current limit, and cable strain relief are verified before connecting the heater harness."
+notes = "A reversed or mechanically stressed external 12 V source can damage the board without violating PCB DRC."
+
+[[external_harness_checks]]
+id = "heater_output_harness"
+interface = "Two-wire external heater lead from J3"
+nets = ["HEATER_SUPPLY", "HEATER_P"]
+required_parts = ["heater_output_terminal", "heater_resettable_fuse", "heater_tvs", "heater_mosfet", "inline_thermal_cutoff"]
+required_measurements = ["heater_supply_voltage_pwm_off", "heater_return_pwm_off", "heater_pwm_idle"]
+wire_gauge_awg = 20
+current_rating_ma = 3000
+voltage_rating_v = 24.0
+temperature_rating_c = 105.0
+polarity_marking = "J3 pin 1 HEATER_SUPPLY and pin 2 HEATER_P labeled at harness and fixture."
+strain_relief = "Heater lead must be clamped to the fixture so J3 screw terminals do not carry heater-block movement."
+pass_criterion = "Heater harness polarity, off-state return voltage, and gate idle state pass before any PWM command."
+notes = "This is the off-board continuation of the high-current heater path."
+
+[[external_harness_checks]]
+id = "inline_thermal_cutoff_installation"
+interface = "Normally-closed thermal cutoff in series with heater"
+nets = ["HEATER_SUPPLY", "HEATER_P"]
+required_parts = ["inline_thermal_cutoff", "heater_output_terminal"]
+required_measurements = ["heater_supply_voltage_pwm_off", "heater_raw_12v_voltage"]
+wire_gauge_awg = 20
+current_rating_ma = 3000
+voltage_rating_v = 24.0
+temperature_rating_c = 105.0
+polarity_marking = "Cutoff is wired in series with the heater lead, not across the heater or across the PCB output."
+strain_relief = "Cutoff body must be mechanically attached to the heater block/carrier with insulated leads."
+pass_criterion = "Cutoff continuity and physical mounting are confirmed before the first current-limited heater enable."
+notes = "The PCB cannot enforce thermal cutoff placement; this gate makes the external safety part release-blocking."
+
+[[external_harness_checks]]
+id = "usb_service_cable"
+interface = "USB-C power/programming cable"
+nets = ["VBUS", "GND", "USB_DP", "USB_DN"]
+required_parts = ["usb_c_connector", "usb_c_cc_resistors", "usb_esd_protection"]
+required_measurements = ["usb_vbus_voltage", "usb_5v_voltage", "usb_3v3_voltage"]
+wire_gauge_awg = 28
+current_rating_ma = 500
+voltage_rating_v = 5.5
+temperature_rating_c = 60.0
+polarity_marking = "USB-C keyed cable; do not backfeed heater 12 V through USB during service."
+strain_relief = "USB cable must be supported during flashing so the connector is not used as a handle."
+pass_criterion = "USB-only flashing and rail measurements pass before the external 12 V heater source is connected."
+notes = "This keeps programming/service wiring separated from the higher-energy heater harness."
 
 [gpio_domain]
 mcu_reference = "U1"

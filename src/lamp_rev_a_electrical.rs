@@ -30,6 +30,7 @@ pub struct ElectricalOutputPaths {
     pub assembly_orientation_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
     pub heater_protection_csv: PathBuf,
+    pub external_harness_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
     pub manufacturing_test_csv: PathBuf,
     pub calibration_readiness_csv: PathBuf,
@@ -113,6 +114,9 @@ struct ValidationConfig {
     heater_protection_policy: HeaterProtectionPolicy,
     #[serde(default)]
     heater_protection_checks: Vec<HeaterProtectionCheck>,
+    external_harness_policy: ExternalHarnessPolicy,
+    #[serde(default)]
+    external_harness_checks: Vec<ExternalHarnessCheck>,
     boot_startup_policy: BootStartupPolicy,
     #[serde(default)]
     boot_startup_checks: Vec<BootStartupCheck>,
@@ -181,6 +185,7 @@ struct Outputs {
     assembly_orientation_csv: String,
     i2c_bus_csv: String,
     heater_protection_csv: String,
+    external_harness_csv: String,
     startup_safety_csv: String,
     manufacturing_test_csv: String,
     calibration_readiness_csv: String,
@@ -874,6 +879,42 @@ struct HeaterProtectionCheck {
 }
 
 #[derive(Debug, Deserialize)]
+struct ExternalHarnessPolicy {
+    min_checks: usize,
+    require_wire_gauge: bool,
+    require_current_rating: bool,
+    require_voltage_rating: bool,
+    require_temperature_rating: bool,
+    require_polarity_marking: bool,
+    require_strain_relief: bool,
+    require_first_article_measurements: bool,
+    required_evidence_ids: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ExternalHarnessCheck {
+    id: String,
+    interface: String,
+    nets: Vec<String>,
+    required_parts: Vec<String>,
+    #[serde(default)]
+    required_measurements: Vec<String>,
+    #[serde(default)]
+    wire_gauge_awg: Option<u32>,
+    #[serde(default)]
+    current_rating_ma: Option<u32>,
+    #[serde(default)]
+    voltage_rating_v: Option<f64>,
+    #[serde(default)]
+    temperature_rating_c: Option<f64>,
+    polarity_marking: String,
+    strain_relief: String,
+    pass_criterion: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct BootStartupPolicy {
     min_checks: usize,
     require_all_boot_sensitive_firmware_pins: bool,
@@ -1216,6 +1257,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         assembly_orientation_csv: repo_root.join(config.outputs.assembly_orientation_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
+        external_harness_csv: repo_root.join(config.outputs.external_harness_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
         manufacturing_test_csv: repo_root.join(config.outputs.manufacturing_test_csv),
         calibration_readiness_csv: repo_root.join(config.outputs.calibration_readiness_csv),
@@ -1322,6 +1364,7 @@ pub fn validate_to_outputs(
         &mut errors,
     );
     validate_heater_protection(&config, &parts, &mut rows, &mut errors);
+    validate_external_harness_safety(&config, &parts, &contract_nets, &mut rows, &mut errors);
     validate_boot_startup_safety(
         &config,
         &parts,
@@ -1383,6 +1426,7 @@ pub fn validate_to_outputs(
     write_assembly_orientation_handoff(&config, &placement, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_heater_protection_handoff(&config, outputs)?;
+    write_external_harness_handoff(&config, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
     write_manufacturing_test_handoff(&config, outputs)?;
     write_calibration_readiness_handoff(&config, outputs)?;
@@ -6780,6 +6824,271 @@ fn validate_heater_protection(
     }
 }
 
+fn validate_external_harness_safety(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.external_harness_policy;
+    let evidence_ids = fault_evidence_ids(config, parts);
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "external harness",
+        "minimum external harness coverage",
+        format!("{} checks", config.external_harness_checks.len()),
+        format!(">= {} checks", policy.min_checks),
+        config.external_harness_checks.len() >= policy.min_checks,
+        &policy.notes,
+    );
+
+    for evidence in &policy.required_evidence_ids {
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("required evidence {evidence}"),
+            evidence.clone(),
+            "known selected/external part, analysis, or validation id",
+            evidence_ids.contains(evidence.as_str()),
+            &policy.notes,
+        );
+    }
+
+    let mut ids = BTreeSet::new();
+    for check in &config.external_harness_checks {
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} interface", check.id),
+            check.interface.clone(),
+            "non-empty",
+            !check.interface.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} net coverage", check.id),
+            mitigation_list(&check.nets),
+            "at least one known contract net",
+            !check.nets.is_empty() && check.nets.iter().all(|net| contract_nets.contains(net)),
+            &check.notes,
+        );
+
+        for part_id in &check.required_parts {
+            push_gate!(
+                rows,
+                errors,
+                "external harness",
+                format!("{} required part {}", check.id, part_id),
+                part_id.clone(),
+                "known selected/external safety part id",
+                evidence_ids.contains(part_id.as_str()),
+                &check.notes,
+            );
+        }
+
+        let min_current_ma = min_harness_current_ma(config, check);
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} current rating", check.id),
+            format_optional_u32(check.current_rating_ma),
+            if policy.require_current_rating {
+                format!(">= {min_current_ma} mA")
+            } else {
+                "documented when available".to_string()
+            },
+            !policy.require_current_rating
+                || check.current_rating_ma.unwrap_or(0) >= min_current_ma,
+            &check.notes,
+        );
+
+        let min_voltage_v = min_harness_voltage_v(config, check);
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} voltage rating", check.id),
+            format_optional_v(check.voltage_rating_v),
+            if policy.require_voltage_rating {
+                format!(">= {min_voltage_v:.2} V")
+            } else {
+                "documented when available".to_string()
+            },
+            !policy.require_voltage_rating
+                || check.voltage_rating_v.unwrap_or(0.0) >= min_voltage_v,
+            &check.notes,
+        );
+
+        let max_awg = max_harness_awg(config, check);
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} wire gauge", check.id),
+            check
+                .wire_gauge_awg
+                .map(|awg| format!("{awg} AWG"))
+                .unwrap_or_else(|| "missing".to_string()),
+            if policy.require_wire_gauge {
+                format!("<= {max_awg} AWG")
+            } else {
+                "documented when available".to_string()
+            },
+            !policy.require_wire_gauge || check.wire_gauge_awg.unwrap_or(u32::MAX) <= max_awg,
+            &check.notes,
+        );
+
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} temperature rating", check.id),
+            format_optional_c(check.temperature_rating_c),
+            if policy.require_temperature_rating {
+                format!(">= {:.1} C", min_harness_temperature_c(config, check))
+            } else {
+                "documented when available".to_string()
+            },
+            !policy.require_temperature_rating
+                || check.temperature_rating_c.unwrap_or(0.0)
+                    >= min_harness_temperature_c(config, check),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} polarity marking", check.id),
+            check.polarity_marking.clone(),
+            "non-empty",
+            !policy.require_polarity_marking || !check.polarity_marking.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} strain relief", check.id),
+            check.strain_relief.clone(),
+            "non-empty",
+            !policy.require_strain_relief || !check.strain_relief.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "external harness",
+            format!("{} pass criterion", check.id),
+            check.pass_criterion.clone(),
+            "non-empty",
+            !check.pass_criterion.trim().is_empty(),
+            &check.notes,
+        );
+
+        for measurement in &check.required_measurements {
+            push_gate!(
+                rows,
+                errors,
+                "external harness",
+                format!("{} measurement {}", check.id, measurement),
+                measurement.clone(),
+                "known first-article measurement id",
+                !policy.require_first_article_measurements
+                    || measurement_ids.contains(measurement.as_str()),
+                &check.notes,
+            );
+        }
+    }
+}
+
+fn min_harness_current_ma(config: &ValidationConfig, check: &ExternalHarnessCheck) -> u32 {
+    if check
+        .nets
+        .iter()
+        .any(|net| net.contains("HEATER") || net.starts_with("+12V"))
+    {
+        config.assumptions.protected_heater_current_ma
+    } else if check
+        .nets
+        .iter()
+        .any(|net| net == "VBUS" || net.starts_with("USB_"))
+    {
+        500
+    } else {
+        100
+    }
+}
+
+fn min_harness_voltage_v(config: &ValidationConfig, check: &ExternalHarnessCheck) -> f64 {
+    let mut required_v = 0.0_f64;
+    for net in &check.nets {
+        if let Some(rail) = config.rail_budgets.iter().find(|rail| rail.rail == *net) {
+            required_v = required_v.max(rail.max_v);
+        }
+    }
+    if required_v > 0.0 {
+        required_v
+    } else if check
+        .nets
+        .iter()
+        .any(|net| net.contains("HEATER") || net.starts_with("+12V"))
+    {
+        13.2
+    } else if check
+        .nets
+        .iter()
+        .any(|net| net == "VBUS" || net.starts_with("USB_"))
+    {
+        5.5
+    } else {
+        3.6
+    }
+}
+
+fn max_harness_awg(config: &ValidationConfig, check: &ExternalHarnessCheck) -> u32 {
+    if min_harness_current_ma(config, check) >= config.assumptions.protected_heater_current_ma {
+        20
+    } else {
+        28
+    }
+}
+
+fn min_harness_temperature_c(config: &ValidationConfig, check: &ExternalHarnessCheck) -> f64 {
+    if check
+        .nets
+        .iter()
+        .any(|net| net.contains("HEATER") || net.starts_with("+12V"))
+    {
+        config.assumptions.max_board_surface_c
+    } else {
+        60.0
+    }
+}
+
 fn validate_boot_startup_safety(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -7643,6 +7952,12 @@ fn fault_evidence_ids<'a>(
             .external_analysis_handoffs
             .iter()
             .map(|handoff| handoff.id.as_str()),
+    );
+    ids.extend(
+        config
+            .validation_traceability
+            .iter()
+            .map(|traceability| traceability.id.as_str()),
     );
     ids.insert("gpio_domain");
     ids.insert("usb_signal_integrity");
@@ -10092,6 +10407,50 @@ fn write_heater_protection_handoff(
     Ok(())
 }
 
+fn write_external_harness_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.external_harness_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.external_harness_csv)?;
+    writer.write_record([
+        "id",
+        "interface",
+        "nets",
+        "required_parts",
+        "required_measurements",
+        "wire_gauge_awg",
+        "current_rating_ma",
+        "voltage_rating_v",
+        "temperature_rating_c",
+        "polarity_marking",
+        "strain_relief",
+        "pass_criterion",
+        "notes",
+    ])?;
+
+    for check in &config.external_harness_checks {
+        writer.write_record([
+            check.id.as_str(),
+            check.interface.as_str(),
+            mitigation_list(&check.nets).as_str(),
+            mitigation_list(&check.required_parts).as_str(),
+            mitigation_list(&check.required_measurements).as_str(),
+            format_optional_u32(check.wire_gauge_awg).as_str(),
+            format_optional_u32(check.current_rating_ma).as_str(),
+            format_optional_v(check.voltage_rating_v).as_str(),
+            format_optional_c(check.temperature_rating_c).as_str(),
+            check.polarity_marking.as_str(),
+            check.strain_relief.as_str(),
+            check.pass_criterion.as_str(),
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_startup_safety_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -10284,6 +10643,12 @@ fn write_simulation_inputs_handoff(
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
+        .unwrap_or_else(|| "n/a".to_string())
+}
+
+fn format_optional_c(value: Option<f64>) -> String {
+    value
+        .map(|value| format!("{value:.1} C"))
         .unwrap_or_else(|| "n/a".to_string())
 }
 
@@ -10743,6 +11108,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("heater_protection_coordination.csv")
+    )?;
+    writeln!(
+        report,
+        "- External harness safety table: `{}`",
+        outputs
+            .external_harness_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("external_harness_safety.csv")
     )?;
     writeln!(
         report,
