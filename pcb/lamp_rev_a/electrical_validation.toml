@@ -26,6 +26,7 @@ first_article_measurements_csv = "pcb/lamp_rev_a/reports/first_article_measureme
 component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
 fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
+usb_power_budget_csv = "pcb/lamp_rev_a/reports/usb_power_budget.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
@@ -255,6 +256,17 @@ ci_step = "LAMP Rev A electrical validation"
 acceptance_criterion = "USB DP/DN are known nets with top-layer route coverage, length mismatch, via, and width sanity checks."
 blocks_release = true
 notes = "This is a practical pre-SI gate for full-speed USB before any external SI tool is introduced."
+
+[[validation_traceability]]
+id = "usb_c_power_budget"
+validation_layer = "USB-C default-current and VBUS power-budget validation"
+electrical_gate_category = "usb power budget"
+output_artifact = "usb_power_budget.csv; electrical_validation_gates.csv"
+release_manifest_entry = "usb_power_budget; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "USB-C sink Rd, selected protection/current-path parts, VBUS/+5V/+3V3 load budgets, startup/inrush linkage, and first-article USB rail measurements are declared and inside configured limits."
+blocks_release = true
+notes = "Prevents Rev A from silently assuming more USB bus power than the USB-C sink/default-current setup permits."
 
 [[validation_traceability]]
 id = "i2c_ads1115_bus_validation"
@@ -1552,6 +1564,24 @@ max_width_mismatch_mm = 0.05
 max_vias_per_net = 2
 allowed_layers = ["F.Cu", "B.Cu"]
 notes = "Machine-checkable full-speed USB D+/D- route sanity gate. This is not controlled-impedance signoff; it catches obvious pre-fab routing mistakes before first-article USB enumeration."
+
+[usb_power_budget_policy]
+connector_part_id = "usb_c_connector"
+cc_resistor_part_id = "usb_c_cc_resistors"
+esd_part_id = "usb_esd_protection"
+schottky_part_id = "vbus_to_5v_schottky"
+vbus_trace_path_id = "vbus_electronics_path"
+vbus_rail = "VBUS"
+five_v_rail = "+5V"
+three_v_three_rail = "+3V3"
+cc_rd_ohm = 5100.0
+min_cc_rd_ohm = 4080.0
+max_cc_rd_ohm = 6120.0
+default_current_ma = 500
+max_steady_utilization = 1.0
+max_vbus_bulk_cap_u = 10.0
+required_first_article_measurements = ["usb_vbus_voltage", "usb_5v_voltage", "usb_3v3_voltage"]
+notes = "Rev A is a USB-C sink with Rd only and no PD negotiation; design to USB 2.0/default current until first article confirms host behavior."
 
 [i2c_bus_policy]
 sda_net = "SDA"

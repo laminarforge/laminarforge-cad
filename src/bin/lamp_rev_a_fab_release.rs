@@ -82,6 +82,7 @@ struct Outputs {
     component_derating_file: String,
     fault_fmea_file: String,
     emc_esd_file: String,
+    usb_power_budget_file: String,
     i2c_bus_file: String,
     heater_protection_file: String,
     startup_safety_file: String,
@@ -466,6 +467,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         component_derating_csv: output_root.join(&config.outputs.component_derating_file),
         fault_fmea_csv: output_root.join(&config.outputs.fault_fmea_file),
         emc_esd_csv: output_root.join(&config.outputs.emc_esd_file),
+        usb_power_budget_csv: output_root.join(&config.outputs.usb_power_budget_file),
         i2c_bus_csv: output_root.join(&config.outputs.i2c_bus_file),
         heater_protection_csv: output_root.join(&config.outputs.heater_protection_file),
         startup_safety_csv: output_root.join(&config.outputs.startup_safety_file),
@@ -1433,6 +1435,11 @@ fn write_manifest(
     )?;
     writeln!(file, "fault_fmea: {}", config.outputs.fault_fmea_file)?;
     writeln!(file, "emc_esd: {}", config.outputs.emc_esd_file)?;
+    writeln!(
+        file,
+        "usb_power_budget: {}",
+        config.outputs.usb_power_budget_file
+    )?;
     writeln!(file, "i2c_bus: {}", config.outputs.i2c_bus_file)?;
     writeln!(
         file,
@@ -1910,6 +1917,7 @@ fn write_release_bundles(
         config.outputs.component_derating_file.as_str(),
         config.outputs.fault_fmea_file.as_str(),
         config.outputs.emc_esd_file.as_str(),
+        config.outputs.usb_power_budget_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
         config.outputs.startup_safety_file.as_str(),
@@ -2140,6 +2148,7 @@ fn validate_release_outputs(
         &config.outputs.component_derating_file,
         &config.outputs.fault_fmea_file,
         &config.outputs.emc_esd_file,
+        &config.outputs.usb_power_budget_file,
         &config.outputs.i2c_bus_file,
         &config.outputs.heater_protection_file,
         &config.outputs.startup_safety_file,
@@ -2262,6 +2271,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.component_derating_file.as_str(),
         config.outputs.fault_fmea_file.as_str(),
         config.outputs.emc_esd_file.as_str(),
+        config.outputs.usb_power_budget_file.as_str(),
         config.outputs.i2c_bus_file.as_str(),
         config.outputs.heater_protection_file.as_str(),
         config.outputs.startup_safety_file.as_str(),

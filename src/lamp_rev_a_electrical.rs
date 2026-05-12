@@ -22,6 +22,7 @@ pub struct ElectricalOutputPaths {
     pub component_derating_csv: PathBuf,
     pub fault_fmea_csv: PathBuf,
     pub emc_esd_csv: PathBuf,
+    pub usb_power_budget_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
     pub heater_protection_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
@@ -72,6 +73,7 @@ struct ValidationConfig {
     #[serde(default)]
     spice_exports: Vec<SpiceExport>,
     usb_signal_integrity: UsbSignalIntegrity,
+    usb_power_budget_policy: UsbPowerBudgetPolicy,
     #[serde(default)]
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
     simulation_input_policy: SimulationInputPolicy,
@@ -150,6 +152,7 @@ struct Outputs {
     component_derating_csv: String,
     fault_fmea_csv: String,
     emc_esd_csv: String,
+    usb_power_budget_csv: String,
     i2c_bus_csv: String,
     heater_protection_csv: String,
     startup_safety_csv: String,
@@ -296,6 +299,26 @@ struct UsbSignalIntegrity {
     max_width_mismatch_mm: f64,
     max_vias_per_net: usize,
     allowed_layers: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct UsbPowerBudgetPolicy {
+    connector_part_id: String,
+    cc_resistor_part_id: String,
+    esd_part_id: String,
+    schottky_part_id: String,
+    vbus_trace_path_id: String,
+    vbus_rail: String,
+    five_v_rail: String,
+    three_v_three_rail: String,
+    cc_rd_ohm: f64,
+    min_cc_rd_ohm: f64,
+    max_cc_rd_ohm: f64,
+    default_current_ma: u32,
+    max_steady_utilization: f64,
+    max_vbus_bulk_cap_u: f64,
+    required_first_article_measurements: Vec<String>,
     notes: String,
 }
 
@@ -1004,6 +1027,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         component_derating_csv: repo_root.join(config.outputs.component_derating_csv),
         fault_fmea_csv: repo_root.join(config.outputs.fault_fmea_csv),
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
+        usb_power_budget_csv: repo_root.join(config.outputs.usb_power_budget_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
@@ -1073,6 +1097,7 @@ pub fn validate_to_outputs(
     validate_mosfets(&config, &selected_part_ids, &mut rows, &mut errors);
     validate_trace_current_paths(&config, &routing, &mut rows, &mut errors);
     validate_usb_signal_integrity(&config, &routing, &contract_nets, &mut rows, &mut errors);
+    validate_usb_power_budget(&config, &parts, &mut rows, &mut errors);
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
@@ -1142,6 +1167,7 @@ pub fn validate_to_outputs(
     write_component_derating_handoff(&config, outputs)?;
     write_fault_fmea_handoff(&config, outputs)?;
     write_emc_esd_handoff(&config, outputs)?;
+    write_usb_power_budget_handoff(&config, &parts, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_heater_protection_handoff(&config, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
@@ -4125,6 +4151,163 @@ fn validate_usb_signal_integrity(
         width_mismatch_mm.is_finite() && width_mismatch_mm <= usb.max_width_mismatch_mm,
         &usb.notes,
     );
+}
+
+fn validate_usb_power_budget(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.usb_power_budget_policy;
+    let selected_part_ids = selected_part_ids(parts);
+    let rail_budgets = config
+        .rail_budgets
+        .iter()
+        .map(|rail| (rail.rail.as_str(), rail))
+        .collect::<BTreeMap<_, _>>();
+    let trace_paths = config
+        .trace_current_paths
+        .iter()
+        .map(|path| (path.id.as_str(), path))
+        .collect::<BTreeMap<_, _>>();
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    for (label, part_id) in [
+        ("USB-C connector", policy.connector_part_id.as_str()),
+        (
+            "CC Rd resistor network",
+            policy.cc_resistor_part_id.as_str(),
+        ),
+        ("USB ESD protection", policy.esd_part_id.as_str()),
+        ("VBUS Schottky path", policy.schottky_part_id.as_str()),
+    ] {
+        push_gate!(
+            rows,
+            errors,
+            "usb power budget",
+            format!("{label} selected part"),
+            part_id.to_string(),
+            "selected in parts.toml",
+            selected_part_ids.contains(part_id),
+            &policy.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "usb power budget",
+        "USB-C sink Rd value",
+        format!("{:.0} ohm", policy.cc_rd_ohm),
+        format!(
+            "{:.0}..{:.0} ohm",
+            policy.min_cc_rd_ohm, policy.max_cc_rd_ohm
+        ),
+        policy.cc_rd_ohm >= policy.min_cc_rd_ohm && policy.cc_rd_ohm <= policy.max_cc_rd_ohm,
+        &policy.notes,
+    );
+
+    for rail in [
+        policy.vbus_rail.as_str(),
+        policy.five_v_rail.as_str(),
+        policy.three_v_three_rail.as_str(),
+    ] {
+        let budget = rail_budgets.get(rail);
+        push_gate!(
+            rows,
+            errors,
+            "usb power budget",
+            format!("{rail} rail budget exists"),
+            rail.to_string(),
+            "declared rail budget",
+            budget.is_some(),
+            &policy.notes,
+        );
+        if let Some(budget) = budget {
+            let utilization =
+                budget.expected_continuous_ma as f64 / policy.default_current_ma as f64;
+            push_gate!(
+                rows,
+                errors,
+                "usb power budget",
+                format!("{rail} expected USB current utilization"),
+                format!(
+                    "{} mA / {} mA = {:.1}%",
+                    budget.expected_continuous_ma,
+                    policy.default_current_ma,
+                    utilization * 100.0
+                ),
+                format!("<= {:.1}%", policy.max_steady_utilization * 100.0),
+                utilization <= policy.max_steady_utilization,
+                &budget.notes,
+            );
+            if rail == policy.vbus_rail || rail == policy.five_v_rail {
+                push_gate!(
+                    rows,
+                    errors,
+                    "usb power budget",
+                    format!("{rail} source limit within USB default current"),
+                    format!("{} mA", budget.source_limit_ma),
+                    format!("<= {} mA", policy.default_current_ma),
+                    budget.source_limit_ma <= policy.default_current_ma,
+                    &budget.notes,
+                );
+            }
+        }
+    }
+
+    let trace_path = trace_paths.get(policy.vbus_trace_path_id.as_str());
+    push_gate!(
+        rows,
+        errors,
+        "usb power budget",
+        "VBUS trace current path exists",
+        policy.vbus_trace_path_id.clone(),
+        "declared trace_current_paths entry",
+        trace_path.is_some(),
+        &policy.notes,
+    );
+    if let Some(trace_path) = trace_path {
+        push_gate!(
+            rows,
+            errors,
+            "usb power budget",
+            "VBUS trace path current within USB default",
+            format!("{} mA", trace_path.current_ma),
+            format!("<= {} mA", policy.default_current_ma),
+            trace_path.current_ma <= policy.default_current_ma,
+            &trace_path.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "usb power budget",
+        "VBUS bulk capacitance inrush assumption",
+        format!("{:.3} uF", config.usb_inrush_startup_policy.vbus_bulk_cap_u),
+        format!("<= {:.3} uF", policy.max_vbus_bulk_cap_u),
+        config.usb_inrush_startup_policy.vbus_bulk_cap_u <= policy.max_vbus_bulk_cap_u,
+        &config.usb_inrush_startup_policy.notes,
+    );
+
+    for measurement_id in &policy.required_first_article_measurements {
+        push_gate!(
+            rows,
+            errors,
+            "usb power budget",
+            format!("{measurement_id} first-article measurement"),
+            measurement_id.clone(),
+            "declared first_article_measurements entry",
+            measurement_ids.contains(measurement_id.as_str()),
+            &policy.notes,
+        );
+    }
 }
 
 #[derive(Debug, Default)]
@@ -8092,6 +8275,168 @@ fn write_emc_esd_handoff(
     Ok(())
 }
 
+fn write_usb_power_budget_handoff(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.usb_power_budget_csv)?;
+    let policy = &config.usb_power_budget_policy;
+    let selected_part_ids = selected_part_ids(parts);
+    let rail_budgets = config
+        .rail_budgets
+        .iter()
+        .map(|rail| (rail.rail.as_str(), rail))
+        .collect::<BTreeMap<_, _>>();
+    let trace_paths = config
+        .trace_current_paths
+        .iter()
+        .map(|path| (path.id.as_str(), path))
+        .collect::<BTreeMap<_, _>>();
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    let mut writer = csv::Writer::from_path(&outputs.usb_power_budget_csv)?;
+    writer.write_record(["check_id", "measured", "limit", "status", "notes"])?;
+
+    for (check_id, part_id) in [
+        ("connector_selected", policy.connector_part_id.as_str()),
+        ("cc_resistor_selected", policy.cc_resistor_part_id.as_str()),
+        ("esd_protection_selected", policy.esd_part_id.as_str()),
+        ("schottky_path_selected", policy.schottky_part_id.as_str()),
+    ] {
+        write_usb_power_row(
+            &mut writer,
+            check_id,
+            part_id,
+            "selected in parts.toml",
+            selected_part_ids.contains(part_id),
+            &policy.notes,
+        )?;
+    }
+
+    write_usb_power_row(
+        &mut writer,
+        "cc_rd_value",
+        &format!("{:.0} ohm", policy.cc_rd_ohm),
+        &format!(
+            "{:.0}..{:.0} ohm",
+            policy.min_cc_rd_ohm, policy.max_cc_rd_ohm
+        ),
+        policy.cc_rd_ohm >= policy.min_cc_rd_ohm && policy.cc_rd_ohm <= policy.max_cc_rd_ohm,
+        &policy.notes,
+    )?;
+
+    for rail in [
+        policy.vbus_rail.as_str(),
+        policy.five_v_rail.as_str(),
+        policy.three_v_three_rail.as_str(),
+    ] {
+        if let Some(budget) = rail_budgets.get(rail) {
+            let utilization =
+                budget.expected_continuous_ma as f64 / policy.default_current_ma as f64;
+            write_usb_power_row(
+                &mut writer,
+                &format!("{rail}_expected_current"),
+                &format!(
+                    "{} mA ({:.1}% of USB default)",
+                    budget.expected_continuous_ma,
+                    utilization * 100.0
+                ),
+                &format!(
+                    "<= {:.1}% of USB default",
+                    policy.max_steady_utilization * 100.0
+                ),
+                utilization <= policy.max_steady_utilization,
+                &budget.notes,
+            )?;
+            if rail == policy.vbus_rail || rail == policy.five_v_rail {
+                write_usb_power_row(
+                    &mut writer,
+                    &format!("{rail}_source_limit"),
+                    &format!("{} mA", budget.source_limit_ma),
+                    &format!("<= {} mA", policy.default_current_ma),
+                    budget.source_limit_ma <= policy.default_current_ma,
+                    &budget.notes,
+                )?;
+            }
+        } else {
+            write_usb_power_row(
+                &mut writer,
+                &format!("{rail}_budget"),
+                "missing",
+                "declared rail budget",
+                false,
+                &policy.notes,
+            )?;
+        }
+    }
+
+    if let Some(trace_path) = trace_paths.get(policy.vbus_trace_path_id.as_str()) {
+        write_usb_power_row(
+            &mut writer,
+            "vbus_trace_path_current",
+            &format!("{} mA", trace_path.current_ma),
+            &format!("<= {} mA", policy.default_current_ma),
+            trace_path.current_ma <= policy.default_current_ma,
+            &trace_path.notes,
+        )?;
+    } else {
+        write_usb_power_row(
+            &mut writer,
+            "vbus_trace_path_current",
+            "missing",
+            "declared trace_current_paths entry",
+            false,
+            &policy.notes,
+        )?;
+    }
+
+    write_usb_power_row(
+        &mut writer,
+        "vbus_bulk_capacitance",
+        &format!("{:.3} uF", config.usb_inrush_startup_policy.vbus_bulk_cap_u),
+        &format!("<= {:.3} uF", policy.max_vbus_bulk_cap_u),
+        config.usb_inrush_startup_policy.vbus_bulk_cap_u <= policy.max_vbus_bulk_cap_u,
+        &config.usb_inrush_startup_policy.notes,
+    )?;
+
+    for measurement_id in &policy.required_first_article_measurements {
+        write_usb_power_row(
+            &mut writer,
+            &format!("measurement_{measurement_id}"),
+            measurement_id,
+            "declared first_article_measurements entry",
+            measurement_ids.contains(measurement_id.as_str()),
+            &policy.notes,
+        )?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_usb_power_row(
+    writer: &mut csv::Writer<fs::File>,
+    check_id: &str,
+    measured: &str,
+    limit: &str,
+    pass: bool,
+    notes: &str,
+) -> Result<(), Box<dyn Error>> {
+    writer.write_record([
+        check_id,
+        measured,
+        limit,
+        if pass { "pass" } else { "fail" },
+        notes,
+    ])?;
+    Ok(())
+}
+
 fn write_i2c_bus_handoff(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -8813,6 +9158,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("emc_esd_precompliance.csv")
+    )?;
+    writeln!(
+        report,
+        "- USB-C power budget table: `{}`",
+        outputs
+            .usb_power_budget_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("usb_power_budget.csv")
     )?;
     writeln!(
         report,

@@ -163,6 +163,7 @@ jobs:
           test -s "$release_dir/review/lamp_rev_a_analog_front_end.ngspice.log"
           test -s "$release_dir/review/analog_front_end_simulation.csv"
           test -s "$release_dir/review/thermistor_adc_transfer.csv"
+          test -s "$release_dir/review/usb_power_budget.csv"
           test -s "$release_dir/review/simulation_handoff.md"
           (cd "$release_dir" && shasum -a 256 -c review/upload_bundle_checksums.sha256)
 
