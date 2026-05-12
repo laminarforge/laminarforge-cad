@@ -37,6 +37,7 @@ thermal_margin_simulation_csv = "pcb/lamp_rev_a/reports/thermal_margin_simulatio
 heater_pwm_transient_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_heater_pwm_transient.spice"
 heater_pwm_transient_csv = "pcb/lamp_rev_a/reports/heater_pwm_transient_simulation.csv"
 heater_thermal_transient_csv = "pcb/lamp_rev_a/reports/heater_thermal_transient_simulation.csv"
+usb_inrush_startup_csv = "pcb/lamp_rev_a/reports/usb_inrush_startup_simulation.csv"
 rail_load_step_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_rail_load_step.spice"
 rail_load_step_csv = "pcb/lamp_rev_a/reports/rail_load_step_simulation.csv"
 analog_front_end_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_analog_front_end.spice"
@@ -135,6 +136,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
 acceptance_criterion = "Numerical thermal model reaches LAMP target temperature in time, stays below maximum/overshoot limits, and holds target inside configured error, duty, and energy limits."
 blocks_release = true
 notes = "This turns heater warm-up and hold behavior into a CI-gated transient model before physical thermal logging."
+
+[[validation_traceability]]
+id = "usb_inrush_startup_simulation"
+validation_layer = "USB/VBUS hot-plug and 3.3 V startup transient simulation"
+electrical_gate_category = "usb inrush startup"
+output_artifact = "usb_inrush_startup_simulation.csv; electrical_validation_gates.csv"
+release_manifest_entry = "usb_inrush_startup_simulation; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "Numerical startup model keeps VBUS inrush, +5 V path inrush, 3.3 V startup time, final voltage, and overshoot inside configured limits."
+blocks_release = true
+notes = "This catches USB hot-plug and 3.3 V startup-envelope failures before first-article oscilloscope rail capture."
 
 [[validation_traceability]]
 id = "rail_load_step_simulation"
@@ -404,6 +416,29 @@ min_hold_duty = 0.0
 max_hold_duty = 0.85
 max_energy_wh = 4.0
 notes = "First-order reaction-block/heater thermal transient model for pre-fab screening. This does not replace first-article thermal logging or enclosure-coupled FEA."
+
+[usb_inrush_startup_policy]
+vbus_nominal_v = 5.0
+usb_source_resistance_ohm = 2.0
+vbus_bulk_cap_u = 10.0
+five_v_bulk_cap_u = 47.0
+three_v_three_bulk_cap_u = 47.0
+five_v_load_ma = 20.0
+three_v_three_load_ma = 60.0
+schottky_drop_v = 0.25
+schottky_series_resistance_ohm = 0.35
+regulator_dropout_v = 0.9
+regulator_series_resistance_ohm = 1.2
+regulated_3v3_v = 3.3
+simulation_stop_ms = 80.0
+timestep_ms = 0.001
+max_vbus_inrush_ma = 2600.0
+max_5v_inrush_ma = 1800.0
+min_final_3v3_v = 3.10
+max_final_3v3_v = 3.35
+max_3v3_overshoot_v = 0.05
+max_startup_ms = 50.0
+notes = "First-order USB hot-plug and 3.3 V startup envelope model. Startup load excludes later ESP32 Wi-Fi burst current, which is covered by the rail load-step SPICE gate. This does not replace oscilloscope capture of first-article rail startup."
 
 [rail_load_step_policy]
 nominal_voltage_v = 3.3

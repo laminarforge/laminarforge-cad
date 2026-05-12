@@ -33,6 +33,7 @@ pub struct ElectricalOutputPaths {
     pub heater_pwm_transient_netlist: PathBuf,
     pub heater_pwm_transient_csv: PathBuf,
     pub heater_thermal_transient_csv: PathBuf,
+    pub usb_inrush_startup_csv: PathBuf,
     pub rail_load_step_netlist: PathBuf,
     pub rail_load_step_csv: PathBuf,
     pub analog_front_end_netlist: PathBuf,
@@ -97,6 +98,7 @@ struct ValidationConfig {
     thermal_margin_simulation_policy: ThermalMarginSimulationPolicy,
     heater_pwm_transient_policy: HeaterPwmTransientPolicy,
     heater_thermal_transient_policy: HeaterThermalTransientPolicy,
+    usb_inrush_startup_policy: UsbInrushStartupPolicy,
     rail_load_step_policy: RailLoadStepPolicy,
     analog_front_end_policy: AnalogFrontEndPolicy,
 }
@@ -145,6 +147,7 @@ struct Outputs {
     heater_pwm_transient_netlist: String,
     heater_pwm_transient_csv: String,
     heater_thermal_transient_csv: String,
+    usb_inrush_startup_csv: String,
     rail_load_step_netlist: String,
     rail_load_step_csv: String,
     analog_front_end_netlist: String,
@@ -355,6 +358,31 @@ struct HeaterThermalTransientPolicy {
     min_hold_duty: f64,
     max_hold_duty: f64,
     max_energy_wh: f64,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct UsbInrushStartupPolicy {
+    vbus_nominal_v: f64,
+    usb_source_resistance_ohm: f64,
+    vbus_bulk_cap_u: f64,
+    five_v_bulk_cap_u: f64,
+    three_v_three_bulk_cap_u: f64,
+    five_v_load_ma: f64,
+    three_v_three_load_ma: f64,
+    schottky_drop_v: f64,
+    schottky_series_resistance_ohm: f64,
+    regulator_dropout_v: f64,
+    regulator_series_resistance_ohm: f64,
+    regulated_3v3_v: f64,
+    simulation_stop_ms: f64,
+    timestep_ms: f64,
+    max_vbus_inrush_ma: f64,
+    max_5v_inrush_ma: f64,
+    min_final_3v3_v: f64,
+    max_final_3v3_v: f64,
+    max_3v3_overshoot_v: f64,
+    max_startup_ms: f64,
     notes: String,
 }
 
@@ -859,6 +887,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         heater_pwm_transient_netlist: repo_root.join(config.outputs.heater_pwm_transient_netlist),
         heater_pwm_transient_csv: repo_root.join(config.outputs.heater_pwm_transient_csv),
         heater_thermal_transient_csv: repo_root.join(config.outputs.heater_thermal_transient_csv),
+        usb_inrush_startup_csv: repo_root.join(config.outputs.usb_inrush_startup_csv),
         rail_load_step_netlist: repo_root.join(config.outputs.rail_load_step_netlist),
         rail_load_step_csv: repo_root.join(config.outputs.rail_load_step_csv),
         analog_front_end_netlist: repo_root.join(config.outputs.analog_front_end_netlist),
@@ -943,6 +972,7 @@ pub fn validate_to_outputs(
     validate_thermal_margin_simulation(&config, &routing, &mut rows, &mut errors);
     validate_heater_pwm_transient(&config, &contract_nets, &mut rows, &mut errors);
     validate_heater_thermal_transient(&config, &contract_nets, &mut rows, &mut errors);
+    validate_usb_inrush_startup(&config, &contract_nets, &mut rows, &mut errors);
     validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
     validate_analog_front_end_transient(&config, &contract_nets, &mut rows, &mut errors);
     let gate_categories = rows
@@ -973,6 +1003,7 @@ pub fn validate_to_outputs(
     write_thermal_margin_simulation_handoff(&config, &routing, outputs)?;
     write_heater_pwm_transient_handoff(&config, outputs)?;
     write_heater_thermal_transient_handoff(&config, outputs)?;
+    write_usb_inrush_startup_handoff(&config, outputs)?;
     write_rail_load_step_handoff(&config, outputs)?;
     write_analog_front_end_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
@@ -2218,6 +2249,256 @@ fn heater_thermal_control_duty(
     commanded
         .clamp(policy.min_hold_duty, policy.max_hold_duty)
         .min(policy.max_duty)
+}
+
+fn validate_usb_inrush_startup(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.usb_inrush_startup_policy;
+    for net in ["VBUS", "+5V", "+3V3", "GND"] {
+        push_gate!(
+            rows,
+            errors,
+            "usb inrush startup",
+            format!("{net} contract net"),
+            net,
+            "present in contract",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "usb inrush startup",
+        "startup model constants",
+        format!(
+            "{:.3} V, {:.3} ohm source, {:.3}/{:.3}/{:.3} uF",
+            policy.vbus_nominal_v,
+            policy.usb_source_resistance_ohm,
+            policy.vbus_bulk_cap_u,
+            policy.five_v_bulk_cap_u,
+            policy.three_v_three_bulk_cap_u
+        ),
+        "positive source, resistance, capacitance",
+        policy.vbus_nominal_v > 0.0
+            && policy.usb_source_resistance_ohm > 0.0
+            && policy.vbus_bulk_cap_u > 0.0
+            && policy.five_v_bulk_cap_u > 0.0
+            && policy.three_v_three_bulk_cap_u > 0.0,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "usb inrush startup",
+        "startup timing",
+        format!(
+            "{:.6} ms step / {:.3} ms stop",
+            policy.timestep_ms, policy.simulation_stop_ms
+        ),
+        "0 < step < stop",
+        policy.timestep_ms > 0.0 && policy.timestep_ms < policy.simulation_stop_ms,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "usb inrush startup",
+        "3.3 V acceptance window",
+        format!(
+            "{:.3}..{:.3} V final, {:.3} V overshoot",
+            policy.min_final_3v3_v, policy.max_final_3v3_v, policy.max_3v3_overshoot_v
+        ),
+        "0 < min <= regulated <= max",
+        policy.min_final_3v3_v > 0.0
+            && policy.min_final_3v3_v <= policy.regulated_3v3_v
+            && policy.regulated_3v3_v <= policy.max_final_3v3_v,
+        &policy.notes,
+    );
+
+    for row in usb_inrush_startup_rows(config) {
+        push_gate!(
+            rows,
+            errors,
+            "usb inrush startup",
+            row.measurement,
+            format!("{:.6} {}", row.value, row.units),
+            row.limit,
+            row.pass,
+            row.notes,
+        );
+    }
+}
+
+#[derive(Debug)]
+struct UsbInrushStartupRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+#[derive(Debug)]
+struct UsbInrushStartupMetrics {
+    max_vbus_inrush_ma: f64,
+    max_five_v_inrush_ma: f64,
+    startup_ms: Option<f64>,
+    final_vbus_v: f64,
+    final_five_v_v: f64,
+    final_three_v_three_v: f64,
+    max_three_v_three_v: f64,
+}
+
+fn usb_inrush_startup_rows(config: &ValidationConfig) -> Vec<UsbInrushStartupRow> {
+    let policy = &config.usb_inrush_startup_policy;
+    let metrics = usb_inrush_startup_metrics(policy);
+    let startup_ms = metrics.startup_ms.unwrap_or(f64::INFINITY);
+    let overshoot_v = (metrics.max_three_v_three_v - policy.regulated_3v3_v).max(0.0);
+    vec![
+        UsbInrushStartupRow {
+            id: "vbus_inrush_current",
+            measurement: "maximum USB VBUS source inrush",
+            value: metrics.max_vbus_inrush_ma,
+            units: "mA",
+            limit: format!("<= {:.3} mA", policy.max_vbus_inrush_ma),
+            pass: metrics.max_vbus_inrush_ma <= policy.max_vbus_inrush_ma,
+            notes: policy.notes.clone(),
+        },
+        UsbInrushStartupRow {
+            id: "five_v_path_inrush_current",
+            measurement: "maximum post-Schottky +5 V charging current",
+            value: metrics.max_five_v_inrush_ma,
+            units: "mA",
+            limit: format!("<= {:.3} mA", policy.max_5v_inrush_ma),
+            pass: metrics.max_five_v_inrush_ma <= policy.max_5v_inrush_ma,
+            notes: policy.notes.clone(),
+        },
+        UsbInrushStartupRow {
+            id: "three_v_three_startup_time",
+            measurement: "time for +3V3 to enter valid window",
+            value: startup_ms,
+            units: "ms",
+            limit: format!("<= {:.3} ms", policy.max_startup_ms),
+            pass: startup_ms <= policy.max_startup_ms,
+            notes: policy.notes.clone(),
+        },
+        UsbInrushStartupRow {
+            id: "three_v_three_final_voltage",
+            measurement: "final +3V3 voltage",
+            value: metrics.final_three_v_three_v,
+            units: "V",
+            limit: format!(
+                "{:.3}..{:.3} V",
+                policy.min_final_3v3_v, policy.max_final_3v3_v
+            ),
+            pass: metrics.final_three_v_three_v >= policy.min_final_3v3_v
+                && metrics.final_three_v_three_v <= policy.max_final_3v3_v,
+            notes: policy.notes.clone(),
+        },
+        UsbInrushStartupRow {
+            id: "three_v_three_overshoot",
+            measurement: "maximum +3V3 startup overshoot",
+            value: overshoot_v,
+            units: "V",
+            limit: format!("<= {:.3} V", policy.max_3v3_overshoot_v),
+            pass: overshoot_v <= policy.max_3v3_overshoot_v,
+            notes: policy.notes.clone(),
+        },
+        UsbInrushStartupRow {
+            id: "vbus_final_voltage",
+            measurement: "final VBUS voltage",
+            value: metrics.final_vbus_v,
+            units: "V",
+            limit: format!(">= {:.3} V", policy.vbus_nominal_v * 0.90),
+            pass: metrics.final_vbus_v >= policy.vbus_nominal_v * 0.90,
+            notes: policy.notes.clone(),
+        },
+        UsbInrushStartupRow {
+            id: "five_v_final_voltage",
+            measurement: "final post-Schottky +5 V voltage",
+            value: metrics.final_five_v_v,
+            units: "V",
+            limit: format!(
+                ">= {:.3} V",
+                policy.regulated_3v3_v + policy.regulator_dropout_v
+            ),
+            pass: metrics.final_five_v_v >= policy.regulated_3v3_v + policy.regulator_dropout_v,
+            notes: policy.notes.clone(),
+        },
+    ]
+}
+
+fn usb_inrush_startup_metrics(policy: &UsbInrushStartupPolicy) -> UsbInrushStartupMetrics {
+    let dt_s = (policy.timestep_ms / 1000.0).max(1.0e-9);
+    let stop_s = (policy.simulation_stop_ms / 1000.0).max(dt_s);
+    let vbus_cap_f = (policy.vbus_bulk_cap_u * 1.0e-6).max(1.0e-12);
+    let five_v_cap_f = (policy.five_v_bulk_cap_u * 1.0e-6).max(1.0e-12);
+    let three_v_three_cap_f = (policy.three_v_three_bulk_cap_u * 1.0e-6).max(1.0e-12);
+    let five_v_load_a = (policy.five_v_load_ma / 1000.0).max(0.0);
+    let three_v_three_load_a = (policy.three_v_three_load_ma / 1000.0).max(0.0);
+
+    let mut vbus_v = 0.0;
+    let mut five_v = 0.0;
+    let mut three_v_three_v = 0.0;
+    let mut max_vbus_inrush_ma = 0.0;
+    let mut max_five_v_inrush_ma = 0.0;
+    let mut max_three_v_three_v = 0.0;
+    let mut startup_ms = None;
+    let mut time_s = 0.0;
+
+    while time_s <= stop_s + f64::EPSILON {
+        let source_current_a =
+            ((policy.vbus_nominal_v - vbus_v) / policy.usb_source_resistance_ohm).max(0.0);
+        let diode_current_a = ((vbus_v - policy.schottky_drop_v - five_v)
+            / policy.schottky_series_resistance_ohm)
+            .max(0.0);
+        let regulator_input_available_v = five_v - policy.regulator_dropout_v;
+        let regulator_current_a = if three_v_three_v < policy.regulated_3v3_v
+            && regulator_input_available_v > three_v_three_v
+        {
+            ((regulator_input_available_v - three_v_three_v)
+                / policy.regulator_series_resistance_ohm)
+                .max(0.0)
+        } else {
+            0.0
+        };
+
+        max_vbus_inrush_ma = f64::max(max_vbus_inrush_ma, source_current_a * 1000.0);
+        max_five_v_inrush_ma = f64::max(max_five_v_inrush_ma, diode_current_a * 1000.0);
+
+        vbus_v += (source_current_a - diode_current_a) * dt_s / vbus_cap_f;
+        five_v += (diode_current_a - five_v_load_a - regulator_current_a) * dt_s / five_v_cap_f;
+        three_v_three_v +=
+            (regulator_current_a - three_v_three_load_a) * dt_s / three_v_three_cap_f;
+
+        vbus_v = vbus_v.clamp(0.0, policy.vbus_nominal_v);
+        five_v = five_v.clamp(0.0, policy.vbus_nominal_v - policy.schottky_drop_v);
+        three_v_three_v = three_v_three_v.clamp(0.0, policy.regulated_3v3_v);
+        max_three_v_three_v = f64::max(max_three_v_three_v, three_v_three_v);
+        time_s += dt_s;
+
+        if startup_ms.is_none() && three_v_three_v >= policy.min_final_3v3_v {
+            startup_ms = Some(time_s * 1000.0);
+        }
+    }
+
+    UsbInrushStartupMetrics {
+        max_vbus_inrush_ma,
+        max_five_v_inrush_ma,
+        startup_ms,
+        final_vbus_v: vbus_v,
+        final_five_v_v: five_v,
+        final_three_v_three_v: three_v_three_v,
+        max_three_v_three_v,
+    }
 }
 
 fn validate_rail_load_step(
@@ -5296,6 +5577,36 @@ fn write_heater_thermal_transient_handoff(
     Ok(())
 }
 
+fn write_usb_inrush_startup_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.usb_inrush_startup_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.usb_inrush_startup_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in usb_inrush_startup_rows(config) {
+        writer.write_record([
+            row.id,
+            row.measurement,
+            format!("{:.6}", row.value).as_str(),
+            row.units,
+            row.limit.as_str(),
+            if row.pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_rail_load_step_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -6394,6 +6705,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("heater_thermal_transient_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- USB/VBUS hot-plug and 3.3 V startup table: `{}`",
+        outputs
+            .usb_inrush_startup_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("usb_inrush_startup_simulation.csv")
     )?;
     writeln!(
         report,
