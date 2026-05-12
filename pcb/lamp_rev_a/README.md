@@ -39,7 +39,7 @@ contract.toml + parts.toml
   -> placement.toml refs and zone checks
   -> pin_nets.toml trusted pad assignments
   -> firmware_handoff.toml firmware pin/slot handoff checks
-  -> electrical_validation.toml power, derating, heater, GPIO, and simulation checks
+  -> electrical_validation.toml power, derating, heater, GPIO, USB, and simulation checks
   -> cargo run --release --bin lamp_rev_a_materialize_board
   -> cargo run --release --bin lamp_rev_a_seed_routes_from_drc when reseeding short safe traces
   -> cargo run --release --bin lamp_rev_a_route_greedy for DRC-gated route iteration
@@ -108,7 +108,8 @@ KiCad and TOML inputs used to generate the fab package. The review package
 includes a bring-up checklist generated from the configured Rev A test points
 and a firmware handoff generated from the checked ESP32-S3 pin map. It also
 emits an electrical-validation report, a first-order SPICE power-path handoff,
-a simulation/analysis handoff, and a checksum manifest for the fabrication,
+a machine-checked full-speed USB DP/DN routing sanity gate, a
+simulation/analysis handoff, and a checksum manifest for the fabrication,
 assembly, and source bundles.
 
 Current KiCad checks:

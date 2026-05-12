@@ -252,6 +252,17 @@ id = "power_path_operating_point"
 output = "lamp_rev_a_power_path.spice"
 notes = "Ngspice handoff for USB-derived electronics rails and heater path first-order operating point."
 
+[usb_signal_integrity]
+dp_net = "USB_DP"
+dn_net = "USB_DN"
+min_width_mm = 0.20
+max_route_length_mm = 60.0
+max_length_skew_mm = 7.5
+max_width_mismatch_mm = 0.05
+max_vias_per_net = 2
+allowed_layers = ["F.Cu", "B.Cu"]
+notes = "Machine-checkable full-speed USB D+/D- route sanity gate. This is not controlled-impedance signoff; it catches obvious pre-fab routing mistakes before first-article USB enumeration."
+
 [[external_analysis_handoffs]]
 id = "pdn_power_integrity"
 tool_class = "PDN / power integrity"

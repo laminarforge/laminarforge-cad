@@ -39,6 +39,7 @@ struct ValidationConfig {
     analog_checks: Vec<AnalogCheck>,
     #[serde(default)]
     spice_exports: Vec<SpiceExport>,
+    usb_signal_integrity: UsbSignalIntegrity,
     #[serde(default)]
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
     #[serde(default)]
@@ -181,6 +182,19 @@ struct SpiceExport {
 }
 
 #[derive(Debug, Deserialize)]
+struct UsbSignalIntegrity {
+    dp_net: String,
+    dn_net: String,
+    min_width_mm: f64,
+    max_route_length_mm: f64,
+    max_length_skew_mm: f64,
+    max_width_mismatch_mm: f64,
+    max_vias_per_net: usize,
+    allowed_layers: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct ExternalAnalysisHandoff {
     id: String,
     tool_class: String,
@@ -261,6 +275,12 @@ struct RoutingSeed {
 struct RouteSegment {
     net: String,
     layer: String,
+    #[serde(default)]
+    via_at_ends: bool,
+    #[serde(default)]
+    via_at_start: bool,
+    #[serde(default)]
+    via_at_end: bool,
     width_mm: f64,
     start_x_mm: f64,
     start_y_mm: f64,
@@ -404,6 +424,7 @@ pub fn validate_to_outputs(
     validate_protection(&config, &selected_part_ids, &mut rows, &mut errors);
     validate_mosfets(&config, &selected_part_ids, &mut rows, &mut errors);
     validate_trace_current_paths(&config, &routing, &mut rows, &mut errors);
+    validate_usb_signal_integrity(&config, &routing, &contract_nets, &mut rows, &mut errors);
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     add_external_analysis_rows(&config, &mut rows);
@@ -877,6 +898,191 @@ fn segment_length_mm(segment: &RouteSegment) -> f64 {
     let dx = segment.end_x_mm - segment.start_x_mm;
     let dy = segment.end_y_mm - segment.start_y_mm;
     (dx * dx + dy * dy).sqrt()
+}
+
+fn validate_usb_signal_integrity(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let usb = &config.usb_signal_integrity;
+    let allowed_layers = usb
+        .allowed_layers
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+
+    let dp_stats = collect_usb_route_stats(&usb.dp_net, routing, &allowed_layers);
+    let dn_stats = collect_usb_route_stats(&usb.dn_net, routing, &allowed_layers);
+    validate_usb_net(&usb.dp_net, &dp_stats, usb, contract_nets, rows, errors);
+    validate_usb_net(&usb.dn_net, &dn_stats, usb, contract_nets, rows, errors);
+
+    let length_skew_mm = (dp_stats.length_mm - dn_stats.length_mm).abs();
+    push_gate!(
+        rows,
+        errors,
+        "usb signal integrity",
+        "D+/D- route length skew",
+        format!("{length_skew_mm:.2} mm"),
+        format!("<= {:.2} mm", usb.max_length_skew_mm),
+        dp_stats.segment_count > 0
+            && dn_stats.segment_count > 0
+            && length_skew_mm <= usb.max_length_skew_mm,
+        &usb.notes,
+    );
+
+    let width_mismatch_mm = match (dp_stats.min_width_mm, dn_stats.min_width_mm) {
+        (Some(dp_width), Some(dn_width)) => (dp_width - dn_width).abs(),
+        _ => f64::INFINITY,
+    };
+    push_gate!(
+        rows,
+        errors,
+        "usb signal integrity",
+        "D+/D- minimum width mismatch",
+        if width_mismatch_mm.is_finite() {
+            format!("{width_mismatch_mm:.3} mm")
+        } else {
+            "missing routed width".to_string()
+        },
+        format!("<= {:.3} mm", usb.max_width_mismatch_mm),
+        width_mismatch_mm.is_finite() && width_mismatch_mm <= usb.max_width_mismatch_mm,
+        &usb.notes,
+    );
+}
+
+#[derive(Debug, Default)]
+struct UsbRouteStats {
+    segment_count: usize,
+    length_mm: f64,
+    min_width_mm: Option<f64>,
+    layers: BTreeSet<String>,
+    disallowed_layers: BTreeSet<String>,
+    vias: BTreeSet<(i64, i64)>,
+}
+
+fn collect_usb_route_stats(
+    net: &str,
+    routing: &RoutingSeed,
+    allowed_layers: &BTreeSet<&str>,
+) -> UsbRouteStats {
+    let mut stats = UsbRouteStats::default();
+    for segment in routing.segments.iter().filter(|segment| segment.net == net) {
+        stats.segment_count += 1;
+        stats.length_mm += segment_length_mm(segment);
+        stats.min_width_mm = Some(
+            stats
+                .min_width_mm
+                .map_or(segment.width_mm, |width| width.min(segment.width_mm)),
+        );
+        stats.layers.insert(segment.layer.clone());
+        if !allowed_layers.contains(segment.layer.as_str()) {
+            stats.disallowed_layers.insert(segment.layer.clone());
+        }
+        if segment.via_at_ends || segment.via_at_start {
+            stats
+                .vias
+                .insert(route_point_key(segment.start_x_mm, segment.start_y_mm));
+        }
+        if segment.via_at_ends || segment.via_at_end {
+            stats
+                .vias
+                .insert(route_point_key(segment.end_x_mm, segment.end_y_mm));
+        }
+    }
+    stats
+}
+
+fn route_point_key(x_mm: f64, y_mm: f64) -> (i64, i64) {
+    (
+        (x_mm * 1000.0).round() as i64,
+        (y_mm * 1000.0).round() as i64,
+    )
+}
+
+fn validate_usb_net(
+    net: &str,
+    stats: &UsbRouteStats,
+    usb: &UsbSignalIntegrity,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    push_gate!(
+        rows,
+        errors,
+        "usb signal integrity",
+        format!("{net} contract net"),
+        net.to_string(),
+        "present in contract",
+        contract_nets.contains(net),
+        &usb.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "usb signal integrity",
+        format!("{net} routed segments"),
+        format!("{}", stats.segment_count),
+        "> 0",
+        stats.segment_count > 0,
+        &usb.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "usb signal integrity",
+        format!("{net} route length"),
+        format!("{:.2} mm", stats.length_mm),
+        format!("<= {:.2} mm", usb.max_route_length_mm),
+        stats.segment_count > 0 && stats.length_mm <= usb.max_route_length_mm,
+        &usb.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "usb signal integrity",
+        format!("{net} minimum width"),
+        stats
+            .min_width_mm
+            .map(|width| format!("{width:.3} mm"))
+            .unwrap_or_else(|| "missing".to_string()),
+        format!(">= {:.3} mm", usb.min_width_mm),
+        stats
+            .min_width_mm
+            .is_some_and(|width| width + f64::EPSILON >= usb.min_width_mm),
+        &usb.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "usb signal integrity",
+        format!("{net} layers"),
+        format_string_set(&stats.layers),
+        format!("one of {}", usb.allowed_layers.join(",")),
+        stats.segment_count > 0 && stats.disallowed_layers.is_empty(),
+        &usb.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "usb signal integrity",
+        format!("{net} route vias"),
+        format!("{}", stats.vias.len()),
+        format!("<= {}", usb.max_vias_per_net),
+        stats.vias.len() <= usb.max_vias_per_net,
+        &usb.notes,
+    );
+}
+
+fn format_string_set(values: &BTreeSet<String>) -> String {
+    if values.is_empty() {
+        "none".to_string()
+    } else {
+        values.iter().cloned().collect::<Vec<_>>().join(",")
+    }
 }
 
 fn derated_trace_capacity_ma(width_mm: f64, layer: &str, assumptions: &Assumptions) -> f64 {
