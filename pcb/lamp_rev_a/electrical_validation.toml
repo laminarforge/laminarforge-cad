@@ -18,6 +18,8 @@ report_md = "pcb/lamp_rev_a/reports/electrical_validation.md"
 gates_csv = "pcb/lamp_rev_a/reports/electrical_validation_gates.csv"
 spice_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_power_path.spice"
 simulation_handoff_md = "pcb/lamp_rev_a/reports/simulation_handoff.md"
+pdn_current_paths_csv = "pcb/lamp_rev_a/reports/pdn_current_paths.csv"
+thermal_power_csv = "pcb/lamp_rev_a/reports/thermal_power_budget.csv"
 
 [assumptions]
 ambient_c = 35.0

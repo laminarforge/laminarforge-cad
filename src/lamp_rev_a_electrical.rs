@@ -15,6 +15,8 @@ pub struct ElectricalOutputPaths {
     pub gates_csv: PathBuf,
     pub spice_netlist: PathBuf,
     pub simulation_handoff_md: PathBuf,
+    pub pdn_current_paths_csv: PathBuf,
+    pub thermal_power_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -71,6 +73,8 @@ struct Outputs {
     gates_csv: String,
     spice_netlist: String,
     simulation_handoff_md: String,
+    pdn_current_paths_csv: String,
+    thermal_power_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -383,6 +387,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         gates_csv: repo_root.join(config.outputs.gates_csv),
         spice_netlist: repo_root.join(config.outputs.spice_netlist),
         simulation_handoff_md: repo_root.join(config.outputs.simulation_handoff_md),
+        pdn_current_paths_csv: repo_root.join(config.outputs.pdn_current_paths_csv),
+        thermal_power_csv: repo_root.join(config.outputs.thermal_power_csv),
     })
 }
 
@@ -433,6 +439,8 @@ pub fn validate_to_outputs(
     write_report(&config, outputs, &rows)?;
     write_gates_csv(&outputs.gates_csv, &rows)?;
     write_spice_handoff(&config, outputs)?;
+    write_pdn_current_paths_handoff(&config, &routing, outputs)?;
+    write_thermal_power_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -1348,6 +1356,165 @@ fn write_gates_csv(path: &Path, rows: &[GateRow]) -> Result<(), Box<dyn Error>> 
     Ok(())
 }
 
+fn write_pdn_current_paths_handoff(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.pdn_current_paths_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.pdn_current_paths_csv)?;
+    writer.write_record([
+        "path_id",
+        "net",
+        "current_ma",
+        "min_required_width_mm",
+        "allowed_layers",
+        "routed_segment_count",
+        "routed_length_mm",
+        "minimum_routed_width_mm",
+        "estimated_derated_capacity_ma",
+        "notes",
+    ])?;
+
+    for path in &config.trace_current_paths {
+        let segments = routing
+            .segments
+            .iter()
+            .filter(|segment| segment.net == path.net)
+            .collect::<Vec<_>>();
+        let routed_length_mm = segments
+            .iter()
+            .map(|segment| segment_length_mm(segment))
+            .sum::<f64>();
+        let minimum_routed_width_mm = segments
+            .iter()
+            .map(|segment| segment.width_mm)
+            .reduce(f64::min);
+        let estimated_derated_capacity_ma = segments
+            .iter()
+            .filter(|segment| !allowed_neckdown(segment, path))
+            .map(|segment| {
+                derated_trace_capacity_ma(segment.width_mm, &segment.layer, &config.assumptions)
+            })
+            .reduce(f64::min);
+
+        writer.write_record([
+            path.id.as_str(),
+            path.net.as_str(),
+            format!("{}", path.current_ma).as_str(),
+            format!("{:.3}", path.min_width_mm).as_str(),
+            path.allowed_layers.join(";").as_str(),
+            format!("{}", segments.len()).as_str(),
+            format!("{routed_length_mm:.3}").as_str(),
+            format_optional_mm(minimum_routed_width_mm).as_str(),
+            format_optional_ma(estimated_derated_capacity_ma).as_str(),
+            path.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_thermal_power_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.thermal_power_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.thermal_power_csv)?;
+    writer.write_record([
+        "id",
+        "component_class",
+        "part_id",
+        "path_or_rails",
+        "current_ma",
+        "power_w",
+        "estimated_temp_rise_c",
+        "limit",
+        "notes",
+    ])?;
+
+    for regulator in &config.linear_regulators {
+        let current_a = regulator.load_ma as f64 / 1000.0;
+        let power_w = (regulator.vin_nominal_v - regulator.vout_nominal_v) * current_a;
+        let temp_rise_c = power_w * regulator.theta_ja_c_per_w;
+        writer.write_record([
+            regulator.id.as_str(),
+            "linear_regulator",
+            regulator.part_id.as_str(),
+            format!("{} -> {}", regulator.input_rail, regulator.output_rail).as_str(),
+            format!("{}", regulator.load_ma).as_str(),
+            format!("{power_w:.4}").as_str(),
+            format!("{temp_rise_c:.2}").as_str(),
+            format!("<= {:.2} C rise", regulator.max_temp_rise_c).as_str(),
+            regulator.notes.as_str(),
+        ])?;
+    }
+
+    for protection in &config.protection_checks {
+        let current_a = protection.current_ma as f64 / 1000.0;
+        let power_w = current_a * protection.voltage_drop_v;
+        writer.write_record([
+            protection.id.as_str(),
+            "protection",
+            protection.part_id.as_str(),
+            protection.path.as_str(),
+            format!("{}", protection.current_ma).as_str(),
+            format!("{power_w:.4}").as_str(),
+            "external thermal model required",
+            format!("<= {:.4} W", protection.max_power_w).as_str(),
+            protection.notes.as_str(),
+        ])?;
+    }
+
+    for mosfet in &config.mosfet_checks {
+        let current_a = mosfet.continuous_current_ma as f64 / 1000.0;
+        let rds_on_ohm = mosfet.rds_on_mohm / 1000.0;
+        let power_w = current_a * current_a * rds_on_ohm;
+        let temp_rise_c = power_w * mosfet.package_theta_ja_c_per_w;
+        writer.write_record([
+            mosfet.id.as_str(),
+            "mosfet",
+            mosfet.part_id.as_str(),
+            "HEATER_P low-side switch",
+            format!("{}", mosfet.continuous_current_ma).as_str(),
+            format!("{power_w:.4}").as_str(),
+            format!("{temp_rise_c:.2}").as_str(),
+            format!("<= {:.2} C rise", mosfet.max_temp_rise_c).as_str(),
+            mosfet.notes.as_str(),
+        ])?;
+    }
+
+    let heater_current_a = config.assumptions.continuous_heater_current_ma as f64 / 1000.0;
+    let heater_power_w = heater_current_a * 12.0;
+    writer.write_record([
+        "external_heater_load",
+        "external_load",
+        "external_heater",
+        "HEATER_SUPPLY -> HEATER_P",
+        format!("{}", config.assumptions.continuous_heater_current_ma).as_str(),
+        format!("{heater_power_w:.4}").as_str(),
+        "outside PCB; validate with bench thermography",
+        "external cutoff required",
+        "Heater load is external to the PCB; board thermal review focuses on connector, fuse, diode, MOSFET, and copper.",
+    ])?;
+
+    writer.flush()?;
+    Ok(())
+}
+
+fn format_optional_mm(value: Option<f64>) -> String {
+    value
+        .map(|value| format!("{value:.3}"))
+        .unwrap_or_else(|| "missing".to_string())
+}
+
+fn format_optional_ma(value: Option<f64>) -> String {
+    value
+        .map(|value| format!("{value:.0}"))
+        .unwrap_or_else(|| "missing".to_string())
+}
+
 fn write_spice_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -1446,6 +1613,27 @@ fn write_simulation_handoff(
     writeln!(
         report,
         "- Suggested command: `cargo run --release --bin lamp_rev_a_spice_check`"
+    )?;
+    writeln!(report)?;
+    writeln!(report, "## Generated PDN / Thermal Handoffs")?;
+    writeln!(report)?;
+    writeln!(
+        report,
+        "- PDN current-path table: `{}`",
+        outputs
+            .pdn_current_paths_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("pdn_current_paths.csv")
+    )?;
+    writeln!(
+        report,
+        "- Thermal power table: `{}`",
+        outputs
+            .thermal_power_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("thermal_power_budget.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())

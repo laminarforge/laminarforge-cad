@@ -109,8 +109,8 @@ includes a bring-up checklist generated from the configured Rev A test points
 and a firmware handoff generated from the checked ESP32-S3 pin map. It also
 emits an electrical-validation report, a first-order SPICE power-path handoff,
 a machine-checked full-speed USB DP/DN routing sanity gate, a
-simulation/analysis handoff, and a checksum manifest for the fabrication,
-assembly, and source bundles.
+simulation/analysis handoff, generated PDN current-path and thermal power CSVs,
+and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:
 
