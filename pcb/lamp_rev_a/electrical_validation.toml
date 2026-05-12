@@ -42,6 +42,7 @@ rail_load_step_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_rail_load_step.spice
 rail_load_step_csv = "pcb/lamp_rev_a/reports/rail_load_step_simulation.csv"
 analog_front_end_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_analog_front_end.spice"
 analog_front_end_csv = "pcb/lamp_rev_a/reports/analog_front_end_simulation.csv"
+thermistor_adc_transfer_csv = "pcb/lamp_rev_a/reports/thermistor_adc_transfer.csv"
 
 [traceability_policy]
 min_items = 15
@@ -169,6 +170,17 @@ ci_step = "LAMP Rev A SPICE checks; Run LAMP Rev A release SPICE checks"
 acceptance_criterion = "ngspice transient measurements keep ADC_AIN1 inside the 3.3 V analog domain while producing a detectable dark-to-light signal delta."
 blocks_release = true
 notes = "This is a first-order photodiode/mux/TIA/ADC signal-envelope simulation. It does not replace optical calibration, but it catches gain/range assumptions before fab."
+
+[[validation_traceability]]
+id = "thermistor_adc_transfer"
+validation_layer = "Thermistor/ADC transfer simulation"
+electrical_gate_category = "thermistor adc transfer"
+output_artifact = "thermistor_adc_transfer.csv; electrical_validation_gates.csv"
+release_manifest_entry = "thermistor_adc_transfer; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "Thermistor divider voltages and ADS1115 counts remain inside configured operating and fault windows across the LAMP temperature range."
+blocks_release = true
+notes = "This catches temperature-sense range, sensitivity, and open/short fault assumptions before heater-control firmware relies on ADC_AIN1."
 
 [[validation_traceability]]
 id = "component_stress_derating"
@@ -471,6 +483,30 @@ min_signal_delta_v = 0.25
 min_adc_voltage_v = 0.0
 max_adc_voltage_v = 3.0
 notes = "First-order optical TIA signal-envelope model from SFH2704/CD74HC4051/TLV6001/ADS1115 assumptions. Bench optical calibration remains mandatory."
+
+[thermistor_adc_policy]
+adc_net = "ADC_AIN1"
+rail = "+3V3"
+test_point = "TP_ADC"
+pullup_part_id = "resistor_10k"
+adc_part_id = "adc"
+rail_voltage_v = 3.3
+pullup_ohm = 10000.0
+thermistor_nominal_ohm = 10000.0
+beta_k = 3950.0
+reference_temp_c = 25.0
+adc_full_scale_v = 3.3
+adc_counts = 32767
+min_temp_c = 55.0
+max_temp_c = 75.0
+target_temp_c = 65.0
+sample_temps_c = [55.0, 60.0, 63.0, 65.0, 67.0, 70.0, 75.0]
+min_operating_counts = 2500.0
+max_operating_counts = 14000.0
+min_counts_per_c_at_target = 100.0
+open_fault_min_v = 3.0
+short_fault_max_v = 0.05
+notes = "First-order 10k NTC divider model for heater temperature feedback on ADC_AIN1. Bench calibration remains mandatory."
 
 [[rail_budgets]]
 rail = "VBUS"

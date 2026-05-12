@@ -126,6 +126,7 @@ a heater/reaction-block thermal transient CSV for warm-up, hold, duty, overshoot
 a USB/VBUS hot-plug and 3.3 V startup/inrush CSV for rail startup envelope checks,
 an ngspice 3.3 V rail load-step transient netlist/CSV for ESP32 burst-load sag,
 an ngspice optical analog front-end transient netlist/CSV for TIA/ADC signal-envelope range,
+and a thermistor/ADC transfer CSV for heater temperature-sense range, sensitivity, and fault coverage,
 and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:

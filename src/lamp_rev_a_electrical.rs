@@ -38,6 +38,7 @@ pub struct ElectricalOutputPaths {
     pub rail_load_step_csv: PathBuf,
     pub analog_front_end_netlist: PathBuf,
     pub analog_front_end_csv: PathBuf,
+    pub thermistor_adc_transfer_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -101,6 +102,7 @@ struct ValidationConfig {
     usb_inrush_startup_policy: UsbInrushStartupPolicy,
     rail_load_step_policy: RailLoadStepPolicy,
     analog_front_end_policy: AnalogFrontEndPolicy,
+    thermistor_adc_policy: ThermistorAdcPolicy,
 }
 
 #[derive(Debug, Deserialize)]
@@ -152,6 +154,7 @@ struct Outputs {
     rail_load_step_csv: String,
     analog_front_end_netlist: String,
     analog_front_end_csv: String,
+    thermistor_adc_transfer_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -419,6 +422,32 @@ struct AnalogFrontEndPolicy {
     min_signal_delta_v: f64,
     min_adc_voltage_v: f64,
     max_adc_voltage_v: f64,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ThermistorAdcPolicy {
+    adc_net: String,
+    rail: String,
+    test_point: String,
+    pullup_part_id: String,
+    adc_part_id: String,
+    rail_voltage_v: f64,
+    pullup_ohm: f64,
+    thermistor_nominal_ohm: f64,
+    beta_k: f64,
+    reference_temp_c: f64,
+    adc_full_scale_v: f64,
+    adc_counts: u32,
+    min_temp_c: f64,
+    max_temp_c: f64,
+    target_temp_c: f64,
+    sample_temps_c: Vec<f64>,
+    min_operating_counts: f64,
+    max_operating_counts: f64,
+    min_counts_per_c_at_target: f64,
+    open_fault_min_v: f64,
+    short_fault_max_v: f64,
     notes: String,
 }
 
@@ -892,6 +921,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         rail_load_step_csv: repo_root.join(config.outputs.rail_load_step_csv),
         analog_front_end_netlist: repo_root.join(config.outputs.analog_front_end_netlist),
         analog_front_end_csv: repo_root.join(config.outputs.analog_front_end_csv),
+        thermistor_adc_transfer_csv: repo_root.join(config.outputs.thermistor_adc_transfer_csv),
     })
 }
 
@@ -975,6 +1005,14 @@ pub fn validate_to_outputs(
     validate_usb_inrush_startup(&config, &contract_nets, &mut rows, &mut errors);
     validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
     validate_analog_front_end_transient(&config, &contract_nets, &mut rows, &mut errors);
+    validate_thermistor_adc_transfer(
+        &config,
+        &parts,
+        &placement,
+        &contract_nets,
+        &mut rows,
+        &mut errors,
+    );
     let gate_categories = rows
         .iter()
         .map(|row| row.category.clone())
@@ -1006,6 +1044,7 @@ pub fn validate_to_outputs(
     write_usb_inrush_startup_handoff(&config, outputs)?;
     write_rail_load_step_handoff(&config, outputs)?;
     write_analog_front_end_handoff(&config, outputs)?;
+    write_thermistor_adc_transfer_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -2795,6 +2834,222 @@ fn analog_front_end_rows(config: &ValidationConfig) -> Vec<AnalogFrontEndRow> {
 
 fn analog_front_end_output_v(current_na: f64, policy: &AnalogFrontEndPolicy) -> f64 {
     current_na * 1.0e-9 * policy.feedback_resistor_ohm
+}
+
+fn validate_thermistor_adc_transfer(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.thermistor_adc_policy;
+    let selected = selected_part_ids(parts);
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point))
+        .collect::<BTreeMap<_, _>>();
+
+    for net in [policy.adc_net.as_str(), policy.rail.as_str(), "GND"] {
+        push_gate!(
+            rows,
+            errors,
+            "thermistor adc transfer",
+            format!("{net} contract net"),
+            net,
+            "present in contract",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "thermistor adc transfer",
+        "thermistor pull-up part",
+        policy.pullup_part_id.as_str(),
+        "selected in parts.toml",
+        selected.contains(policy.pullup_part_id.as_str()),
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "thermistor adc transfer",
+        "ADC part",
+        policy.adc_part_id.as_str(),
+        "selected in parts.toml",
+        selected.contains(policy.adc_part_id.as_str()),
+        &policy.notes,
+    );
+
+    let test_point = test_points.get(policy.test_point.as_str());
+    push_gate!(
+        rows,
+        errors,
+        "thermistor adc transfer",
+        "ADC test point",
+        policy.test_point.as_str(),
+        format!("exists on {}", policy.adc_net).as_str(),
+        test_point.is_some_and(|point| point.net.as_str() == policy.adc_net.as_str()),
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "thermistor adc transfer",
+        "temperature window",
+        format!(
+            "{:.1}..{:.1} C target {:.1} C",
+            policy.min_temp_c, policy.max_temp_c, policy.target_temp_c
+        ),
+        "min < target < max",
+        policy.min_temp_c < policy.target_temp_c && policy.target_temp_c < policy.max_temp_c,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "thermistor adc transfer",
+        "divider constants",
+        format!(
+            "{:.0} ohm pull-up, {:.0} ohm NTC, beta {:.0} K",
+            policy.pullup_ohm, policy.thermistor_nominal_ohm, policy.beta_k
+        ),
+        "positive resistance and beta values",
+        policy.pullup_ohm > 0.0 && policy.thermistor_nominal_ohm > 0.0 && policy.beta_k > 0.0,
+        &policy.notes,
+    );
+
+    for row in thermistor_adc_transfer_rows(config) {
+        push_gate!(
+            rows,
+            errors,
+            "thermistor adc transfer",
+            row.id.as_str(),
+            row.measured.as_str(),
+            row.limit.as_str(),
+            row.pass,
+            row.notes.as_str(),
+        );
+    }
+}
+
+#[derive(Debug)]
+struct ThermistorAdcTransferRow {
+    id: String,
+    temperature_c: Option<f64>,
+    thermistor_ohm: Option<f64>,
+    voltage_v: f64,
+    adc_counts: f64,
+    counts_per_c: Option<f64>,
+    measured: String,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+fn thermistor_adc_transfer_rows(config: &ValidationConfig) -> Vec<ThermistorAdcTransferRow> {
+    let policy = &config.thermistor_adc_policy;
+    let mut rows = Vec::new();
+
+    for &temp_c in &policy.sample_temps_c {
+        let thermistor_ohm = thermistor_resistance_ohm(temp_c, policy);
+        let voltage_v = thermistor_adc_voltage_v(thermistor_ohm, policy);
+        let adc_counts = thermistor_adc_counts(voltage_v, policy);
+        let in_temp_window = temp_c >= policy.min_temp_c && temp_c <= policy.max_temp_c;
+        let in_count_window =
+            adc_counts >= policy.min_operating_counts && adc_counts <= policy.max_operating_counts;
+        rows.push(ThermistorAdcTransferRow {
+            id: format!("temp_{temp_c:.0}_c"),
+            temperature_c: Some(temp_c),
+            thermistor_ohm: Some(thermistor_ohm),
+            voltage_v,
+            adc_counts,
+            counts_per_c: Some(thermistor_counts_per_c(temp_c, policy)),
+            measured: format!("{adc_counts:.1} counts at {voltage_v:.3} V"),
+            limit: format!(
+                "{:.0}..{:.0} counts inside {:.1}..{:.1} C",
+                policy.min_operating_counts,
+                policy.max_operating_counts,
+                policy.min_temp_c,
+                policy.max_temp_c
+            ),
+            pass: in_temp_window && in_count_window,
+            notes: policy.notes.clone(),
+        });
+    }
+
+    let target_counts_per_c = thermistor_counts_per_c(policy.target_temp_c, policy);
+    let target_ohm = thermistor_resistance_ohm(policy.target_temp_c, policy);
+    let target_v = thermistor_adc_voltage_v(target_ohm, policy);
+    rows.push(ThermistorAdcTransferRow {
+        id: "target_sensitivity".to_string(),
+        temperature_c: Some(policy.target_temp_c),
+        thermistor_ohm: Some(target_ohm),
+        voltage_v: target_v,
+        adc_counts: thermistor_adc_counts(target_v, policy),
+        counts_per_c: Some(target_counts_per_c),
+        measured: format!("{target_counts_per_c:.1} counts/C"),
+        limit: format!(">= {:.1} counts/C", policy.min_counts_per_c_at_target),
+        pass: target_counts_per_c >= policy.min_counts_per_c_at_target,
+        notes: policy.notes.clone(),
+    });
+
+    let open_fault_v = policy.rail_voltage_v;
+    rows.push(ThermistorAdcTransferRow {
+        id: "open_thermistor_fault".to_string(),
+        temperature_c: None,
+        thermistor_ohm: None,
+        voltage_v: open_fault_v,
+        adc_counts: thermistor_adc_counts(open_fault_v, policy),
+        counts_per_c: None,
+        measured: format!("{open_fault_v:.3} V"),
+        limit: format!(">= {:.3} V", policy.open_fault_min_v),
+        pass: open_fault_v >= policy.open_fault_min_v,
+        notes: "NTC open fault should rail high so firmware can reject the reading.".to_string(),
+    });
+    let short_fault_v = 0.0;
+    rows.push(ThermistorAdcTransferRow {
+        id: "short_thermistor_fault".to_string(),
+        temperature_c: None,
+        thermistor_ohm: None,
+        voltage_v: short_fault_v,
+        adc_counts: thermistor_adc_counts(short_fault_v, policy),
+        counts_per_c: None,
+        measured: format!("{short_fault_v:.3} V"),
+        limit: format!("<= {:.3} V", policy.short_fault_max_v),
+        pass: short_fault_v <= policy.short_fault_max_v,
+        notes: "NTC short fault should rail low so firmware can reject the reading.".to_string(),
+    });
+
+    rows
+}
+
+fn thermistor_resistance_ohm(temp_c: f64, policy: &ThermistorAdcPolicy) -> f64 {
+    let temp_k = temp_c + 273.15;
+    let reference_k = policy.reference_temp_c + 273.15;
+    policy.thermistor_nominal_ohm * (policy.beta_k * (1.0 / temp_k - 1.0 / reference_k)).exp()
+}
+
+fn thermistor_adc_voltage_v(thermistor_ohm: f64, policy: &ThermistorAdcPolicy) -> f64 {
+    policy.rail_voltage_v * thermistor_ohm / (policy.pullup_ohm + thermistor_ohm)
+}
+
+fn thermistor_adc_counts(voltage_v: f64, policy: &ThermistorAdcPolicy) -> f64 {
+    voltage_v / policy.adc_full_scale_v * policy.adc_counts as f64
+}
+
+fn thermistor_counts_per_c(temp_c: f64, policy: &ThermistorAdcPolicy) -> f64 {
+    let delta_c = 0.25;
+    let low_ohm = thermistor_resistance_ohm(temp_c - delta_c, policy);
+    let high_ohm = thermistor_resistance_ohm(temp_c + delta_c, policy);
+    let low_counts = thermistor_adc_counts(thermistor_adc_voltage_v(low_ohm, policy), policy);
+    let high_counts = thermistor_adc_counts(thermistor_adc_voltage_v(high_ohm, policy), policy);
+    ((high_counts - low_counts) / (2.0 * delta_c)).abs()
 }
 
 fn allowed_neckdown(segment: &RouteSegment, path: &TraceCurrentPath) -> bool {
@@ -5848,6 +6103,40 @@ fn write_analog_front_end_spice(
     Ok(())
 }
 
+fn write_thermistor_adc_transfer_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.thermistor_adc_transfer_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.thermistor_adc_transfer_csv)?;
+    writer.write_record([
+        "id",
+        "temperature_c",
+        "thermistor_ohm",
+        "voltage_v",
+        "adc_counts",
+        "counts_per_c",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in thermistor_adc_transfer_rows(config) {
+        writer.write_record([
+            row.id.as_str(),
+            format_optional_f64(row.temperature_c).as_str(),
+            format_optional_f64(row.thermistor_ohm).as_str(),
+            format!("{:.6}", row.voltage_v).as_str(),
+            format!("{:.1}", row.adc_counts).as_str(),
+            format_optional_f64(row.counts_per_c).as_str(),
+            row.limit.as_str(),
+            if row.pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_thermal_power_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -6477,6 +6766,12 @@ fn format_optional_w(value: Option<f64>) -> String {
         .unwrap_or_else(|| "n/a".to_string())
 }
 
+fn format_optional_f64(value: Option<f64>) -> String {
+    value
+        .map(|value| format!("{value:.3}"))
+        .unwrap_or_else(|| "n/a".to_string())
+}
+
 fn format_optional_pct(value: Option<f64>) -> String {
     value
         .map(|value| format!("{:.1}", value * 100.0))
@@ -6732,6 +7027,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("analog_front_end_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Thermistor/ADC transfer table: `{}`",
+        outputs
+            .thermistor_adc_transfer_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("thermistor_adc_transfer.csv")
     )?;
     writeln!(
         report,
