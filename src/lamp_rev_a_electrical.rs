@@ -28,6 +28,8 @@ pub struct ElectricalOutputPaths {
     pub validation_traceability_csv: PathBuf,
     pub pdn_dc_simulation_csv: PathBuf,
     pub thermal_margin_simulation_csv: PathBuf,
+    pub heater_pwm_transient_netlist: PathBuf,
+    pub heater_pwm_transient_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -82,6 +84,7 @@ struct ValidationConfig {
     validation_traceability: Vec<ValidationTraceability>,
     pdn_dc_simulation_policy: PdnDcSimulationPolicy,
     thermal_margin_simulation_policy: ThermalMarginSimulationPolicy,
+    heater_pwm_transient_policy: HeaterPwmTransientPolicy,
 }
 
 #[derive(Debug, Deserialize)]
@@ -123,6 +126,8 @@ struct Outputs {
     validation_traceability_csv: String,
     pdn_dc_simulation_csv: String,
     thermal_margin_simulation_csv: String,
+    heater_pwm_transient_netlist: String,
+    heater_pwm_transient_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -283,6 +288,28 @@ struct ThermalMarginSimulationPolicy {
     max_total_board_power_w: f64,
     protection_theta_c_per_w: f64,
     trace_theta_c_per_w: f64,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct HeaterPwmTransientPolicy {
+    supply_voltage_v: f64,
+    heater_resistance_ohm: f64,
+    heater_series_resistance_ohm: f64,
+    mosfet_rds_on_ohm: f64,
+    mosfet_off_resistance_ohm: f64,
+    gate_drive_high_v: f64,
+    gate_drive_low_v: f64,
+    gate_threshold_v: f64,
+    gate_hysteresis_v: f64,
+    pwm_period_ms: f64,
+    pwm_on_ms: f64,
+    simulation_stop_ms: f64,
+    max_on_current_a: f64,
+    min_on_current_a: f64,
+    max_off_current_ma: f64,
+    min_gate_high_v: f64,
+    max_gate_low_v: f64,
     notes: String,
 }
 
@@ -692,6 +719,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         validation_traceability_csv: repo_root.join(config.outputs.validation_traceability_csv),
         pdn_dc_simulation_csv: repo_root.join(config.outputs.pdn_dc_simulation_csv),
         thermal_margin_simulation_csv: repo_root.join(config.outputs.thermal_margin_simulation_csv),
+        heater_pwm_transient_netlist: repo_root.join(config.outputs.heater_pwm_transient_netlist),
+        heater_pwm_transient_csv: repo_root.join(config.outputs.heater_pwm_transient_csv),
     })
 }
 
@@ -760,6 +789,7 @@ pub fn validate_to_outputs(
     validate_simulation_inputs(&config, &mut rows, &mut errors);
     validate_pdn_dc_simulation(&config, &routing, &contract_rails, &mut rows, &mut errors);
     validate_thermal_margin_simulation(&config, &routing, &mut rows, &mut errors);
+    validate_heater_pwm_transient(&config, &contract_nets, &mut rows, &mut errors);
     let gate_categories = rows
         .iter()
         .map(|row| row.category.clone())
@@ -784,6 +814,7 @@ pub fn validate_to_outputs(
     write_simulation_inputs_handoff(&config, outputs)?;
     write_pdn_dc_simulation_handoff(&config, &routing, &contract_rails, outputs)?;
     write_thermal_margin_simulation_handoff(&config, &routing, outputs)?;
+    write_heater_pwm_transient_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -1588,6 +1619,166 @@ fn thermal_margin_row(config: &ValidationConfig, spec: ThermalMarginSpec) -> The
         margin_c: spec.max_temp_c - estimated_temp_c,
         notes: spec.notes,
     }
+}
+
+fn validate_heater_pwm_transient(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.heater_pwm_transient_policy;
+    for net in ["HEATER_SUPPLY", "HEATER_P", "GATE_DRV", "HEATER_PWM"] {
+        push_gate!(
+            rows,
+            errors,
+            "heater pwm transient",
+            format!("{net} contract net"),
+            net,
+            "present in contract",
+            contract_nets.contains(net),
+            &policy.notes,
+        );
+    }
+
+    let on_current_a = heater_pwm_on_current_a(policy);
+    let off_current_ma = heater_pwm_off_current_ma(policy);
+    push_gate!(
+        rows,
+        errors,
+        "heater pwm transient",
+        "configured on current envelope",
+        format!("{on_current_a:.3} A"),
+        format!(
+            "{:.3}..{:.3} A",
+            policy.min_on_current_a, policy.max_on_current_a
+        ),
+        on_current_a >= policy.min_on_current_a && on_current_a <= policy.max_on_current_a,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "heater pwm transient",
+        "configured off current leakage",
+        format!("{off_current_ma:.6} mA"),
+        format!("<= {:.6} mA", policy.max_off_current_ma),
+        off_current_ma <= policy.max_off_current_ma,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "heater pwm transient",
+        "gate drive high margin",
+        format!("{:.3} V", policy.gate_drive_high_v),
+        format!(
+            ">= {:.3} V",
+            policy.gate_threshold_v + policy.gate_hysteresis_v
+        ),
+        policy.gate_drive_high_v >= policy.gate_threshold_v + policy.gate_hysteresis_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "heater pwm transient",
+        "gate drive low margin",
+        format!("{:.3} V", policy.gate_drive_low_v),
+        format!(
+            "<= {:.3} V",
+            policy.gate_threshold_v - policy.gate_hysteresis_v
+        ),
+        policy.gate_drive_low_v <= policy.gate_threshold_v - policy.gate_hysteresis_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "heater pwm transient",
+        "PWM timing envelope",
+        format!(
+            "{:.3} ms on / {:.3} ms period / {:.3} ms stop",
+            policy.pwm_on_ms, policy.pwm_period_ms, policy.simulation_stop_ms
+        ),
+        "0 < on < period and stop >= 2 periods",
+        policy.pwm_on_ms > 0.0
+            && policy.pwm_on_ms < policy.pwm_period_ms
+            && policy.simulation_stop_ms >= 2.0 * policy.pwm_period_ms,
+        &policy.notes,
+    );
+}
+
+#[derive(Debug)]
+struct HeaterPwmTransientRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+fn heater_pwm_transient_rows(config: &ValidationConfig) -> Vec<HeaterPwmTransientRow> {
+    let policy = &config.heater_pwm_transient_policy;
+    vec![
+        HeaterPwmTransientRow {
+            id: "heater_on_current",
+            measurement: "expected on-state heater current",
+            value: heater_pwm_on_current_a(policy),
+            units: "A",
+            limit: format!(
+                "{:.3}..{:.3} A",
+                policy.min_on_current_a, policy.max_on_current_a
+            ),
+            pass: heater_pwm_on_current_a(policy) >= policy.min_on_current_a
+                && heater_pwm_on_current_a(policy) <= policy.max_on_current_a,
+            notes: policy.notes.clone(),
+        },
+        HeaterPwmTransientRow {
+            id: "heater_off_current",
+            measurement: "expected off-state leakage",
+            value: heater_pwm_off_current_ma(policy),
+            units: "mA",
+            limit: format!("<= {:.6} mA", policy.max_off_current_ma),
+            pass: heater_pwm_off_current_ma(policy) <= policy.max_off_current_ma,
+            notes: policy.notes.clone(),
+        },
+        HeaterPwmTransientRow {
+            id: "gate_high",
+            measurement: "gate-drive high level",
+            value: policy.gate_drive_high_v,
+            units: "V",
+            limit: format!(">= {:.3} V", policy.min_gate_high_v),
+            pass: policy.gate_drive_high_v >= policy.min_gate_high_v,
+            notes: policy.notes.clone(),
+        },
+        HeaterPwmTransientRow {
+            id: "gate_low",
+            measurement: "gate-drive low level",
+            value: policy.gate_drive_low_v,
+            units: "V",
+            limit: format!("<= {:.3} V", policy.max_gate_low_v),
+            pass: policy.gate_drive_low_v <= policy.max_gate_low_v,
+            notes: policy.notes.clone(),
+        },
+    ]
+}
+
+fn heater_pwm_on_current_a(policy: &HeaterPwmTransientPolicy) -> f64 {
+    policy.supply_voltage_v
+        / (policy.heater_resistance_ohm
+            + policy.heater_series_resistance_ohm
+            + policy.mosfet_rds_on_ohm)
+}
+
+fn heater_pwm_off_current_ma(policy: &HeaterPwmTransientPolicy) -> f64 {
+    policy.supply_voltage_v
+        / (policy.heater_resistance_ohm
+            + policy.heater_series_resistance_ohm
+            + policy.mosfet_off_resistance_ohm)
+        * 1000.0
 }
 
 fn allowed_neckdown(segment: &RouteSegment, path: &TraceCurrentPath) -> bool {
@@ -3836,6 +4027,148 @@ fn write_thermal_margin_simulation_handoff(
     Ok(())
 }
 
+fn write_heater_pwm_transient_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    write_heater_pwm_transient_csv(config, outputs)?;
+    write_heater_pwm_transient_spice(config, outputs)?;
+    Ok(())
+}
+
+fn write_heater_pwm_transient_csv(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.heater_pwm_transient_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.heater_pwm_transient_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in heater_pwm_transient_rows(config) {
+        writer.write_record([
+            row.id,
+            row.measurement,
+            format!("{:.6}", row.value).as_str(),
+            row.units,
+            row.limit.as_str(),
+            if row.pass { "pass" } else { "fail" },
+            row.notes.as_str(),
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn write_heater_pwm_transient_spice(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.heater_pwm_transient_netlist)?;
+    let policy = &config.heater_pwm_transient_policy;
+    let rise_ms = 0.001_f64;
+    let fall_ms = 0.001_f64;
+    let mut spice = String::new();
+    writeln!(
+        spice,
+        "* LaminarForge LAMP Rev A heater PWM transient check"
+    )?;
+    writeln!(spice, "* Generated by lamp_rev_a_electrical_validate")?;
+    writeln!(
+        spice,
+        "* This is a first-order switching envelope model, not signoff."
+    )?;
+    writeln!(
+        spice,
+        "* check_min_on_current_a={:.6}",
+        policy.min_on_current_a
+    )?;
+    writeln!(
+        spice,
+        "* check_max_on_current_a={:.6}",
+        policy.max_on_current_a
+    )?;
+    writeln!(
+        spice,
+        "* check_max_off_current_ma={:.6}",
+        policy.max_off_current_ma
+    )?;
+    writeln!(
+        spice,
+        "* check_min_gate_high_v={:.6}",
+        policy.min_gate_high_v
+    )?;
+    writeln!(spice, "* check_max_gate_low_v={:.6}", policy.max_gate_low_v)?;
+    writeln!(spice, "V12 P12RAW 0 DC {:.6}", policy.supply_voltage_v)?;
+    writeln!(
+        spice,
+        "RFEED P12RAW HEATER_SUPPLY {:.6}",
+        policy.heater_series_resistance_ohm
+    )?;
+    writeln!(spice, "VHEATER HEATER_SUPPLY HEATER_TOP 0")?;
+    writeln!(
+        spice,
+        "RHEATER HEATER_TOP HEATER_P {:.6}",
+        policy.heater_resistance_ohm
+    )?;
+    writeln!(spice, "SLOW HEATER_P 0 GATE 0 HEATER_SWITCH")?;
+    writeln!(
+        spice,
+        ".model HEATER_SWITCH SW(Ron={:.6} Roff={:.6} Vt={:.6} Vh={:.6})",
+        policy.mosfet_rds_on_ohm,
+        policy.mosfet_off_resistance_ohm,
+        policy.gate_threshold_v,
+        policy.gate_hysteresis_v
+    )?;
+    writeln!(
+        spice,
+        "VGATE GATE 0 PULSE({:.6} {:.6} 0 {:.6}m {:.6}m {:.6}m {:.6}m)",
+        policy.gate_drive_low_v,
+        policy.gate_drive_high_v,
+        rise_ms,
+        fall_ms,
+        policy.pwm_on_ms,
+        policy.pwm_period_ms
+    )?;
+    writeln!(spice, ".tran 10u {:.6}m", policy.simulation_stop_ms)?;
+    writeln!(spice, ".control")?;
+    writeln!(spice, "run")?;
+    writeln!(
+        spice,
+        "meas tran heater_current_on AVG i(vheater) FROM={:.6}m TO={:.6}m",
+        policy.pwm_on_ms * 0.40,
+        policy.pwm_on_ms * 0.80
+    )?;
+    writeln!(
+        spice,
+        "meas tran heater_current_off AVG i(vheater) FROM={:.6}m TO={:.6}m",
+        policy.pwm_on_ms + (policy.pwm_period_ms - policy.pwm_on_ms) * 0.40,
+        policy.pwm_on_ms + (policy.pwm_period_ms - policy.pwm_on_ms) * 0.80
+    )?;
+    writeln!(
+        spice,
+        "meas tran gate_high_max MAX v(gate) FROM={:.6}m TO={:.6}m",
+        policy.pwm_on_ms * 0.40,
+        policy.pwm_on_ms * 0.80
+    )?;
+    writeln!(
+        spice,
+        "meas tran gate_low_min MIN v(gate) FROM={:.6}m TO={:.6}m",
+        policy.pwm_on_ms + (policy.pwm_period_ms - policy.pwm_on_ms) * 0.40,
+        policy.pwm_on_ms + (policy.pwm_period_ms - policy.pwm_on_ms) * 0.80
+    )?;
+    writeln!(spice, ".endc")?;
+    writeln!(spice, ".end")?;
+    fs::write(&outputs.heater_pwm_transient_netlist, spice)?;
+    Ok(())
+}
+
 fn write_thermal_power_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -4469,6 +4802,15 @@ fn write_simulation_handoff(
         report,
         "- Suggested command: `cargo run --release --bin lamp_rev_a_spice_check`"
     )?;
+    writeln!(
+        report,
+        "- Heater PWM transient netlist: `{}`",
+        outputs
+            .heater_pwm_transient_netlist
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("lamp_rev_a_heater_pwm_transient.spice")
+    )?;
     writeln!(report)?;
     writeln!(report, "## Generated PDN / Thermal Handoffs")?;
     writeln!(report)?;
@@ -4507,6 +4849,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("thermal_margin_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Heater PWM transient result table: `{}`",
+        outputs
+            .heater_pwm_transient_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("heater_pwm_transient_simulation.csv")
     )?;
     writeln!(
         report,

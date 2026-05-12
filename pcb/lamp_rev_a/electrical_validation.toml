@@ -32,6 +32,8 @@ calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
 validation_traceability_csv = "pcb/lamp_rev_a/reports/validation_traceability.csv"
 pdn_dc_simulation_csv = "pcb/lamp_rev_a/reports/pdn_dc_simulation.csv"
 thermal_margin_simulation_csv = "pcb/lamp_rev_a/reports/thermal_margin_simulation.csv"
+heater_pwm_transient_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_heater_pwm_transient.spice"
+heater_pwm_transient_csv = "pcb/lamp_rev_a/reports/heater_pwm_transient_simulation.csv"
 
 [traceability_policy]
 min_items = 15
@@ -104,6 +106,17 @@ ci_step = "LAMP Rev A electrical validation"
 acceptance_criterion = "Regulator, diode, PTC, MOSFET, and routed-copper thermal nodes estimate below configured steady-state temperature and total board-loss limits."
 blocks_release = true
 notes = "This is a lumped thermal model, not FEA; it turns existing component power and routed copper loss into CI-gated temperature margins."
+
+[[validation_traceability]]
+id = "heater_pwm_transient_simulation"
+validation_layer = "SPICE heater PWM transient simulation"
+electrical_gate_category = "heater pwm transient"
+output_artifact = "lamp_rev_a_heater_pwm_transient.spice; heater_pwm_transient_simulation.csv"
+release_manifest_entry = "heater_pwm_transient_netlist; heater_pwm_transient_simulation"
+ci_step = "LAMP Rev A SPICE operating-point check; Run LAMP Rev A release SPICE check"
+acceptance_criterion = "ngspice transient measurements keep heater on-current, off-current leakage, and gate-drive levels inside configured limits."
+blocks_release = true
+notes = "This is the first switched-heater transient simulation gate; it catches PWM/gate-drive envelope mistakes that DC checks cannot see."
 
 [[validation_traceability]]
 id = "component_stress_derating"
@@ -255,6 +268,26 @@ max_total_board_power_w = 2.5
 protection_theta_c_per_w = 70.0
 trace_theta_c_per_w = 35.0
 notes = "First-order lumped thermal model for pre-fab screening. Replace with electrothermal/FEA after first physical assumptions are validated."
+
+[heater_pwm_transient_policy]
+supply_voltage_v = 12.0
+heater_resistance_ohm = 7.75
+heater_series_resistance_ohm = 0.15
+mosfet_rds_on_ohm = 0.052
+mosfet_off_resistance_ohm = 10000000.0
+gate_drive_high_v = 10.0
+gate_drive_low_v = 0.0
+gate_threshold_v = 4.0
+gate_hysteresis_v = 0.5
+pwm_period_ms = 10.0
+pwm_on_ms = 5.0
+simulation_stop_ms = 30.0
+max_on_current_a = 1.60
+min_on_current_a = 1.35
+max_off_current_ma = 0.005
+min_gate_high_v = 9.0
+max_gate_low_v = 0.2
+notes = "First-order switched heater path transient model for MOSFET/PWM envelope screening before first article."
 
 [[rail_budgets]]
 rail = "VBUS"

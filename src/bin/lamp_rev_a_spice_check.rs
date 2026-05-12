@@ -17,30 +17,71 @@ const REQUIRED_OUTPUT_TOKENS: &[&str] = &[
     "v12#branch",
 ];
 
+#[derive(Clone, Copy)]
+enum SpiceMode {
+    OperatingPoint,
+    HeaterPwmTransient,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let repo_root = Path::new(".");
     let args = std::env::args().skip(1).collect::<Vec<_>>();
-    let (netlist_path, log_path) = match args.as_slice() {
+    let (netlist_path, log_path, mode) = match args.as_slice() {
         [] => {
             validate_default(repo_root)?;
             let outputs = default_output_paths(repo_root)?;
-            let log_path = default_log_path(&outputs.spice_netlist);
-            (outputs.spice_netlist, log_path)
+            run_spice_check(
+                &outputs.spice_netlist,
+                &default_log_path(&outputs.spice_netlist),
+                SpiceMode::OperatingPoint,
+            )?;
+            run_spice_check(
+                &outputs.heater_pwm_transient_netlist,
+                &default_log_path(&outputs.heater_pwm_transient_netlist),
+                SpiceMode::HeaterPwmTransient,
+            )?;
+            println!("LAMP Rev A SPICE checks passed.");
+            return Ok(());
         }
-        [netlist, log] => (PathBuf::from(netlist), PathBuf::from(log)),
+        [netlist, log] => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::OperatingPoint,
+        ),
+        [mode, netlist, log] if mode == "heater-pwm-transient" => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::HeaterPwmTransient,
+        ),
+        [mode, netlist, log] if mode == "operating-point" => (
+            PathBuf::from(netlist),
+            PathBuf::from(log),
+            SpiceMode::OperatingPoint,
+        ),
         _ => {
-            return Err("usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH]".into());
+            return Err(
+                "usage: lamp_rev_a_spice_check [NETLIST_PATH LOG_PATH] | [operating-point|heater-pwm-transient NETLIST_PATH LOG_PATH]"
+                    .into(),
+            );
         }
     };
 
-    ensure_file(&netlist_path)?;
-    ensure_parent(&log_path)?;
+    run_spice_check(&netlist_path, &log_path, mode)
+}
+
+fn run_spice_check(
+    netlist_path: &Path,
+    log_path: &Path,
+    mode: SpiceMode,
+) -> Result<(), Box<dyn Error>> {
+    ensure_file(netlist_path)?;
+    ensure_parent(log_path)?;
 
     let output = Command::new("ngspice")
         .arg("-b")
         .arg("-o")
-        .arg(&log_path)
-        .arg(&netlist_path)
+        .arg(log_path)
+        .arg(netlist_path)
         .output()
         .map_err(|err| {
             format!(
@@ -59,10 +100,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         .into());
     }
 
-    let log = fs::read_to_string(&log_path)?;
-    validate_ngspice_log(&log)?;
+    let log = fs::read_to_string(log_path)?;
+    let netlist = fs::read_to_string(netlist_path)?;
+    match mode {
+        SpiceMode::OperatingPoint => validate_operating_point_log(&log)?,
+        SpiceMode::HeaterPwmTransient => validate_heater_pwm_transient_log(&netlist, &log)?,
+    }
 
-    println!("LAMP Rev A SPICE operating-point check passed.");
+    println!(
+        "LAMP Rev A {} SPICE check passed.",
+        match mode {
+            SpiceMode::OperatingPoint => "operating-point",
+            SpiceMode::HeaterPwmTransient => "heater PWM transient",
+        }
+    );
     println!("  netlist: {}", netlist_path.display());
     println!("  log: {}", log_path.display());
     Ok(())
@@ -91,12 +142,11 @@ fn ensure_parent(path: &Path) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn validate_ngspice_log(log: &str) -> Result<(), Box<dyn Error>> {
+fn validate_operating_point_log(log: &str) -> Result<(), Box<dyn Error>> {
     let lower = log.to_ascii_lowercase();
+    validate_no_ngspice_failure_tokens(&lower)?;
     for bad_token in ["fatal", "singular matrix", "error on line"] {
-        if lower.contains(bad_token) {
-            return Err(format!("ngspice log contains failure token `{bad_token}`").into());
-        }
+        debug_assert!(!lower.contains(bad_token));
     }
     for token in REQUIRED_OUTPUT_TOKENS {
         if !lower.contains(token) {
@@ -107,4 +157,85 @@ fn validate_ngspice_log(log: &str) -> Result<(), Box<dyn Error>> {
         return Err("ngspice log does not contain an operating-point data table".into());
     }
     Ok(())
+}
+
+fn validate_heater_pwm_transient_log(netlist: &str, log: &str) -> Result<(), Box<dyn Error>> {
+    let lower = log.to_ascii_lowercase();
+    validate_no_ngspice_failure_tokens(&lower)?;
+
+    let min_on_current = netlist_limit(netlist, "check_min_on_current_a")?;
+    let max_on_current = netlist_limit(netlist, "check_max_on_current_a")?;
+    let max_off_current_a = netlist_limit(netlist, "check_max_off_current_ma")? / 1000.0;
+    let min_gate_high = netlist_limit(netlist, "check_min_gate_high_v")?;
+    let max_gate_low = netlist_limit(netlist, "check_max_gate_low_v")?;
+
+    let heater_current_on = measurement(&lower, "heater_current_on")?.abs();
+    let heater_current_off = measurement(&lower, "heater_current_off")?.abs();
+    let gate_high_max = measurement(&lower, "gate_high_max")?;
+    let gate_low_min = measurement(&lower, "gate_low_min")?;
+
+    if heater_current_on < min_on_current || heater_current_on > max_on_current {
+        return Err(format!(
+            "heater PWM transient on-current {heater_current_on:.6} A is outside {min_on_current:.6}..{max_on_current:.6} A"
+        )
+        .into());
+    }
+    if heater_current_off > max_off_current_a {
+        return Err(format!(
+            "heater PWM transient off-current {heater_current_off:.9} A exceeds {max_off_current_a:.9} A"
+        )
+        .into());
+    }
+    if gate_high_max < min_gate_high {
+        return Err(format!(
+            "heater PWM transient gate high {gate_high_max:.6} V is below {min_gate_high:.6} V"
+        )
+        .into());
+    }
+    if gate_low_min > max_gate_low {
+        return Err(format!(
+            "heater PWM transient gate low {gate_low_min:.6} V exceeds {max_gate_low:.6} V"
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn validate_no_ngspice_failure_tokens(lower_log: &str) -> Result<(), Box<dyn Error>> {
+    for bad_token in ["fatal", "singular matrix", "error on line", "failed"] {
+        if lower_log.contains(bad_token) {
+            return Err(format!("ngspice log contains failure token `{bad_token}`").into());
+        }
+    }
+    Ok(())
+}
+
+fn netlist_limit(netlist: &str, key: &str) -> Result<f64, Box<dyn Error>> {
+    let prefix = format!("* {key}=");
+    for line in netlist.lines() {
+        if let Some(value) = line.trim().strip_prefix(&prefix) {
+            return value.trim().parse::<f64>().map_err(|err| {
+                format!("invalid numeric SPICE check limit `{key}` value `{value}`: {err}").into()
+            });
+        }
+    }
+    Err(format!("SPICE netlist is missing check limit `{key}`").into())
+}
+
+fn measurement(lower_log: &str, name: &str) -> Result<f64, Box<dyn Error>> {
+    for line in lower_log.lines() {
+        let trimmed = line.trim();
+        if let Some(rest) = trimmed.strip_prefix(name) {
+            if let Some(value) = rest
+                .split('=')
+                .nth(1)
+                .and_then(|rhs| rhs.split_whitespace().next())
+            {
+                return value.parse::<f64>().map_err(|err| {
+                    format!("invalid ngspice measurement `{name}` value `{value}`: {err}").into()
+                });
+            }
+        }
+    }
+    Err(format!("ngspice log is missing transient measurement `{name}`").into())
 }
