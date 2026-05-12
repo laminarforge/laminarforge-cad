@@ -31,9 +31,10 @@ manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv
 calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
 validation_traceability_csv = "pcb/lamp_rev_a/reports/validation_traceability.csv"
 pdn_dc_simulation_csv = "pcb/lamp_rev_a/reports/pdn_dc_simulation.csv"
+thermal_margin_simulation_csv = "pcb/lamp_rev_a/reports/thermal_margin_simulation.csv"
 
 [traceability_policy]
-min_items = 14
+min_items = 15
 require_output_artifact = true
 require_release_manifest_entry = true
 require_ci_step = true
@@ -92,6 +93,17 @@ ci_step = "LAMP Rev A electrical validation"
 acceptance_criterion = "Every declared power/current path computes below the configured DC voltage-drop and copper-loss limits from routed trace geometry."
 blocks_release = true
 notes = "This is the first routed-geometry power simulation gate; it complements trace-width checks by estimating resistance, voltage drop, and I2R loss."
+
+[[validation_traceability]]
+id = "thermal_margin_simulation"
+validation_layer = "Lumped electrothermal margin simulation"
+electrical_gate_category = "thermal margin simulation"
+output_artifact = "thermal_margin_simulation.csv; electrical_validation_gates.csv"
+release_manifest_entry = "thermal_margin_simulation; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "Regulator, diode, PTC, MOSFET, and routed-copper thermal nodes estimate below configured steady-state temperature and total board-loss limits."
+blocks_release = true
+notes = "This is a lumped thermal model, not FEA; it turns existing component power and routed copper loss into CI-gated temperature margins."
 
 [[validation_traceability]]
 id = "component_stress_derating"
@@ -235,6 +247,14 @@ via_resistance_mohm = 0.5
 copper_resistivity_ohm_m = 0.00000001724
 copper_thickness_um_per_oz = 34.8
 require_all_trace_paths = true
+
+[thermal_margin_simulation_policy]
+max_component_temp_c = 100.0
+max_trace_temp_c = 70.0
+max_total_board_power_w = 2.5
+protection_theta_c_per_w = 70.0
+trace_theta_c_per_w = 35.0
+notes = "First-order lumped thermal model for pre-fab screening. Replace with electrothermal/FEA after first physical assumptions are validated."
 
 [[rail_budgets]]
 rail = "VBUS"

@@ -27,6 +27,7 @@ pub struct ElectricalOutputPaths {
     pub calibration_readiness_csv: PathBuf,
     pub validation_traceability_csv: PathBuf,
     pub pdn_dc_simulation_csv: PathBuf,
+    pub thermal_margin_simulation_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -80,6 +81,7 @@ struct ValidationConfig {
     #[serde(default)]
     validation_traceability: Vec<ValidationTraceability>,
     pdn_dc_simulation_policy: PdnDcSimulationPolicy,
+    thermal_margin_simulation_policy: ThermalMarginSimulationPolicy,
 }
 
 #[derive(Debug, Deserialize)]
@@ -120,6 +122,7 @@ struct Outputs {
     calibration_readiness_csv: String,
     validation_traceability_csv: String,
     pdn_dc_simulation_csv: String,
+    thermal_margin_simulation_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -271,6 +274,16 @@ struct PdnDcSimulationPolicy {
     copper_resistivity_ohm_m: f64,
     copper_thickness_um_per_oz: f64,
     require_all_trace_paths: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct ThermalMarginSimulationPolicy {
+    max_component_temp_c: f64,
+    max_trace_temp_c: f64,
+    max_total_board_power_w: f64,
+    protection_theta_c_per_w: f64,
+    trace_theta_c_per_w: f64,
+    notes: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -678,6 +691,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         calibration_readiness_csv: repo_root.join(config.outputs.calibration_readiness_csv),
         validation_traceability_csv: repo_root.join(config.outputs.validation_traceability_csv),
         pdn_dc_simulation_csv: repo_root.join(config.outputs.pdn_dc_simulation_csv),
+        thermal_margin_simulation_csv: repo_root.join(config.outputs.thermal_margin_simulation_csv),
     })
 }
 
@@ -745,6 +759,7 @@ pub fn validate_to_outputs(
     validate_calibration_readiness(&config, &contract_nets, &mut rows, &mut errors);
     validate_simulation_inputs(&config, &mut rows, &mut errors);
     validate_pdn_dc_simulation(&config, &routing, &contract_rails, &mut rows, &mut errors);
+    validate_thermal_margin_simulation(&config, &routing, &mut rows, &mut errors);
     let gate_categories = rows
         .iter()
         .map(|row| row.category.clone())
@@ -768,6 +783,7 @@ pub fn validate_to_outputs(
     write_validation_traceability_handoff(&config, outputs)?;
     write_simulation_inputs_handoff(&config, outputs)?;
     write_pdn_dc_simulation_handoff(&config, &routing, &contract_rails, outputs)?;
+    write_thermal_margin_simulation_handoff(&config, &routing, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -1413,6 +1429,165 @@ fn segment_resistance_mohm(segment: &RouteSegment, config: &ValidationConfig) ->
     let resistance_ohm = config.pdn_dc_simulation_policy.copper_resistivity_ohm_m * length_m
         / (width_m * thickness_m);
     resistance_ohm * 1000.0
+}
+
+fn validate_thermal_margin_simulation(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let thermal_rows = thermal_margin_simulation_rows(config, routing);
+    let total_board_power_w = thermal_rows.iter().map(|row| row.power_w).sum::<f64>();
+
+    for row in &thermal_rows {
+        push_gate!(
+            rows,
+            errors,
+            "thermal margin simulation",
+            format!("{} steady-state temperature", row.id),
+            format!("{:.2} C", row.estimated_temp_c),
+            format!("<= {:.2} C", row.max_temp_c),
+            row.estimated_temp_c <= row.max_temp_c,
+            &row.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "thermal margin simulation",
+        "total modeled board heat",
+        format!("{total_board_power_w:.4} W"),
+        format!(
+            "<= {:.4} W",
+            config
+                .thermal_margin_simulation_policy
+                .max_total_board_power_w
+        ),
+        total_board_power_w
+            <= config
+                .thermal_margin_simulation_policy
+                .max_total_board_power_w,
+        &config.thermal_margin_simulation_policy.notes,
+    );
+}
+
+#[derive(Debug)]
+struct ThermalMarginRow {
+    id: String,
+    source_class: String,
+    source_id: String,
+    power_w: f64,
+    theta_c_per_w: f64,
+    temp_rise_c: f64,
+    estimated_temp_c: f64,
+    max_temp_c: f64,
+    margin_c: f64,
+    notes: String,
+}
+
+fn thermal_margin_simulation_rows(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+) -> Vec<ThermalMarginRow> {
+    let mut rows = Vec::new();
+    for regulator in &config.linear_regulators {
+        let current_a = regulator.load_ma as f64 / 1000.0;
+        let power_w = (regulator.vin_nominal_v - regulator.vout_nominal_v) * current_a;
+        rows.push(thermal_margin_row(
+            config,
+            ThermalMarginSpec {
+                id: regulator.id.clone(),
+                source_class: "linear_regulator",
+                source_id: regulator.part_id.clone(),
+                power_w,
+                theta_c_per_w: regulator.theta_ja_c_per_w,
+                max_temp_c: config.thermal_margin_simulation_policy.max_component_temp_c,
+                notes: regulator.notes.clone(),
+            },
+        ));
+    }
+
+    for protection in &config.protection_checks {
+        let current_a = protection.current_ma as f64 / 1000.0;
+        let power_w = current_a * protection.voltage_drop_v;
+        rows.push(thermal_margin_row(
+            config,
+            ThermalMarginSpec {
+                id: protection.id.clone(),
+                source_class: "protection",
+                source_id: protection.part_id.clone(),
+                power_w,
+                theta_c_per_w: config
+                    .thermal_margin_simulation_policy
+                    .protection_theta_c_per_w,
+                max_temp_c: config.thermal_margin_simulation_policy.max_component_temp_c,
+                notes: protection.notes.clone(),
+            },
+        ));
+    }
+
+    for mosfet in &config.mosfet_checks {
+        let current_a = mosfet.continuous_current_ma as f64 / 1000.0;
+        let power_w = current_a * current_a * mosfet.rds_on_mohm / 1000.0;
+        rows.push(thermal_margin_row(
+            config,
+            ThermalMarginSpec {
+                id: mosfet.id.clone(),
+                source_class: "mosfet",
+                source_id: mosfet.part_id.clone(),
+                power_w,
+                theta_c_per_w: mosfet.package_theta_ja_c_per_w,
+                max_temp_c: config.thermal_margin_simulation_policy.max_component_temp_c,
+                notes: mosfet.notes.clone(),
+            },
+        ));
+    }
+
+    for pdn in pdn_dc_simulation_rows(config, routing) {
+        rows.push(thermal_margin_row(
+            config,
+            ThermalMarginSpec {
+                id: format!("{}_copper", pdn.path_id),
+                source_class: "routed_copper",
+                source_id: pdn.net,
+                power_w: pdn.path_power_mw / 1000.0,
+                theta_c_per_w: config.thermal_margin_simulation_policy.trace_theta_c_per_w,
+                max_temp_c: config.thermal_margin_simulation_policy.max_trace_temp_c,
+                notes: pdn.notes,
+            },
+        ));
+    }
+
+    rows
+}
+
+struct ThermalMarginSpec {
+    id: String,
+    source_class: &'static str,
+    source_id: String,
+    power_w: f64,
+    theta_c_per_w: f64,
+    max_temp_c: f64,
+    notes: String,
+}
+
+fn thermal_margin_row(config: &ValidationConfig, spec: ThermalMarginSpec) -> ThermalMarginRow {
+    let temp_rise_c = spec.power_w * spec.theta_c_per_w;
+    let estimated_temp_c = config.assumptions.ambient_c + temp_rise_c;
+    ThermalMarginRow {
+        id: spec.id,
+        source_class: spec.source_class.to_string(),
+        source_id: spec.source_id,
+        power_w: spec.power_w,
+        theta_c_per_w: spec.theta_c_per_w,
+        temp_rise_c,
+        estimated_temp_c,
+        max_temp_c: spec.max_temp_c,
+        margin_c: spec.max_temp_c - estimated_temp_c,
+        notes: spec.notes,
+    }
 }
 
 fn allowed_neckdown(segment: &RouteSegment, path: &TraceCurrentPath) -> bool {
@@ -3616,6 +3791,51 @@ fn write_pdn_dc_simulation_handoff(
     Ok(())
 }
 
+fn write_thermal_margin_simulation_handoff(
+    config: &ValidationConfig,
+    routing: &RoutingSeed,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.thermal_margin_simulation_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.thermal_margin_simulation_csv)?;
+    writer.write_record([
+        "id",
+        "source_class",
+        "source_id",
+        "power_w",
+        "theta_c_per_w",
+        "temp_rise_c",
+        "estimated_temp_c",
+        "max_temp_c",
+        "margin_c",
+        "status",
+        "notes",
+    ])?;
+
+    for row in thermal_margin_simulation_rows(config, routing) {
+        writer.write_record([
+            row.id.as_str(),
+            row.source_class.as_str(),
+            row.source_id.as_str(),
+            format!("{:.5}", row.power_w).as_str(),
+            format!("{:.3}", row.theta_c_per_w).as_str(),
+            format!("{:.3}", row.temp_rise_c).as_str(),
+            format!("{:.3}", row.estimated_temp_c).as_str(),
+            format!("{:.3}", row.max_temp_c).as_str(),
+            format!("{:.3}", row.margin_c).as_str(),
+            if row.estimated_temp_c <= row.max_temp_c {
+                "pass"
+            } else {
+                "fail"
+            },
+            row.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_thermal_power_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -4278,6 +4498,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("pdn_dc_simulation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Thermal margin simulation table: `{}`",
+        outputs
+            .thermal_margin_simulation_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("thermal_margin_simulation.csv")
     )?;
     writeln!(
         report,
