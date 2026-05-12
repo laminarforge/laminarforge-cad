@@ -116,6 +116,7 @@ an EMC/ESD pre-compliance CSV for USB, heater, 12 V, Wi-Fi, and analog noise ris
 an ESP32-S3 startup-safety CSV for boot straps, reset, and heater fail-closed defaults,
 a manufacturing-test coverage CSV for critical test points, firmware diagnostics, and release traceability,
 a calibration-readiness CSV for heater, ADC, optical, sensor-bus, negative-control, and firmware identity records,
+a validation-traceability CSV tying each gate to artifacts, manifest evidence, CI steps, and pass criteria,
 and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:

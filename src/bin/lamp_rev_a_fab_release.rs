@@ -84,6 +84,7 @@ struct Outputs {
     startup_safety_file: String,
     manufacturing_test_file: String,
     calibration_readiness_file: String,
+    validation_traceability_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
@@ -445,6 +446,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         startup_safety_csv: output_root.join(&config.outputs.startup_safety_file),
         manufacturing_test_csv: output_root.join(&config.outputs.manufacturing_test_file),
         calibration_readiness_csv: output_root.join(&config.outputs.calibration_readiness_file),
+        validation_traceability_csv: output_root.join(&config.outputs.validation_traceability_file),
     };
     validate_to_outputs(&root, &electrical_outputs)?;
     write_release_bundles(&config, &root, &output_root)?;
@@ -1298,6 +1300,11 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "validation_traceability: {}",
+        config.outputs.validation_traceability_file
+    )?;
+    writeln!(
+        file,
         "bundle_checksums: {}",
         config.outputs.bundle_checksums_file
     )?;
@@ -1749,6 +1756,7 @@ fn write_release_bundles(
         config.outputs.startup_safety_file.as_str(),
         config.outputs.manufacturing_test_file.as_str(),
         config.outputs.calibration_readiness_file.as_str(),
+        config.outputs.validation_traceability_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
@@ -1953,6 +1961,7 @@ fn validate_release_outputs(
         &config.outputs.startup_safety_file,
         &config.outputs.manufacturing_test_file,
         &config.outputs.calibration_readiness_file,
+        &config.outputs.validation_traceability_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
@@ -2052,6 +2061,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.startup_safety_file.as_str(),
         config.outputs.manufacturing_test_file.as_str(),
         config.outputs.calibration_readiness_file.as_str(),
+        config.outputs.validation_traceability_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),

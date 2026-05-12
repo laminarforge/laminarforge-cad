@@ -24,6 +24,7 @@ pub struct ElectricalOutputPaths {
     pub startup_safety_csv: PathBuf,
     pub manufacturing_test_csv: PathBuf,
     pub calibration_readiness_csv: PathBuf,
+    pub validation_traceability_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -72,6 +73,9 @@ struct ValidationConfig {
     calibration_policy: CalibrationPolicy,
     #[serde(default)]
     calibration_checks: Vec<CalibrationCheck>,
+    traceability_policy: TraceabilityPolicy,
+    #[serde(default)]
+    validation_traceability: Vec<ValidationTraceability>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -109,6 +113,7 @@ struct Outputs {
     startup_safety_csv: String,
     manufacturing_test_csv: String,
     calibration_readiness_csv: String,
+    validation_traceability_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -423,6 +428,30 @@ struct CalibrationCheck {
 }
 
 #[derive(Debug, Deserialize)]
+struct TraceabilityPolicy {
+    min_items: usize,
+    require_output_artifact: bool,
+    require_release_manifest_entry: bool,
+    require_ci_step: bool,
+    require_acceptance_criterion: bool,
+    require_release_blocking: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct ValidationTraceability {
+    id: String,
+    validation_layer: String,
+    #[serde(default)]
+    electrical_gate_category: Option<String>,
+    output_artifact: String,
+    release_manifest_entry: String,
+    ci_step: String,
+    acceptance_criterion: String,
+    blocks_release: bool,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct Contract {
     stackup: Stackup,
     rails: Vec<ContractRail>,
@@ -620,6 +649,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
         manufacturing_test_csv: repo_root.join(config.outputs.manufacturing_test_csv),
         calibration_readiness_csv: repo_root.join(config.outputs.calibration_readiness_csv),
+        validation_traceability_csv: repo_root.join(config.outputs.validation_traceability_csv),
     })
 }
 
@@ -685,6 +715,11 @@ pub fn validate_to_outputs(
         &mut errors,
     );
     validate_calibration_readiness(&config, &contract_nets, &mut rows, &mut errors);
+    let gate_categories = rows
+        .iter()
+        .map(|row| row.category.clone())
+        .collect::<BTreeSet<_>>();
+    validate_validation_traceability(&config, &gate_categories, &mut rows, &mut errors);
     add_external_analysis_rows(&config, &mut rows);
     add_manual_gate_rows(&config, &parts, &mut rows, &mut errors);
 
@@ -700,6 +735,7 @@ pub fn validate_to_outputs(
     write_startup_safety_handoff(&config, outputs)?;
     write_manufacturing_test_handoff(&config, outputs)?;
     write_calibration_readiness_handoff(&config, outputs)?;
+    write_validation_traceability_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -747,6 +783,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.boot_startup_checks.is_empty()
         || config.manufacturing_test_checks.is_empty()
         || config.calibration_checks.is_empty()
+        || config.validation_traceability.is_empty()
     {
         return Err("electrical validation config is missing required gate groups".into());
     }
@@ -2767,6 +2804,133 @@ fn validate_calibration_readiness(
     }
 }
 
+fn validate_validation_traceability(
+    config: &ValidationConfig,
+    gate_categories: &BTreeSet<String>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    push_gate!(
+        rows,
+        errors,
+        "validation traceability",
+        "minimum validation traceability coverage",
+        format!("{} items", config.validation_traceability.len()),
+        format!(">= {} items", config.traceability_policy.min_items),
+        config.validation_traceability.len() >= config.traceability_policy.min_items,
+        "Every major release gate needs a traceable artifact, CI evidence path, and acceptance criterion.",
+    );
+
+    let mut ids = BTreeSet::new();
+    for item in &config.validation_traceability {
+        push_gate!(
+            rows,
+            errors,
+            "validation traceability",
+            format!("{} unique id", item.id),
+            item.id.clone(),
+            "unique",
+            ids.insert(item.id.as_str()),
+            &item.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "validation traceability",
+            format!("{} validation layer", item.id),
+            item.validation_layer.clone(),
+            "non-empty",
+            !item.validation_layer.trim().is_empty(),
+            &item.notes,
+        );
+        if let Some(category) = &item.electrical_gate_category {
+            push_gate!(
+                rows,
+                errors,
+                "validation traceability",
+                format!("{} electrical gate category", item.id),
+                category.clone(),
+                "present in electrical validation rows",
+                gate_categories.contains(category),
+                &item.notes,
+            );
+        }
+        push_gate!(
+            rows,
+            errors,
+            "validation traceability",
+            format!("{} output artifact", item.id),
+            item.output_artifact.clone(),
+            if config.traceability_policy.require_output_artifact {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.traceability_policy.require_output_artifact
+                || !item.output_artifact.trim().is_empty(),
+            &item.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "validation traceability",
+            format!("{} release manifest entry", item.id),
+            item.release_manifest_entry.clone(),
+            if config.traceability_policy.require_release_manifest_entry {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.traceability_policy.require_release_manifest_entry
+                || !item.release_manifest_entry.trim().is_empty(),
+            &item.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "validation traceability",
+            format!("{} CI step", item.id),
+            item.ci_step.clone(),
+            if config.traceability_policy.require_ci_step {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.traceability_policy.require_ci_step || !item.ci_step.trim().is_empty(),
+            &item.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "validation traceability",
+            format!("{} acceptance criterion", item.id),
+            item.acceptance_criterion.clone(),
+            if config.traceability_policy.require_acceptance_criterion {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.traceability_policy.require_acceptance_criterion
+                || !item.acceptance_criterion.trim().is_empty(),
+            &item.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "validation traceability",
+            format!("{} release blocking", item.id),
+            item.blocks_release.to_string(),
+            if config.traceability_policy.require_release_blocking {
+                "true"
+            } else {
+                "documented"
+            },
+            !config.traceability_policy.require_release_blocking || item.blocks_release,
+            &item.notes,
+        );
+    }
+}
+
 fn valid_fmea_score(value: u8) -> bool {
     (1..=10).contains(&value)
 }
@@ -3471,6 +3635,43 @@ fn write_calibration_readiness_handoff(
     Ok(())
 }
 
+fn write_validation_traceability_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.validation_traceability_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.validation_traceability_csv)?;
+    writer.write_record([
+        "id",
+        "validation_layer",
+        "electrical_gate_category",
+        "output_artifact",
+        "release_manifest_entry",
+        "ci_step",
+        "acceptance_criterion",
+        "blocks_release",
+        "notes",
+    ])?;
+
+    for item in &config.validation_traceability {
+        let blocks_release = item.blocks_release.to_string();
+        writer.write_record([
+            item.id.as_str(),
+            item.validation_layer.as_str(),
+            item.electrical_gate_category.as_deref().unwrap_or("n/a"),
+            item.output_artifact.as_str(),
+            item.release_manifest_entry.as_str(),
+            item.ci_step.as_str(),
+            item.acceptance_criterion.as_str(),
+            blocks_release.as_str(),
+            item.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
@@ -3703,6 +3904,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("calibration_readiness.csv")
+    )?;
+    writeln!(
+        report,
+        "- Validation traceability matrix: `{}`",
+        outputs
+            .validation_traceability_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("validation_traceability.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())

@@ -28,6 +28,154 @@ emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
 manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv"
 calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
+validation_traceability_csv = "pcb/lamp_rev_a/reports/validation_traceability.csv"
+
+[traceability_policy]
+min_items = 12
+require_output_artifact = true
+require_release_manifest_entry = true
+require_ci_step = true
+require_acceptance_criterion = true
+require_release_blocking = true
+
+[[validation_traceability]]
+id = "kicad_drc_erc_connectivity"
+validation_layer = "KiCad DRC/ERC/connectivity"
+output_artifact = "drc.json; erc.json; release_manifest.txt"
+release_manifest_entry = "drc_violations; erc_violations; real_unconnected_items"
+ci_step = "LAMP Rev A materialize KiCad board; Generate LAMP Rev A fab release"
+acceptance_criterion = "Zero physical DRC violations, zero ERC violations, and zero real unconnected items."
+blocks_release = true
+notes = "KiCad gates catch board-rule, schematic-rule, and connectivity failures before fab packaging."
+
+[[validation_traceability]]
+id = "fab_upload_package"
+validation_layer = "JLCPCB fabrication and assembly package"
+output_artifact = "lamp_rev_a_jlcpcb_fabrication.zip; lamp_rev_a_jlcpcb_assembly.zip; upload_bundle_checksums.sha256"
+release_manifest_entry = "fabrication_bundle; assembly_bundle; bundle_checksums"
+ci_step = "Generate LAMP Rev A fab release; Validate LAMP Rev A upload bundles"
+acceptance_criterion = "Release tool regenerates upload bundles and validates exact ZIP contents/checksums."
+blocks_release = true
+notes = "This prevents a DRC-clean board from being shipped with missing or mismatched manufacturing files."
+
+[[validation_traceability]]
+id = "rail_power_budget"
+validation_layer = "Rail voltage/current budget"
+electrical_gate_category = "rail budget"
+output_artifact = "electrical_validation_gates.csv"
+release_manifest_entry = "electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "Every declared rail has a known contract rail, sane voltage window, and current budget."
+blocks_release = true
+notes = "Rail checks are the first automated defense against overloading USB, the 3.3 V regulator, or heater rails."
+
+[[validation_traceability]]
+id = "trace_current_capacity"
+validation_layer = "Trace current capacity and layer policy"
+electrical_gate_category = "trace current"
+output_artifact = "pdn_current_paths.csv; electrical_validation_gates.csv"
+release_manifest_entry = "pdn_current_paths; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "Each high-current path has routed segments on allowed layers with width/capacity margin."
+blocks_release = true
+notes = "This gate is not a field solver, but it catches route-source current-path mistakes before PDN simulation."
+
+[[validation_traceability]]
+id = "component_stress_derating"
+validation_layer = "Component stress and derating"
+electrical_gate_category = "component derating"
+output_artifact = "component_derating.csv; electrical_validation_gates.csv"
+release_manifest_entry = "component_derating; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "High-risk selected parts remain inside configured voltage/current/power utilization limits."
+blocks_release = true
+notes = "This covers the regulator, heater fuse/diodes/MOSFET, USB ESD, capacitors, and external connector ratings."
+
+[[validation_traceability]]
+id = "usb_signal_integrity"
+validation_layer = "Full-speed USB route sanity"
+electrical_gate_category = "usb signal integrity"
+output_artifact = "electrical_validation_gates.csv"
+release_manifest_entry = "electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "USB DP/DN are known nets with top-layer route coverage, length mismatch, via, and width sanity checks."
+blocks_release = true
+notes = "This is a practical pre-SI gate for full-speed USB before any external SI tool is introduced."
+
+[[validation_traceability]]
+id = "startup_fail_closed"
+validation_layer = "ESP32-S3 startup and fail-closed behavior"
+electrical_gate_category = "startup safety"
+output_artifact = "startup_safety.csv; electrical_validation_gates.csv"
+release_manifest_entry = "startup_safety; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "Boot-sensitive GPIOs and heater control defaults have declared safe states and first-article measurements."
+blocks_release = true
+notes = "This targets the failure mode where firmware has not started yet but the board is already powered."
+
+[[validation_traceability]]
+id = "single_fault_fmea"
+validation_layer = "Single-fault/FMEA safety"
+electrical_gate_category = "single fault"
+output_artifact = "fault_fmea.csv; electrical_validation_gates.csv"
+release_manifest_entry = "fault_fmea; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "High-severity fault modes declare mitigations, detection methods, verification measurements, and RPN scoring."
+blocks_release = true
+notes = "This makes heater, USB, analog, firmware, and connector fault assumptions explicit before first article."
+
+[[validation_traceability]]
+id = "emc_esd_precompliance"
+validation_layer = "EMC/ESD/transient pre-compliance"
+electrical_gate_category = "emc esd"
+output_artifact = "emc_esd_precompliance.csv; electrical_validation_gates.csv"
+release_manifest_entry = "emc_esd; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "External interfaces and noisy subsystems declare protection, return-path strategy, verification, and external analysis coverage."
+blocks_release = true
+notes = "This does not replace lab EMC testing; it prevents missing ESD/transient assumptions from slipping into fab release."
+
+[[validation_traceability]]
+id = "manufacturing_test_coverage"
+validation_layer = "DFT/manufacturing test coverage"
+electrical_gate_category = "manufacturing test"
+output_artifact = "manufacturing_test_coverage.csv; electrical_validation_gates.csv"
+release_manifest_entry = "manufacturing_test; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "Critical power, programming, heater, I2C/ADC, optical, manual-install, and traceability checks have test coverage."
+blocks_release = true
+notes = "This makes the board testable when the first assembled PCBA arrives."
+
+[[validation_traceability]]
+id = "calibration_readiness"
+validation_layer = "Calibration readiness"
+electrical_gate_category = "calibration readiness"
+output_artifact = "calibration_readiness.csv; electrical_validation_gates.csv"
+release_manifest_entry = "calibration_readiness; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation"
+acceptance_criterion = "Heater, ADC dark baseline, optical response, sensor identity, negative control, and firmware identity records are defined."
+blocks_release = true
+notes = "This connects electrical bring-up to assay calibration so a safe board can become a measurable diagnostic device."
+
+[[validation_traceability]]
+id = "spice_power_path"
+validation_layer = "SPICE operating-point power-path simulation"
+output_artifact = "lamp_rev_a_power_path.spice; lamp_rev_a_power_path.ngspice.log"
+release_manifest_entry = "spice_netlist; simulation_handoff"
+ci_step = "LAMP Rev A SPICE operating-point check; Run LAMP Rev A release SPICE check"
+acceptance_criterion = "ngspice operating-point output contains the expected rail tokens and exits successfully."
+blocks_release = true
+notes = "This is the first actual simulation gate and will be replaced or complemented by richer PDN/thermal simulation."
+
+[[validation_traceability]]
+id = "firmware_flash_artifact"
+validation_layer = "Firmware handoff and flashable artifact traceability"
+output_artifact = "firmware_handoff.md; source snapshot bundle"
+release_manifest_entry = "firmware_handoff; source_bundle"
+ci_step = "LAMP Rev A firmware CI; Generate LAMP Rev A fab release"
+acceptance_criterion = "Board pin map, firmware handoff, source snapshot, and firmware CI artifact identity are traceable."
+blocks_release = true
+notes = "This keeps the CAD release tied to the firmware image and pin map used during bring-up."
 
 [assumptions]
 ambient_c = 35.0
