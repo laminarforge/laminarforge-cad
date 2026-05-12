@@ -127,6 +127,7 @@ a USB/VBUS hot-plug and 3.3 V startup/inrush CSV for rail startup envelope check
 an ngspice 3.3 V rail load-step transient netlist/CSV for ESP32 burst-load sag,
 an ngspice optical analog front-end transient netlist/CSV for TIA/ADC signal-envelope range,
 an optical crosstalk/mux-settling CSV for slot isolation and ADC sampling assumptions,
+an optical signal/noise margin CSV for threshold and negative-control drift assumptions,
 and a thermistor/ADC transfer CSV for heater temperature-sense range, sensitivity, and fault coverage,
 and a checksum manifest for the fabrication, assembly, and source bundles.
 

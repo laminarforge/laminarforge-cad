@@ -43,6 +43,7 @@ rail_load_step_csv = "pcb/lamp_rev_a/reports/rail_load_step_simulation.csv"
 analog_front_end_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_analog_front_end.spice"
 analog_front_end_csv = "pcb/lamp_rev_a/reports/analog_front_end_simulation.csv"
 optical_crosstalk_csv = "pcb/lamp_rev_a/reports/optical_crosstalk_validation.csv"
+optical_noise_margin_csv = "pcb/lamp_rev_a/reports/optical_noise_margin.csv"
 thermistor_adc_transfer_csv = "pcb/lamp_rev_a/reports/thermistor_adc_transfer.csv"
 
 [traceability_policy]
@@ -182,6 +183,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
 acceptance_criterion = "LED channel crosstalk, mux off-leakage, and mux/ADC settling estimates stay below configured limits and first-article optical outputs are planned."
 blocks_release = true
 notes = "This catches slot-to-slot optical false-signal risk before relying on the dry optical calibration fixture."
+
+[[validation_traceability]]
+id = "optical_noise_threshold_margin"
+validation_layer = "Optical signal/noise and threshold-margin validation"
+electrical_gate_category = "optical noise margin"
+output_artifact = "optical_noise_margin.csv; electrical_validation_gates.csv"
+release_manifest_entry = "optical_noise_margin; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "Expected dark-to-light signal delta exceeds ADC quantization, analog noise, negative-control drift, and configured threshold margins."
+blocks_release = true
+notes = "This prevents choosing optical thresholds that are inside expected noise/drift before assay calibration."
 
 [[validation_traceability]]
 id = "thermistor_adc_transfer"
@@ -514,6 +526,20 @@ sample_settle_us = 250.0
 required_measurements = ["analog_adc_idle"]
 required_outputs = ["optical_slot_response.csv", "slot_mapping_check.md"]
 notes = "First-order channel isolation and mux/ADC settling gate. It does not replace dry fixture calibration, but it keeps gross optical crosstalk assumptions inside the release package."
+
+[optical_noise_margin_policy]
+adc_full_scale_v = 3.3
+adc_counts = 32767
+analog_noise_rms_mv = 2.5
+adc_noise_rms_counts = 2.0
+quantization_guard_lsb = 2.0
+negative_control_drift_mv = 25.0
+threshold_fraction = 0.30
+min_signal_to_noise_ratio = 20.0
+min_threshold_margin_v = 0.050
+required_measurements = ["analog_adc_idle"]
+required_outputs = ["optical_slot_response.csv", "threshold_margin_notes.md"]
+notes = "First-order optical noise and threshold margin gate using the analog front-end signal envelope, ADS1115 quantization, analog noise, and negative-control drift assumptions. Wet assay calibration remains mandatory."
 
 [thermistor_adc_policy]
 adc_net = "ADC_AIN1"

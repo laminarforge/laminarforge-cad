@@ -39,6 +39,7 @@ pub struct ElectricalOutputPaths {
     pub analog_front_end_netlist: PathBuf,
     pub analog_front_end_csv: PathBuf,
     pub optical_crosstalk_csv: PathBuf,
+    pub optical_noise_margin_csv: PathBuf,
     pub thermistor_adc_transfer_csv: PathBuf,
 }
 
@@ -104,6 +105,7 @@ struct ValidationConfig {
     rail_load_step_policy: RailLoadStepPolicy,
     analog_front_end_policy: AnalogFrontEndPolicy,
     optical_crosstalk_policy: OpticalCrosstalkPolicy,
+    optical_noise_margin_policy: OpticalNoiseMarginPolicy,
     thermistor_adc_policy: ThermistorAdcPolicy,
 }
 
@@ -157,6 +159,7 @@ struct Outputs {
     analog_front_end_netlist: String,
     analog_front_end_csv: String,
     optical_crosstalk_csv: String,
+    optical_noise_margin_csv: String,
     thermistor_adc_transfer_csv: String,
 }
 
@@ -444,6 +447,22 @@ struct OpticalCrosstalkPolicy {
     adc_sample_cap_pf: f64,
     settling_error_pct: f64,
     sample_settle_us: f64,
+    required_measurements: Vec<String>,
+    required_outputs: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct OpticalNoiseMarginPolicy {
+    adc_full_scale_v: f64,
+    adc_counts: u32,
+    analog_noise_rms_mv: f64,
+    adc_noise_rms_counts: f64,
+    quantization_guard_lsb: f64,
+    negative_control_drift_mv: f64,
+    threshold_fraction: f64,
+    min_signal_to_noise_ratio: f64,
+    min_threshold_margin_v: f64,
     required_measurements: Vec<String>,
     required_outputs: Vec<String>,
     notes: String,
@@ -946,6 +965,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         analog_front_end_netlist: repo_root.join(config.outputs.analog_front_end_netlist),
         analog_front_end_csv: repo_root.join(config.outputs.analog_front_end_csv),
         optical_crosstalk_csv: repo_root.join(config.outputs.optical_crosstalk_csv),
+        optical_noise_margin_csv: repo_root.join(config.outputs.optical_noise_margin_csv),
         thermistor_adc_transfer_csv: repo_root.join(config.outputs.thermistor_adc_transfer_csv),
     })
 }
@@ -1031,6 +1051,7 @@ pub fn validate_to_outputs(
     validate_rail_load_step(&config, &contract_nets, &mut rows, &mut errors);
     validate_analog_front_end_transient(&config, &contract_nets, &mut rows, &mut errors);
     validate_optical_crosstalk(&config, &contract_nets, &mut rows, &mut errors);
+    validate_optical_noise_margin(&config, &mut rows, &mut errors);
     validate_thermistor_adc_transfer(
         &config,
         &parts,
@@ -1071,6 +1092,7 @@ pub fn validate_to_outputs(
     write_rail_load_step_handoff(&config, outputs)?;
     write_analog_front_end_handoff(&config, outputs)?;
     write_optical_crosstalk_handoff(&config, outputs)?;
+    write_optical_noise_margin_handoff(&config, outputs)?;
     write_thermistor_adc_transfer_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
@@ -3081,6 +3103,287 @@ fn optical_settling_time_us(policy: &OpticalCrosstalkPolicy, analog: &AnalogFron
         (analog.feedback_cap_pf + analog.input_cap_pf + policy.adc_sample_cap_pf) * 1.0e-12;
     let target_error = policy.settling_error_pct / 100.0;
     -total_resistance_ohm * total_capacitance_f * target_error.ln() * 1.0e6
+}
+
+fn validate_optical_noise_margin(
+    config: &ValidationConfig,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.optical_noise_margin_policy;
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let calibration_outputs = config
+        .calibration_checks
+        .iter()
+        .flat_map(|check| check.required_outputs.iter().map(String::as_str))
+        .collect::<BTreeSet<_>>();
+    let metrics = optical_noise_margin_metrics(config);
+
+    push_gate!(
+        rows,
+        errors,
+        "optical noise margin",
+        "ADC full-scale model",
+        format!(
+            "{:.3} V full-scale, {} counts",
+            policy.adc_full_scale_v, policy.adc_counts
+        ),
+        format!(
+            "> 0 counts and <= {:.3} V analog rail",
+            config.analog_front_end_policy.adc_rail_v
+        ),
+        policy.adc_counts > 0
+            && policy.adc_full_scale_v > 0.0
+            && policy.adc_full_scale_v <= config.analog_front_end_policy.adc_rail_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical noise margin",
+        "threshold fraction",
+        format!("{:.3}", policy.threshold_fraction),
+        "0.05 < threshold < 0.95",
+        policy.threshold_fraction > 0.05 && policy.threshold_fraction < 0.95,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical noise margin",
+        "combined noise floor",
+        format!("{:.6} V", metrics.total_noise_v),
+        "> 0 V",
+        metrics.total_noise_v > 0.0,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical noise margin",
+        "dark-to-light signal-to-noise ratio",
+        format!("{:.2}:1", metrics.signal_to_noise_ratio),
+        format!(">= {:.2}:1", policy.min_signal_to_noise_ratio),
+        metrics.signal_to_noise_ratio >= policy.min_signal_to_noise_ratio,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical noise margin",
+        "false-positive threshold margin",
+        format!("{:.4} V", metrics.false_positive_margin_v),
+        format!(">= {:.4} V", policy.min_threshold_margin_v),
+        metrics.false_positive_margin_v >= policy.min_threshold_margin_v,
+        &policy.notes,
+    );
+    push_gate!(
+        rows,
+        errors,
+        "optical noise margin",
+        "detection threshold margin",
+        format!("{:.4} V", metrics.detection_margin_v),
+        format!(">= {:.4} V", policy.min_threshold_margin_v),
+        metrics.detection_margin_v >= policy.min_threshold_margin_v,
+        &policy.notes,
+    );
+
+    for measurement in &policy.required_measurements {
+        push_gate!(
+            rows,
+            errors,
+            "optical noise margin",
+            format!("required measurement {measurement}"),
+            measurement.clone(),
+            "present in first-article measurement plan",
+            measurement_ids.contains(measurement.as_str()),
+            &policy.notes,
+        );
+    }
+    for output in &policy.required_outputs {
+        push_gate!(
+            rows,
+            errors,
+            "optical noise margin",
+            format!("required calibration output {output}"),
+            output.clone(),
+            "present in calibration output plan",
+            calibration_outputs.contains(output.as_str()),
+            &policy.notes,
+        );
+    }
+}
+
+#[derive(Debug)]
+struct OpticalNoiseMarginMetrics {
+    signal_delta_v: f64,
+    lsb_v: f64,
+    analog_noise_v: f64,
+    adc_noise_v: f64,
+    quantization_guard_v: f64,
+    total_noise_v: f64,
+    threshold_v: f64,
+    negative_control_drift_v: f64,
+    signal_to_noise_ratio: f64,
+    false_positive_margin_v: f64,
+    detection_margin_v: f64,
+}
+
+#[derive(Debug)]
+struct OpticalNoiseMarginRow {
+    id: &'static str,
+    measurement: &'static str,
+    value: f64,
+    units: &'static str,
+    limit: String,
+    pass: bool,
+    notes: String,
+}
+
+fn optical_noise_margin_metrics(config: &ValidationConfig) -> OpticalNoiseMarginMetrics {
+    let analog = &config.analog_front_end_policy;
+    let policy = &config.optical_noise_margin_policy;
+    let signal_delta_v = analog_front_end_output_v(analog.light_current_na, analog)
+        - analog_front_end_output_v(analog.dark_current_na, analog);
+    let lsb_v = policy.adc_full_scale_v / policy.adc_counts as f64;
+    let analog_noise_v = policy.analog_noise_rms_mv / 1000.0;
+    let adc_noise_v = lsb_v * policy.adc_noise_rms_counts;
+    let quantization_guard_v = lsb_v * policy.quantization_guard_lsb;
+    let total_noise_v =
+        (analog_noise_v.powi(2) + adc_noise_v.powi(2) + quantization_guard_v.powi(2)).sqrt();
+    let threshold_v = signal_delta_v * policy.threshold_fraction;
+    let negative_control_drift_v = policy.negative_control_drift_mv / 1000.0;
+    let signal_to_noise_ratio = signal_delta_v / total_noise_v;
+    let false_positive_margin_v = threshold_v - negative_control_drift_v - 3.0 * total_noise_v;
+    let detection_margin_v = signal_delta_v - threshold_v - 3.0 * total_noise_v;
+
+    OpticalNoiseMarginMetrics {
+        signal_delta_v,
+        lsb_v,
+        analog_noise_v,
+        adc_noise_v,
+        quantization_guard_v,
+        total_noise_v,
+        threshold_v,
+        negative_control_drift_v,
+        signal_to_noise_ratio,
+        false_positive_margin_v,
+        detection_margin_v,
+    }
+}
+
+fn optical_noise_margin_rows(config: &ValidationConfig) -> Vec<OpticalNoiseMarginRow> {
+    let policy = &config.optical_noise_margin_policy;
+    let metrics = optical_noise_margin_metrics(config);
+
+    vec![
+        OpticalNoiseMarginRow {
+            id: "signal_delta",
+            measurement: "modeled dark-to-light signal delta",
+            value: metrics.signal_delta_v,
+            units: "V",
+            limit: format!(
+                ">= {:.4} V",
+                config.analog_front_end_policy.min_signal_delta_v
+            ),
+            pass: metrics.signal_delta_v >= config.analog_front_end_policy.min_signal_delta_v,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "adc_lsb",
+            measurement: "ADS1115 voltage per code",
+            value: metrics.lsb_v,
+            units: "V/count",
+            limit: "> 0".to_string(),
+            pass: metrics.lsb_v > 0.0,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "analog_noise_rms",
+            measurement: "assumed analog RMS noise",
+            value: metrics.analog_noise_v,
+            units: "V",
+            limit: "included in total noise".to_string(),
+            pass: metrics.analog_noise_v >= 0.0,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "adc_noise_rms",
+            measurement: "assumed ADC RMS noise",
+            value: metrics.adc_noise_v,
+            units: "V",
+            limit: "included in total noise".to_string(),
+            pass: metrics.adc_noise_v >= 0.0,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "quantization_guard",
+            measurement: "ADC quantization guard band",
+            value: metrics.quantization_guard_v,
+            units: "V",
+            limit: "included in total noise".to_string(),
+            pass: metrics.quantization_guard_v >= 0.0,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "combined_noise",
+            measurement: "combined RMS noise model",
+            value: metrics.total_noise_v,
+            units: "V",
+            limit: "> 0".to_string(),
+            pass: metrics.total_noise_v > 0.0,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "threshold_voltage",
+            measurement: "proposed threshold above dark",
+            value: metrics.threshold_v,
+            units: "V",
+            limit: "inside dark/light signal window".to_string(),
+            pass: metrics.threshold_v > 0.0 && metrics.threshold_v < metrics.signal_delta_v,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "negative_control_drift",
+            measurement: "negative-control drift allowance",
+            value: metrics.negative_control_drift_v,
+            units: "V",
+            limit: "subtracted from false-positive margin".to_string(),
+            pass: metrics.negative_control_drift_v >= 0.0,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "signal_to_noise_ratio",
+            measurement: "dark-to-light signal-to-noise ratio",
+            value: metrics.signal_to_noise_ratio,
+            units: "ratio",
+            limit: format!(">= {:.2}", policy.min_signal_to_noise_ratio),
+            pass: metrics.signal_to_noise_ratio >= policy.min_signal_to_noise_ratio,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "false_positive_margin",
+            measurement: "threshold margin after drift and 3-sigma noise",
+            value: metrics.false_positive_margin_v,
+            units: "V",
+            limit: format!(">= {:.4} V", policy.min_threshold_margin_v),
+            pass: metrics.false_positive_margin_v >= policy.min_threshold_margin_v,
+            notes: policy.notes.clone(),
+        },
+        OpticalNoiseMarginRow {
+            id: "detection_margin",
+            measurement: "remaining light-signal margin after threshold and 3-sigma noise",
+            value: metrics.detection_margin_v,
+            units: "V",
+            limit: format!(">= {:.4} V", policy.min_threshold_margin_v),
+            pass: metrics.detection_margin_v >= policy.min_threshold_margin_v,
+            notes: policy.notes.clone(),
+        },
+    ]
 }
 
 fn validate_thermistor_adc_transfer(
@@ -6384,6 +6687,40 @@ fn write_optical_crosstalk_handoff(
     Ok(())
 }
 
+fn write_optical_noise_margin_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.optical_noise_margin_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.optical_noise_margin_csv)?;
+    writer.write_record([
+        "id",
+        "measurement",
+        "value",
+        "units",
+        "limit",
+        "status",
+        "notes",
+    ])?;
+    for row in optical_noise_margin_rows(config) {
+        writer.write_record([
+            row.id.to_string(),
+            row.measurement.to_string(),
+            format!("{:.6}", row.value),
+            row.units.to_string(),
+            row.limit,
+            if row.pass {
+                "pass".to_string()
+            } else {
+                "fail".to_string()
+            },
+            row.notes,
+        ])?;
+    }
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_thermistor_adc_transfer_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -7317,6 +7654,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("optical_crosstalk_validation.csv")
+    )?;
+    writeln!(
+        report,
+        "- Optical signal/noise threshold-margin table: `{}`",
+        outputs
+            .optical_noise_margin_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("optical_noise_margin.csv")
     )?;
     writeln!(
         report,
