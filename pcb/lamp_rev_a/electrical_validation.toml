@@ -1,0 +1,289 @@
+[package]
+name = "lamp_rev_a_electrical_validation"
+ticket = "T-55545112"
+revision = "Rev A"
+source_stage = "pre_fab_electrical_safety_gate"
+
+[inputs]
+contract = "pcb/lamp_rev_a/contract.toml"
+parts = "pcb/lamp_rev_a/parts.toml"
+routing_seed = "pcb/lamp_rev_a/routing_seed.toml"
+pin_nets = "pcb/lamp_rev_a/pin_nets.toml"
+firmware_handoff = "pcb/lamp_rev_a/firmware_handoff.toml"
+power_architecture = "pcb/lamp_rev_a/power_architecture.toml"
+optical_architecture = "pcb/lamp_rev_a/optical_architecture.toml"
+
+[outputs]
+report_md = "pcb/lamp_rev_a/reports/electrical_validation.md"
+gates_csv = "pcb/lamp_rev_a/reports/electrical_validation_gates.csv"
+spice_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_power_path.spice"
+simulation_handoff_md = "pcb/lamp_rev_a/reports/simulation_handoff.md"
+
+[assumptions]
+ambient_c = 35.0
+max_board_surface_c = 85.0
+allowed_trace_temp_rise_c = 20.0
+outer_copper_oz = 1.0
+inner_copper_oz = 0.5
+trace_current_derating = 0.70
+component_current_derating = 0.80
+component_voltage_derating = 0.70
+continuous_heater_current_ma = 1500
+protected_heater_current_ma = 3000
+first_article_current_limit_ma = 500
+
+[[rail_budgets]]
+rail = "VBUS"
+nominal_v = 5.0
+min_v = 4.75
+max_v = 5.25
+expected_continuous_ma = 500
+source_limit_ma = 500
+notes = "USB 2.0 bring-up limit. Do not assume higher current without USB-C PD or external 5 V source."
+
+[[rail_budgets]]
+rail = "+5V"
+nominal_v = 4.6
+min_v = 4.3
+max_v = 5.1
+expected_continuous_ma = 450
+source_limit_ma = 500
+notes = "VBUS after SS34 drop; feeds only the 3.3 V regulator and local bulk capacitance."
+
+[[rail_budgets]]
+rail = "+3V3"
+nominal_v = 3.3
+min_v = 3.135
+max_v = 3.465
+expected_continuous_ma = 300
+source_limit_ma = 700
+notes = "ESP32-S3, ADC, mux, op amp, logic, and optical LED drive base current."
+
+[[rail_budgets]]
+rail = "+12V_RAW"
+nominal_v = 12.0
+min_v = 10.8
+max_v = 13.2
+expected_continuous_ma = 1500
+source_limit_ma = 3500
+notes = "External 12 V input for heater path only."
+
+[[rail_budgets]]
+rail = "+12V"
+nominal_v = 11.6
+min_v = 10.4
+max_v = 13.2
+expected_continuous_ma = 1500
+source_limit_ma = 3000
+notes = "Post input-Schottky heater supply before resettable fuse."
+
+[[rail_budgets]]
+rail = "HEATER_SUPPLY"
+nominal_v = 11.6
+min_v = 10.4
+max_v = 13.2
+expected_continuous_ma = 1500
+source_limit_ma = 3000
+notes = "Fused heater supply at J3 pin 1."
+
+[[rail_budgets]]
+rail = "HEATER_P"
+nominal_v = 11.6
+min_v = 0.0
+max_v = 13.2
+expected_continuous_ma = 1500
+source_limit_ma = 3000
+notes = "Switched heater return through the low-side MOSFET."
+
+[[linear_regulators]]
+id = "u3_3v3_ldo"
+part_id = "three_v_three_regulator"
+input_rail = "+5V"
+output_rail = "+3V3"
+vin_nominal_v = 4.6
+vout_nominal_v = 3.3
+load_ma = 300
+current_rating_ma = 1000
+theta_ja_c_per_w = 65.0
+max_temp_rise_c = 35.0
+notes = "AMS1117 thermal budget assumes SOT-223 copper pour and USB-powered electronics only."
+
+[[protection_checks]]
+id = "usb_vbus_schottky"
+part_id = "vbus_to_5v_schottky"
+path = "VBUS to +5V"
+current_ma = 500
+voltage_v = 5.25
+current_rating_ma = 3000
+voltage_rating_v = 40.0
+voltage_drop_v = 0.50
+max_power_w = 1.0
+notes = "SS34 VBUS isolation diode dissipates worst-case USB electronics current only."
+
+[[protection_checks]]
+id = "heater_input_schottky"
+part_id = "input_schottky"
+path = "+12V_RAW to +12V"
+current_ma = 1500
+voltage_v = 13.2
+current_rating_ma = 3000
+voltage_rating_v = 40.0
+voltage_drop_v = 0.50
+max_power_w = 1.5
+notes = "Normal heater current limit; 3 A is treated as protected/fused current, not continuous design current."
+
+[[protection_checks]]
+id = "heater_ptc"
+part_id = "heater_resettable_fuse"
+path = "+12V to HEATER_SUPPLY"
+current_ma = 1500
+voltage_v = 13.2
+current_rating_ma = 3000
+voltage_rating_v = 36.0
+voltage_drop_v = 0.15
+max_power_w = 0.6
+notes = "3 A hold-current PTC must still be bench-validated against the heater warm-up profile."
+
+[[protection_checks]]
+id = "heater_terminal"
+part_id = "heater_output_terminal"
+path = "HEATER_SUPPLY/HEATER_P external heater connector"
+current_ma = 3000
+voltage_v = 13.2
+current_rating_ma = 16000
+voltage_rating_v = 250.0
+voltage_drop_v = 0.0
+max_power_w = 0.2
+notes = "Terminal rating margin is high; manual installation torque and wire gauge remain bring-up checks."
+
+[[mosfet_checks]]
+id = "heater_low_side_fet"
+part_id = "heater_mosfet"
+drain_source_voltage_v = 13.2
+continuous_current_ma = 1500
+pulsed_current_ma = 3000
+rds_on_mohm = 52.0
+current_rating_ma = 5700
+voltage_rating_v = 30.0
+package_theta_ja_c_per_w = 125.0
+max_temp_rise_c = 35.0
+notes = "AO3400A loss estimate at 10-12 V gate drive from TC4427; prototype must measure MOSFET case temperature."
+
+[[trace_current_paths]]
+id = "vbus_electronics_path"
+net = "VBUS"
+current_ma = 500
+min_width_mm = 0.50
+allowed_layers = ["F.Cu", "B.Cu"]
+notes = "USB input current path to VBUS Schottky and rail bulk capacitance."
+
+[[trace_current_paths]]
+id = "five_v_electronics_path"
+net = "+5V"
+current_ma = 450
+min_width_mm = 0.50
+allowed_layers = ["F.Cu", "B.Cu"]
+notes = "Post-Schottky electronics 5 V path."
+
+[[trace_current_paths]]
+id = "three_v_three_distribution"
+net = "+3V3"
+current_ma = 300
+min_width_mm = 0.50
+neckdown_min_width_mm = 0.20
+max_neckdown_length_mm = 2.00
+allowed_layers = ["F.Cu", "In2.Cu", "B.Cu"]
+notes = "3.3 V logic distribution."
+
+[[trace_current_paths]]
+id = "twelve_v_input_path"
+net = "+12V_RAW"
+current_ma = 1500
+min_width_mm = 1.50
+allowed_layers = ["F.Cu", "B.Cu"]
+notes = "12 V input from barrel jack to input protection and test point."
+
+[[trace_current_paths]]
+id = "twelve_v_fused_path"
+net = "+12V"
+current_ma = 1500
+min_width_mm = 1.50
+allowed_layers = ["F.Cu", "B.Cu"]
+notes = "Post-Schottky heater supply to the PTC."
+
+[[trace_current_paths]]
+id = "heater_supply_path"
+net = "HEATER_SUPPLY"
+current_ma = 1500
+min_width_mm = 2.00
+allowed_layers = ["F.Cu", "B.Cu"]
+notes = "Fused heater supply to J3."
+
+[[trace_current_paths]]
+id = "heater_return_path"
+net = "HEATER_P"
+current_ma = 1500
+min_width_mm = 2.00
+allowed_layers = ["F.Cu", "B.Cu"]
+notes = "Switched heater return path from J3 to MOSFET drain."
+
+[gpio_domain]
+mcu_reference = "U1"
+logic_max_v = 3.6
+forbidden_high_voltage_nets = ["+12V_RAW", "+12V", "HEATER_SUPPLY", "HEATER_P", "VBUS", "+5V"]
+notes = "ESP32-S3 module pins must not directly touch USB VBUS, 5 V, or heater rails."
+
+[[analog_checks]]
+id = "ads1115_input_range"
+net = "ADC_AIN1"
+max_expected_v = 3.3
+absolute_max_v = 3.6
+notes = "ADS1115 analog input is limited by +3V3 supply in Rev A."
+
+[[analog_checks]]
+id = "tia_output_range"
+net = "MUX_COM"
+max_expected_v = 3.3
+absolute_max_v = 3.6
+notes = "TIA/mux path must stay inside the ADS1115 and op-amp common-mode/output range."
+
+[[spice_exports]]
+id = "power_path_operating_point"
+output = "lamp_rev_a_power_path.spice"
+notes = "Ngspice handoff for USB-derived electronics rails and heater path first-order operating point."
+
+[[external_analysis_handoffs]]
+id = "pdn_power_integrity"
+tool_class = "PDN / power integrity"
+recommended_tools = ["Ki-PIDA", "Altium PDN Analyzer", "Cadence Sigrity", "Ansys SIwave"]
+inputs = ["lamp_rev_a.kicad_pcb", "electrical_validation.toml", "routing_seed.toml", "gerbers"]
+exit_criterion = "Voltage drop and current density pass for VBUS, +5V, +3V3, +12V_RAW, +12V, HEATER_SUPPLY, and HEATER_P at the currents in this file."
+
+[[external_analysis_handoffs]]
+id = "electrothermal"
+tool_class = "thermal / electrothermal"
+recommended_tools = ["Cadence Celsius", "Ansys Icepak/SIwave", "PCB-Investigator", "bench thermography"]
+inputs = ["heater path copper", "SS34 losses", "AMS1117 losses", "AO3400A losses"]
+exit_criterion = "Regulator, input diode, PTC, MOSFET, terminal, and copper remain below touch/material limits at normal heater current."
+
+[[external_analysis_handoffs]]
+id = "usb_signal_integrity"
+tool_class = "signal integrity"
+recommended_tools = ["KiCad impedance calculator", "Saturn PCB Toolkit", "HyperLynx", "oscilloscope eye/edge check"]
+inputs = ["USB_DP", "USB_DN", "4-layer stackup"]
+exit_criterion = "USB D+/D- routing has controlled-enough geometry for full-speed USB and passes firmware enumeration on first article."
+
+[[manual_first_article_gates]]
+id = "unpowered_resistance"
+description = "Measure rail-to-GND resistance before applying power."
+pass_criterion = "No low-ohm short on VBUS, +5V, +3V3, +12V_RAW, +12V, HEATER_SUPPLY, or HEATER_P."
+
+[[manual_first_article_gates]]
+id = "current_limited_usb"
+description = "Power USB/VBUS with current limit before attaching 12 V."
+pass_criterion = "+5V and +3V3 settle in range and current remains below the USB bring-up limit."
+
+[[manual_first_article_gates]]
+id = "current_limited_heater"
+description = "Apply 12 V heater power with bench current limit and external thermal cutoff installed."
+pass_criterion = "Heater current, MOSFET temperature, diode temperature, and terminal temperature remain inside this validation budget."

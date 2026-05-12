@@ -15,6 +15,7 @@ parts = "pcb/lamp_rev_a/parts.toml"
 placement = "pcb/lamp_rev_a/placement.toml"
 pin_nets = "pcb/lamp_rev_a/pin_nets.toml"
 firmware_handoff = "pcb/lamp_rev_a/firmware_handoff.toml"
+electrical_validation = "pcb/lamp_rev_a/electrical_validation.toml"
 
 [outputs]
 root_dir = "pcb/lamp_rev_a/fab_release"
@@ -35,6 +36,10 @@ step_file = "review/lamp_rev_a_board.step"
 order_audit_file = "review/order_audit.md"
 bringup_file = "review/bringup_checklist.md"
 firmware_handoff_file = "review/firmware_handoff.md"
+electrical_validation_file = "review/electrical_validation.md"
+electrical_validation_gates_file = "review/electrical_validation_gates.csv"
+spice_netlist_file = "review/lamp_rev_a_power_path.spice"
+simulation_handoff_file = "review/simulation_handoff.md"
 bundle_checksums_file = "review/upload_bundle_checksums.sha256"
 manifest_file = "release_manifest.txt"
 fabrication_bundle = "bundles/lamp_rev_a_jlcpcb_fabrication.zip"
@@ -55,6 +60,7 @@ remaining_gates = [
   "Human KiCad layout review of the routed board, especially USB, heater current path, and analog optical front end.",
   "Schematic completion/parity review; the current KiCad schematic is still an architecture shell.",
   "Heater current, copper temperature-rise, fuse trip-curve, and external thermal-cutoff bench validation.",
+  "Run the electrical validation report through external PDN/electrothermal tooling before treating Rev A as a production design.",
   "Optical one-channel bench calibration for 650 nm turbidimetry signal slope, negative-control stability, and detector saturation margin.",
   "Enclosure/connector fit check against the Rev A mechanical assembly before ordering assembled boards.",
 ]
@@ -90,6 +96,7 @@ files = [
   "pcb/lamp_rev_a/placement.toml",
   "pcb/lamp_rev_a/pin_nets.toml",
   "pcb/lamp_rev_a/firmware_handoff.toml",
+  "pcb/lamp_rev_a/electrical_validation.toml",
   "pcb/lamp_rev_a/routing_plan.toml",
   "pcb/lamp_rev_a/routing_seed.toml",
   "pcb/lamp_rev_a/copper_zones.toml",

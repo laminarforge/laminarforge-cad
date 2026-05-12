@@ -296,7 +296,7 @@ end_y_mm = 5.000
 net = "+12V_RAW"
 layer = "F.Cu"
 via_at_ends = false
-width_mm = 0.500
+width_mm = 1.500
 start_x_mm = 82.500
 start_y_mm = 6.000
 end_x_mm = 81.800
@@ -362,7 +362,7 @@ end_y_mm = 70.000
 net = "+12V_RAW"
 layer = "B.Cu"
 via_at_ends = true
-width_mm = 0.500
+width_mm = 1.500
 start_x_mm = 81.800
 start_y_mm = 12.000
 end_x_mm = 89.000
@@ -384,7 +384,7 @@ end_y_mm = 34.000
 net = "HEATER_SUPPLY"
 layer = "F.Cu"
 via_at_ends = false
-width_mm = 1.500
+width_mm = 2.000
 start_x_mm = 92.000
 start_y_mm = 25.000
 end_x_mm = 84.700
@@ -439,7 +439,7 @@ end_y_mm = 8.000
 net = "HEATER_SUPPLY"
 layer = "F.Cu"
 via_at_ends = false
-width_mm = 1.500
+width_mm = 2.000
 start_x_mm = 88.000
 start_y_mm = 34.000
 end_x_mm = 92.000
@@ -450,7 +450,7 @@ end_y_mm = 25.000
 net = "+12V"
 layer = "F.Cu"
 via_at_ends = false
-width_mm = 0.500
+width_mm = 1.500
 start_x_mm = 79.300
 start_y_mm = 20.000
 end_x_mm = 86.200
@@ -527,7 +527,7 @@ end_y_mm = 16.500
 net = "+12V_RAW"
 layer = "F.Cu"
 via_at_ends = false
-width_mm = 0.500
+width_mm = 1.500
 start_x_mm = 89.000
 start_y_mm = 10.350
 end_x_mm = 98.000
@@ -537,9 +537,23 @@ end_y_mm = 5.000
 [[segments]]
 net = "+12V"
 layer = "B.Cu"
-via_at_ends = true
-width_mm = 0.500
+via_at_ends = false
+via_at_start = true
+via_at_end = false
+width_mm = 1.500
 start_x_mm = 68.630
+start_y_mm = 9.430
+end_x_mm = 79.300
+end_y_mm = 9.430
+
+[[segments]]
+net = "+12V"
+layer = "B.Cu"
+via_at_ends = false
+via_at_start = false
+via_at_end = true
+width_mm = 1.500
+start_x_mm = 79.300
 start_y_mm = 9.430
 end_x_mm = 79.300
 end_y_mm = 20.000
@@ -582,7 +596,7 @@ end_y_mm = 4.610
 net = "HEATER_SUPPLY"
 layer = "F.Cu"
 via_at_ends = false
-width_mm = 1.500
+width_mm = 2.000
 start_x_mm = 92.000
 start_y_mm = 25.000
 end_x_mm = 92.000
@@ -593,7 +607,7 @@ end_y_mm = 27.650
 net = "HEATER_SUPPLY"
 layer = "F.Cu"
 via_at_ends = false
-width_mm = 1.500
+width_mm = 2.000
 start_x_mm = 92.000
 start_y_mm = 27.650
 end_x_mm = 75.000
@@ -657,7 +671,7 @@ end_y_mm = 45.890
 
 [[segments]]
 net = "VBUS"
-layer = "In2.Cu"
+layer = "B.Cu"
 via_at_ends = true
 width_mm = 0.500
 start_x_mm = 45.800
@@ -822,29 +836,29 @@ end_y_mm = 68.000
 
 [[segments]]
 net = "HEATER_P"
-layer = "In2.Cu"
+layer = "B.Cu"
 via_at_ends = false
-width_mm = 1.500
+width_mm = 2.000
 start_x_mm = 74.000
 start_y_mm = 17.000
-end_x_mm = 86.920
-end_y_mm = 17.000
+end_x_mm = 74.000
+end_y_mm = 30.000
 
 via_at_start = true
 via_at_end = false
 
 [[segments]]
 net = "HEATER_P"
-layer = "In2.Cu"
+layer = "B.Cu"
 via_at_ends = false
-width_mm = 1.500
-start_x_mm = 86.920
-start_y_mm = 17.000
-end_x_mm = 86.920
-end_y_mm = 25.000
+width_mm = 2.000
+start_x_mm = 74.000
+start_y_mm = 30.000
+end_x_mm = 82.000
+end_y_mm = 30.000
 
 via_at_start = false
-via_at_end = false
+via_at_end = true
 
 [[segments]]
 net = "GND"
@@ -991,6 +1005,16 @@ start_x_mm = 55.900
 start_y_mm = 40.000
 end_x_mm = 55.900
 end_y_mm = 63.000
+
+[[segments]]
+net = "VBUS"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 22.000
+start_y_mm = 4.000
+end_x_mm = 22.000
+end_y_mm = 4.300
 
 [[segments]]
 net = "MUX_S0"
@@ -1142,16 +1166,16 @@ end_y_mm = 45.890
 
 [[segments]]
 net = "HEATER_P"
-layer = "In2.Cu"
+layer = "B.Cu"
 via_at_ends = false
-width_mm = 1.500
-start_x_mm = 86.920
-start_y_mm = 25.000
-end_x_mm = 82.000
-end_y_mm = 30.000
+width_mm = 2.000
+start_x_mm = 82.000
+start_y_mm = 30.000
+end_x_mm = 86.920
+end_y_mm = 25.000
 
 via_at_start = false
-via_at_end = true
+via_at_end = false
 
 [[segments]]
 net = "+3V3"

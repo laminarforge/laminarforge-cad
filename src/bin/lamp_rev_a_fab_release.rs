@@ -1,3 +1,4 @@
+use laminarforge_cad::lamp_rev_a_electrical::{validate_to_outputs, ElectricalOutputPaths};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
@@ -47,6 +48,7 @@ struct Inputs {
     placement: String,
     pin_nets: String,
     firmware_handoff: String,
+    electrical_validation: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -69,6 +71,10 @@ struct Outputs {
     order_audit_file: String,
     bringup_file: String,
     firmware_handoff_file: String,
+    electrical_validation_file: String,
+    electrical_validation_gates_file: String,
+    spice_netlist_file: String,
+    simulation_handoff_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
@@ -344,6 +350,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let placement_path = root.join(&config.inputs.placement);
     let pin_nets_path = root.join(&config.inputs.pin_nets);
     let firmware_handoff_path = root.join(&config.inputs.firmware_handoff);
+    let electrical_validation_path = root.join(&config.inputs.electrical_validation);
     ensure_file(&board)?;
     ensure_file(&schematic)?;
     ensure_file(&contract_path)?;
@@ -351,6 +358,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     ensure_file(&placement_path)?;
     ensure_file(&pin_nets_path)?;
     ensure_file(&firmware_handoff_path)?;
+    ensure_file(&electrical_validation_path)?;
 
     validate_kicad_version(config.toolchain.min_kicad_major)?;
 
@@ -413,6 +421,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         &firmware_handoff,
         &output_root,
     )?;
+    let electrical_outputs = ElectricalOutputPaths {
+        report_md: output_root.join(&config.outputs.electrical_validation_file),
+        gates_csv: output_root.join(&config.outputs.electrical_validation_gates_file),
+        spice_netlist: output_root.join(&config.outputs.spice_netlist_file),
+        simulation_handoff_md: output_root.join(&config.outputs.simulation_handoff_file),
+    };
+    validate_to_outputs(&root, &electrical_outputs)?;
     write_release_bundles(&config, &root, &output_root)?;
     validate_release_outputs(&config, &parts, &placement, &output_root)?;
 
@@ -1215,6 +1230,22 @@ fn write_manifest(
     )?;
     writeln!(
         file,
+        "electrical_validation: {}",
+        config.outputs.electrical_validation_file
+    )?;
+    writeln!(
+        file,
+        "electrical_validation_gates: {}",
+        config.outputs.electrical_validation_gates_file
+    )?;
+    writeln!(file, "spice_netlist: {}", config.outputs.spice_netlist_file)?;
+    writeln!(
+        file,
+        "simulation_handoff: {}",
+        config.outputs.simulation_handoff_file
+    )?;
+    writeln!(
+        file,
         "bundle_checksums: {}",
         config.outputs.bundle_checksums_file
     )?;
@@ -1653,6 +1684,10 @@ fn write_release_bundles(
         config.outputs.order_audit_file.as_str(),
         config.outputs.bringup_file.as_str(),
         config.outputs.firmware_handoff_file.as_str(),
+        config.outputs.electrical_validation_file.as_str(),
+        config.outputs.electrical_validation_gates_file.as_str(),
+        config.outputs.spice_netlist_file.as_str(),
+        config.outputs.simulation_handoff_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
@@ -1844,6 +1879,10 @@ fn validate_release_outputs(
         &config.outputs.order_audit_file,
         &config.outputs.bringup_file,
         &config.outputs.firmware_handoff_file,
+        &config.outputs.electrical_validation_file,
+        &config.outputs.electrical_validation_gates_file,
+        &config.outputs.spice_netlist_file,
+        &config.outputs.simulation_handoff_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
@@ -1930,6 +1969,10 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.order_audit_file.as_str(),
         config.outputs.bringup_file.as_str(),
         config.outputs.firmware_handoff_file.as_str(),
+        config.outputs.electrical_validation_file.as_str(),
+        config.outputs.electrical_validation_gates_file.as_str(),
+        config.outputs.spice_netlist_file.as_str(),
+        config.outputs.simulation_handoff_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),

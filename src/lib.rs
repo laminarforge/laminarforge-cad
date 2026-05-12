@@ -1,3 +1,4 @@
+pub mod lamp_rev_a_electrical;
 pub mod pcb;
 
 // ─── Shared Dimensions for LAMP Device v1 ───

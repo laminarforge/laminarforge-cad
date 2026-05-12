@@ -16,6 +16,7 @@ workflow.
 - `placement.toml`: locked starting refs, coordinates, test points, and eight-slot optical geometry.
 - `pin_nets.toml`: conservative footprint pad-to-net assignments for known package pinouts.
 - `firmware_handoff.toml`: ESP32-S3 module-pin to SoC-GPIO handoff, slot map, and firmware bring-up notes.
+- `electrical_validation.toml`: pre-fab electrical validation assumptions, derating gates, current-path checks, and simulation handoff sources.
 - `routing_plan.toml`: routing phase order, current unrouted count, autorouter policy, and release gates.
 - `routing_seed.toml`: DRC-clean starter traces emitted into the materialized board.
 - `copper_zones.toml`: controlled KiCad copper pours, starting with front/back GND zones.
@@ -38,6 +39,7 @@ contract.toml + parts.toml
   -> placement.toml refs and zone checks
   -> pin_nets.toml trusted pad assignments
   -> firmware_handoff.toml firmware pin/slot handoff checks
+  -> electrical_validation.toml power, derating, heater, GPIO, and simulation checks
   -> cargo run --release --bin lamp_rev_a_materialize_board
   -> cargo run --release --bin lamp_rev_a_seed_routes_from_drc when reseeding short safe traces
   -> cargo run --release --bin lamp_rev_a_route_greedy for DRC-gated route iteration
@@ -72,6 +74,7 @@ Run:
 
 ```bash
 cargo run --release --bin lamp_pcba_check
+cargo run --release --bin lamp_rev_a_electrical_validate
 cargo run --release --bin lamp_rev_a_materialize_board
 cargo run --release --bin lamp_rev_a_fab_preview
 cargo run --release --bin lamp_rev_a_fab_release
@@ -101,7 +104,9 @@ artifacts. The release also includes a source snapshot bundle with the exact
 KiCad and TOML inputs used to generate the fab package. The review package
 includes a bring-up checklist generated from the configured Rev A test points
 and a firmware handoff generated from the checked ESP32-S3 pin map. It also
-emits a checksum manifest for the fabrication, assembly, and source bundles.
+emits an electrical-validation report, a first-order SPICE power-path handoff,
+a simulation/analysis handoff, and a checksum manifest for the fabrication,
+assembly, and source bundles.
 
 Current KiCad checks:
 
