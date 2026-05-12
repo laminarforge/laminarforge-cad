@@ -22,6 +22,7 @@ pub struct ElectricalOutputPaths {
     pub fault_fmea_csv: PathBuf,
     pub emc_esd_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
+    pub manufacturing_test_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -64,6 +65,9 @@ struct ValidationConfig {
     boot_startup_policy: BootStartupPolicy,
     #[serde(default)]
     boot_startup_checks: Vec<BootStartupCheck>,
+    manufacturing_test_policy: ManufacturingTestPolicy,
+    #[serde(default)]
+    manufacturing_test_checks: Vec<ManufacturingTestCheck>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -99,6 +103,7 @@ struct Outputs {
     fault_fmea_csv: String,
     emc_esd_csv: String,
     startup_safety_csv: String,
+    manufacturing_test_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -366,6 +371,28 @@ struct BootStartupCheck {
 }
 
 #[derive(Debug, Deserialize)]
+struct ManufacturingTestPolicy {
+    min_checks: usize,
+    require_test_points: bool,
+    require_pass_criterion: bool,
+    require_measurement_or_firmware_test: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct ManufacturingTestCheck {
+    id: String,
+    subsystem: String,
+    nets: Vec<String>,
+    required_test_points: Vec<String>,
+    test_stage: String,
+    test_method: String,
+    firmware_test: String,
+    pass_criterion: String,
+    verification_measurements: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct Contract {
     stackup: Stackup,
     rails: Vec<ContractRail>,
@@ -561,6 +588,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         fault_fmea_csv: repo_root.join(config.outputs.fault_fmea_csv),
         emc_esd_csv: repo_root.join(config.outputs.emc_esd_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
+        manufacturing_test_csv: repo_root.join(config.outputs.manufacturing_test_csv),
     })
 }
 
@@ -618,6 +646,13 @@ pub fn validate_to_outputs(
         &mut rows,
         &mut errors,
     );
+    validate_manufacturing_test_coverage(
+        &config,
+        &contract_nets,
+        &placement,
+        &mut rows,
+        &mut errors,
+    );
     add_external_analysis_rows(&config, &mut rows);
     add_manual_gate_rows(&config, &parts, &mut rows, &mut errors);
 
@@ -631,6 +666,7 @@ pub fn validate_to_outputs(
     write_fault_fmea_handoff(&config, outputs)?;
     write_emc_esd_handoff(&config, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
+    write_manufacturing_test_handoff(&config, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -676,6 +712,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.single_fault_checks.is_empty()
         || config.emc_esd_checks.is_empty()
         || config.boot_startup_checks.is_empty()
+        || config.manufacturing_test_checks.is_empty()
     {
         return Err("electrical validation config is missing required gate groups".into());
     }
@@ -2342,6 +2379,193 @@ fn validate_boot_startup_safety(
     }
 }
 
+fn validate_manufacturing_test_coverage(
+    config: &ValidationConfig,
+    contract_nets: &BTreeSet<String>,
+    placement: &PlacementPlan,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point))
+        .collect::<BTreeMap<_, _>>();
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "manufacturing test",
+        "minimum manufacturing coverage",
+        format!("{} checks", config.manufacturing_test_checks.len()),
+        format!(">= {} checks", config.manufacturing_test_policy.min_checks),
+        config.manufacturing_test_checks.len() >= config.manufacturing_test_policy.min_checks,
+        "Manufacturing/DFT validation must cover rails, programming, heater, sensor, debug, manual install, and traceability.",
+    );
+
+    let mut ids = BTreeSet::new();
+    for check in &config.manufacturing_test_checks {
+        push_gate!(
+            rows,
+            errors,
+            "manufacturing test",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "manufacturing test",
+            format!("{} subsystem", check.id),
+            check.subsystem.clone(),
+            "non-empty",
+            !check.subsystem.trim().is_empty(),
+            &check.notes,
+        );
+        for net in &check.nets {
+            push_gate!(
+                rows,
+                errors,
+                "manufacturing test",
+                format!("{} net {}", check.id, net),
+                net.clone(),
+                "known contract net",
+                contract_nets.contains(net),
+                &check.notes,
+            );
+        }
+
+        let requires_test_points = config.manufacturing_test_policy.require_test_points;
+        push_gate!(
+            rows,
+            errors,
+            "manufacturing test",
+            format!("{} test point coverage", check.id),
+            mitigation_list(&check.required_test_points),
+            if requires_test_points {
+                "non-empty and net-matched"
+            } else {
+                "documented"
+            },
+            !requires_test_points || !check.required_test_points.is_empty(),
+            &check.notes,
+        );
+        for test_point in &check.required_test_points {
+            let point = test_points.get(test_point.as_str());
+            push_gate!(
+                rows,
+                errors,
+                "manufacturing test",
+                format!("{} test point {}", check.id, test_point),
+                test_point.clone(),
+                "known placement test point",
+                point.is_some(),
+                &check.notes,
+            );
+            if let Some(point) = point {
+                push_gate!(
+                    rows,
+                    errors,
+                    "manufacturing test",
+                    format!("{} test point {} net", check.id, test_point),
+                    point.net.clone(),
+                    "one of checked nets",
+                    check.nets.iter().any(|net| net == &point.net),
+                    &check.notes,
+                );
+            }
+        }
+
+        push_gate!(
+            rows,
+            errors,
+            "manufacturing test",
+            format!("{} stage", check.id),
+            check.test_stage.clone(),
+            "non-empty",
+            !check.test_stage.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "manufacturing test",
+            format!("{} method", check.id),
+            check.test_method.clone(),
+            "non-empty",
+            !check.test_method.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "manufacturing test",
+            format!("{} pass criterion", check.id),
+            check.pass_criterion.clone(),
+            if config.manufacturing_test_policy.require_pass_criterion {
+                "non-empty"
+            } else {
+                "documented"
+            },
+            !config.manufacturing_test_policy.require_pass_criterion
+                || !check.pass_criterion.trim().is_empty(),
+            &check.notes,
+        );
+
+        let has_measurement = !check.verification_measurements.is_empty();
+        let has_firmware_test = !check.firmware_test.trim().is_empty();
+        push_gate!(
+            rows,
+            errors,
+            "manufacturing test",
+            format!("{} automated/bench evidence", check.id),
+            format!(
+                "measurements: {}; firmware: {}",
+                mitigation_list(&check.verification_measurements),
+                if has_firmware_test {
+                    check.firmware_test.as_str()
+                } else {
+                    "none"
+                }
+            ),
+            if config
+                .manufacturing_test_policy
+                .require_measurement_or_firmware_test
+            {
+                "measurement or firmware test"
+            } else {
+                "documented"
+            },
+            !config
+                .manufacturing_test_policy
+                .require_measurement_or_firmware_test
+                || has_measurement
+                || has_firmware_test,
+            &check.notes,
+        );
+        for measurement in &check.verification_measurements {
+            push_gate!(
+                rows,
+                errors,
+                "manufacturing test",
+                format!("{} verifies {}", check.id, measurement),
+                measurement.clone(),
+                "known first-article measurement id",
+                measurement_ids.contains(measurement.as_str()),
+                &check.notes,
+            );
+        }
+    }
+}
+
 fn valid_fmea_score(value: u8) -> bool {
     (1..=10).contains(&value)
 }
@@ -2966,6 +3190,44 @@ fn write_startup_safety_handoff(
     Ok(())
 }
 
+fn write_manufacturing_test_handoff(
+    config: &ValidationConfig,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.manufacturing_test_csv)?;
+    let mut writer = csv::Writer::from_path(&outputs.manufacturing_test_csv)?;
+    writer.write_record([
+        "id",
+        "subsystem",
+        "nets",
+        "required_test_points",
+        "test_stage",
+        "test_method",
+        "firmware_test",
+        "pass_criterion",
+        "verification_measurements",
+        "notes",
+    ])?;
+
+    for check in &config.manufacturing_test_checks {
+        writer.write_record([
+            check.id.as_str(),
+            check.subsystem.as_str(),
+            mitigation_list(&check.nets).as_str(),
+            mitigation_list(&check.required_test_points).as_str(),
+            check.test_stage.as_str(),
+            check.test_method.as_str(),
+            check.firmware_test.as_str(),
+            check.pass_criterion.as_str(),
+            mitigation_list(&check.verification_measurements).as_str(),
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn format_optional_v(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
@@ -3180,6 +3442,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("startup_safety.csv")
+    )?;
+    writeln!(
+        report,
+        "- Manufacturing test coverage table: `{}`",
+        outputs
+            .manufacturing_test_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("manufacturing_test_coverage.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())

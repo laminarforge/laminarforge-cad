@@ -26,6 +26,7 @@ component_derating_csv = "pcb/lamp_rev_a/reports/component_derating.csv"
 fault_fmea_csv = "pcb/lamp_rev_a/reports/fault_fmea.csv"
 emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
+manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv"
 
 [assumptions]
 ambient_c = 35.0
@@ -343,6 +344,108 @@ require_all_boot_sensitive_firmware_pins = true
 require_evidence_for_boot_sensitive = true
 require_measurement_for_safety_critical = true
 forbid_active_safety_outputs_at_reset = true
+
+[manufacturing_test_policy]
+min_checks = 8
+require_test_points = true
+require_pass_criterion = true
+require_measurement_or_firmware_test = true
+
+[[manufacturing_test_checks]]
+id = "power_off_rail_short_screen"
+subsystem = "power"
+nets = ["VBUS", "+3V3", "+12V_RAW", "GND"]
+required_test_points = ["TP_VBUS", "TP_3V3", "TP_12V", "TP_GND"]
+test_stage = "bare-board or assembled power-off inspection"
+test_method = "DMM resistance checks from each rail test point to TP_GND before applying USB or 12 V."
+firmware_test = ""
+pass_criterion = "No low-ohm rail-to-ground short before any powered bring-up."
+verification_measurements = ["power_off_vbus_resistance", "power_off_3v3_resistance"]
+notes = "This is the fastest way to catch assembly shorts before current is available."
+
+[[manufacturing_test_checks]]
+id = "usb_power_and_programming_screen"
+subsystem = "usb_mcu"
+nets = ["VBUS", "+5V", "+3V3", "ESP_EN", "ESP_GPIO0", "USB_DP", "USB_DN"]
+required_test_points = ["TP_VBUS", "TP_5V", "TP_3V3", "TP_EN", "TP_BOOT"]
+test_stage = "USB-only bring-up"
+test_method = "Current-limited USB power, rail measurement, boot strap measurement, USB enumeration, and firmware flash attempt."
+firmware_test = "Flash the Rev A CI artifact or run firmware USB enumeration check."
+pass_criterion = "Board enumerates/accepts firmware while VBUS, +5V, +3V3, EN, and BOOT stay in expected ranges."
+verification_measurements = ["usb_vbus_voltage", "usb_5v_voltage", "usb_3v3_voltage", "esp_en_idle", "esp_gpio0_boot_idle"]
+notes = "Covers the recovery path before heater power is attached."
+
+[[manufacturing_test_checks]]
+id = "uart_debug_access_screen"
+subsystem = "debug"
+nets = ["UART_TX", "UART_RX", "GND"]
+required_test_points = ["TP_TX", "TP_RX", "TP_GND"]
+test_stage = "firmware debug access"
+test_method = "Probe UART TX/RX pads or attach a 3.3 V UART adapter during firmware diagnostic mode."
+firmware_test = "Firmware diagnostic build prints boot identity and accepts a non-destructive status command."
+pass_criterion = "UART pads are physically accessible and remain in the 3.3 V logic domain."
+verification_measurements = []
+notes = "UART is the fallback debug path if native USB is unreliable."
+
+[[manufacturing_test_checks]]
+id = "heater_fail_closed_screen"
+subsystem = "heater_drive"
+nets = ["HEATER_SUPPLY", "HEATER_P", "HEATER_PWM", "GATE_DRV", "GND"]
+required_test_points = ["TP_HEATER_SUPPLY", "TP_HEATER", "TP_PWM", "TP_GND"]
+test_stage = "heater power present, PWM disabled"
+test_method = "Attach current-limited 12 V with external cutoff installed, then verify supply/return/PWM before any heater command."
+firmware_test = "Firmware heater_enabled interlock remains false until explicit validated command."
+pass_criterion = "HEATER_SUPPLY is present, HEATER_P and HEATER_PWM remain off, and no load current flows before command."
+verification_measurements = ["heater_supply_voltage_pwm_off", "heater_return_pwm_off", "heater_pwm_idle"]
+notes = "Covers the highest-energy board output in a production-test-friendly form."
+
+[[manufacturing_test_checks]]
+id = "i2c_adc_bus_screen"
+subsystem = "optical_detection"
+nets = ["SDA", "SCL", "ADC_AIN1", "MUX_COM", "+3V3", "GND"]
+required_test_points = ["TP_SDA", "TP_SCL", "TP_ADC", "TP_MUX", "TP_3V3", "TP_GND"]
+test_stage = "firmware idle sensor bring-up"
+test_method = "Confirm I2C idle levels, ADS1115 presence, ADC idle range, and mux common accessibility."
+firmware_test = "Firmware I2C scan detects ADS1115 and refuses assay start if the bus is stuck low."
+pass_criterion = "I2C idles high, ADS1115 is reachable, and ADC/TIA path stays in the 3.3 V domain."
+verification_measurements = ["i2c_sda_idle", "i2c_scl_idle", "analog_adc_idle"]
+notes = "Catches functional false-result risk before wet assay testing."
+
+[[manufacturing_test_checks]]
+id = "optical_channel_smoke_screen"
+subsystem = "optical_detection"
+nets = ["LED_BASE_0", "LED_BASE_1", "LED_BASE_2", "LED_BASE_3", "LED_BASE_4", "LED_BASE_5", "LED_BASE_6", "LED_BASE_7", "MUX_COM", "ADC_AIN1", "GND"]
+required_test_points = ["TP_ADC", "TP_MUX", "TP_GND"]
+test_stage = "dry optical calibration"
+test_method = "Run one-channel-at-a-time LED smoke test and confirm ADC slope stays inside the non-saturating range."
+firmware_test = "Firmware optical diagnostic cycles all eight LED channels and reports dark/on ADC values."
+pass_criterion = "Every channel has a detectable on/off delta without saturating ADC_AIN1."
+verification_measurements = ["analog_adc_idle"]
+notes = "This is not assay validation; it confirms the board can exercise the optical path."
+
+[[manufacturing_test_checks]]
+id = "manual_parts_install_screen"
+subsystem = "assembly"
+nets = ["+12V_RAW", "HEATER_SUPPLY", "HEATER_P", "GND"]
+required_test_points = ["TP_12V", "TP_HEATER_SUPPLY", "TP_HEATER", "TP_GND"]
+test_stage = "post-manual-install inspection"
+test_method = "Inspect and tug-test DC jack, heater terminal, wire polarity, and external inline thermal cutoff installation."
+firmware_test = ""
+pass_criterion = "Manual through-hole parts are installed, polarized wiring is correct, and heater cutoff is present before 12 V power."
+verification_measurements = ["heater_raw_12v_voltage", "heater_supply_voltage_pwm_off"]
+notes = "The JLC machine-assembly package intentionally excludes these manual install parts."
+
+[[manufacturing_test_checks]]
+id = "release_artifact_traceability_screen"
+subsystem = "release"
+nets = ["VBUS", "+3V3", "HEATER_SUPPLY", "HEATER_P", "ADC_AIN1", "SDA", "SCL"]
+required_test_points = ["TP_VBUS", "TP_3V3", "TP_HEATER_SUPPLY", "TP_HEATER", "TP_ADC", "TP_SDA", "TP_SCL"]
+test_stage = "release artifact review"
+test_method = "Confirm fab bundle includes firmware handoff, electrical gate report, first-article measurements, FMEA, EMC/ESD, startup safety, and checksum manifest."
+firmware_test = "Firmware CI artifact exposes build identity that matches the flashed test record."
+pass_criterion = "The board under test can be traced back to the exact release bundle and firmware build used for validation."
+verification_measurements = ["usb_3v3_voltage", "heater_supply_voltage_pwm_off", "analog_adc_idle"]
+notes = "This prevents bring-up data from becoming disconnected from the generated board and firmware sources."
 
 [[boot_startup_checks]]
 id = "esp_en_reset_release"

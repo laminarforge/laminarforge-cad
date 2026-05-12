@@ -114,6 +114,7 @@ a structured first-article measurement CSV for current-limited rail bring-up,
 component derating/stress CSVs for the high-risk electrical parts,
 an EMC/ESD pre-compliance CSV for USB, heater, 12 V, Wi-Fi, and analog noise risks,
 an ESP32-S3 startup-safety CSV for boot straps, reset, and heater fail-closed defaults,
+a manufacturing-test coverage CSV for critical test points, firmware diagnostics, and release traceability,
 and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:
