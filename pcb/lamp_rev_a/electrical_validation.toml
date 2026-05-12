@@ -10,6 +10,7 @@ parts = "pcb/lamp_rev_a/parts.toml"
 routing_seed = "pcb/lamp_rev_a/routing_seed.toml"
 pin_nets = "pcb/lamp_rev_a/pin_nets.toml"
 firmware_handoff = "pcb/lamp_rev_a/firmware_handoff.toml"
+placement = "pcb/lamp_rev_a/placement.toml"
 power_architecture = "pcb/lamp_rev_a/power_architecture.toml"
 optical_architecture = "pcb/lamp_rev_a/optical_architecture.toml"
 
@@ -20,6 +21,7 @@ spice_netlist = "pcb/lamp_rev_a/reports/lamp_rev_a_power_path.spice"
 simulation_handoff_md = "pcb/lamp_rev_a/reports/simulation_handoff.md"
 pdn_current_paths_csv = "pcb/lamp_rev_a/reports/pdn_current_paths.csv"
 thermal_power_csv = "pcb/lamp_rev_a/reports/thermal_power_budget.csv"
+first_article_measurements_csv = "pcb/lamp_rev_a/reports/first_article_measurements.csv"
 
 [assumptions]
 ambient_c = 35.0
@@ -300,3 +302,153 @@ pass_criterion = "+5V and +3V3 settle in range and current remains below the USB
 id = "current_limited_heater"
 description = "Apply 12 V heater power with bench current limit and external thermal cutoff installed."
 pass_criterion = "Heater current, MOSFET temperature, diode temperature, and terminal temperature remain inside this validation budget."
+
+[[first_article_measurements]]
+id = "power_off_vbus_resistance"
+stage = "power_off"
+order = 10
+test_point = "TP_VBUS"
+net = "VBUS"
+measurement = "resistance_to_gnd"
+pass_criterion = "No low-ohm short to TP_GND before USB power is applied."
+notes = "Measure with board unpowered and heater supply disconnected."
+
+[[first_article_measurements]]
+id = "power_off_3v3_resistance"
+stage = "power_off"
+order = 20
+test_point = "TP_3V3"
+net = "+3V3"
+measurement = "resistance_to_gnd"
+pass_criterion = "No low-ohm short to TP_GND before USB power is applied."
+notes = "This catches reversed/bridged logic rail assembly defects before applying USB power."
+
+[[first_article_measurements]]
+id = "usb_vbus_voltage"
+stage = "usb_power_only"
+order = 30
+test_point = "TP_VBUS"
+net = "VBUS"
+measurement = "voltage_to_gnd"
+min_v = 4.75
+max_v = 5.25
+current_limit_ma = 500
+pass_criterion = "VBUS enters the configured voltage window without the supply current limit folding back."
+notes = "Use USB/electronics-only power. Do not connect 12 V heater power yet."
+
+[[first_article_measurements]]
+id = "usb_5v_voltage"
+stage = "usb_power_only"
+order = 40
+test_point = "TP_5V"
+net = "+5V"
+measurement = "voltage_to_gnd"
+min_v = 4.30
+max_v = 5.10
+current_limit_ma = 500
+pass_criterion = "+5V is present after the VBUS Schottky path and remains below the configured source limit."
+notes = "Expected lower than VBUS because Rev A uses a Schottky isolation diode."
+
+[[first_article_measurements]]
+id = "usb_3v3_voltage"
+stage = "usb_power_only"
+order = 50
+test_point = "TP_3V3"
+net = "+3V3"
+measurement = "voltage_to_gnd"
+min_v = 3.135
+max_v = 3.465
+current_limit_ma = 500
+pass_criterion = "+3V3 regulator is in range before flashing or enabling heater firmware."
+notes = "Stop if AMS1117 temperature rises quickly during this low-current step."
+
+[[first_article_measurements]]
+id = "heater_raw_12v_voltage"
+stage = "heater_power_present_pwm_off"
+order = 60
+test_point = "TP_12V"
+net = "+12V_RAW"
+measurement = "voltage_to_gnd"
+min_v = 10.80
+max_v = 13.20
+current_limit_ma = 3000
+pass_criterion = "External 12 V input is in range while firmware keeps heater PWM inactive."
+notes = "Bench supply current limit must be at or below the protected heater current budget."
+
+[[first_article_measurements]]
+id = "heater_supply_voltage_pwm_off"
+stage = "heater_power_present_pwm_off"
+order = 70
+test_point = "TP_HEATER_SUPPLY"
+net = "HEATER_SUPPLY"
+measurement = "voltage_to_gnd"
+min_v = 10.40
+max_v = 13.20
+current_limit_ma = 3000
+pass_criterion = "Fused heater supply is in range before commanding any heater current."
+notes = "External inline thermal cutoff must be installed before this stage."
+
+[[first_article_measurements]]
+id = "heater_return_pwm_off"
+stage = "heater_power_present_pwm_off"
+order = 80
+test_point = "TP_HEATER"
+net = "HEATER_P"
+measurement = "voltage_to_gnd"
+min_v = 0.00
+max_v = 0.25
+current_limit_ma = 3000
+pass_criterion = "Low-side return remains off with PWM inactive."
+notes = "A high voltage here before firmware enables PWM means the MOSFET path is not fail-closed."
+
+[[first_article_measurements]]
+id = "heater_pwm_idle"
+stage = "heater_power_present_pwm_off"
+order = 90
+test_point = "TP_PWM"
+net = "HEATER_PWM"
+measurement = "logic_level"
+min_v = 0.00
+max_v = 0.40
+current_limit_ma = 500
+pass_criterion = "Firmware leaves heater gate drive low during idle and boot."
+notes = "Verify before connecting a high-power heater load."
+
+[[first_article_measurements]]
+id = "analog_adc_idle"
+stage = "firmware_idle"
+order = 100
+test_point = "TP_ADC"
+net = "ADC_AIN1"
+measurement = "voltage_to_gnd"
+min_v = 0.00
+max_v = 3.30
+current_limit_ma = 500
+pass_criterion = "ADC input stays inside the 3.3 V analog domain."
+notes = "Use dark optical state first, then repeat during a one-channel 650 nm emitter check."
+
+[[first_article_measurements]]
+id = "i2c_sda_idle"
+stage = "firmware_idle"
+order = 110
+test_point = "TP_SDA"
+net = "SDA"
+measurement = "logic_level"
+min_v = 3.00
+max_v = 3.465
+current_limit_ma = 500
+pass_criterion = "SDA idles high on the 3.3 V domain and is not stuck low."
+notes = "A stuck-low bus blocks ADS1115 bring-up."
+
+[[first_article_measurements]]
+id = "i2c_scl_idle"
+stage = "firmware_idle"
+order = 120
+test_point = "TP_SCL"
+net = "SCL"
+measurement = "logic_level"
+min_v = 3.00
+max_v = 3.465
+current_limit_ma = 500
+pass_criterion = "SCL idles high on the 3.3 V domain and is not stuck low."
+notes = "A stuck-low bus blocks ADS1115 bring-up."

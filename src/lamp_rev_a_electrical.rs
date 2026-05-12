@@ -17,6 +17,7 @@ pub struct ElectricalOutputPaths {
     pub simulation_handoff_md: PathBuf,
     pub pdn_current_paths_csv: PathBuf,
     pub thermal_power_csv: PathBuf,
+    pub first_article_measurements_csv: PathBuf,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -46,6 +47,8 @@ struct ValidationConfig {
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
     #[serde(default)]
     manual_first_article_gates: Vec<ManualFirstArticleGate>,
+    #[serde(default)]
+    first_article_measurements: Vec<FirstArticleMeasurement>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -63,6 +66,7 @@ struct Inputs {
     routing_seed: String,
     pin_nets: String,
     firmware_handoff: String,
+    placement: String,
     power_architecture: String,
     optical_architecture: String,
 }
@@ -75,6 +79,7 @@ struct Outputs {
     simulation_handoff_md: String,
     pdn_current_paths_csv: String,
     thermal_power_csv: String,
+    first_article_measurements_csv: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -215,6 +220,24 @@ struct ManualFirstArticleGate {
 }
 
 #[derive(Debug, Deserialize)]
+struct FirstArticleMeasurement {
+    id: String,
+    stage: String,
+    order: u32,
+    test_point: String,
+    net: String,
+    measurement: String,
+    #[serde(default)]
+    min_v: Option<f64>,
+    #[serde(default)]
+    max_v: Option<f64>,
+    #[serde(default)]
+    current_limit_ma: Option<u32>,
+    pass_criterion: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct Contract {
     stackup: Stackup,
     rails: Vec<ContractRail>,
@@ -322,6 +345,21 @@ struct FirmwareModulePin {
     boot_sensitive: bool,
 }
 
+#[derive(Debug, Deserialize)]
+struct PlacementPlan {
+    #[serde(default)]
+    test_points: Vec<TestPoint>,
+}
+
+#[derive(Debug, Deserialize)]
+struct TestPoint {
+    name: String,
+    net: String,
+    x_mm: f64,
+    y_mm: f64,
+    side: String,
+}
+
 #[derive(Debug)]
 struct GateRow {
     category: String,
@@ -389,6 +427,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         simulation_handoff_md: repo_root.join(config.outputs.simulation_handoff_md),
         pdn_current_paths_csv: repo_root.join(config.outputs.pdn_current_paths_csv),
         thermal_power_csv: repo_root.join(config.outputs.thermal_power_csv),
+        first_article_measurements_csv: repo_root
+            .join(config.outputs.first_article_measurements_csv),
     })
 }
 
@@ -410,6 +450,7 @@ pub fn validate_to_outputs(
     let routing = read_toml::<RoutingSeed>(&repo_root.join(&config.inputs.routing_seed))?;
     let pin_nets = read_toml::<PinNetManifest>(&repo_root.join(&config.inputs.pin_nets))?;
     let firmware = read_toml::<FirmwareHandoff>(&repo_root.join(&config.inputs.firmware_handoff))?;
+    let placement = read_toml::<PlacementPlan>(&repo_root.join(&config.inputs.placement))?;
 
     let selected_part_ids = selected_part_ids(&parts);
     let contract_rails = contract_rails(&contract);
@@ -433,6 +474,7 @@ pub fn validate_to_outputs(
     validate_usb_signal_integrity(&config, &routing, &contract_nets, &mut rows, &mut errors);
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
+    validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
     add_external_analysis_rows(&config, &mut rows);
     add_manual_gate_rows(&config, &parts, &mut rows, &mut errors);
 
@@ -441,6 +483,7 @@ pub fn validate_to_outputs(
     write_spice_handoff(&config, outputs)?;
     write_pdn_current_paths_handoff(&config, &routing, outputs)?;
     write_thermal_power_handoff(&config, outputs)?;
+    write_first_article_measurements_handoff(&config, &placement, outputs)?;
     write_simulation_handoff(&config, outputs)?;
 
     if errors.is_empty() {
@@ -481,6 +524,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
     if config.rail_budgets.is_empty()
         || config.trace_current_paths.is_empty()
         || config.external_analysis_handoffs.is_empty()
+        || config.first_article_measurements.is_empty()
     {
         return Err("electrical validation config is missing required gate groups".into());
     }
@@ -494,6 +538,7 @@ fn ensure_inputs(repo_root: &Path, inputs: &Inputs) -> Result<(), Box<dyn Error>
         &inputs.routing_seed,
         &inputs.pin_nets,
         &inputs.firmware_handoff,
+        &inputs.placement,
         &inputs.power_architecture,
         &inputs.optical_architecture,
     ] {
@@ -1207,6 +1252,216 @@ fn validate_analog_ranges(
     }
 }
 
+fn validate_first_article_measurements(
+    config: &ValidationConfig,
+    placement: &PlacementPlan,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point))
+        .collect::<BTreeMap<_, _>>();
+    let rail_budgets = config
+        .rail_budgets
+        .iter()
+        .map(|budget| (budget.rail.as_str(), budget))
+        .collect::<BTreeMap<_, _>>();
+    let mut ids = BTreeSet::new();
+    let mut orders = BTreeSet::new();
+
+    for measurement in &config.first_article_measurements {
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} unique id", measurement.id),
+            measurement.id.clone(),
+            "unique",
+            ids.insert(measurement.id.as_str()),
+            &measurement.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} unique order", measurement.id),
+            format!("{}", measurement.order),
+            "unique",
+            orders.insert(measurement.order),
+            &measurement.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} stage", measurement.id),
+            measurement.stage.clone(),
+            "non-empty",
+            !measurement.stage.trim().is_empty(),
+            &measurement.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} pass criterion", measurement.id),
+            measurement.pass_criterion.clone(),
+            "non-empty",
+            !measurement.pass_criterion.trim().is_empty(),
+            &measurement.notes,
+        );
+
+        let Some(point) = test_points.get(measurement.test_point.as_str()) else {
+            push_gate!(
+                rows,
+                errors,
+                "first article",
+                format!("{} test point", measurement.id),
+                measurement.test_point.clone(),
+                "exists in placement.toml",
+                false,
+                &measurement.notes,
+            );
+            continue;
+        };
+
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} test point net", measurement.id),
+            point.net.clone(),
+            measurement.net.clone(),
+            point.net == measurement.net,
+            &measurement.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} test point side", measurement.id),
+            point.side.clone(),
+            "top",
+            point.side == "top",
+            &measurement.notes,
+        );
+
+        validate_measurement_voltage_window(config, measurement, &rail_budgets, rows, errors);
+        validate_measurement_current_limit(config, measurement, &rail_budgets, rows, errors);
+    }
+}
+
+fn validate_measurement_voltage_window(
+    config: &ValidationConfig,
+    measurement: &FirstArticleMeasurement,
+    rail_budgets: &BTreeMap<&str, &RailBudget>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let has_voltage_window = measurement.min_v.is_some() || measurement.max_v.is_some();
+    if !has_voltage_window {
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} voltage window", measurement.id),
+            "not voltage-gated",
+            "allowed for resistance/non-voltage checks",
+            true,
+            &measurement.notes,
+        );
+        return;
+    }
+
+    let (Some(min_v), Some(max_v)) = (measurement.min_v, measurement.max_v) else {
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} voltage window", measurement.id),
+            "partial window",
+            "both min_v and max_v",
+            false,
+            &measurement.notes,
+        );
+        return;
+    };
+
+    push_gate!(
+        rows,
+        errors,
+        "first article",
+        format!("{} voltage window", measurement.id),
+        format!("{min_v:.3}..{max_v:.3} V"),
+        "min_v <= max_v",
+        min_v <= max_v,
+        &measurement.notes,
+    );
+
+    if let Some(budget) = rail_budgets.get(measurement.net.as_str()) {
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} voltage budget", measurement.id),
+            format!("{min_v:.3}..{max_v:.3} V"),
+            format!("{:.3}..{:.3} V rail budget", budget.min_v, budget.max_v),
+            min_v + f64::EPSILON >= budget.min_v && max_v <= budget.max_v + f64::EPSILON,
+            &measurement.notes,
+        );
+    } else {
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} logic/analog voltage domain", measurement.id),
+            format!("{max_v:.3} V"),
+            format!("<= {:.3} V logic abs max", config.gpio_domain.logic_max_v),
+            max_v <= config.gpio_domain.logic_max_v,
+            &measurement.notes,
+        );
+    }
+}
+
+fn validate_measurement_current_limit(
+    config: &ValidationConfig,
+    measurement: &FirstArticleMeasurement,
+    rail_budgets: &BTreeMap<&str, &RailBudget>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let Some(current_limit_ma) = measurement.current_limit_ma else {
+        push_gate!(
+            rows,
+            errors,
+            "first article",
+            format!("{} current limit", measurement.id),
+            "not powered",
+            "allowed for unpowered checks",
+            measurement.measurement == "resistance_to_gnd",
+            &measurement.notes,
+        );
+        return;
+    };
+
+    let limit_ma = rail_budgets
+        .get(measurement.net.as_str())
+        .map(|rail| rail.source_limit_ma)
+        .unwrap_or(config.assumptions.first_article_current_limit_ma);
+    push_gate!(
+        rows,
+        errors,
+        "first article",
+        format!("{} current limit", measurement.id),
+        format!("{current_limit_ma} mA"),
+        format!("<= {limit_ma} mA validation budget"),
+        current_limit_ma <= limit_ma,
+        &measurement.notes,
+    );
+}
+
 fn add_external_analysis_rows(config: &ValidationConfig, rows: &mut Vec<GateRow>) {
     for handoff in &config.external_analysis_handoffs {
         rows.push(GateRow {
@@ -1503,6 +1758,80 @@ fn write_thermal_power_handoff(
     Ok(())
 }
 
+fn write_first_article_measurements_handoff(
+    config: &ValidationConfig,
+    placement: &PlacementPlan,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.first_article_measurements_csv)?;
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point))
+        .collect::<BTreeMap<_, _>>();
+    let mut measurements = config.first_article_measurements.iter().collect::<Vec<_>>();
+    measurements.sort_by_key(|measurement| measurement.order);
+
+    let mut writer = csv::Writer::from_path(&outputs.first_article_measurements_csv)?;
+    writer.write_record([
+        "order",
+        "stage",
+        "id",
+        "test_point",
+        "net",
+        "x_mm",
+        "y_mm",
+        "side",
+        "measurement",
+        "min_v",
+        "max_v",
+        "current_limit_ma",
+        "pass_criterion",
+        "notes",
+    ])?;
+
+    for measurement in measurements {
+        let point = test_points.get(measurement.test_point.as_str());
+        writer.write_record([
+            format!("{}", measurement.order).as_str(),
+            measurement.stage.as_str(),
+            measurement.id.as_str(),
+            measurement.test_point.as_str(),
+            measurement.net.as_str(),
+            point
+                .map(|point| format!("{:.3}", point.x_mm))
+                .unwrap_or_else(|| "missing".to_string())
+                .as_str(),
+            point
+                .map(|point| format!("{:.3}", point.y_mm))
+                .unwrap_or_else(|| "missing".to_string())
+                .as_str(),
+            point.map(|point| point.side.as_str()).unwrap_or("missing"),
+            measurement.measurement.as_str(),
+            format_optional_v(measurement.min_v).as_str(),
+            format_optional_v(measurement.max_v).as_str(),
+            format_optional_u32(measurement.current_limit_ma).as_str(),
+            measurement.pass_criterion.as_str(),
+            measurement.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
+fn format_optional_v(value: Option<f64>) -> String {
+    value
+        .map(|value| format!("{value:.3}"))
+        .unwrap_or_else(|| "n/a".to_string())
+}
+
+fn format_optional_u32(value: Option<u32>) -> String {
+    value
+        .map(|value| value.to_string())
+        .unwrap_or_else(|| "n/a".to_string())
+}
+
 fn format_optional_mm(value: Option<f64>) -> String {
     value
         .map(|value| format!("{value:.3}"))
@@ -1634,6 +1963,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("thermal_power_budget.csv")
+    )?;
+    writeln!(
+        report,
+        "- First-article measurement table: `{}`",
+        outputs
+            .first_article_measurements_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("first_article_measurements.csv")
     )?;
     fs::write(&outputs.simulation_handoff_md, report)?;
     Ok(())

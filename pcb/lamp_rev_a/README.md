@@ -110,6 +110,7 @@ and a firmware handoff generated from the checked ESP32-S3 pin map. It also
 emits an electrical-validation report, a first-order SPICE power-path handoff,
 a machine-checked full-speed USB DP/DN routing sanity gate, a
 simulation/analysis handoff, generated PDN current-path and thermal power CSVs,
+a structured first-article measurement CSV for current-limited rail bring-up,
 and a checksum manifest for the fabrication, assembly, and source bundles.
 
 Current KiCad checks:

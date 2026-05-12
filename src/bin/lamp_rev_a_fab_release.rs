@@ -77,6 +77,7 @@ struct Outputs {
     simulation_handoff_file: String,
     pdn_current_paths_file: String,
     thermal_power_file: String,
+    first_article_measurements_file: String,
     bundle_checksums_file: String,
     manifest_file: String,
     fabrication_bundle: String,
@@ -430,6 +431,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         simulation_handoff_md: output_root.join(&config.outputs.simulation_handoff_file),
         pdn_current_paths_csv: output_root.join(&config.outputs.pdn_current_paths_file),
         thermal_power_csv: output_root.join(&config.outputs.thermal_power_file),
+        first_article_measurements_csv: output_root
+            .join(&config.outputs.first_article_measurements_file),
     };
     validate_to_outputs(&root, &electrical_outputs)?;
     write_release_bundles(&config, &root, &output_root)?;
@@ -1256,6 +1259,11 @@ fn write_manifest(
     writeln!(file, "thermal_power: {}", config.outputs.thermal_power_file)?;
     writeln!(
         file,
+        "first_article_measurements: {}",
+        config.outputs.first_article_measurements_file
+    )?;
+    writeln!(
+        file,
         "bundle_checksums: {}",
         config.outputs.bundle_checksums_file
     )?;
@@ -1700,6 +1708,7 @@ fn write_release_bundles(
         config.outputs.simulation_handoff_file.as_str(),
         config.outputs.pdn_current_paths_file.as_str(),
         config.outputs.thermal_power_file.as_str(),
+        config.outputs.first_article_measurements_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),
@@ -1897,6 +1906,7 @@ fn validate_release_outputs(
         &config.outputs.simulation_handoff_file,
         &config.outputs.pdn_current_paths_file,
         &config.outputs.thermal_power_file,
+        &config.outputs.first_article_measurements_file,
         &config.outputs.bundle_checksums_file,
         &config.outputs.manifest_file,
         &config.outputs.drill_report,
@@ -1989,6 +1999,7 @@ fn validate_release_bundles(config: &ReleaseConfig, output_root: &Path, errors: 
         config.outputs.simulation_handoff_file.as_str(),
         config.outputs.pdn_current_paths_file.as_str(),
         config.outputs.thermal_power_file.as_str(),
+        config.outputs.first_article_measurements_file.as_str(),
         config.outputs.bundle_checksums_file.as_str(),
         config.outputs.drc_report.as_str(),
         config.outputs.erc_report.as_str(),

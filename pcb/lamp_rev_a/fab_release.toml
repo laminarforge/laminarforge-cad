@@ -42,6 +42,7 @@ spice_netlist_file = "review/lamp_rev_a_power_path.spice"
 simulation_handoff_file = "review/simulation_handoff.md"
 pdn_current_paths_file = "review/pdn_current_paths.csv"
 thermal_power_file = "review/thermal_power_budget.csv"
+first_article_measurements_file = "review/first_article_measurements.csv"
 bundle_checksums_file = "review/upload_bundle_checksums.sha256"
 manifest_file = "release_manifest.txt"
 fabrication_bundle = "bundles/lamp_rev_a_jlcpcb_fabrication.zip"
@@ -69,7 +70,7 @@ remaining_gates = [
 
 [bringup]
 usb_power_limit_ma = 500
-heater_power_limit_ma = 3500
+heater_power_limit_ma = 3000
 required_test_points = [
   "TP_GND",
   "TP_VBUS",
