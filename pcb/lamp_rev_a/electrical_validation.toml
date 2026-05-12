@@ -29,6 +29,7 @@ emc_esd_csv = "pcb/lamp_rev_a/reports/emc_esd_precompliance.csv"
 usb_power_budget_csv = "pcb/lamp_rev_a/reports/usb_power_budget.csv"
 procurement_readiness_csv = "pcb/lamp_rev_a/reports/procurement_readiness.csv"
 connector_polarity_csv = "pcb/lamp_rev_a/reports/connector_polarity.csv"
+assembly_orientation_csv = "pcb/lamp_rev_a/reports/assembly_orientation.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
@@ -291,6 +292,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Va
 acceptance_criterion = "Manual/external connectors and polarity-sensitive parts have expected pin-net mappings, placement records, orientation evidence, and verification methods."
 blocks_release = true
 notes = "Catches semantically wrong but DRC-clean pinout/orientation mistakes before ordering or manual assembly."
+
+[[validation_traceability]]
+id = "assembly_orientation"
+validation_layer = "Machine assembly orientation and centroid validation"
+electrical_gate_category = "assembly orientation"
+output_artifact = "assembly_orientation.csv; electrical_validation_gates.csv"
+release_manifest_entry = "assembly_orientation; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Validate LAMP Rev A upload bundles"
+acceptance_criterion = "Orientation-sensitive machine-assembled parts have locked placement records, expected side/rotation, pin-1 evidence, and inspection method."
+blocks_release = true
+notes = "Catches wrong CPL/centroid/rotation assumptions before JLCPCB assembly."
 
 [[validation_traceability]]
 id = "i2c_ads1115_bus_validation"
@@ -1867,6 +1879,196 @@ notes = "Op-amp orientation errors can rail the analog front end or short MUX_CO
 "3" = "GND"
 "4" = "MUX_COM"
 "5" = "+3V3"
+
+[assembly_orientation_policy]
+min_checks = 11
+default_side = "top"
+max_rotation_error_deg = 0.5
+require_locked_placements = true
+require_machine_assembled = true
+required_check_ids = [
+  "mcu_module_orientation",
+  "usb_c_receptacle_orientation",
+  "usb_esd_orientation",
+  "vbus_schottky_orientation",
+  "input_schottky_orientation",
+  "heater_tvs_orientation",
+  "heater_mosfet_orientation",
+  "heater_gate_driver_orientation",
+  "ldo_orientation",
+  "ads1115_orientation",
+  "optical_mux_orientation",
+  "tia_opamp_orientation",
+]
+notes = "Machine-assembled orientation-sensitive Rev A parts must match locked placement side/rotation and include pin-1/orientation evidence before CPL upload."
+
+[[assembly_orientation_checks]]
+id = "mcu_module_orientation"
+part_id = "mcu_module"
+reference = "U1"
+package_class = "ESP32-S3-WROOM castellated module"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "module antenna edge and pin-1/castellation orientation"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml U1 rotation", "ESP32-S3-WROOM footprint orientation", "firmware handoff U1 pin map"]
+verification_method = "Inspect U1 antenna edge, pin-1/castellation orientation, and USB/boot first-article behavior."
+notes = "A rotated module can map GPIO/USB/heater nets to the wrong castellations while still looking routable."
+
+[[assembly_orientation_checks]]
+id = "usb_c_receptacle_orientation"
+part_id = "usb_c_connector"
+reference = "J1"
+package_class = "USB-C SMT receptacle"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "USB-C shell mouth faces board edge and A/B pads map to pin_nets.toml"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml J1 rotation", "pin_nets.toml J1 A/B pin map", "connector_polarity gate"]
+verification_method = "Inspect connector mouth orientation and verify USB enumeration with either cable orientation."
+notes = "A mirrored USB-C connector can pass DRC but fail VBUS/CC/DP/DN semantics."
+
+[[assembly_orientation_checks]]
+id = "usb_esd_orientation"
+part_id = "usb_esd_protection"
+reference = "U2"
+package_class = "SOT-23-6 ESD array"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "SOT-23-6 pin-1 mark and USB D+/D-/VBUS clamp pin map"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml U2 rotation", "USBLC6-2SC6 package pin-1", "EMC/ESD pre-compliance gate"]
+verification_method = "Inspect U2 pin-1 orientation and confirm USB rails are not shorted before plugging in USB."
+notes = "Wrong ESD orientation can short or leave USB lines unprotected."
+
+[[assembly_orientation_checks]]
+id = "vbus_schottky_orientation"
+part_id = "vbus_to_5v_schottky"
+reference = "D1"
+package_class = "SMA diode"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "cathode band from VBUS toward +5V"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml D1 rotation", "diode polarity mark", "connector_polarity gate"]
+verification_method = "Inspect D1 cathode band and verify +5V rises from VBUS."
+notes = "Wrong orientation blocks electronics power or backfeeds USB."
+
+[[assembly_orientation_checks]]
+id = "input_schottky_orientation"
+part_id = "input_schottky"
+reference = "D13"
+package_class = "SMA diode"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "cathode band from +12V_RAW toward +12V"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml D13 rotation", "diode polarity mark", "connector_polarity gate"]
+verification_method = "Inspect D13 cathode band and verify protected +12V appears only with correct input polarity."
+notes = "Wrong orientation defeats or blocks heater input protection."
+
+[[assembly_orientation_checks]]
+id = "heater_tvs_orientation"
+part_id = "heater_tvs"
+reference = "D10"
+package_class = "SMBJ TVS diode"
+expected_side = "top"
+expected_rotation_deg = 90.0
+orientation_feature = "TVS cathode/polarity mark to HEATER_SUPPLY"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml D10 rotation", "TVS polarity mark", "heater protection gate"]
+verification_method = "Inspect D10 orientation and confirm HEATER_SUPPLY is not shorted to GND."
+notes = "Wrong TVS orientation can short the heater rail or leave cable transients unclamped."
+
+[[assembly_orientation_checks]]
+id = "heater_mosfet_orientation"
+part_id = "heater_mosfet"
+reference = "Q1"
+package_class = "SOT-23 MOSFET"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "SOT-23 pin-1/gate orientation to GATE_DRV"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml Q1 rotation", "AO3400A SOT-23 pinout", "heater PWM transient gate"]
+verification_method = "Inspect Q1 orientation and verify heater return remains off until commanded."
+notes = "Wrong MOSFET orientation can leave the heater stuck on or un-switchable."
+
+[[assembly_orientation_checks]]
+id = "heater_gate_driver_orientation"
+part_id = "heater_gate_driver"
+reference = "U7"
+package_class = "SOIC-8 gate driver"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "SOIC pin-1 mark to HEATER_PWM/GATE_DRV pin map"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml U7 rotation", "TC4427 package pin-1", "heater PWM transient gate"]
+verification_method = "Inspect U7 pin-1 mark and verify GATE_DRV follows HEATER_PWM before connecting the heater."
+notes = "Wrong driver orientation can put 12 V on the wrong pin or defeat fail-closed behavior."
+
+[[assembly_orientation_checks]]
+id = "ldo_orientation"
+part_id = "three_v_three_regulator"
+reference = "U3"
+package_class = "SOT-223 regulator"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "SOT-223 tab/output orientation"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml U3 rotation", "AMS1117 SOT-223 tab orientation", "3.3 V first-article measurement"]
+verification_method = "Inspect U3 tab orientation and confirm +3V3 before flashing."
+notes = "Wrong regulator orientation can overvoltage the ESP32 3.3 V rail."
+
+[[assembly_orientation_checks]]
+id = "ads1115_orientation"
+part_id = "adc"
+reference = "U4"
+package_class = "MSOP-10 ADC"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "MSOP pin-1 dot to SDA/SCL/ADDR/ADC pin map"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml U4 rotation", "ADS1115 pin-1 mark", "I2C bus validation gate"]
+verification_method = "Inspect U4 pin-1 mark and verify ADS1115 I2C address plus ADC_AIN1 range."
+notes = "Wrong ADC orientation breaks the optical/temperature readout path."
+
+[[assembly_orientation_checks]]
+id = "optical_mux_orientation"
+part_id = "optical_mux"
+reference = "U5"
+package_class = "SOIC-16 analog mux"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "SOIC pin-1 mark to MUX_COM/MUX_Sx pin map"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml U5 rotation", "CD74HC4051 package pin-1", "optical crosstalk gate"]
+verification_method = "Inspect U5 pin-1 mark and verify mux channel selection during calibration."
+notes = "Wrong mux orientation can permute or short optical channels."
+
+[[assembly_orientation_checks]]
+id = "tia_opamp_orientation"
+part_id = "optical_tia_opamp"
+reference = "U6"
+package_class = "SOT-23-5 op amp"
+expected_side = "top"
+expected_rotation_deg = 0.0
+orientation_feature = "SOT-23-5 pin-1/output orientation to ADC_AIN1"
+centroid_source = "placement.toml locked coordinate and KiCad CPL export"
+assembly_method = "machine"
+pin1_evidence = ["placement.toml U6 rotation", "TLV6001 package pin-1", "analog front-end transient gate"]
+verification_method = "Inspect U6 pin-1 mark and verify dark/light ADC_AIN1 envelope."
+notes = "Wrong op-amp orientation can rail or short the analog front end."
 
 [[procurement_critical_parts]]
 id = "mcu_module"

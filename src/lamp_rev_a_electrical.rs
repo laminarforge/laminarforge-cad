@@ -25,6 +25,7 @@ pub struct ElectricalOutputPaths {
     pub usb_power_budget_csv: PathBuf,
     pub procurement_readiness_csv: PathBuf,
     pub connector_polarity_csv: PathBuf,
+    pub assembly_orientation_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
     pub heater_protection_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
@@ -82,6 +83,9 @@ struct ValidationConfig {
     connector_polarity_policy: ConnectorPolarityPolicy,
     #[serde(default)]
     connector_polarity_checks: Vec<ConnectorPolarityCheck>,
+    assembly_orientation_policy: AssemblyOrientationPolicy,
+    #[serde(default)]
+    assembly_orientation_checks: Vec<AssemblyOrientationCheck>,
     #[serde(default)]
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
     simulation_input_policy: SimulationInputPolicy,
@@ -163,6 +167,7 @@ struct Outputs {
     usb_power_budget_csv: String,
     procurement_readiness_csv: String,
     connector_polarity_csv: String,
+    assembly_orientation_csv: String,
     i2c_bus_csv: String,
     heater_protection_csv: String,
     startup_safety_csv: String,
@@ -378,6 +383,35 @@ struct ConnectorPolarityCheck {
     #[serde(default)]
     required_nets: Vec<String>,
     orientation_evidence: Vec<String>,
+    verification_method: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct AssemblyOrientationPolicy {
+    min_checks: usize,
+    default_side: String,
+    max_rotation_error_deg: f64,
+    require_locked_placements: bool,
+    require_machine_assembled: bool,
+    required_check_ids: Vec<String>,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct AssemblyOrientationCheck {
+    id: String,
+    part_id: String,
+    reference: String,
+    package_class: String,
+    expected_side: String,
+    expected_rotation_deg: f64,
+    #[serde(default)]
+    rotation_tolerance_deg: Option<f64>,
+    orientation_feature: String,
+    centroid_source: String,
+    assembly_method: String,
+    pin1_evidence: Vec<String>,
     verification_method: String,
     notes: String,
 }
@@ -1113,6 +1147,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         usb_power_budget_csv: repo_root.join(config.outputs.usb_power_budget_csv),
         procurement_readiness_csv: repo_root.join(config.outputs.procurement_readiness_csv),
         connector_polarity_csv: repo_root.join(config.outputs.connector_polarity_csv),
+        assembly_orientation_csv: repo_root.join(config.outputs.assembly_orientation_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
@@ -1193,6 +1228,7 @@ pub fn validate_to_outputs(
         &mut rows,
         &mut errors,
     );
+    validate_assembly_orientation(&config, &parts, &placement, &mut rows, &mut errors);
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
@@ -1265,6 +1301,7 @@ pub fn validate_to_outputs(
     write_usb_power_budget_handoff(&config, &parts, outputs)?;
     write_procurement_readiness_handoff(&config, &parts, outputs)?;
     write_connector_polarity_handoff(&config, outputs)?;
+    write_assembly_orientation_handoff(&config, &placement, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_heater_protection_handoff(&config, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
@@ -1330,6 +1367,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.emc_esd_checks.is_empty()
         || config.procurement_critical_parts.is_empty()
         || config.connector_polarity_checks.is_empty()
+        || config.assembly_orientation_checks.is_empty()
         || config.boot_startup_checks.is_empty()
         || config.manufacturing_test_checks.is_empty()
         || config.calibration_checks.is_empty()
@@ -4831,6 +4869,212 @@ fn validate_connector_polarity(
             &check.notes,
         );
     }
+}
+
+fn validate_assembly_orientation(
+    config: &ValidationConfig,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.assembly_orientation_policy;
+    let selected_parts = selected_part_ids(parts);
+    let placements = placement
+        .placements
+        .iter()
+        .map(|placement| (placement.reference.as_str(), placement))
+        .collect::<BTreeMap<_, _>>();
+    let check_ids = config
+        .assembly_orientation_checks
+        .iter()
+        .map(|check| check.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "assembly orientation",
+        "minimum assembly orientation coverage",
+        format!("{} checks", config.assembly_orientation_checks.len()),
+        format!(">= {} checks", policy.min_checks),
+        config.assembly_orientation_checks.len() >= policy.min_checks,
+        &policy.notes,
+    );
+
+    for required_id in &policy.required_check_ids {
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{required_id} required check"),
+            required_id.clone(),
+            "declared assembly_orientation_checks entry",
+            check_ids.contains(required_id.as_str()),
+            &policy.notes,
+        );
+    }
+
+    let mut ids = BTreeSet::new();
+    for check in &config.assembly_orientation_checks {
+        let placed = placements.get(check.reference.as_str());
+        let tolerance = check
+            .rotation_tolerance_deg
+            .unwrap_or(policy.max_rotation_error_deg);
+        let rotation_error = placed.map(|placement| {
+            rotation_delta_deg(placement.rotation_deg, check.expected_rotation_deg)
+        });
+
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} selected part", check.id),
+            check.part_id.clone(),
+            "selected part id",
+            selected_parts.contains(check.part_id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} placement part", check.id),
+            check.reference.clone(),
+            "placement entry with matching part_id",
+            placed
+                .map(|placement| placement.part_id.as_str() == check.part_id.as_str())
+                .unwrap_or(false),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} placement side", check.id),
+            placed
+                .map(|placement| placement.side.clone())
+                .unwrap_or_else(|| "missing".to_string()),
+            check.expected_side.clone(),
+            placed
+                .map(|placement| placement.side.as_str() == check.expected_side.as_str())
+                .unwrap_or(false),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} default side agreement", check.id),
+            check.expected_side.clone(),
+            policy.default_side.clone(),
+            check.expected_side == policy.default_side,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} placement rotation", check.id),
+            rotation_error
+                .map(|error| format!("{error:.3} deg error"))
+                .unwrap_or_else(|| "missing placement".to_string()),
+            format!("<= {tolerance:.3} deg"),
+            rotation_error
+                .map(|error| error <= tolerance)
+                .unwrap_or(false),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} locked placement", check.id),
+            placed
+                .map(|placement| placement.locked.to_string())
+                .unwrap_or_else(|| "missing".to_string()),
+            "true",
+            !policy.require_locked_placements
+                || placed.map(|placement| placement.locked).unwrap_or(false),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} assembly method", check.id),
+            check.assembly_method.clone(),
+            "machine",
+            !policy.require_machine_assembled || check.assembly_method == "machine",
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} package class", check.id),
+            check.package_class.clone(),
+            "non-empty",
+            !check.package_class.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} orientation feature", check.id),
+            check.orientation_feature.clone(),
+            "non-empty",
+            !check.orientation_feature.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} centroid source", check.id),
+            check.centroid_source.clone(),
+            "placement.toml and KiCad CPL",
+            check.centroid_source.contains("placement.toml")
+                && check.centroid_source.contains("KiCad"),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} pin-1 evidence", check.id),
+            check.pin1_evidence.join("; "),
+            ">= 2 evidence items",
+            check.pin1_evidence.len() >= 2,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly orientation",
+            format!("{} verification method", check.id),
+            check.verification_method.clone(),
+            "non-empty",
+            !check.verification_method.trim().is_empty(),
+            &check.notes,
+        );
+    }
+}
+
+fn rotation_delta_deg(actual: f64, expected: f64) -> f64 {
+    let delta = (actual - expected).rem_euclid(360.0).abs();
+    delta.min(360.0 - delta)
 }
 
 #[derive(Debug, Default)]
@@ -9122,6 +9366,87 @@ fn write_connector_polarity_handoff(
     Ok(())
 }
 
+fn write_assembly_orientation_handoff(
+    config: &ValidationConfig,
+    placement: &PlacementPlan,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.assembly_orientation_csv)?;
+    let placements = placement
+        .placements
+        .iter()
+        .map(|placement| (placement.reference.as_str(), placement))
+        .collect::<BTreeMap<_, _>>();
+    let mut writer = csv::Writer::from_path(&outputs.assembly_orientation_csv)?;
+    writer.write_record([
+        "id",
+        "part_id",
+        "reference",
+        "package_class",
+        "expected_side",
+        "actual_side",
+        "expected_rotation_deg",
+        "actual_rotation_deg",
+        "rotation_error_deg",
+        "rotation_tolerance_deg",
+        "orientation_feature",
+        "centroid_source",
+        "pin1_evidence",
+        "verification_method",
+        "status",
+        "notes",
+    ])?;
+
+    for check in &config.assembly_orientation_checks {
+        let placed = placements.get(check.reference.as_str());
+        let actual_side = placed
+            .map(|placement| placement.side.clone())
+            .unwrap_or_else(|| "missing".to_string());
+        let actual_rotation = placed.map(|placement| placement.rotation_deg);
+        let rotation_error =
+            actual_rotation.map(|actual| rotation_delta_deg(actual, check.expected_rotation_deg));
+        let tolerance = check
+            .rotation_tolerance_deg
+            .unwrap_or(config.assembly_orientation_policy.max_rotation_error_deg);
+        let status = if actual_side == check.expected_side
+            && rotation_error
+                .map(|error| error <= tolerance)
+                .unwrap_or(false)
+            && check.pin1_evidence.len() >= 2
+            && !check.verification_method.trim().is_empty()
+        {
+            "pass"
+        } else {
+            "fail"
+        };
+        writer.write_record([
+            check.id.clone(),
+            check.part_id.clone(),
+            check.reference.clone(),
+            check.package_class.clone(),
+            check.expected_side.clone(),
+            actual_side,
+            format!("{:.3}", check.expected_rotation_deg),
+            actual_rotation
+                .map(|rotation| format!("{rotation:.3}"))
+                .unwrap_or_else(|| "missing".to_string()),
+            rotation_error
+                .map(|error| format!("{error:.3}"))
+                .unwrap_or_else(|| "missing".to_string()),
+            format!("{tolerance:.3}"),
+            check.orientation_feature.clone(),
+            check.centroid_source.clone(),
+            check.pin1_evidence.join(";"),
+            check.verification_method.clone(),
+            status.to_string(),
+            check.notes.clone(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_i2c_bus_handoff(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -9861,6 +10186,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("connector_polarity.csv")
+    )?;
+    writeln!(
+        report,
+        "- Assembly orientation table: `{}`",
+        outputs
+            .assembly_orientation_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("assembly_orientation.csv")
     )?;
     writeln!(
         report,
