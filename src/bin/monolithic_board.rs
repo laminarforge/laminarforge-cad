@@ -768,7 +768,7 @@ fn main() {
     );
     d.push_str("  TECHNICAL DRAWING -- MONOLITHIC 16-CHAMBER MICROFLUIDIC BOARD\n");
     d.push_str("  AAV Selectivity Screening Platform\n");
-    d.push_str("  LaminarForge Nonprofit\n");
+    d.push_str("  LaminarForge\n");
     d.push_str(
         "================================================================================\n",
     );
@@ -1550,7 +1550,7 @@ fn main() {
     s.push_str("╔══════════════════════════════════════════════════════════════════════════╗\n");
     s.push_str("║  CNC MANUFACTURING SPEC SHEET                                          ║\n");
     s.push_str("║  Monolithic 16-Chamber Microfluidic Board                               ║\n");
-    s.push_str("║  LaminarForge Nonprofit — laminarforge.org                              ║\n");
+    s.push_str("║  LaminarForge — laminarforge.org                                        ║\n");
     s.push_str("╚══════════════════════════════════════════════════════════════════════════╝\n");
     s.push('\n');
     s.push_str("FILES INCLUDED:\n");
@@ -1704,7 +1704,7 @@ fn main() {
     s.push_str("═══════════════════════════════════════════════════\n");
     s.push_str("CONTACT\n");
     s.push_str("═══════════════════════════════════════════════════\n");
-    s.push_str("  LaminarForge Nonprofit\n");
+    s.push_str("  LaminarForge\n");
     s.push_str("  Alex Lewis — Founder\n");
     s.push_str("  laminarforge.org\n");
 

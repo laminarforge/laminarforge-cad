@@ -655,7 +655,7 @@ fn main() {
     );
     drawing.push_str("  TECHNICAL DRAWING -- FLUIDIC CIRCUIT BOARD (FCB16)\n");
     drawing.push_str("  16-Chamber AAV Selectivity Screening Platform\n");
-    drawing.push_str("  LaminarForge Nonprofit\n");
+    drawing.push_str("  LaminarForge\n");
     drawing.push_str(
         "================================================================================\n",
     );
