@@ -31,6 +31,7 @@ pub struct ElectricalOutputPaths {
     pub i2c_bus_csv: PathBuf,
     pub heater_protection_csv: PathBuf,
     pub external_harness_csv: PathBuf,
+    pub mechanical_access_csv: PathBuf,
     pub startup_safety_csv: PathBuf,
     pub manufacturing_test_csv: PathBuf,
     pub calibration_readiness_csv: PathBuf,
@@ -117,6 +118,9 @@ struct ValidationConfig {
     external_harness_policy: ExternalHarnessPolicy,
     #[serde(default)]
     external_harness_checks: Vec<ExternalHarnessCheck>,
+    mechanical_access_policy: MechanicalAccessPolicy,
+    #[serde(default)]
+    mechanical_access_checks: Vec<MechanicalAccessCheck>,
     boot_startup_policy: BootStartupPolicy,
     #[serde(default)]
     boot_startup_checks: Vec<BootStartupCheck>,
@@ -186,6 +190,7 @@ struct Outputs {
     i2c_bus_csv: String,
     heater_protection_csv: String,
     external_harness_csv: String,
+    mechanical_access_csv: String,
     startup_safety_csv: String,
     manufacturing_test_csv: String,
     calibration_readiness_csv: String,
@@ -915,6 +920,38 @@ struct ExternalHarnessCheck {
 }
 
 #[derive(Debug, Deserialize)]
+struct MechanicalAccessPolicy {
+    min_checks: usize,
+    min_edge_clearance_mm: f64,
+    min_service_clearance_mm: f64,
+    require_known_zone: bool,
+    require_top_side: bool,
+    require_locked_placement: bool,
+    require_service_clearance: bool,
+    require_measurement_evidence: bool,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct MechanicalAccessCheck {
+    id: String,
+    target_kind: String,
+    target: String,
+    role: String,
+    #[serde(default)]
+    required_zone: Option<String>,
+    required_side: String,
+    #[serde(default)]
+    min_edge_clearance_mm: Option<f64>,
+    #[serde(default)]
+    min_service_clearance_mm: Option<f64>,
+    access_direction: String,
+    required_measurements: Vec<String>,
+    pass_criterion: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct BootStartupPolicy {
     min_checks: usize,
     require_all_boot_sensitive_firmware_pins: bool,
@@ -1013,13 +1050,22 @@ struct ValidationTraceability {
 
 #[derive(Debug, Deserialize)]
 struct Contract {
+    board: ContractBoard,
     #[serde(default)]
     modules: Vec<ContractModule>,
     stackup: Stackup,
+    #[serde(default)]
+    zones: Vec<ContractZone>,
     rails: Vec<ContractRail>,
     nets: Vec<ContractNet>,
     #[serde(default)]
     net_groups: Vec<ContractNetGroup>,
+}
+
+#[derive(Debug, Deserialize)]
+struct ContractBoard {
+    width_mm: f64,
+    height_mm: f64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -1034,6 +1080,15 @@ struct ContractModule {
 struct Stackup {
     outer_copper_oz: f64,
     inner_copper_oz: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct ContractZone {
+    name: String,
+    x_min_mm: f64,
+    x_max_mm: f64,
+    y_min_mm: f64,
+    y_max_mm: f64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -1258,6 +1313,7 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
         external_harness_csv: repo_root.join(config.outputs.external_harness_csv),
+        mechanical_access_csv: repo_root.join(config.outputs.mechanical_access_csv),
         startup_safety_csv: repo_root.join(config.outputs.startup_safety_csv),
         manufacturing_test_csv: repo_root.join(config.outputs.manufacturing_test_csv),
         calibration_readiness_csv: repo_root.join(config.outputs.calibration_readiness_csv),
@@ -1365,6 +1421,7 @@ pub fn validate_to_outputs(
     );
     validate_heater_protection(&config, &parts, &mut rows, &mut errors);
     validate_external_harness_safety(&config, &parts, &contract_nets, &mut rows, &mut errors);
+    validate_mechanical_access(&config, &contract, &placement, &mut rows, &mut errors);
     validate_boot_startup_safety(
         &config,
         &parts,
@@ -1427,6 +1484,7 @@ pub fn validate_to_outputs(
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_heater_protection_handoff(&config, outputs)?;
     write_external_harness_handoff(&config, outputs)?;
+    write_mechanical_access_handoff(&config, &contract, &placement, outputs)?;
     write_startup_safety_handoff(&config, outputs)?;
     write_manufacturing_test_handoff(&config, outputs)?;
     write_calibration_readiness_handoff(&config, outputs)?;
@@ -7089,6 +7147,328 @@ fn min_harness_temperature_c(config: &ValidationConfig, check: &ExternalHarnessC
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+struct MechanicalTarget<'a> {
+    x_mm: f64,
+    y_mm: f64,
+    side: &'a str,
+    zone: Option<&'a str>,
+    locked: Option<bool>,
+}
+
+fn validate_mechanical_access(
+    config: &ValidationConfig,
+    contract: &Contract,
+    placement: &PlacementPlan,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.mechanical_access_policy;
+    let zones = contract
+        .zones
+        .iter()
+        .map(|zone| (zone.name.as_str(), zone))
+        .collect::<BTreeMap<_, _>>();
+    let placements = placement
+        .placements
+        .iter()
+        .map(|item| (item.reference.as_str(), item))
+        .collect::<BTreeMap<_, _>>();
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|item| (item.name.as_str(), item))
+        .collect::<BTreeMap<_, _>>();
+    let measurement_ids = config
+        .first_article_measurements
+        .iter()
+        .map(|measurement| measurement.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "mechanical access",
+        "minimum mechanical access coverage",
+        format!("{} checks", config.mechanical_access_checks.len()),
+        format!(">= {} checks", policy.min_checks),
+        config.mechanical_access_checks.len() >= policy.min_checks,
+        &policy.notes,
+    );
+
+    let mut ids = BTreeSet::new();
+    for check in &config.mechanical_access_checks {
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} target kind", check.id),
+            check.target_kind.clone(),
+            "placement or test_point",
+            matches!(check.target_kind.as_str(), "placement" | "test_point"),
+            &check.notes,
+        );
+
+        let target = mechanical_target(check, &placements, &test_points);
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} target exists", check.id),
+            format!("{} {}", check.target_kind, check.target),
+            "known placement reference or test point name",
+            target.is_some(),
+            &check.notes,
+        );
+
+        let Some(target) = target else {
+            continue;
+        };
+
+        let side_ok = target.side == check.required_side
+            && (!policy.require_top_side || target.side.eq_ignore_ascii_case("top"));
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} side", check.id),
+            target.side.to_string(),
+            if policy.require_top_side {
+                format!("{} and top", check.required_side)
+            } else {
+                check.required_side.clone()
+            },
+            side_ok,
+            &check.notes,
+        );
+
+        if policy.require_locked_placement && check.target_kind == "placement" {
+            push_gate!(
+                rows,
+                errors,
+                "mechanical access",
+                format!("{} locked placement", check.id),
+                target
+                    .locked
+                    .map(|locked| locked.to_string())
+                    .unwrap_or_else(|| "missing".to_string()),
+                "true",
+                target.locked.unwrap_or(false),
+                &check.notes,
+            );
+        }
+
+        let min_edge_clearance_mm = check
+            .min_edge_clearance_mm
+            .unwrap_or(policy.min_edge_clearance_mm);
+        let edge_clearance_mm = board_edge_clearance_mm(
+            target.x_mm,
+            target.y_mm,
+            contract.board.width_mm,
+            contract.board.height_mm,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} board-edge clearance", check.id),
+            format!("{edge_clearance_mm:.3} mm"),
+            format!(">= {min_edge_clearance_mm:.3} mm"),
+            edge_clearance_mm >= min_edge_clearance_mm,
+            &check.notes,
+        );
+
+        let min_service_clearance_mm = check
+            .min_service_clearance_mm
+            .unwrap_or(policy.min_service_clearance_mm);
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} service clearance", check.id),
+            format!("{min_service_clearance_mm:.3} mm declared"),
+            format!(">= {:.3} mm", policy.min_service_clearance_mm),
+            !policy.require_service_clearance
+                || min_service_clearance_mm >= policy.min_service_clearance_mm,
+            &check.notes,
+        );
+
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} access direction", check.id),
+            check.access_direction.clone(),
+            "non-empty",
+            !check.access_direction.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} pass criterion", check.id),
+            check.pass_criterion.clone(),
+            "non-empty",
+            !check.pass_criterion.trim().is_empty(),
+            &check.notes,
+        );
+
+        validate_mechanical_zone(config, contract, &zones, check, target, rows, errors);
+
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} measurement evidence count", check.id),
+            format!("{} measurements", check.required_measurements.len()),
+            ">= 1 known first-article measurement",
+            !policy.require_measurement_evidence || !check.required_measurements.is_empty(),
+            &check.notes,
+        );
+        for measurement in &check.required_measurements {
+            push_gate!(
+                rows,
+                errors,
+                "mechanical access",
+                format!("{} measurement {}", check.id, measurement),
+                measurement.clone(),
+                "known first-article measurement id",
+                !policy.require_measurement_evidence
+                    || measurement_ids.contains(measurement.as_str()),
+                &check.notes,
+            );
+        }
+    }
+}
+
+fn mechanical_target<'a>(
+    check: &MechanicalAccessCheck,
+    placements: &'a BTreeMap<&str, &'a Placement>,
+    test_points: &'a BTreeMap<&str, &'a TestPoint>,
+) -> Option<MechanicalTarget<'a>> {
+    match check.target_kind.as_str() {
+        "placement" => placements
+            .get(check.target.as_str())
+            .map(|item| MechanicalTarget {
+                x_mm: item.x_mm,
+                y_mm: item.y_mm,
+                side: item.side.as_str(),
+                zone: Some(item.zone.as_str()),
+                locked: Some(item.locked),
+            }),
+        "test_point" => test_points
+            .get(check.target.as_str())
+            .map(|item| MechanicalTarget {
+                x_mm: item.x_mm,
+                y_mm: item.y_mm,
+                side: item.side.as_str(),
+                zone: None,
+                locked: None,
+            }),
+        _ => None,
+    }
+}
+
+fn validate_mechanical_zone(
+    config: &ValidationConfig,
+    contract: &Contract,
+    zones: &BTreeMap<&str, &ContractZone>,
+    check: &MechanicalAccessCheck,
+    target: MechanicalTarget<'_>,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.mechanical_access_policy;
+    if let Some(required_zone) = &check.required_zone {
+        let zone = zones.get(required_zone.as_str()).copied();
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} required zone exists", check.id),
+            required_zone.clone(),
+            "known contract zone",
+            zone.is_some(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} placement zone", check.id),
+            target.zone.unwrap_or("n/a").to_string(),
+            required_zone.clone(),
+            target.zone == Some(required_zone.as_str()),
+            &check.notes,
+        );
+        if let Some(zone) = zone {
+            push_gate!(
+                rows,
+                errors,
+                "mechanical access",
+                format!("{} coordinate inside zone", check.id),
+                format!("{:.3},{:.3}", target.x_mm, target.y_mm),
+                format!(
+                    "{:.3}..{:.3} x {:.3}..{:.3}",
+                    zone.x_min_mm, zone.x_max_mm, zone.y_min_mm, zone.y_max_mm
+                ),
+                point_in_zone(target.x_mm, target.y_mm, zone),
+                &check.notes,
+            );
+        }
+    } else if policy.require_known_zone && check.target_kind == "placement" {
+        push_gate!(
+            rows,
+            errors,
+            "mechanical access",
+            format!("{} known zone", check.id),
+            target.zone.unwrap_or("missing").to_string(),
+            "known contract zone",
+            target
+                .zone
+                .map(|zone| zones.contains_key(zone))
+                .unwrap_or(false),
+            &check.notes,
+        );
+    }
+
+    push_gate!(
+        rows,
+        errors,
+        "mechanical access",
+        format!("{} board coordinate", check.id),
+        format!("{:.3},{:.3}", target.x_mm, target.y_mm),
+        format!(
+            "inside {:.3} x {:.3} mm board",
+            contract.board.width_mm, contract.board.height_mm
+        ),
+        target.x_mm >= 0.0
+            && target.y_mm >= 0.0
+            && target.x_mm <= contract.board.width_mm
+            && target.y_mm <= contract.board.height_mm,
+        &check.notes,
+    );
+}
+
+fn board_edge_clearance_mm(x_mm: f64, y_mm: f64, width_mm: f64, height_mm: f64) -> f64 {
+    x_mm.min(y_mm).min(width_mm - x_mm).min(height_mm - y_mm)
+}
+
+fn point_in_zone(x_mm: f64, y_mm: f64, zone: &ContractZone) -> bool {
+    x_mm >= zone.x_min_mm && x_mm <= zone.x_max_mm && y_mm >= zone.y_min_mm && y_mm <= zone.y_max_mm
+}
+
 fn validate_boot_startup_safety(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -10451,6 +10831,100 @@ fn write_external_harness_handoff(
     Ok(())
 }
 
+fn write_mechanical_access_handoff(
+    config: &ValidationConfig,
+    contract: &Contract,
+    placement: &PlacementPlan,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.mechanical_access_csv)?;
+    let placements = placement
+        .placements
+        .iter()
+        .map(|item| (item.reference.as_str(), item))
+        .collect::<BTreeMap<_, _>>();
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|item| (item.name.as_str(), item))
+        .collect::<BTreeMap<_, _>>();
+
+    let mut writer = csv::Writer::from_path(&outputs.mechanical_access_csv)?;
+    writer.write_record([
+        "id",
+        "target_kind",
+        "target",
+        "role",
+        "x_mm",
+        "y_mm",
+        "side",
+        "zone",
+        "locked",
+        "edge_clearance_mm",
+        "min_edge_clearance_mm",
+        "service_clearance_mm",
+        "access_direction",
+        "required_measurements",
+        "pass_criterion",
+        "notes",
+    ])?;
+
+    for check in &config.mechanical_access_checks {
+        let target = mechanical_target(check, &placements, &test_points);
+        let min_edge_clearance_mm = check
+            .min_edge_clearance_mm
+            .unwrap_or(config.mechanical_access_policy.min_edge_clearance_mm);
+        let min_service_clearance_mm = check
+            .min_service_clearance_mm
+            .unwrap_or(config.mechanical_access_policy.min_service_clearance_mm);
+        let edge_clearance_mm = target
+            .map(|target| {
+                board_edge_clearance_mm(
+                    target.x_mm,
+                    target.y_mm,
+                    contract.board.width_mm,
+                    contract.board.height_mm,
+                )
+            })
+            .unwrap_or(f64::NAN);
+
+        writer.write_record([
+            check.id.as_str(),
+            check.target_kind.as_str(),
+            check.target.as_str(),
+            check.role.as_str(),
+            target
+                .map(|target| format!("{:.3}", target.x_mm))
+                .unwrap_or_else(|| "missing".to_string())
+                .as_str(),
+            target
+                .map(|target| format!("{:.3}", target.y_mm))
+                .unwrap_or_else(|| "missing".to_string())
+                .as_str(),
+            target
+                .map(|target| target.side.to_string())
+                .unwrap_or_else(|| "missing".to_string())
+                .as_str(),
+            target.and_then(|target| target.zone).unwrap_or("n/a"),
+            target
+                .and_then(|target| target.locked)
+                .map(|locked| locked.to_string())
+                .unwrap_or_else(|| "n/a".to_string())
+                .as_str(),
+            format!("{edge_clearance_mm:.3}").as_str(),
+            format!("{min_edge_clearance_mm:.3}").as_str(),
+            format!("{min_service_clearance_mm:.3}").as_str(),
+            check.access_direction.as_str(),
+            mitigation_list(&check.required_measurements).as_str(),
+            check.pass_criterion.as_str(),
+            check.notes.as_str(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_startup_safety_handoff(
     config: &ValidationConfig,
     outputs: &ElectricalOutputPaths,
@@ -11117,6 +11591,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("external_harness_safety.csv")
+    )?;
+    writeln!(
+        report,
+        "- Mechanical access/serviceability table: `{}`",
+        outputs
+            .mechanical_access_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("mechanical_access.csv")
     )?;
     writeln!(
         report,

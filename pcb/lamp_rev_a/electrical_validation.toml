@@ -36,6 +36,7 @@ assembly_orientation_csv = "pcb/lamp_rev_a/reports/assembly_orientation.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
 external_harness_csv = "pcb/lamp_rev_a/reports/external_harness_safety.csv"
+mechanical_access_csv = "pcb/lamp_rev_a/reports/mechanical_access.csv"
 startup_safety_csv = "pcb/lamp_rev_a/reports/startup_safety.csv"
 manufacturing_test_csv = "pcb/lamp_rev_a/reports/manufacturing_test_coverage.csv"
 calibration_readiness_csv = "pcb/lamp_rev_a/reports/calibration_readiness.csv"
@@ -362,6 +363,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
 acceptance_criterion = "12 V adapter, heater leads, inline cutoff, polarity marking, wire gauge, current/voltage/temperature ratings, strain relief, and first-article checks are declared and evidence-backed."
 blocks_release = true
 notes = "This covers dangerous off-board installation mistakes that ERC/DRC and on-board heater protection cannot catch."
+
+[[validation_traceability]]
+id = "mechanical_service_access"
+validation_layer = "Mechanical integration and service access"
+electrical_gate_category = "mechanical access"
+output_artifact = "mechanical_access.csv; electrical_validation_gates.csv"
+release_manifest_entry = "mechanical_access; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release"
+acceptance_criterion = "Critical connectors, heater switch, boot/reset pads, analog probe point, and I2C probe point are on the expected side with edge/service clearance and first-article evidence."
+blocks_release = true
+notes = "This prevents an electrically valid PCBA from being impossible to plug in, probe, clamp, inspect, or service in the enclosure/fixture."
 
 [[validation_traceability]]
 id = "startup_fail_closed"
@@ -1680,6 +1692,125 @@ polarity_marking = "USB-C keyed cable; do not backfeed heater 12 V through USB d
 strain_relief = "USB cable must be supported during flashing so the connector is not used as a handle."
 pass_criterion = "USB-only flashing and rail measurements pass before the external 12 V heater source is connected."
 notes = "This keeps programming/service wiring separated from the higher-energy heater harness."
+
+[mechanical_access_policy]
+min_checks = 8
+min_edge_clearance_mm = 2.0
+min_service_clearance_mm = 5.0
+require_known_zone = true
+require_top_side = true
+require_locked_placement = true
+require_service_clearance = true
+require_measurement_evidence = true
+notes = "Critical off-board and service features must be reachable before committing the Rev A fab release."
+
+[[mechanical_access_checks]]
+id = "usb_c_service_access"
+target_kind = "placement"
+target = "J1"
+role = "USB-C programming and USB-derived power service connector"
+required_zone = "mcu_usb"
+required_side = "top"
+min_edge_clearance_mm = 2.0
+min_service_clearance_mm = 5.0
+access_direction = "left board edge USB service opening"
+required_measurements = ["usb_vbus_voltage", "usb_5v_voltage", "usb_3v3_voltage"]
+pass_criterion = "USB cable can be inserted and supported without contacting heater harness wiring or blocking rail test points."
+notes = "USB service access must remain independent of external 12 V heater wiring."
+
+[[mechanical_access_checks]]
+id = "dc_input_jack_service_access"
+target_kind = "placement"
+target = "J2"
+role = "12 V adapter input connector"
+required_zone = "heater_power"
+required_side = "top"
+min_edge_clearance_mm = 2.0
+min_service_clearance_mm = 5.0
+access_direction = "right board edge heater power entry"
+required_measurements = ["heater_raw_12v_voltage"]
+pass_criterion = "12 V adapter lead can be connected, polarity-checked, and strain-relieved before heater enable."
+notes = "The barrel input is a high-energy external interface and must stay probeable."
+
+[[mechanical_access_checks]]
+id = "heater_terminal_service_access"
+target_kind = "placement"
+target = "J3"
+role = "External heater output screw terminal"
+required_zone = "heater_power"
+required_side = "top"
+min_edge_clearance_mm = 2.0
+min_service_clearance_mm = 5.0
+access_direction = "right board edge heater lead exit"
+required_measurements = ["heater_supply_voltage_pwm_off", "heater_return_pwm_off", "heater_pwm_idle"]
+pass_criterion = "Heater lead can be installed, torqued, strain-relieved, and probed with PWM disabled."
+notes = "J3 must remain physically accessible after the board is mounted in the heater fixture."
+
+[[mechanical_access_checks]]
+id = "heater_switch_probe_access"
+target_kind = "placement"
+target = "Q1"
+role = "Heater MOSFET inspection and thermal probe point"
+required_zone = "heater_power"
+required_side = "top"
+min_edge_clearance_mm = 5.0
+min_service_clearance_mm = 5.0
+access_direction = "top-side thermal probe and visual inspection"
+required_measurements = ["heater_pwm_idle", "heater_return_pwm_off"]
+pass_criterion = "MOSFET package remains visible and reachable for first-article case-temperature measurement."
+notes = "The heater switch is the key on-board heat source during bring-up."
+
+[[mechanical_access_checks]]
+id = "boot_pad_service_access"
+target_kind = "test_point"
+target = "TP_BOOT"
+role = "ESP32 GPIO0 boot strap probe"
+required_side = "top"
+min_edge_clearance_mm = 5.0
+min_service_clearance_mm = 5.0
+access_direction = "top-side probe access"
+required_measurements = ["esp_gpio0_boot_idle"]
+pass_criterion = "GPIO0 can be probed during reset/programming without removing the board."
+notes = "A boot-strap mistake can block service access even when USB routes pass."
+
+[[mechanical_access_checks]]
+id = "reset_pad_service_access"
+target_kind = "test_point"
+target = "TP_EN"
+role = "ESP32 EN/reset probe"
+required_side = "top"
+min_edge_clearance_mm = 5.0
+min_service_clearance_mm = 5.0
+access_direction = "top-side probe access"
+required_measurements = ["esp_en_idle"]
+pass_criterion = "EN/reset can be probed during USB flashing and startup validation."
+notes = "Reset accessibility shortens bring-up when the ESP32 does not enumerate."
+
+[[mechanical_access_checks]]
+id = "analog_adc_probe_access"
+target_kind = "test_point"
+target = "TP_ADC"
+role = "Optical analog ADC probe"
+required_side = "top"
+min_edge_clearance_mm = 5.0
+min_service_clearance_mm = 5.0
+access_direction = "optical fixture top-side probe access"
+required_measurements = ["analog_adc_idle"]
+pass_criterion = "ADC_AIN1 can be probed while optical slots remain mechanically accessible."
+notes = "Analog probe access is needed to debug dark baseline and optical response."
+
+[[mechanical_access_checks]]
+id = "i2c_probe_access"
+target_kind = "test_point"
+target = "TP_SDA"
+role = "I2C SDA probe"
+required_side = "top"
+min_edge_clearance_mm = 5.0
+min_service_clearance_mm = 5.0
+access_direction = "top-side logic-analyzer probe access"
+required_measurements = ["i2c_sda_idle", "i2c_ads1115_identity"]
+pass_criterion = "I2C SDA can be probed with a logic analyzer while USB power is connected."
+notes = "I2C probe access is required for ADS1115 bring-up and bus-fault debugging."
 
 [gpio_domain]
 mcu_reference = "U1"
