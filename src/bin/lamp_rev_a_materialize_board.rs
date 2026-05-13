@@ -452,6 +452,34 @@ fn write_board_geometry(
         1.0,
         counter,
     )?;
+    write_assembly_fixture_labels(board, counter)?;
+    Ok(())
+}
+
+fn write_assembly_fixture_labels(
+    board: &mut String,
+    counter: &mut UuidCounter,
+) -> Result<(), Box<dyn Error>> {
+    let labels = [
+        ("USB/VBUS", 12.0, 2.2, 0.8),
+        ("12V IN", 88.0, 2.2, 0.8),
+        ("HEATER", 90.0, 31.5, 0.8),
+        ("VBUS", 24.0, 3.2, 0.8),
+        ("3V3", 52.0, 3.2, 0.8),
+        ("H+", 88.0, 36.5, 0.8),
+        ("H-", 82.0, 28.2, 0.8),
+        ("PWM", 69.0, 5.8, 0.8),
+        ("BOOT", 38.5, 27.5, 0.8),
+        ("ADC", 40.0, 72.2, 0.8),
+        ("SDA", 28.0, 32.2, 0.8),
+        ("SCL", 32.0, 32.2, 0.8),
+        ("GND", 6.5, 36.2, 0.8),
+        ("RevA", 63.0, 76.0, 0.8),
+    ];
+
+    for (text, x_mm, y_mm, size_mm) in labels {
+        write_text(board, text, x_mm, y_mm, "F.SilkS", size_mm, counter)?;
+    }
     Ok(())
 }
 

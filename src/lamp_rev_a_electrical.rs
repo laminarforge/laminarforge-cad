@@ -29,6 +29,7 @@ pub struct ElectricalOutputPaths {
     pub connector_polarity_csv: PathBuf,
     pub assembly_orientation_csv: PathBuf,
     pub assembly_inspection_csv: PathBuf,
+    pub assembly_fixture_readability_csv: PathBuf,
     pub i2c_bus_csv: PathBuf,
     pub heater_protection_csv: PathBuf,
     pub external_harness_csv: PathBuf,
@@ -100,6 +101,9 @@ struct ValidationConfig {
     assembly_inspection_policy: AssemblyInspectionPolicy,
     #[serde(default)]
     assembly_inspection_checks: Vec<AssemblyInspectionCheck>,
+    assembly_fixture_policy: AssemblyFixturePolicy,
+    #[serde(default)]
+    assembly_fixture_checks: Vec<AssemblyFixtureCheck>,
     #[serde(default)]
     external_analysis_handoffs: Vec<ExternalAnalysisHandoff>,
     simulation_input_policy: SimulationInputPolicy,
@@ -161,6 +165,7 @@ struct Package {
 
 #[derive(Debug, Deserialize)]
 struct Inputs {
+    board: String,
     schematic: String,
     contract: String,
     parts: String,
@@ -192,6 +197,7 @@ struct Outputs {
     connector_polarity_csv: String,
     assembly_orientation_csv: String,
     assembly_inspection_csv: String,
+    assembly_fixture_readability_csv: String,
     i2c_bus_csv: String,
     heater_protection_csv: String,
     external_harness_csv: String,
@@ -489,6 +495,38 @@ struct AssemblyInspectionCheck {
     linked_orientation_check: Option<String>,
     #[serde(default)]
     linked_polarity_check: Option<String>,
+    evidence: Vec<String>,
+    verification_method: String,
+    failure_action: String,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct AssemblyFixturePolicy {
+    min_checks: usize,
+    min_label_chars: usize,
+    max_label_chars: usize,
+    allowed_target_kinds: Vec<String>,
+    allowed_criticalities: Vec<String>,
+    required_check_ids: Vec<String>,
+    require_target_exists: bool,
+    require_board_silkscreen_label: bool,
+    require_fixture_access: bool,
+    require_photo_evidence: bool,
+    require_failure_action: bool,
+    notes: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct AssemblyFixtureCheck {
+    id: String,
+    target_kind: String,
+    target: String,
+    criticality: String,
+    visible_label: String,
+    label_location: String,
+    fixture_reference: String,
+    access_direction: String,
     evidence: Vec<String>,
     verification_method: String,
     failure_action: String,
@@ -1348,6 +1386,8 @@ pub fn default_output_paths(repo_root: &Path) -> Result<ElectricalOutputPaths, B
         connector_polarity_csv: repo_root.join(config.outputs.connector_polarity_csv),
         assembly_orientation_csv: repo_root.join(config.outputs.assembly_orientation_csv),
         assembly_inspection_csv: repo_root.join(config.outputs.assembly_inspection_csv),
+        assembly_fixture_readability_csv: repo_root
+            .join(config.outputs.assembly_fixture_readability_csv),
         i2c_bus_csv: repo_root.join(config.outputs.i2c_bus_csv),
         heater_protection_csv: repo_root.join(config.outputs.heater_protection_csv),
         external_harness_csv: repo_root.join(config.outputs.external_harness_csv),
@@ -1398,6 +1438,7 @@ pub fn validate_to_outputs(
     let pin_nets = read_toml::<PinNetManifest>(&repo_root.join(&config.inputs.pin_nets))?;
     let firmware = read_toml::<FirmwareHandoff>(&repo_root.join(&config.inputs.firmware_handoff))?;
     let placement = read_toml::<PlacementPlan>(&repo_root.join(&config.inputs.placement))?;
+    let board = fs::read_to_string(repo_root.join(&config.inputs.board))?;
     let schematic = fs::read_to_string(repo_root.join(&config.inputs.schematic))?;
 
     let selected_part_ids = selected_part_ids(&parts);
@@ -1443,6 +1484,7 @@ pub fn validate_to_outputs(
     );
     validate_assembly_orientation(&config, &parts, &placement, &mut rows, &mut errors);
     validate_assembly_inspection(&config, &parts, &placement, &mut rows, &mut errors);
+    validate_assembly_fixture_readability(&config, &placement, &board, &mut rows, &mut errors);
     validate_gpio_domains(&config, &pin_nets, &firmware, &mut rows, &mut errors);
     validate_analog_ranges(&config, &contract_nets, &mut rows, &mut errors);
     validate_first_article_measurements(&config, &placement, &mut rows, &mut errors);
@@ -1521,6 +1563,7 @@ pub fn validate_to_outputs(
     write_connector_polarity_handoff(&config, outputs)?;
     write_assembly_orientation_handoff(&config, &placement, outputs)?;
     write_assembly_inspection_handoff(&config, &parts, &placement, outputs)?;
+    write_assembly_fixture_readability_handoff(&config, &placement, &board, outputs)?;
     write_i2c_bus_handoff(&config, &parts, &firmware, &placement, outputs)?;
     write_heater_protection_handoff(&config, outputs)?;
     write_external_harness_handoff(&config, outputs)?;
@@ -1590,6 +1633,8 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
         || config.schematic_source_parity_checks.is_empty()
         || config.connector_polarity_checks.is_empty()
         || config.assembly_orientation_checks.is_empty()
+        || config.assembly_inspection_checks.is_empty()
+        || config.assembly_fixture_checks.is_empty()
         || config.boot_startup_checks.is_empty()
         || config.manufacturing_test_checks.is_empty()
         || config.calibration_checks.is_empty()
@@ -1602,6 +1647,7 @@ fn validate_config_header(config: &ValidationConfig) -> Result<(), Box<dyn Error
 
 fn ensure_inputs(repo_root: &Path, inputs: &Inputs) -> Result<(), Box<dyn Error>> {
     for relative in [
+        &inputs.board,
         &inputs.schematic,
         &inputs.contract,
         &inputs.parts,
@@ -5805,12 +5851,262 @@ fn validate_assembly_inspection(
     }
 }
 
+fn validate_assembly_fixture_readability(
+    config: &ValidationConfig,
+    placement: &PlacementPlan,
+    board: &str,
+    rows: &mut Vec<GateRow>,
+    errors: &mut Vec<String>,
+) {
+    let policy = &config.assembly_fixture_policy;
+    let placements = placement
+        .placements
+        .iter()
+        .map(|placement| (placement.reference.as_str(), placement))
+        .collect::<BTreeMap<_, _>>();
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point))
+        .collect::<BTreeMap<_, _>>();
+    let allowed_target_kinds = policy
+        .allowed_target_kinds
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let allowed_criticalities = policy
+        .allowed_criticalities
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let check_ids = config
+        .assembly_fixture_checks
+        .iter()
+        .map(|check| check.id.as_str())
+        .collect::<BTreeSet<_>>();
+
+    push_gate!(
+        rows,
+        errors,
+        "assembly fixture readability",
+        "minimum fixture/readability coverage",
+        format!("{} checks", config.assembly_fixture_checks.len()),
+        format!(">= {} checks", policy.min_checks),
+        config.assembly_fixture_checks.len() >= policy.min_checks,
+        &policy.notes,
+    );
+
+    for required_id in &policy.required_check_ids {
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{required_id} required check"),
+            required_id.clone(),
+            "declared assembly_fixture_checks entry",
+            check_ids.contains(required_id.as_str()),
+            &policy.notes,
+        );
+    }
+
+    let mut ids = BTreeSet::new();
+    for check in &config.assembly_fixture_checks {
+        let target_exists = assembly_fixture_target_exists(check, &placements, &test_points);
+        let label_chars = check.visible_label.chars().count();
+        let has_label = board_has_silkscreen_label(board, &check.visible_label);
+        let has_photo_evidence = check
+            .evidence
+            .iter()
+            .any(|item| contains_inspection_photo_evidence(item));
+
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} unique id", check.id),
+            check.id.clone(),
+            "unique",
+            ids.insert(check.id.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} target kind", check.id),
+            check.target_kind.clone(),
+            format!("one of {}", policy.allowed_target_kinds.join(", ")),
+            allowed_target_kinds.contains(check.target_kind.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} target exists", check.id),
+            check.target.clone(),
+            "known placement or test point target",
+            !policy.require_target_exists || target_exists,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} criticality", check.id),
+            check.criticality.clone(),
+            format!("one of {}", policy.allowed_criticalities.join(", ")),
+            allowed_criticalities.contains(check.criticality.as_str()),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} visible label length", check.id),
+            format!("{label_chars} chars"),
+            format!(
+                "{}..{} chars",
+                policy.min_label_chars, policy.max_label_chars
+            ),
+            label_chars >= policy.min_label_chars && label_chars <= policy.max_label_chars,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} board silkscreen label", check.id),
+            check.visible_label.clone(),
+            "present as F.SilkS gr_text in KiCad board",
+            !policy.require_board_silkscreen_label || has_label,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} label location", check.id),
+            check.label_location.clone(),
+            "non-empty",
+            !check.label_location.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} fixture reference", check.id),
+            check.fixture_reference.clone(),
+            "non-empty",
+            !policy.require_fixture_access || !check.fixture_reference.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} access direction", check.id),
+            check.access_direction.clone(),
+            "non-empty",
+            !check.access_direction.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} photo evidence", check.id),
+            check.evidence.join("; "),
+            "photo/AOI/microscope evidence",
+            !policy.require_photo_evidence || has_photo_evidence,
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} verification method", check.id),
+            check.verification_method.clone(),
+            "non-empty",
+            !check.verification_method.trim().is_empty(),
+            &check.notes,
+        );
+        push_gate!(
+            rows,
+            errors,
+            "assembly fixture readability",
+            format!("{} failure action", check.id),
+            check.failure_action.clone(),
+            "non-empty",
+            !policy.require_failure_action || !check.failure_action.trim().is_empty(),
+            &check.notes,
+        );
+    }
+}
+
 fn contains_inspection_photo_evidence(value: &str) -> bool {
     let lower = value.to_ascii_lowercase();
     lower.contains("photo")
         || lower.contains("aoi")
         || lower.contains("microscope")
         || lower.contains("image")
+}
+
+fn assembly_fixture_target_exists(
+    check: &AssemblyFixtureCheck,
+    placements: &BTreeMap<&str, &Placement>,
+    test_points: &BTreeMap<&str, &TestPoint>,
+) -> bool {
+    match check.target_kind.as_str() {
+        "placement" => placements.contains_key(check.target.as_str()),
+        "test_point" => test_points.contains_key(check.target.as_str()),
+        "board_feature" => !check.target.trim().is_empty(),
+        _ => false,
+    }
+}
+
+fn assembly_fixture_target_coordinates(
+    check: &AssemblyFixtureCheck,
+    placements: &BTreeMap<&str, &Placement>,
+    test_points: &BTreeMap<&str, &TestPoint>,
+) -> (String, String, String) {
+    match check.target_kind.as_str() {
+        "placement" => placements
+            .get(check.target.as_str())
+            .map(|placement| {
+                (
+                    format!("{:.3}", placement.x_mm),
+                    format!("{:.3}", placement.y_mm),
+                    placement.side.clone(),
+                )
+            })
+            .unwrap_or_else(missing_coordinates),
+        "test_point" => test_points
+            .get(check.target.as_str())
+            .map(|point| {
+                (
+                    format!("{:.3}", point.x_mm),
+                    format!("{:.3}", point.y_mm),
+                    point.side.clone(),
+                )
+            })
+            .unwrap_or_else(missing_coordinates),
+        "board_feature" => ("n/a".to_string(), "n/a".to_string(), "top".to_string()),
+        _ => missing_coordinates(),
+    }
+}
+
+fn missing_coordinates() -> (String, String, String) {
+    (
+        "missing".to_string(),
+        "missing".to_string(),
+        "missing".to_string(),
+    )
+}
+
+fn board_has_silkscreen_label(board: &str, label: &str) -> bool {
+    board.contains(&format!("(gr_text \"{}\"", label)) && board.contains("(layer \"F.SilkS\")")
 }
 
 fn rotation_delta_deg(actual: f64, expected: f64) -> f64 {
@@ -11024,6 +11320,115 @@ fn write_assembly_inspection_handoff(
     Ok(())
 }
 
+fn write_assembly_fixture_readability_handoff(
+    config: &ValidationConfig,
+    placement: &PlacementPlan,
+    board: &str,
+    outputs: &ElectricalOutputPaths,
+) -> Result<(), Box<dyn Error>> {
+    ensure_parent(&outputs.assembly_fixture_readability_csv)?;
+    let placements = placement
+        .placements
+        .iter()
+        .map(|placement| (placement.reference.as_str(), placement))
+        .collect::<BTreeMap<_, _>>();
+    let test_points = placement
+        .test_points
+        .iter()
+        .map(|point| (point.name.as_str(), point))
+        .collect::<BTreeMap<_, _>>();
+    let allowed_target_kinds = config
+        .assembly_fixture_policy
+        .allowed_target_kinds
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let allowed_criticalities = config
+        .assembly_fixture_policy
+        .allowed_criticalities
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+
+    let mut writer = csv::Writer::from_path(&outputs.assembly_fixture_readability_csv)?;
+    writer.write_record([
+        "id",
+        "target_kind",
+        "target",
+        "target_x_mm",
+        "target_y_mm",
+        "target_side",
+        "criticality",
+        "visible_label",
+        "silkscreen_label_present",
+        "label_location",
+        "fixture_reference",
+        "access_direction",
+        "evidence",
+        "verification_method",
+        "failure_action",
+        "status",
+        "notes",
+    ])?;
+
+    for check in &config.assembly_fixture_checks {
+        let target_exists = assembly_fixture_target_exists(check, &placements, &test_points);
+        let label_chars = check.visible_label.chars().count();
+        let silkscreen_label_present = board_has_silkscreen_label(board, &check.visible_label);
+        let (target_x, target_y, target_side) =
+            assembly_fixture_target_coordinates(check, &placements, &test_points);
+        let status = if allowed_target_kinds.contains(check.target_kind.as_str())
+            && (!config.assembly_fixture_policy.require_target_exists || target_exists)
+            && allowed_criticalities.contains(check.criticality.as_str())
+            && label_chars >= config.assembly_fixture_policy.min_label_chars
+            && label_chars <= config.assembly_fixture_policy.max_label_chars
+            && (!config
+                .assembly_fixture_policy
+                .require_board_silkscreen_label
+                || silkscreen_label_present)
+            && !check.label_location.trim().is_empty()
+            && (!config.assembly_fixture_policy.require_fixture_access
+                || !check.fixture_reference.trim().is_empty())
+            && !check.access_direction.trim().is_empty()
+            && (!config.assembly_fixture_policy.require_photo_evidence
+                || check
+                    .evidence
+                    .iter()
+                    .any(|item| contains_inspection_photo_evidence(item)))
+            && !check.verification_method.trim().is_empty()
+            && (!config.assembly_fixture_policy.require_failure_action
+                || !check.failure_action.trim().is_empty())
+        {
+            "pass"
+        } else {
+            "fail"
+        };
+
+        writer.write_record([
+            check.id.clone(),
+            check.target_kind.clone(),
+            check.target.clone(),
+            target_x,
+            target_y,
+            target_side,
+            check.criticality.clone(),
+            check.visible_label.clone(),
+            silkscreen_label_present.to_string(),
+            check.label_location.clone(),
+            check.fixture_reference.clone(),
+            check.access_direction.clone(),
+            check.evidence.join(";"),
+            check.verification_method.clone(),
+            check.failure_action.clone(),
+            status.to_string(),
+            check.notes.clone(),
+        ])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
 fn write_i2c_bus_handoff(
     config: &ValidationConfig,
     parts: &PartsManifest,
@@ -11943,6 +12348,15 @@ fn write_simulation_handoff(
             .file_name()
             .and_then(|name| name.to_str())
             .unwrap_or("assembly_inspection.csv")
+    )?;
+    writeln!(
+        report,
+        "- Assembly fixture/readability table: `{}`",
+        outputs
+            .assembly_fixture_readability_csv
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("assembly_fixture_readability.csv")
     )?;
     writeln!(
         report,

@@ -5,6 +5,7 @@ revision = "Rev A"
 source_stage = "pre_fab_electrical_safety_gate"
 
 [inputs]
+board = "pcb/lamp_rev_a/lamp_rev_a.kicad_pcb"
 schematic = "pcb/lamp_rev_a/lamp_rev_a.kicad_sch"
 contract = "pcb/lamp_rev_a/contract.toml"
 parts = "pcb/lamp_rev_a/parts.toml"
@@ -34,6 +35,7 @@ schematic_source_parity_csv = "pcb/lamp_rev_a/reports/schematic_source_parity.cs
 connector_polarity_csv = "pcb/lamp_rev_a/reports/connector_polarity.csv"
 assembly_orientation_csv = "pcb/lamp_rev_a/reports/assembly_orientation.csv"
 assembly_inspection_csv = "pcb/lamp_rev_a/reports/assembly_inspection.csv"
+assembly_fixture_readability_csv = "pcb/lamp_rev_a/reports/assembly_fixture_readability.csv"
 i2c_bus_csv = "pcb/lamp_rev_a/reports/i2c_bus_validation.csv"
 heater_protection_csv = "pcb/lamp_rev_a/reports/heater_protection_coordination.csv"
 external_harness_csv = "pcb/lamp_rev_a/reports/external_harness_safety.csv"
@@ -342,6 +344,17 @@ ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Va
 acceptance_criterion = "Critical polarized or safety-relevant parts have placement-backed inspection evidence, linked validation coverage, and stop/rework actions."
 blocks_release = true
 notes = "Turns polarity/orientation checks into an explicit incoming-assembly and first-article inspection gate."
+
+[[validation_traceability]]
+id = "assembly_fixture_readability"
+validation_layer = "Assembly fixture readability and label coverage"
+electrical_gate_category = "assembly fixture readability"
+output_artifact = "assembly_fixture_readability.csv; electrical_validation_gates.csv"
+release_manifest_entry = "assembly_fixture_readability; electrical_validation_gates"
+ci_step = "LAMP Rev A electrical validation; Generate LAMP Rev A fab release; Validate LAMP Rev A upload bundles"
+acceptance_criterion = "Critical connectors and test points have visible board silkscreen labels, fixture-access references, photo evidence, and stop/rework actions."
+blocks_release = true
+notes = "Catches first-article/fixture confusion where the board is electrically valid but the technician cannot identify the correct connector, test point, or high-energy path."
 
 [[validation_traceability]]
 id = "i2c_ads1115_bus_validation"
@@ -2790,6 +2803,231 @@ evidence = ["AOI image of U5 pin-1 mark", "microscope photo of U5 orientation", 
 verification_method = "Inspect U5 and verify channel selection during optical slot calibration."
 failure_action = "Do not use optical assay data; rework U5 or reject board."
 notes = "A rotated mux can permute channels or short the optical front end."
+
+[assembly_fixture_policy]
+min_checks = 14
+min_label_chars = 2
+max_label_chars = 12
+allowed_target_kinds = ["placement", "test_point", "board_feature"]
+allowed_criticalities = ["safety", "power", "programming", "analog", "manufacturing"]
+required_check_ids = [
+  "usb_input_label",
+  "twelve_v_input_label",
+  "heater_terminal_label",
+  "vbus_test_point_label",
+  "three_v_three_test_point_label",
+  "heater_supply_test_point_label",
+  "heater_return_test_point_label",
+  "heater_pwm_test_point_label",
+  "boot_pin_test_point_label",
+  "adc_test_point_label",
+  "i2c_sda_test_point_label",
+  "i2c_scl_test_point_label",
+  "ground_reference_label",
+  "board_revision_label",
+]
+require_target_exists = true
+require_board_silkscreen_label = true
+require_fixture_access = true
+require_photo_evidence = true
+require_failure_action = true
+notes = "Critical first-article labels and fixture references must be visible on the generated KiCad board and tied to inspection evidence before assembly or bring-up."
+
+[[assembly_fixture_checks]]
+id = "usb_input_label"
+target_kind = "placement"
+target = "J1"
+criticality = "programming"
+visible_label = "USB/VBUS"
+label_location = "front/top-left USB-C edge"
+fixture_reference = "USB current-limited power and programming fixture"
+access_direction = "front edge"
+evidence = ["AOI image showing USB/VBUS silkscreen near J1", "fixture photo with USB cable connected to labeled edge"]
+verification_method = "Confirm the USB/VBUS label is readable before plugging the current-limited USB source into J1."
+failure_action = "Stop USB power and programming setup; relabel/rework fixture documentation or reject the board if J1 cannot be identified."
+notes = "J1 is the normal power, programming, and recovery entry point."
+
+[[assembly_fixture_checks]]
+id = "twelve_v_input_label"
+target_kind = "placement"
+target = "J2"
+criticality = "safety"
+visible_label = "12V IN"
+label_location = "top-right external heater power input edge"
+fixture_reference = "12 V current-limited heater supply fixture"
+access_direction = "right edge"
+evidence = ["AOI image showing 12V IN silkscreen near J2", "fixture photo showing the 12 V supply lead keyed to the labeled input"]
+verification_method = "Confirm the 12V IN label is readable before connecting any external 12 V source."
+failure_action = "Do not apply 12 V; update fixture labeling or reject the board if the input cannot be identified."
+notes = "J2 carries external heater power and is the highest-risk user-supplied input."
+
+[[assembly_fixture_checks]]
+id = "heater_terminal_label"
+target_kind = "placement"
+target = "J3"
+criticality = "safety"
+visible_label = "HEATER"
+label_location = "right-edge heater output terminal"
+fixture_reference = "external heater load and thermal-cutoff fixture"
+access_direction = "right edge"
+evidence = ["AOI image showing HEATER silkscreen near J3", "fixture photo showing heater leads landed only at the labeled terminal"]
+verification_method = "Confirm the HEATER label is readable before attaching heater wiring."
+failure_action = "Do not attach heater wiring; relabel/rework the fixture or reject the board."
+notes = "J3 is the high-current switched heater output."
+
+[[assembly_fixture_checks]]
+id = "vbus_test_point_label"
+target_kind = "test_point"
+target = "TP_VBUS"
+criticality = "power"
+visible_label = "VBUS"
+label_location = "top-side USB input rail test point"
+fixture_reference = "USB rail bring-up DMM probe map"
+access_direction = "top probe"
+evidence = ["AOI image showing VBUS silkscreen at TP_VBUS", "fixture photo showing DMM probe on the labeled TP_VBUS point"]
+verification_method = "Probe TP_VBUS by label during current-limited USB bring-up."
+failure_action = "Stop first-power measurement; correct fixture map or reject the board if VBUS cannot be identified."
+notes = "VBUS measurement distinguishes USB input faults from downstream +5V/+3V3 faults."
+
+[[assembly_fixture_checks]]
+id = "three_v_three_test_point_label"
+target_kind = "test_point"
+target = "TP_3V3"
+criticality = "power"
+visible_label = "3V3"
+label_location = "top-side regulator output test point"
+fixture_reference = "3.3 V regulator bring-up DMM probe map"
+access_direction = "top probe"
+evidence = ["AOI image showing 3V3 silkscreen at TP_3V3", "fixture photo showing DMM probe on the labeled TP_3V3 point"]
+verification_method = "Probe TP_3V3 by label before flashing the ESP32-S3."
+failure_action = "Stop firmware bring-up; correct fixture map or reject the board if +3V3 cannot be identified."
+notes = "The ESP32-S3 and analog devices depend on this rail."
+
+[[assembly_fixture_checks]]
+id = "heater_supply_test_point_label"
+target_kind = "test_point"
+target = "TP_HEATER_SUPPLY"
+criticality = "safety"
+visible_label = "H+"
+label_location = "top-side protected heater supply test point"
+fixture_reference = "heater rail DMM/current-limit probe map"
+access_direction = "top probe"
+evidence = ["AOI image showing H+ silkscreen at TP_HEATER_SUPPLY", "fixture photo showing DMM probe on the labeled H+ point"]
+verification_method = "Probe H+ by label before enabling any heater PWM."
+failure_action = "Do not enable heater; correct fixture map or reject the board if H+ cannot be identified."
+notes = "H+ is the protected supply side of the heater path."
+
+[[assembly_fixture_checks]]
+id = "heater_return_test_point_label"
+target_kind = "test_point"
+target = "TP_HEATER"
+criticality = "safety"
+visible_label = "H-"
+label_location = "top-side switched heater return test point"
+fixture_reference = "heater return DMM/current-limit probe map"
+access_direction = "top probe"
+evidence = ["AOI image showing H- silkscreen at TP_HEATER", "fixture photo showing DMM probe on the labeled H- point"]
+verification_method = "Probe H- by label during heater-off and low-duty PWM checks."
+failure_action = "Do not connect heater load; correct fixture map or reject the board if H- cannot be identified."
+notes = "H- confirms the MOSFET-switched low-side heater return behavior."
+
+[[assembly_fixture_checks]]
+id = "heater_pwm_test_point_label"
+target_kind = "test_point"
+target = "TP_PWM"
+criticality = "safety"
+visible_label = "PWM"
+label_location = "top-side heater PWM command test point"
+fixture_reference = "heater PWM oscilloscope probe map"
+access_direction = "top probe"
+evidence = ["AOI image showing PWM silkscreen at TP_PWM", "fixture photo showing scope probe on the labeled PWM point"]
+verification_method = "Probe PWM by label before connecting a heater load."
+failure_action = "Do not enable heater power; correct fixture map or reject the board if PWM cannot be identified."
+notes = "PWM must be verified fail-closed before heater current testing."
+
+[[assembly_fixture_checks]]
+id = "boot_pin_test_point_label"
+target_kind = "test_point"
+target = "TP_BOOT"
+criticality = "programming"
+visible_label = "BOOT"
+label_location = "top-side ESP32-S3 boot strap test point"
+fixture_reference = "ESP32 flashing and recovery fixture"
+access_direction = "top probe"
+evidence = ["AOI image showing BOOT silkscreen at TP_BOOT", "fixture photo showing recovery jumper/probe on the labeled BOOT point"]
+verification_method = "Confirm BOOT is readable before using manual flashing recovery."
+failure_action = "Do not attempt forced boot mode; correct fixture map or reject the board if BOOT cannot be identified."
+notes = "BOOT access preserves firmware recovery if USB flashing is unreliable."
+
+[[assembly_fixture_checks]]
+id = "adc_test_point_label"
+target_kind = "test_point"
+target = "TP_ADC"
+criticality = "analog"
+visible_label = "ADC"
+label_location = "top-side analog input test point"
+fixture_reference = "optical analog calibration probe map"
+access_direction = "top probe"
+evidence = ["AOI image showing ADC silkscreen at TP_ADC", "fixture photo showing DMM/scope probe on the labeled ADC point"]
+verification_method = "Probe ADC by label during dark and illuminated optical calibration."
+failure_action = "Do not trust optical calibration data; correct fixture map or reject the board if ADC cannot be identified."
+notes = "ADC_AIN1 is the primary observable analog output from the optical path."
+
+[[assembly_fixture_checks]]
+id = "i2c_sda_test_point_label"
+target_kind = "test_point"
+target = "TP_SDA"
+criticality = "manufacturing"
+visible_label = "SDA"
+label_location = "top-side I2C data test point"
+fixture_reference = "I2C bus logic-analyzer probe map"
+access_direction = "top probe"
+evidence = ["AOI image showing SDA silkscreen at TP_SDA", "fixture photo showing logic analyzer probe on the labeled SDA point"]
+verification_method = "Probe SDA by label during ADS1115 I2C scan validation."
+failure_action = "Do not proceed with sensor validation; correct fixture map or reject the board if SDA cannot be identified."
+notes = "SDA readability supports bus stuck-low and ADS1115 identity debugging."
+
+[[assembly_fixture_checks]]
+id = "i2c_scl_test_point_label"
+target_kind = "test_point"
+target = "TP_SCL"
+criticality = "manufacturing"
+visible_label = "SCL"
+label_location = "top-side I2C clock test point"
+fixture_reference = "I2C bus logic-analyzer probe map"
+access_direction = "top probe"
+evidence = ["AOI image showing SCL silkscreen at TP_SCL", "fixture photo showing logic analyzer probe on the labeled SCL point"]
+verification_method = "Probe SCL by label during ADS1115 I2C scan validation."
+failure_action = "Do not proceed with sensor validation; correct fixture map or reject the board if SCL cannot be identified."
+notes = "SCL readability supports bus timing and pull-up validation."
+
+[[assembly_fixture_checks]]
+id = "ground_reference_label"
+target_kind = "test_point"
+target = "TP_GND"
+criticality = "power"
+visible_label = "GND"
+label_location = "top-side common reference test point"
+fixture_reference = "DMM, oscilloscope, and logic-analyzer ground reference"
+access_direction = "top probe"
+evidence = ["AOI image showing GND silkscreen at TP_GND", "fixture photo showing instrument ground clip on the labeled GND point"]
+verification_method = "Use the labeled GND point as the first reference for all rail and signal measurements."
+failure_action = "Stop probing; correct fixture map or reject the board if GND cannot be identified."
+notes = "A clear ground reference prevents measurement and probe-short mistakes."
+
+[[assembly_fixture_checks]]
+id = "board_revision_label"
+target_kind = "board_feature"
+target = "board_revision_mark"
+criticality = "manufacturing"
+visible_label = "RevA"
+label_location = "top-side board revision marker"
+fixture_reference = "incoming inspection and artifact traceability photo"
+access_direction = "top visual inspection"
+evidence = ["AOI image showing RevA silkscreen", "fixture photo tying the board revision to the release package"]
+verification_method = "Confirm the board is RevA before applying this release package and firmware handoff."
+failure_action = "Do not use this release package; quarantine the board until revision identity is resolved."
+notes = "Revision readability prevents applying Rev A bring-up limits to a different PCB revision."
 
 [[procurement_critical_parts]]
 id = "mcu_module"
