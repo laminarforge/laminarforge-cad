@@ -70,6 +70,7 @@ struct Outputs {
     manual_file: String,
     position_file: String,
     step_file: String,
+    flowstate_step_file: String,
     order_audit_file: String,
     bringup_file: String,
     firmware_handoff_file: String,
@@ -583,6 +584,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     validate_to_outputs(&root, &electrical_outputs)?;
     write_release_bundles(&config, &root, &output_root)?;
     validate_release_outputs(&config, &parts, &placement, &output_root)?;
+    publish_flowstate_step_model(&config, &root, &output_root)?;
 
     println!("Wrote LAMP Rev A fab release:");
     println!("  {}", output_root.display());
@@ -626,6 +628,15 @@ fn validate_config(config: &ReleaseConfig) -> Result<(), Box<dyn Error>> {
     if config.gerbers.precision != 5 && config.gerbers.precision != 6 {
         return Err("gerber precision must be 5 or 6".into());
     }
+    if config.outputs.flowstate_step_file.trim().is_empty() {
+        return Err("flowstate_step_file cannot be empty".into());
+    }
+    let flowstate_step = Path::new(&config.outputs.flowstate_step_file);
+    if flowstate_step.extension().and_then(|ext| ext.to_str()) != Some("stp") {
+        return Err(
+            "flowstate_step_file must use .stp so the CAD tab converter can target it".into(),
+        );
+    }
     for layer in &config.gerbers.layers {
         if layer.trim().is_empty() {
             return Err("gerber layer names cannot be empty".into());
@@ -653,6 +664,27 @@ fn ensure_file(path: &Path) -> Result<(), Box<dyn Error>> {
         return Err(format!("required file is missing: {}", path.display()).into());
     }
     Ok(())
+}
+
+fn publish_flowstate_step_model(
+    config: &ReleaseConfig,
+    repo_root: &Path,
+    output_root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    if !config.step.enabled {
+        return Ok(());
+    }
+
+    let source = output_root.join(&config.outputs.step_file);
+    ensure_file(&source)?;
+
+    let destination = repo_root.join(&config.outputs.flowstate_step_file);
+    let parent = destination
+        .parent()
+        .ok_or("flowstate_step_file must include a parent directory")?;
+    fs::create_dir_all(parent)?;
+    fs::copy(&source, &destination)?;
+    ensure_file(&destination)
 }
 
 fn validate_kicad_version(min_major: u32) -> Result<(), Box<dyn Error>> {
@@ -2273,6 +2305,11 @@ fn write_manifest(
     writeln!(file, "position: {}", config.outputs.position_file)?;
     if config.step.enabled {
         writeln!(file, "step: {}", config.outputs.step_file)?;
+        writeln!(
+            file,
+            "flowstate_step: {}",
+            config.outputs.flowstate_step_file
+        )?;
     }
     writeln!(file, "order_audit: {}", config.outputs.order_audit_file)?;
     writeln!(file, "bringup_checklist: {}", config.outputs.bringup_file)?;

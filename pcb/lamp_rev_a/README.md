@@ -144,6 +144,9 @@ an optical crosstalk/mux-settling CSV for slot isolation and ADC sampling assump
 an optical signal/noise margin CSV for threshold and negative-control drift assumptions,
 and a thermistor/ADC transfer CSV for heater temperature-sense range, sensitivity, and fault coverage,
 and a checksum manifest for the fabrication, assembly, and source bundles.
+It also mirrors the board STEP review model to `output/lamp_rev_a_board.stp`;
+run the CAD conversion for `lamp_rev_a_board` to create
+`output/lamp_rev_a_board.usdz` for the Agentic FlowState CAD tab.
 
 Current KiCad checks:
 
