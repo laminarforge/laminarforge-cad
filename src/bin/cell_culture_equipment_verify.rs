@@ -985,6 +985,198 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [1100.0, 760.0, 120.0],
     },
     ExpectedOutput {
+        generator: "sterile_gas_changeover_regulator_qualification_panel",
+        path: "output/sterile_gas_changeover_regulator_qualification_panel_base_leak_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1600.0, 880.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_gas_changeover_regulator_qualification_panel",
+        path: "output/sterile_gas_changeover_regulator_qualification_panel_regulator_mfc_envelopes.stl",
+        min_triangles: 600,
+        min_size_mm: [900.0, 80.0, 120.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_gas_changeover_regulator_qualification_panel",
+        path: "output/sterile_gas_changeover_regulator_qualification_panel_sterile_filter_check_valve_bank.stl",
+        min_triangles: 600,
+        min_size_mm: [900.0, 50.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_gas_changeover_regulator_qualification_panel",
+        path: "output/sterile_gas_changeover_regulator_qualification_panel_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1600.0, 900.0, 300.0],
+    },
+    ExpectedOutput {
+        generator: "closed_material_passthrough_debagging_station",
+        path: "output/closed_material_passthrough_debagging_station_base_leak_debris_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1480.0, 920.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "closed_material_passthrough_debagging_station",
+        path: "output/closed_material_passthrough_debagging_station_sealed_tote_transfer_hatch_receiver.stl",
+        min_triangles: 600,
+        min_size_mm: [650.0, 100.0, 60.0],
+    },
+    ExpectedOutput {
+        generator: "closed_material_passthrough_debagging_station",
+        path: "output/closed_material_passthrough_debagging_station_evidence_photo_inspection_bridge.stl",
+        min_triangles: 600,
+        min_size_mm: [600.0, 200.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "closed_material_passthrough_debagging_station",
+        path: "output/closed_material_passthrough_debagging_station_assembly.stl",
+        min_triangles: 3000,
+        min_size_mm: [1500.0, 940.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_monitoring_plate_coupon_station",
+        path: "output/closed_environmental_monitoring_plate_coupon_station_base_leak_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1450.0, 900.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_monitoring_plate_coupon_station",
+        path: "output/closed_environmental_monitoring_plate_coupon_station_settle_plate_exposure_grid.stl",
+        min_triangles: 600,
+        min_size_mm: [500.0, 250.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_monitoring_plate_coupon_station",
+        path: "output/closed_environmental_monitoring_plate_coupon_station_evidence_photo_bridge.stl",
+        min_triangles: 500,
+        min_size_mm: [600.0, 180.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_monitoring_plate_coupon_station",
+        path: "output/closed_environmental_monitoring_plate_coupon_station_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1450.0, 900.0, 220.0],
+    },
+    ExpectedOutput {
+        generator: "inline_sensor_cartridge_hydration_calibration_station",
+        path: "output/inline_sensor_cartridge_hydration_calibration_station_base_leak_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1240.0, 780.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "inline_sensor_cartridge_hydration_calibration_station",
+        path: "output/inline_sensor_cartridge_hydration_calibration_station_clean_cartridge_rack.stl",
+        min_triangles: 800,
+        min_size_mm: [400.0, 180.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "inline_sensor_cartridge_hydration_calibration_station",
+        path: "output/inline_sensor_cartridge_hydration_calibration_station_electrical_pogo_check_fixture.stl",
+        min_triangles: 500,
+        min_size_mm: [300.0, 80.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "inline_sensor_cartridge_hydration_calibration_station",
+        path: "output/inline_sensor_cartridge_hydration_calibration_station_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1240.0, 780.0, 200.0],
+    },
+    ExpectedOutput {
+        generator: "robotic_spill_response_decon_kit_station",
+        path: "output/robotic_spill_response_decon_kit_station_drip_leak_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1240.0, 780.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "robotic_spill_response_decon_kit_station",
+        path: "output/robotic_spill_response_decon_kit_station_sealed_spill_pad_cassette.stl",
+        min_triangles: 600,
+        min_size_mm: [340.0, 240.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "robotic_spill_response_decon_kit_station",
+        path: "output/robotic_spill_response_decon_kit_station_used_material_quarantine_bin.stl",
+        min_triangles: 600,
+        min_size_mm: [340.0, 260.0, 180.0],
+    },
+    ExpectedOutput {
+        generator: "robotic_spill_response_decon_kit_station",
+        path: "output/robotic_spill_response_decon_kit_station_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1240.0, 800.0, 220.0],
+    },
+    ExpectedOutput {
+        generator: "closed_run_start_readiness_gate_station",
+        path: "output/closed_run_start_readiness_gate_station_cleanable_interlock_deck.stl",
+        min_triangles: 200,
+        min_size_mm: [1740.0, 1200.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "closed_run_start_readiness_gate_station",
+        path: "output/closed_run_start_readiness_gate_station_cassette_id_dock.stl",
+        min_triangles: 600,
+        min_size_mm: [620.0, 560.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_run_start_readiness_gate_station",
+        path: "output/closed_run_start_readiness_gate_station_camera_evidence_bridge.stl",
+        min_triangles: 500,
+        min_size_mm: [1300.0, 80.0, 180.0],
+    },
+    ExpectedOutput {
+        generator: "closed_run_start_readiness_gate_station",
+        path: "output/closed_run_start_readiness_gate_station_assembly.stl",
+        min_triangles: 3000,
+        min_size_mm: [1740.0, 1200.0, 220.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_valve_manifold_calibration_station",
+        path: "output/closed_pump_valve_manifold_calibration_station_base_leak_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [940.0, 600.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_valve_manifold_calibration_station",
+        path: "output/closed_pump_valve_manifold_calibration_station_valve_actuation_map_plate.stl",
+        min_triangles: 600,
+        min_size_mm: [760.0, 80.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_valve_manifold_calibration_station",
+        path: "output/closed_pump_valve_manifold_calibration_station_pressure_flow_sensor_pockets.stl",
+        min_triangles: 600,
+        min_size_mm: [760.0, 70.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_valve_manifold_calibration_station",
+        path: "output/closed_pump_valve_manifold_calibration_station_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [950.0, 620.0, 100.0],
+    },
+    ExpectedOutput {
+        generator: "closed_calibration_standard_custody_gate",
+        path: "output/closed_calibration_standard_custody_gate_base_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [940.0, 620.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "closed_calibration_standard_custody_gate",
+        path: "output/closed_calibration_standard_custody_gate_temperature_pocket_block.stl",
+        min_triangles: 500,
+        min_size_mm: [380.0, 130.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_calibration_standard_custody_gate",
+        path: "output/closed_calibration_standard_custody_gate_reader_dock_panel.stl",
+        min_triangles: 500,
+        min_size_mm: [300.0, 120.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_calibration_standard_custody_gate",
+        path: "output/closed_calibration_standard_custody_gate_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [940.0, 620.0, 120.0],
+    },
+    ExpectedOutput {
         generator: "sterile_tubing_harness",
         path: "output/sterile_tubing_harness_manifold_insert.stl",
         min_triangles: 160,
@@ -1733,6 +1925,31 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_module_residual_rinse_sampling_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "sterile_gas_changeover_regulator_qualification_panel"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_material_passthrough_debagging_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_environmental_monitoring_plate_coupon_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "inline_sensor_cartridge_hydration_calibration_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "robotic_spill_response_decon_kit_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_run_start_readiness_gate_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_pump_valve_manifold_calibration_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_calibration_standard_custody_gate"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

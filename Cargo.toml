@@ -513,3 +513,35 @@ path = "src/bin/multi_organ_manifold.rs"
 [[bin]]
 name = "lamp_pcba_check"
 path = "src/bin/lamp_pcba_check.rs"
+
+[[bin]]
+name = "sterile_gas_changeover_regulator_qualification_panel"
+path = "src/bin/sterile_gas_changeover_regulator_qualification_panel.rs"
+
+[[bin]]
+name = "closed_material_passthrough_debagging_station"
+path = "src/bin/closed_material_passthrough_debagging_station.rs"
+
+[[bin]]
+name = "closed_environmental_monitoring_plate_coupon_station"
+path = "src/bin/closed_environmental_monitoring_plate_coupon_station.rs"
+
+[[bin]]
+name = "inline_sensor_cartridge_hydration_calibration_station"
+path = "src/bin/inline_sensor_cartridge_hydration_calibration_station.rs"
+
+[[bin]]
+name = "robotic_spill_response_decon_kit_station"
+path = "src/bin/robotic_spill_response_decon_kit_station.rs"
+
+[[bin]]
+name = "closed_run_start_readiness_gate_station"
+path = "src/bin/closed_run_start_readiness_gate_station.rs"
+
+[[bin]]
+name = "closed_pump_valve_manifold_calibration_station"
+path = "src/bin/closed_pump_valve_manifold_calibration_station.rs"
+
+[[bin]]
+name = "closed_calibration_standard_custody_gate"
+path = "src/bin/closed_calibration_standard_custody_gate.rs"
