@@ -210,7 +210,11 @@ fn manifest() -> Vec<Equipment> {
             disposition: Disposition::Buy,
             readiness: Readiness::EarlyBuild,
             culture_use: CultureUse::HardwareValidation,
-            cad_bins: &["controller_enclosure"],
+            cad_bins: &[
+                "controller_enclosure",
+                "cell_culture_logger_enclosure",
+                "co2_sensor_service_module",
+            ],
             validation_gate: "Independent logger agrees with controller sensors over warmup, steady state, door-open recovery, and overnight hold.",
             notes: "No DIY incubator result is trusted without independent measurement.",
         },

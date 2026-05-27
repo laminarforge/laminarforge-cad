@@ -103,6 +103,18 @@ name = "cell_culture_equipment_manifest"
 path = "src/bin/cell_culture_equipment_manifest.rs"
 
 [[bin]]
+name = "cell_culture_equipment_verify"
+path = "src/bin/cell_culture_equipment_verify.rs"
+
+[[bin]]
+name = "cell_culture_logger_enclosure"
+path = "src/bin/cell_culture_logger_enclosure.rs"
+
+[[bin]]
+name = "co2_sensor_service_module"
+path = "src/bin/co2_sensor_service_module.rs"
+
+[[bin]]
 name = "water_bath"
 path = "src/bin/water_bath.rs"
 
