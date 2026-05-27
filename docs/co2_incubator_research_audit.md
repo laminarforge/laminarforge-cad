@@ -94,3 +94,7 @@ For serious cell culture, prioritize access to a certified lab incubator or a us
 ## CAD Verification Link
 
 The current CAD verification pass is recorded in `docs/co2_incubator_cad_verification.md`. It confirms generated STL presence and bounding-box dimensions, but it does not validate biological use, sealing, thermal stability, humidity, or contamination control.
+
+## Simulation Link
+
+The first validation layer before CFD is recorded in `docs/co2_incubator_validation_pipeline.md`. It adds a Rust lumped thermal/CO2 model for heater sizing, CO2 dosing, leak assumptions, and door-open recovery. This is still not a substitute for physical chamber logs.

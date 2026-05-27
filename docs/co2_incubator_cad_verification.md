@@ -85,3 +85,7 @@ cargo run --release --bin co2_incubator_verify
 ## Recommendation
 
 Keep this model out of the LaminarForge website until at least the sensor gate, gas gate, thermal gate, and humidity gate are complete.
+
+## Simulation Gate
+
+The first-order thermal and CO2 validation layer is documented in `docs/co2_incubator_validation_pipeline.md` and implemented by `co2_incubator_sim`.
