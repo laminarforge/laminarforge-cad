@@ -957,3 +957,59 @@ path = "src/bin/closed_ecm_coating_reagent_thaw_dwell_uniformity_station.rs"
 [[bin]]
 name = "closed_cassette_post_run_fixation_rinse_custody_station"
 path = "src/bin/closed_cassette_post_run_fixation_rinse_custody_station.rs"
+
+[[bin]]
+name = "closed_myco_sterility_sample_custody_split_station"
+path = "src/bin/closed_myco_sterility_sample_custody_split_station.rs"
+
+[[bin]]
+name = "closed_ipsc_differentiation_media_change_recipe_verification_station"
+path = "src/bin/closed_ipsc_differentiation_media_change_recipe_verification_station.rs"
+
+[[bin]]
+name = "closed_waste_line_backpressure_overfill_interlock_station"
+path = "src/bin/closed_waste_line_backpressure_overfill_interlock_station.rs"
+
+[[bin]]
+name = "closed_reagent_lot_quarantine_temperature_excursion_station"
+path = "src/bin/closed_reagent_lot_quarantine_temperature_excursion_station.rs"
+
+[[bin]]
+name = "closed_cassette_evaporation_osmotic_drift_sentinel_station"
+path = "src/bin/closed_cassette_evaporation_osmotic_drift_sentinel_station.rs"
+
+[[bin]]
+name = "closed_pump_flow_pulsation_shear_calibration_station"
+path = "src/bin/closed_pump_flow_pulsation_shear_calibration_station.rs"
+
+[[bin]]
+name = "closed_media_degassing_bubble_trap_priming_station"
+path = "src/bin/closed_media_degassing_bubble_trap_priming_station.rs"
+
+[[bin]]
+name = "closed_airlock_gasket_compression_leak_witness_station"
+path = "src/bin/closed_airlock_gasket_compression_leak_witness_station.rs"
+
+[[bin]]
+name = "closed_media_reservoir_temperature_stratification_recirculation_station"
+path = "src/bin/closed_media_reservoir_temperature_stratification_recirculation_station.rs"
+
+[[bin]]
+name = "closed_cassette_media_exchange_residual_fraction_washout_station"
+path = "src/bin/closed_cassette_media_exchange_residual_fraction_washout_station.rs"
+
+[[bin]]
+name = "closed_incubator_power_failure_holdover_witness_station"
+path = "src/bin/closed_incubator_power_failure_holdover_witness_station.rs"
+
+[[bin]]
+name = "closed_inline_sensor_response_lag_flow_step_station"
+path = "src/bin/closed_inline_sensor_response_lag_flow_step_station.rs"
+
+[[bin]]
+name = "closed_connector_cap_loss_open_port_exposure_prevention_station"
+path = "src/bin/closed_connector_cap_loss_open_port_exposure_prevention_station.rs"
+
+[[bin]]
+name = "closed_reagent_thaw_bubble_ingress_connector_wetness_station"
+path = "src/bin/closed_reagent_thaw_bubble_ingress_connector_wetness_station.rs"

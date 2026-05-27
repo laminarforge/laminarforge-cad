@@ -3451,6 +3451,258 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_myco_sterility_sample_custody_split_station",
+        path: "output/closed_myco_sterility_sample_custody_split_station_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_myco_sterility_sample_custody_split_station",
+        path: "output/closed_myco_sterility_sample_custody_split_station_sealed_sample_inlet_dock.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_myco_sterility_sample_custody_split_station",
+        path: "output/closed_myco_sterility_sample_custody_split_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ipsc_differentiation_media_change_recipe_verification_station",
+        path: "output/closed_ipsc_differentiation_media_change_recipe_verification_station_base_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ipsc_differentiation_media_change_recipe_verification_station",
+        path: "output/closed_ipsc_differentiation_media_change_recipe_verification_station_recipe_badge_checksum_dock.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ipsc_differentiation_media_change_recipe_verification_station",
+        path: "output/closed_ipsc_differentiation_media_change_recipe_verification_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backpressure_overfill_interlock_station",
+        path: "output/closed_waste_line_backpressure_overfill_interlock_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backpressure_overfill_interlock_station",
+        path: "output/closed_waste_line_backpressure_overfill_interlock_station_waste_bag_bottle_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backpressure_overfill_interlock_station",
+        path: "output/closed_waste_line_backpressure_overfill_interlock_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_lot_quarantine_temperature_excursion_station",
+        path: "output/closed_reagent_lot_quarantine_temperature_excursion_station_leak_tray_base.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_lot_quarantine_temperature_excursion_station",
+        path: "output/closed_reagent_lot_quarantine_temperature_excursion_station_chilled_quarantine_nest_banks.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_lot_quarantine_temperature_excursion_station",
+        path: "output/closed_reagent_lot_quarantine_temperature_excursion_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_evaporation_osmotic_drift_sentinel_station",
+        path: "output/closed_cassette_evaporation_osmotic_drift_sentinel_station_base_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_evaporation_osmotic_drift_sentinel_station",
+        path: "output/closed_cassette_evaporation_osmotic_drift_sentinel_station_sealed_cassette_nest_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_evaporation_osmotic_drift_sentinel_station",
+        path: "output/closed_cassette_evaporation_osmotic_drift_sentinel_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_flow_pulsation_shear_calibration_station",
+        path: "output/closed_pump_flow_pulsation_shear_calibration_station_leak_tray_base.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_flow_pulsation_shear_calibration_station",
+        path: "output/closed_pump_flow_pulsation_shear_calibration_station_pump_cartridge_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_flow_pulsation_shear_calibration_station",
+        path: "output/closed_pump_flow_pulsation_shear_calibration_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_degassing_bubble_trap_priming_station",
+        path: "output/closed_media_degassing_bubble_trap_priming_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_degassing_bubble_trap_priming_station",
+        path: "output/closed_media_degassing_bubble_trap_priming_station_sterile_media_bag_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_degassing_bubble_trap_priming_station",
+        path: "output/closed_media_degassing_bubble_trap_priming_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_gasket_compression_leak_witness_station",
+        path: "output/closed_airlock_gasket_compression_leak_witness_station_base_containment_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_gasket_compression_leak_witness_station",
+        path: "output/closed_airlock_gasket_compression_leak_witness_station_gasket_coupon_nest_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_gasket_compression_leak_witness_station",
+        path: "output/closed_airlock_gasket_compression_leak_witness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reservoir_temperature_stratification_recirculation_station",
+        path: "output/closed_media_reservoir_temperature_stratification_recirculation_station_leak_condensate_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reservoir_temperature_stratification_recirculation_station",
+        path: "output/closed_media_reservoir_temperature_stratification_recirculation_station_insulated_reservoir_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reservoir_temperature_stratification_recirculation_station",
+        path: "output/closed_media_reservoir_temperature_stratification_recirculation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_media_exchange_residual_fraction_washout_station",
+        path: "output/closed_cassette_media_exchange_residual_fraction_washout_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_media_exchange_residual_fraction_washout_station",
+        path: "output/closed_cassette_media_exchange_residual_fraction_washout_station_sealed_cassette_datum_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_media_exchange_residual_fraction_washout_station",
+        path: "output/closed_cassette_media_exchange_residual_fraction_washout_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_power_failure_holdover_witness_station",
+        path: "output/closed_incubator_power_failure_holdover_witness_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_power_failure_holdover_witness_station",
+        path: "output/closed_incubator_power_failure_holdover_witness_station_sealed_cassette_thermal_mass_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_power_failure_holdover_witness_station",
+        path: "output/closed_incubator_power_failure_holdover_witness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_sensor_response_lag_flow_step_station",
+        path: "output/closed_inline_sensor_response_lag_flow_step_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_sensor_response_lag_flow_step_station",
+        path: "output/closed_inline_sensor_response_lag_flow_step_station_sensor_cartridge_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_sensor_response_lag_flow_step_station",
+        path: "output/closed_inline_sensor_response_lag_flow_step_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_connector_cap_loss_open_port_exposure_prevention_station",
+        path: "output/closed_connector_cap_loss_open_port_exposure_prevention_station_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_connector_cap_loss_open_port_exposure_prevention_station",
+        path: "output/closed_connector_cap_loss_open_port_exposure_prevention_station_connector_nest_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_connector_cap_loss_open_port_exposure_prevention_station",
+        path: "output/closed_connector_cap_loss_open_port_exposure_prevention_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_thaw_bubble_ingress_connector_wetness_station",
+        path: "output/closed_reagent_thaw_bubble_ingress_connector_wetness_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_thaw_bubble_ingress_connector_wetness_station",
+        path: "output/closed_reagent_thaw_bubble_ingress_connector_wetness_station_thawed_bag_vial_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_thaw_bubble_ingress_connector_wetness_station",
+        path: "output/closed_reagent_thaw_bubble_ingress_connector_wetness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -4144,6 +4396,48 @@ mod tests {
             .iter()
             .any(|output| output.generator
                 == "closed_cassette_post_run_fixation_rinse_custody_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_myco_sterility_sample_custody_split_station")
+        );
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_ipsc_differentiation_media_change_recipe_verification_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_waste_line_backpressure_overfill_interlock_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_reagent_lot_quarantine_temperature_excursion_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_evaporation_osmotic_drift_sentinel_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_pump_flow_pulsation_shear_calibration_station"
+        ));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_media_degassing_bubble_trap_priming_station")
+        );
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_airlock_gasket_compression_leak_witness_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_reservoir_temperature_stratification_recirculation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_media_exchange_residual_fraction_washout_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_incubator_power_failure_holdover_witness_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_inline_sensor_response_lag_flow_step_station"
+        ));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_connector_cap_loss_open_port_exposure_prevention_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_reagent_thaw_bubble_ingress_connector_wetness_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
