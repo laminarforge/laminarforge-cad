@@ -138,6 +138,18 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [680.0, 560.0, 20.0],
     },
     ExpectedOutput {
+        generator: "cassette_bench_nest",
+        path: "output/cassette_bench_nest_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [720.0, 620.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_bench_nest",
+        path: "output/cassette_bench_nest_assembly.stl",
+        min_triangles: 160,
+        min_size_mm: [720.0, 620.0, 35.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -367,5 +379,8 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "cassette_bench_nest"));
     }
 }

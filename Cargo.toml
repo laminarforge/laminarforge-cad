@@ -131,6 +131,10 @@ name = "sterile_tubing_harness"
 path = "src/bin/sterile_tubing_harness.rs"
 
 [[bin]]
+name = "cassette_bench_nest"
+path = "src/bin/cassette_bench_nest.rs"
+
+[[bin]]
 name = "pipette_tip_organizer"
 path = "src/bin/pipette_tip_organizer.rs"
 
