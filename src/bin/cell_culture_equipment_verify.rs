@@ -3973,6 +3973,96 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_environmental_sensor_cross_sensitivity_challenge_station",
+        path: "output/closed_environmental_sensor_cross_sensitivity_challenge_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_sensor_cross_sensitivity_challenge_station",
+        path: "output/closed_environmental_sensor_cross_sensitivity_challenge_station_gas_humidity_challenge_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_sensor_cross_sensitivity_challenge_station",
+        path: "output/closed_environmental_sensor_cross_sensitivity_challenge_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_archive_freeze_thaw_chain_of_custody_station",
+        path: "output/closed_sample_archive_freeze_thaw_chain_of_custody_station_containment_cold_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_archive_freeze_thaw_chain_of_custody_station",
+        path: "output/closed_sample_archive_freeze_thaw_chain_of_custody_station_archive_tube_nest_array.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_archive_freeze_thaw_chain_of_custody_station",
+        path: "output/closed_sample_archive_freeze_thaw_chain_of_custody_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_randomization_audit_reconciliation_station",
+        path: "output/closed_cassette_position_randomization_audit_reconciliation_station_audit_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_randomization_audit_reconciliation_station",
+        path: "output/closed_cassette_position_randomization_audit_reconciliation_station_twenty_position_cassette_surrogate_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_randomization_audit_reconciliation_station",
+        path: "output/closed_cassette_position_randomization_audit_reconciliation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_transport_temperature_shock_recovery_station",
+        path: "output/closed_cassette_transport_temperature_shock_recovery_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_transport_temperature_shock_recovery_station",
+        path: "output/closed_cassette_transport_temperature_shock_recovery_station_sealed_cassette_transport_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_transport_temperature_shock_recovery_station",
+        path: "output/closed_cassette_transport_temperature_shock_recovery_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_bubble_trap_degas_pressure_pulse_challenge_station",
+        path: "output/closed_bubble_trap_degas_pressure_pulse_challenge_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_bubble_trap_degas_pressure_pulse_challenge_station",
+        path: "output/closed_bubble_trap_degas_pressure_pulse_challenge_station_vertical_bubble_trap_cartridge_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_bubble_trap_degas_pressure_pulse_challenge_station",
+        path: "output/closed_bubble_trap_degas_pressure_pulse_challenge_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -4746,6 +4836,16 @@ mod tests {
         ));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_perfusion_bypass_valve_fail_position_witness_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_environmental_sensor_cross_sensitivity_challenge_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_sample_archive_freeze_thaw_chain_of_custody_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_position_randomization_audit_reconciliation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_transport_temperature_shock_recovery_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_bubble_trap_degas_pressure_pulse_challenge_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

@@ -1073,3 +1073,23 @@ path = "src/bin/closed_reagent_addition_order_mixing_witness_station.rs"
 [[bin]]
 name = "closed_perfusion_bypass_valve_fail_position_witness_station"
 path = "src/bin/closed_perfusion_bypass_valve_fail_position_witness_station.rs"
+
+[[bin]]
+name = "closed_environmental_sensor_cross_sensitivity_challenge_station"
+path = "src/bin/closed_environmental_sensor_cross_sensitivity_challenge_station.rs"
+
+[[bin]]
+name = "closed_sample_archive_freeze_thaw_chain_of_custody_station"
+path = "src/bin/closed_sample_archive_freeze_thaw_chain_of_custody_station.rs"
+
+[[bin]]
+name = "closed_cassette_position_randomization_audit_reconciliation_station"
+path = "src/bin/closed_cassette_position_randomization_audit_reconciliation_station.rs"
+
+[[bin]]
+name = "closed_cassette_transport_temperature_shock_recovery_station"
+path = "src/bin/closed_cassette_transport_temperature_shock_recovery_station.rs"
+
+[[bin]]
+name = "closed_bubble_trap_degas_pressure_pulse_challenge_station"
+path = "src/bin/closed_bubble_trap_degas_pressure_pulse_challenge_station.rs"
