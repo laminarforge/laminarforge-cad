@@ -150,6 +150,18 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [720.0, 620.0, 35.0],
     },
     ExpectedOutput {
+        generator: "sealed_culture_module",
+        path: "output/sealed_culture_module_base.stl",
+        min_triangles: 120,
+        min_size_mm: [850.0, 750.0, 60.0],
+    },
+    ExpectedOutput {
+        generator: "sealed_culture_module",
+        path: "output/sealed_culture_module_assembly.stl",
+        min_triangles: 240,
+        min_size_mm: [850.0, 780.0, 85.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -382,5 +394,8 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "cassette_bench_nest"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "sealed_culture_module"));
     }
 }
