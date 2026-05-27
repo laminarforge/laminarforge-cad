@@ -721,6 +721,126 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [1100.0, 600.0, 1100.0],
     },
     ExpectedOutput {
+        generator: "closed_fluid_path_packaging_kitting_station",
+        path: "output/closed_fluid_path_packaging_kitting_station_deck_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1200.0, 800.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "closed_fluid_path_packaging_kitting_station",
+        path: "output/closed_fluid_path_packaging_kitting_station_sterile_tubing_harness_kit_trays.stl",
+        min_triangles: 600,
+        min_size_mm: [350.0, 230.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_fluid_path_packaging_kitting_station",
+        path: "output/closed_fluid_path_packaging_kitting_station_leak_test_handoff_ports.stl",
+        min_triangles: 600,
+        min_size_mm: [550.0, 65.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "closed_fluid_path_packaging_kitting_station",
+        path: "output/closed_fluid_path_packaging_kitting_station_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1200.0, 820.0, 170.0],
+    },
+    ExpectedOutput {
+        generator: "cell_lot_release_qc_panel",
+        path: "output/cell_lot_release_qc_panel_base_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1150.0, 730.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "cell_lot_release_qc_panel",
+        path: "output/cell_lot_release_qc_panel_sealed_sample_receiving_nest.stl",
+        min_triangles: 500,
+        min_size_mm: [300.0, 200.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "cell_lot_release_qc_panel",
+        path: "output/cell_lot_release_qc_panel_count_viability_analyzer_dock.stl",
+        min_triangles: 200,
+        min_size_mm: [430.0, 280.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "cell_lot_release_qc_panel",
+        path: "output/cell_lot_release_qc_panel_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1150.0, 740.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_cip_sip_service_station",
+        path: "output/closed_module_cip_sip_service_station_base_deck.stl",
+        min_triangles: 200,
+        min_size_mm: [1300.0, 850.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_cip_sip_service_station",
+        path: "output/closed_module_cip_sip_service_station_sealed_module_dock.stl",
+        min_triangles: 600,
+        min_size_mm: [800.0, 650.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_cip_sip_service_station",
+        path: "output/closed_module_cip_sip_service_station_flush_inlet_bulkhead.stl",
+        min_triangles: 600,
+        min_size_mm: [450.0, 25.0, 220.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_cip_sip_service_station",
+        path: "output/closed_module_cip_sip_service_station_assembly.stl",
+        min_triangles: 2600,
+        min_size_mm: [1300.0, 870.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_deviation_quarantine_station",
+        path: "output/cassette_deviation_quarantine_station_leak_tray_base.stl",
+        min_triangles: 200,
+        min_size_mm: [2200.0, 1800.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_deviation_quarantine_station",
+        path: "output/cassette_deviation_quarantine_station_status_bay_array.stl",
+        min_triangles: 1000,
+        min_size_mm: [1700.0, 850.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_deviation_quarantine_station",
+        path: "output/cassette_deviation_quarantine_station_isolation_cover_envelope.stl",
+        min_triangles: 160,
+        min_size_mm: [1800.0, 1000.0, 220.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_deviation_quarantine_station",
+        path: "output/cassette_deviation_quarantine_station_assembly.stl",
+        min_triangles: 3200,
+        min_size_mm: [2200.0, 1800.0, 230.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_excursion_response_station",
+        path: "output/closed_environmental_excursion_response_station_leak_condensate_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1280.0, 800.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_excursion_response_station",
+        path: "output/closed_environmental_excursion_response_station_suspect_cassette_tote_dock.stl",
+        min_triangles: 600,
+        min_size_mm: [720.0, 640.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_excursion_response_station",
+        path: "output/closed_environmental_excursion_response_station_quarantine_cover_envelope.stl",
+        min_triangles: 400,
+        min_size_mm: [720.0, 640.0, 230.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_excursion_response_station",
+        path: "output/closed_environmental_excursion_response_station_assembly.stl",
+        min_triangles: 2600,
+        min_size_mm: [1300.0, 820.0, 250.0],
+    },
+    ExpectedOutput {
         generator: "sterile_tubing_harness",
         path: "output/sterile_tubing_harness_manifold_insert.stl",
         min_triangles: 160,
@@ -1436,6 +1556,21 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_cleaning_sanitization_validation_cart"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_fluid_path_packaging_kitting_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "cell_lot_release_qc_panel"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_module_cip_sip_service_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "cassette_deviation_quarantine_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_environmental_excursion_response_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

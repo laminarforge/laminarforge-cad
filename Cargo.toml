@@ -147,6 +147,10 @@ name = "closed_sample_fraction_archive_module"
 path = "src/bin/closed_sample_fraction_archive_module.rs"
 
 [[bin]]
+name = "closed_fluid_path_packaging_kitting_station"
+path = "src/bin/closed_fluid_path_packaging_kitting_station.rs"
+
+[[bin]]
 name = "closed_reagent_thaw_equilibration_station"
 path = "src/bin/closed_reagent_thaw_equilibration_station.rs"
 
@@ -285,6 +289,22 @@ path = "src/bin/waste_decon_service_pod.rs"
 [[bin]]
 name = "closed_cleaning_sanitization_validation_cart"
 path = "src/bin/closed_cleaning_sanitization_validation_cart.rs"
+
+[[bin]]
+name = "closed_module_cip_sip_service_station"
+path = "src/bin/closed_module_cip_sip_service_station.rs"
+
+[[bin]]
+name = "cassette_deviation_quarantine_station"
+path = "src/bin/cassette_deviation_quarantine_station.rs"
+
+[[bin]]
+name = "closed_environmental_excursion_response_station"
+path = "src/bin/closed_environmental_excursion_response_station.rs"
+
+[[bin]]
+name = "cell_lot_release_qc_panel"
+path = "src/bin/cell_lot_release_qc_panel.rs"
 
 [[bin]]
 name = "aseptic_transfer_hatch"
