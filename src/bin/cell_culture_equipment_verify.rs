@@ -3271,6 +3271,186 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [250.0, 180.0, 70.0],
     },
     ExpectedOutput {
+        generator: "closed_media_bag_rocking_mixing_shear_surrogate_station",
+        path: "output/closed_media_bag_rocking_mixing_shear_surrogate_station_leak_tray_base.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_rocking_mixing_shear_surrogate_station",
+        path: "output/closed_media_bag_rocking_mixing_shear_surrogate_station_bag_cradle.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_rocking_mixing_shear_surrogate_station",
+        path: "output/closed_media_bag_rocking_mixing_shear_surrogate_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_oxygen_supply_mfc_blend_calibration_station",
+        path: "output/closed_oxygen_supply_mfc_blend_calibration_station_base.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_oxygen_supply_mfc_blend_calibration_station",
+        path: "output/closed_oxygen_supply_mfc_blend_calibration_station_core.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_oxygen_supply_mfc_blend_calibration_station",
+        path: "output/closed_oxygen_supply_mfc_blend_calibration_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_seed_distribution_fluorescent_uniformity_station",
+        path: "output/closed_cassette_seed_distribution_fluorescent_uniformity_station_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_seed_distribution_fluorescent_uniformity_station",
+        path: "output/closed_cassette_seed_distribution_fluorescent_uniformity_station_cassette_datum_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_seed_distribution_fluorescent_uniformity_station",
+        path: "output/closed_cassette_seed_distribution_fluorescent_uniformity_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_pass_through_handoff_repeatability_station",
+        path: "output/closed_robot_pass_through_handoff_repeatability_station_base_airlock_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_pass_through_handoff_repeatability_station",
+        path: "output/closed_robot_pass_through_handoff_repeatability_station_dual_side_handoff_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_pass_through_handoff_repeatability_station",
+        path: "output/closed_robot_pass_through_handoff_repeatability_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_condensate_drain_trap_biofilm_cleanability_station",
+        path: "output/closed_condensate_drain_trap_biofilm_cleanability_station_leak_tray_base.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_condensate_drain_trap_biofilm_cleanability_station",
+        path: "output/closed_condensate_drain_trap_biofilm_cleanability_station_trap_body_surrogate_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_condensate_drain_trap_biofilm_cleanability_station",
+        path: "output/closed_condensate_drain_trap_biofilm_cleanability_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_analyte_panel_calibration_custody_station",
+        path: "output/closed_media_analyte_panel_calibration_custody_station_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_analyte_panel_calibration_custody_station",
+        path: "output/closed_media_analyte_panel_calibration_custody_station_calibration_vial_racks.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_analyte_panel_calibration_custody_station",
+        path: "output/closed_media_analyte_panel_calibration_custody_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_shelf_leveling_load_distribution_station",
+        path: "output/closed_incubator_shelf_leveling_load_distribution_station_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_shelf_leveling_load_distribution_station",
+        path: "output/closed_incubator_shelf_leveling_load_distribution_station_adjustable_shelf_datum_plate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_shelf_leveling_load_distribution_station",
+        path: "output/closed_incubator_shelf_leveling_load_distribution_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_harvest_enzyme_neutralization_timing_station",
+        path: "output/closed_cell_harvest_enzyme_neutralization_timing_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_harvest_enzyme_neutralization_timing_station",
+        path: "output/closed_cell_harvest_enzyme_neutralization_timing_station_source_vessel_surrogate_dock.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_harvest_enzyme_neutralization_timing_station",
+        path: "output/closed_cell_harvest_enzyme_neutralization_timing_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_reagent_thaw_dwell_uniformity_station",
+        path: "output/closed_ecm_coating_reagent_thaw_dwell_uniformity_station_base_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_reagent_thaw_dwell_uniformity_station",
+        path: "output/closed_ecm_coating_reagent_thaw_dwell_uniformity_station_chilled_vial_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_reagent_thaw_dwell_uniformity_station",
+        path: "output/closed_ecm_coating_reagent_thaw_dwell_uniformity_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_post_run_fixation_rinse_custody_station",
+        path: "output/closed_cassette_post_run_fixation_rinse_custody_station_base_leak_overflow_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_post_run_fixation_rinse_custody_station",
+        path: "output/closed_cassette_post_run_fixation_rinse_custody_station_sealed_cassette_dock.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_post_run_fixation_rinse_custody_station",
+        path: "output/closed_cassette_post_run_fixation_rinse_custody_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -3928,6 +4108,42 @@ mod tests {
         assert!(OUTPUTS.iter().any(
             |output| output.generator == "closed_airlock_vhp_residue_aeration_witness_station"
         ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_media_bag_rocking_mixing_shear_surrogate_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_oxygen_supply_mfc_blend_calibration_station")
+        );
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_seed_distribution_fluorescent_uniformity_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_robot_pass_through_handoff_repeatability_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_condensate_drain_trap_biofilm_cleanability_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_media_analyte_panel_calibration_custody_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_shelf_leveling_load_distribution_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cell_harvest_enzyme_neutralization_timing_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_ecm_coating_reagent_thaw_dwell_uniformity_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cassette_post_run_fixation_rinse_custody_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

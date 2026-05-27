@@ -86,6 +86,16 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Liquid handling | `closed_perfusion_filter_bypass_relief_validation_station` | Filter cartridge nests, bypass-loop witness channels, relief-valve surrogate ports, pressure sensor pockets, bubble/wetness windows, waste capture wells, and status labels. |
 | Environmental utilities | `closed_humidity_water_reservoir_biofilm_witness_station` | Removable reservoir surrogate, biofilm coupon carriers, drain low-point wells, UV/decon witness lands, conductivity/turbidity sensor pockets, and clean/dirty segregation. |
 | Sterile handling | `closed_airlock_vhp_residue_aeration_witness_station` | Airlock reference, residue coupon racks, aeration timer lanes, peroxide sensor pockets, purge-flow witness vanes, door-gasket coupons, and clean/dirty segregation. |
+| Liquid handling | `closed_media_bag_rocking_mixing_shear_surrogate_station` | Media-bag cradle, rocker-arc witness rails, tubing strain relief, top/middle/bottom sample loops, tracer coupons, bubble/degas witnesses, tilt logger nests, and load-cell pad. |
+| Environmental utilities | `closed_oxygen_supply_mfc_blend_calibration_station` | O2 blend MFC core, reference meter dock, calibration gas lands, regulator envelopes, relief/vent witnesses, and certificate/status features. |
+| Seeding validation | `closed_cassette_seed_distribution_fluorescent_uniformity_station` | Cassette datum, row/column inlet surrogate ports, fluorescent witness coupons, dwell tokens, wash/recovery wells, fiducials, edge/center labels, and bubble/wetness pockets. |
+| Automation | `closed_robot_pass_through_handoff_repeatability_station` | Dual-side handoff nests, datum pin arrays, latch slots, force/tilt logger pockets, barcode/RFID lands, tamper pockets, collision gauges, and evidence bridge. |
+| Incubation/cleanability | `closed_condensate_drain_trap_biofilm_cleanability_station` | Trap-body surrogate, removable drain-line coupons, biofilm witness rack, rinse/flush manifold, backflow dye wells, swab slots, slope gauges, and evidence bridge. |
+| Monitoring | `closed_media_analyte_panel_calibration_custody_station` | Calibration vial racks, low/high control lanes, expired quarantine, cold-block pocket, analyzer cartridge docks, sample-loop handoff ports, COA lands, and waste/flush route. |
+| Incubation | `closed_incubator_shelf_leveling_load_distribution_station` | Adjustable shelf datum, reference mass pockets, level/tilt vial pockets, rack rails, deflection witnesses, edge/center cassette blocks, camera bridge, and service keepouts. |
+| Liquid handling | `closed_cell_harvest_enzyme_neutralization_timing_station` | Source-vessel dock, enzyme/quench/media ports, timing token rail, temperature probe wells, wash/recovery nests, residue wells, bubble/dead-volume windows, and waste manifold. |
+| ECM/coating | `closed_ecm_coating_reagent_thaw_dwell_uniformity_station` | Chilled/warm vial nests, dwell rails, temperature wells, mixing coupons, viscosity/osmolality pockets, light cover, sterile connector bulkhead, and waste segregation. |
+| Endpoint custody | `closed_cassette_post_run_fixation_rinse_custody_station` | Sealed cassette dock, fixative inputs, rinse/waste manifold, dwell tokens, archive handoff nests, barcode/status lands, chemical compatibility coupons, and segregation barriers. |
 
 ## Build Order
 

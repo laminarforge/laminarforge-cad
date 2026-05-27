@@ -917,3 +917,43 @@ path = "src/bin/closed_humidity_water_reservoir_biofilm_witness_station.rs"
 [[bin]]
 name = "closed_airlock_vhp_residue_aeration_witness_station"
 path = "src/bin/closed_airlock_vhp_residue_aeration_witness_station.rs"
+
+[[bin]]
+name = "closed_media_bag_rocking_mixing_shear_surrogate_station"
+path = "src/bin/closed_media_bag_rocking_mixing_shear_surrogate_station.rs"
+
+[[bin]]
+name = "closed_oxygen_supply_mfc_blend_calibration_station"
+path = "src/bin/closed_oxygen_supply_mfc_blend_calibration_station.rs"
+
+[[bin]]
+name = "closed_cassette_seed_distribution_fluorescent_uniformity_station"
+path = "src/bin/closed_cassette_seed_distribution_fluorescent_uniformity_station.rs"
+
+[[bin]]
+name = "closed_robot_pass_through_handoff_repeatability_station"
+path = "src/bin/closed_robot_pass_through_handoff_repeatability_station.rs"
+
+[[bin]]
+name = "closed_condensate_drain_trap_biofilm_cleanability_station"
+path = "src/bin/closed_condensate_drain_trap_biofilm_cleanability_station.rs"
+
+[[bin]]
+name = "closed_media_analyte_panel_calibration_custody_station"
+path = "src/bin/closed_media_analyte_panel_calibration_custody_station.rs"
+
+[[bin]]
+name = "closed_incubator_shelf_leveling_load_distribution_station"
+path = "src/bin/closed_incubator_shelf_leveling_load_distribution_station.rs"
+
+[[bin]]
+name = "closed_cell_harvest_enzyme_neutralization_timing_station"
+path = "src/bin/closed_cell_harvest_enzyme_neutralization_timing_station.rs"
+
+[[bin]]
+name = "closed_ecm_coating_reagent_thaw_dwell_uniformity_station"
+path = "src/bin/closed_ecm_coating_reagent_thaw_dwell_uniformity_station.rs"
+
+[[bin]]
+name = "closed_cassette_post_run_fixation_rinse_custody_station"
+path = "src/bin/closed_cassette_post_run_fixation_rinse_custody_station.rs"
