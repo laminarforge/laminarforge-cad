@@ -2,7 +2,7 @@
 
 This plan is for a small, self-contained starter setup that can support practice cell-culture workflows, early chip seeding dry runs, media-change workflow development, and incubator control experiments before the larger 100-chip automation stack is needed.
 
-The starter CO2 incubator is not ready for public website publication. Treat it as an internal engineering prototype until the research gates in `docs/co2_incubator_research_audit.md` are satisfied.
+The starter CO2 incubator is not ready for public website publication. Treat it as an internal engineering prototype until the research gates in `docs/co2_incubator_research_audit.md` are satisfied. The broader equipment coverage is tracked in `docs/cell_culture_equipment_design_matrix.md` and the machine-readable `cell_culture_equipment_manifest` output.
 
 ## Build Strategy
 

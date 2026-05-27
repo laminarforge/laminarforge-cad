@@ -99,8 +99,16 @@ name = "co2_incubator_sim"
 path = "src/bin/co2_incubator_sim.rs"
 
 [[bin]]
+name = "cell_culture_equipment_manifest"
+path = "src/bin/cell_culture_equipment_manifest.rs"
+
+[[bin]]
 name = "water_bath"
 path = "src/bin/water_bath.rs"
+
+[[bin]]
+name = "heating_block"
+path = "src/bin/heating_block.rs"
 
 [[bin]]
 name = "magnetic_stirrer"
@@ -177,6 +185,10 @@ path = "src/bin/xy_carriage.rs"
 [[bin]]
 name = "sample_cold_block"
 path = "src/bin/sample_cold_block.rs"
+
+[[bin]]
+name = "peltier_reservoir_block"
+path = "src/bin/peltier_reservoir_block.rs"
 
 [[bin]]
 name = "optical_mount"

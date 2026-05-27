@@ -9,7 +9,7 @@ This is the validation path for the starter CO2 incubator before any public webs
 | CAD generation | `co2_incubator` | Generate printable STL outputs | Active |
 | CAD output verification | `co2_incubator_verify` | Fail if STL files disappear, corrupt, or dimensionally drift | Active |
 | Lumped thermal/CO2 simulation | `co2_incubator_sim` | First-order heater, heat-loss, CO2 dosing, leak, and door-open recovery model | Active |
-| CFD/CHT | OpenFOAM or similar | Airflow, CO2 mixing, heater diffuser, thermal gradients, condensation-risk regions | Planned |
+| CFD/CHT | OpenFOAM first, with Gmsh/OpenFOAM meshing | Airflow, CO2 mixing, heater diffuser, thermal gradients, condensation-risk regions | Planned in `docs/cell_culture_cfd_validation_plan.md` |
 | Physical validation | sensor logs | Empty-chamber and loaded-chamber data against acceptance gates | Planned |
 
 ## Current Lumped Simulation
@@ -73,6 +73,8 @@ Only run CFD/CHT after the sensor/gas/service-bay architecture is stable. The CF
 - Are heater diffuser surfaces too warm near cultureware?
 - Where is condensation likely to collect?
 - Does door geometry or window heat loss create local cold zones?
+
+The preferred first solver path is OpenFOAM `buoyantPimpleFoam` for transient buoyant airflow and heat transfer, plus passive scalar transport for CO2. Move to `chtMultiRegionFoam` only after the air-volume case is useful and the wall/door/insulation model is stable.
 
 ## Physical Validation Mapping
 

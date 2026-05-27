@@ -161,9 +161,15 @@ fn wall_panels() -> Part {
         .rotate(90.0, 0.0, 0.0)
         .translate(100.0, cy / 2.0, 0.0);
 
-    // CO2 sensor pocket (rear recess for MH-Z19B)
-    let co2_sensor_pocket =
-        centered_cube("co2_sensor_pocket", 25.0, 10.0, 35.0).translate(-100.0, cy / 2.0 - 5.0, 0.0);
+    // CO2 sample and passive relief ports. Do not mount a room-air CO2 sensor
+    // inside the humid chamber; incubator control needs an external 0-20%
+    // NDIR sensor or analyzer on a serviceable sample path.
+    let co2_sample_port = centered_cylinder("co2_sample_port", 6.0 / 2.0, WALL + 2.0, 32)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(-100.0, cy / 2.0, 20.0);
+    let co2_relief_port = centered_cylinder("co2_relief_port", 6.0 / 2.0, WALL + 2.0, 32)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(-100.0, cy / 2.0, -20.0);
 
     // Bulkhead grommets on right wall — media IN (30mm), media OUT (30mm),
     // power (25mm), sensor cable (20mm)
@@ -213,7 +219,8 @@ fn wall_panels() -> Part {
         - co2_port
         - heater_port
         - sensor_port
-        - co2_sensor_pocket
+        - co2_sample_port
+        - co2_relief_port
         - g_media_in
         - g_media_out
         - g_power
@@ -755,7 +762,8 @@ fn main() {
            CO2 injection     10 mm Ø   (0, +{cyh:.0}, +{cz50:.0})   upper rear\n\
            Heater leads      12 mm Ø   (0, +{cyh:.0}, -{cz30:.0})   lower rear\n\
            Temp/RH sensor    10 mm Ø   (+100, +{cyh:.0}, 0)\n\
-           CO2 sensor pocket 25×35×10  (-100, +{cyh:.0}, 0)         MH-Z19B\n\
+           CO2 sample port    6 mm Ø    (-100, +{cyh:.0}, +20)       external 0-20% NDIR path\n\
+           CO2 relief port    6 mm Ø    (-100, +{cyh:.0}, -20)       passive pressure relief\n\
            Media in grommet  30 mm Ø   (+{cxh:.0}, -100, 150)       right wall\n\
            Media out grommet 30 mm Ø   (+{cxh:.0}, +100, 150)\n\
            Power grommet     25 mm Ø   (+{cxh:.0}, 0, -50)\n\
