@@ -5107,6 +5107,186 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_cell_source_thaw_to_seed_timing_identity_handoff_station",
+        path: "output/closed_cell_source_thaw_to_seed_timing_identity_handoff_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_source_thaw_to_seed_timing_identity_handoff_station",
+        path: "output/closed_cell_source_thaw_to_seed_timing_identity_handoff_station_thaw_to_seed_token_rail.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_source_thaw_to_seed_timing_identity_handoff_station",
+        path: "output/closed_cell_source_thaw_to_seed_timing_identity_handoff_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_media_ph_osmolality_co2_lag_validation_station",
+        path: "output/closed_inline_media_ph_osmolality_co2_lag_validation_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_media_ph_osmolality_co2_lag_validation_station",
+        path: "output/closed_inline_media_ph_osmolality_co2_lag_validation_station_ph_osmolality_sample_split_retain_wells.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_media_ph_osmolality_co2_lag_validation_station",
+        path: "output/closed_inline_media_ph_osmolality_co2_lag_validation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_probe_placement_shadow_strain_validation_station",
+        path: "output/closed_environmental_probe_placement_shadow_strain_validation_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_probe_placement_shadow_strain_validation_station",
+        path: "output/closed_environmental_probe_placement_shadow_strain_validation_station_probe_mast_array.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_probe_placement_shadow_strain_validation_station",
+        path: "output/closed_environmental_probe_placement_shadow_strain_validation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_airlock_gasket_wear_particle_shedding_station",
+        path: "output/closed_incubator_airlock_gasket_wear_particle_shedding_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_airlock_gasket_wear_particle_shedding_station",
+        path: "output/closed_incubator_airlock_gasket_wear_particle_shedding_station_particle_collection_coupon_lanes.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_airlock_gasket_wear_particle_shedding_station",
+        path: "output/closed_incubator_airlock_gasket_wear_particle_shedding_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_perfusion_startup_shear_ramp_validation_station",
+        path: "output/closed_cassette_perfusion_startup_shear_ramp_validation_station_base_leak_moat.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_perfusion_startup_shear_ramp_validation_station",
+        path: "output/closed_cassette_perfusion_startup_shear_ramp_validation_station_pressure_transducer_bosses.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_perfusion_startup_shear_ramp_validation_station",
+        path: "output/closed_cassette_perfusion_startup_shear_ramp_validation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_degas_membrane_wetout_leak_station",
+        path: "output/closed_media_conditioning_degas_membrane_wetout_leak_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_degas_membrane_wetout_leak_station",
+        path: "output/closed_media_conditioning_degas_membrane_wetout_leak_station_wetout_prime_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_degas_membrane_wetout_leak_station",
+        path: "output/closed_media_conditioning_degas_membrane_wetout_leak_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_decon_residue_sensor_false_clearance_station",
+        path: "output/closed_decon_residue_sensor_false_clearance_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_decon_residue_sensor_false_clearance_station",
+        path: "output/closed_decon_residue_sensor_false_clearance_station_residue_sensor_cartridge_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_decon_residue_sensor_false_clearance_station",
+        path: "output/closed_decon_residue_sensor_false_clearance_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_quarantine_sample_retain_split_verification_station",
+        path: "output/closed_waste_quarantine_sample_retain_split_verification_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_quarantine_sample_retain_split_verification_station",
+        path: "output/closed_waste_quarantine_sample_retain_split_verification_station_split_manifold_surrogate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_quarantine_sample_retain_split_verification_station",
+        path: "output/closed_waste_quarantine_sample_retain_split_verification_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_module_barrier_pressure_equalization_station",
+        path: "output/closed_cassette_module_barrier_pressure_equalization_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_module_barrier_pressure_equalization_station",
+        path: "output/closed_cassette_module_barrier_pressure_equalization_station_dual_equalization_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_module_barrier_pressure_equalization_station",
+        path: "output/closed_cassette_module_barrier_pressure_equalization_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_culture_run_abort_safe_state_station",
+        path: "output/closed_cell_culture_run_abort_safe_state_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_culture_run_abort_safe_state_station",
+        path: "output/closed_cell_culture_run_abort_safe_state_station_pump_valve_state_token_panel.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_culture_run_abort_safe_state_station",
+        path: "output/closed_cell_culture_run_abort_safe_state_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -6041,6 +6221,28 @@ mod tests {
             == "closed_cassette_cell_attachment_settle_uniformity_witness_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_media_exchange_shear_pulse_carryover_validation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cell_source_thaw_to_seed_timing_identity_handoff_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_inline_media_ph_osmolality_co2_lag_validation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_environmental_probe_placement_shadow_strain_validation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_airlock_gasket_wear_particle_shedding_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_perfusion_startup_shear_ramp_validation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_conditioning_degas_membrane_wetout_leak_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_decon_residue_sensor_false_clearance_station"
+        ));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_waste_quarantine_sample_retain_split_verification_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_module_barrier_pressure_equalization_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_cell_culture_run_abort_safe_state_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

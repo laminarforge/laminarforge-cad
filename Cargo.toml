@@ -1325,3 +1325,43 @@ path = "src/bin/closed_cassette_cell_attachment_settle_uniformity_witness_statio
 [[bin]]
 name = "closed_media_exchange_shear_pulse_carryover_validation_station"
 path = "src/bin/closed_media_exchange_shear_pulse_carryover_validation_station.rs"
+
+[[bin]]
+name = "closed_cell_source_thaw_to_seed_timing_identity_handoff_station"
+path = "src/bin/closed_cell_source_thaw_to_seed_timing_identity_handoff_station.rs"
+
+[[bin]]
+name = "closed_inline_media_ph_osmolality_co2_lag_validation_station"
+path = "src/bin/closed_inline_media_ph_osmolality_co2_lag_validation_station.rs"
+
+[[bin]]
+name = "closed_environmental_probe_placement_shadow_strain_validation_station"
+path = "src/bin/closed_environmental_probe_placement_shadow_strain_validation_station.rs"
+
+[[bin]]
+name = "closed_incubator_airlock_gasket_wear_particle_shedding_station"
+path = "src/bin/closed_incubator_airlock_gasket_wear_particle_shedding_station.rs"
+
+[[bin]]
+name = "closed_cassette_perfusion_startup_shear_ramp_validation_station"
+path = "src/bin/closed_cassette_perfusion_startup_shear_ramp_validation_station.rs"
+
+[[bin]]
+name = "closed_media_conditioning_degas_membrane_wetout_leak_station"
+path = "src/bin/closed_media_conditioning_degas_membrane_wetout_leak_station.rs"
+
+[[bin]]
+name = "closed_decon_residue_sensor_false_clearance_station"
+path = "src/bin/closed_decon_residue_sensor_false_clearance_station.rs"
+
+[[bin]]
+name = "closed_waste_quarantine_sample_retain_split_verification_station"
+path = "src/bin/closed_waste_quarantine_sample_retain_split_verification_station.rs"
+
+[[bin]]
+name = "closed_cassette_module_barrier_pressure_equalization_station"
+path = "src/bin/closed_cassette_module_barrier_pressure_equalization_station.rs"
+
+[[bin]]
+name = "closed_cell_culture_run_abort_safe_state_station"
+path = "src/bin/closed_cell_culture_run_abort_safe_state_station.rs"
