@@ -841,6 +841,150 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [1300.0, 820.0, 250.0],
     },
     ExpectedOutput {
+        generator: "sterile_tote_docking_and_transfer_station",
+        path: "output/sterile_tote_docking_and_transfer_station_base_leak_condensate_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1500.0, 950.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_tote_docking_and_transfer_station",
+        path: "output/sterile_tote_docking_and_transfer_station_sealed_tote_receiver_datum.stl",
+        min_triangles: 500,
+        min_size_mm: [780.0, 680.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_tote_docking_and_transfer_station",
+        path: "output/sterile_tote_docking_and_transfer_station_transfer_tongue_rail_interface.stl",
+        min_triangles: 300,
+        min_size_mm: [700.0, 400.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_tote_docking_and_transfer_station",
+        path: "output/sterile_tote_docking_and_transfer_station_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1500.0, 950.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "bioreactor_feed_harvest_bag_hotel",
+        path: "output/bioreactor_feed_harvest_bag_hotel_base_leak_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1280.0, 720.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "bioreactor_feed_harvest_bag_hotel",
+        path: "output/bioreactor_feed_harvest_bag_hotel_fresh_feed_bag_positions.stl",
+        min_triangles: 400,
+        min_size_mm: [480.0, 390.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "bioreactor_feed_harvest_bag_hotel",
+        path: "output/bioreactor_feed_harvest_bag_hotel_sterile_connector_bulkhead.stl",
+        min_triangles: 600,
+        min_size_mm: [650.0, 35.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "bioreactor_feed_harvest_bag_hotel",
+        path: "output/bioreactor_feed_harvest_bag_hotel_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1300.0, 740.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_bank_recovery_thaw_station",
+        path: "output/closed_cell_bank_recovery_thaw_station_base_leak_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1380.0, 860.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_bank_recovery_thaw_station",
+        path: "output/closed_cell_bank_recovery_thaw_station_cryovial_bag_receiving_nest.stl",
+        min_triangles: 800,
+        min_size_mm: [420.0, 260.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_bank_recovery_thaw_station",
+        path: "output/closed_cell_bank_recovery_thaw_station_controlled_thaw_block.stl",
+        min_triangles: 600,
+        min_size_mm: [380.0, 220.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_bank_recovery_thaw_station",
+        path: "output/closed_cell_bank_recovery_thaw_station_assembly.stl",
+        min_triangles: 3000,
+        min_size_mm: [1400.0, 880.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "closed_consumable_pre_use_inspection_station",
+        path: "output/closed_consumable_pre_use_inspection_station_base_leak_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [1320.0, 820.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_consumable_pre_use_inspection_station",
+        path: "output/closed_consumable_pre_use_inspection_station_clean_incoming_kit_datum.stl",
+        min_triangles: 1200,
+        min_size_mm: [440.0, 420.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_consumable_pre_use_inspection_station",
+        path: "output/closed_consumable_pre_use_inspection_station_optical_inspection_window_camera_bridge.stl",
+        min_triangles: 500,
+        min_size_mm: [650.0, 250.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "closed_consumable_pre_use_inspection_station",
+        path: "output/closed_consumable_pre_use_inspection_station_assembly.stl",
+        min_triangles: 3000,
+        min_size_mm: [1320.0, 840.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "closed_deviation_sample_triage_station",
+        path: "output/closed_deviation_sample_triage_station_leak_tray_base.stl",
+        min_triangles: 200,
+        min_size_mm: [1080.0, 700.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "closed_deviation_sample_triage_station",
+        path: "output/closed_deviation_sample_triage_station_sealed_incoming_sample_receiver.stl",
+        min_triangles: 800,
+        min_size_mm: [300.0, 180.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "closed_deviation_sample_triage_station",
+        path: "output/closed_deviation_sample_triage_station_cold_block_interface.stl",
+        min_triangles: 600,
+        min_size_mm: [200.0, 130.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "closed_deviation_sample_triage_station",
+        path: "output/closed_deviation_sample_triage_station_assembly.stl",
+        min_triangles: 3000,
+        min_size_mm: [1100.0, 720.0, 220.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_residual_rinse_sampling_station",
+        path: "output/closed_module_residual_rinse_sampling_station_baseplate.stl",
+        min_triangles: 200,
+        min_size_mm: [1080.0, 740.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_residual_rinse_sampling_station",
+        path: "output/closed_module_residual_rinse_sampling_station_sealed_module_dock.stl",
+        min_triangles: 600,
+        min_size_mm: [580.0, 340.0, 100.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_residual_rinse_sampling_station",
+        path: "output/closed_module_residual_rinse_sampling_station_sample_vial_carousel.stl",
+        min_triangles: 600,
+        min_size_mm: [250.0, 250.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_residual_rinse_sampling_station",
+        path: "output/closed_module_residual_rinse_sampling_station_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1100.0, 760.0, 120.0],
+    },
+    ExpectedOutput {
         generator: "sterile_tubing_harness",
         path: "output/sterile_tubing_harness_manifold_insert.stl",
         min_triangles: 160,
@@ -1571,6 +1715,24 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_environmental_excursion_response_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "sterile_tote_docking_and_transfer_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "bioreactor_feed_harvest_bag_hotel"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_cell_bank_recovery_thaw_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_consumable_pre_use_inspection_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_deviation_sample_triage_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_module_residual_rinse_sampling_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

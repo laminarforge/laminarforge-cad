@@ -155,12 +155,20 @@ name = "closed_reagent_thaw_equilibration_station"
 path = "src/bin/closed_reagent_thaw_equilibration_station.rs"
 
 [[bin]]
+name = "closed_cell_bank_recovery_thaw_station"
+path = "src/bin/closed_cell_bank_recovery_thaw_station.rs"
+
+[[bin]]
 name = "connector_topology_scan_station"
 path = "src/bin/connector_topology_scan_station.rs"
 
 [[bin]]
 name = "incubator_cassette_shuttle_airlock"
 path = "src/bin/incubator_cassette_shuttle_airlock.rs"
+
+[[bin]]
+name = "sterile_tote_docking_and_transfer_station"
+path = "src/bin/sterile_tote_docking_and_transfer_station.rs"
 
 [[bin]]
 name = "cassette_storage_recovery_incubator_rack"
@@ -263,6 +271,10 @@ name = "media_conditioning_perfusion_rack"
 path = "src/bin/media_conditioning_perfusion_rack.rs"
 
 [[bin]]
+name = "bioreactor_feed_harvest_bag_hotel"
+path = "src/bin/bioreactor_feed_harvest_bag_hotel.rs"
+
+[[bin]]
 name = "pressure_driven_perfusion_panel"
 path = "src/bin/pressure_driven_perfusion_panel.rs"
 
@@ -295,6 +307,10 @@ name = "closed_module_cip_sip_service_station"
 path = "src/bin/closed_module_cip_sip_service_station.rs"
 
 [[bin]]
+name = "closed_module_residual_rinse_sampling_station"
+path = "src/bin/closed_module_residual_rinse_sampling_station.rs"
+
+[[bin]]
 name = "cassette_deviation_quarantine_station"
 path = "src/bin/cassette_deviation_quarantine_station.rs"
 
@@ -303,8 +319,16 @@ name = "closed_environmental_excursion_response_station"
 path = "src/bin/closed_environmental_excursion_response_station.rs"
 
 [[bin]]
+name = "closed_deviation_sample_triage_station"
+path = "src/bin/closed_deviation_sample_triage_station.rs"
+
+[[bin]]
 name = "cell_lot_release_qc_panel"
 path = "src/bin/cell_lot_release_qc_panel.rs"
+
+[[bin]]
+name = "closed_consumable_pre_use_inspection_station"
+path = "src/bin/closed_consumable_pre_use_inspection_station.rs"
 
 [[bin]]
 name = "aseptic_transfer_hatch"
