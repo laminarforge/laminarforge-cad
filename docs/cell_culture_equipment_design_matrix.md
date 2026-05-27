@@ -47,6 +47,15 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Environmental utilities | `closed_sensor_cable_feedthrough_leak_test_station` | Leak, ingress, bend-radius, and strain-relief evidence for sensor/data cable penetrations. |
 | Incubation | `closed_incubator_o2_co2_stratification_mapping_station` | Rack-slot and vertical O2/CO2 gradients before gas/pH effects are interpreted biologically. |
 | Incubation safety | `closed_module_thermal_runaway_fault_injection_station` | Dummy-module over-temperature, independent logger, fuse/switch, shield, and emergency-disconnect validation. |
+| Sterile handling | `closed_cassette_transport_drop_shock_inspection_station` | Transport shock, cassette corner/edge damage, seal witness, leak evidence, logger custody, and release/hold/reject disposition. |
+| Incubation/materials | `closed_humidity_condensate_material_compatibility_station` | Warm-humid condensate, cleaning residue, material coupon mass/thickness drift, and gasket witness compatibility. |
+| Liquid handling | `closed_culture_module_service_line_kink_occlusion_station` | Service-line bend radius, kink/occlusion challenge lanes, pressure/flow witnesses, tubing strain relief, and dye recovery. |
+| Monitoring | `closed_inline_sensor_calibration_drift_challenge_station` | Inline sensor cartridge drift under reference standards, wet/dry state, temperature equilibration, pogo checks, and waste/flush routing. |
+| Leak reference | `closed_multichannel_pressure_decay_leak_reference_station` | Twenty-channel pressure-decay reference manifold, calibrated leak-orifice placeholders, transducer docks, valves, and reference volumes. |
+| Liquid handling | `closed_media_reservoir_mixing_homogeneity_validation_station` | Shared reservoir mixing homogeneity using top/middle/bottom sample loops, tracer coupons, load-cell pad, logger, and holdup-volume witnesses. |
+| Liquid handling | `closed_perfusion_pump_cross_channel_crosstalk_station` | Pump lane independence, parallel tubing layout, pressure/flow sensor ports, occlusion valve challenge, crosstalk witness manifold, and restrictor coupons. |
+| Automation safety | `closed_robot_collision_force_limit_validation_station` | Robot force-limit targets, compliant cassette surrogate, staged collision posts, hard/soft stop coupons, calibration mass pockets, and evidence bridge. |
+| Incubation | `closed_incubator_humidity_recovery_load_challenge_station` | Humidity/dewpoint recovery under cassette load using wet/dry coupons, door-event tokens, condensate capture, and logger/probe nests. |
 
 ## Build Order
 

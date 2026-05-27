@@ -761,3 +761,39 @@ path = "src/bin/closed_incubator_o2_co2_stratification_mapping_station.rs"
 [[bin]]
 name = "closed_module_thermal_runaway_fault_injection_station"
 path = "src/bin/closed_module_thermal_runaway_fault_injection_station.rs"
+
+[[bin]]
+name = "closed_cassette_transport_drop_shock_inspection_station"
+path = "src/bin/closed_cassette_transport_drop_shock_inspection_station.rs"
+
+[[bin]]
+name = "closed_humidity_condensate_material_compatibility_station"
+path = "src/bin/closed_humidity_condensate_material_compatibility_station.rs"
+
+[[bin]]
+name = "closed_culture_module_service_line_kink_occlusion_station"
+path = "src/bin/closed_culture_module_service_line_kink_occlusion_station.rs"
+
+[[bin]]
+name = "closed_inline_sensor_calibration_drift_challenge_station"
+path = "src/bin/closed_inline_sensor_calibration_drift_challenge_station.rs"
+
+[[bin]]
+name = "closed_multichannel_pressure_decay_leak_reference_station"
+path = "src/bin/closed_multichannel_pressure_decay_leak_reference_station.rs"
+
+[[bin]]
+name = "closed_media_reservoir_mixing_homogeneity_validation_station"
+path = "src/bin/closed_media_reservoir_mixing_homogeneity_validation_station.rs"
+
+[[bin]]
+name = "closed_perfusion_pump_cross_channel_crosstalk_station"
+path = "src/bin/closed_perfusion_pump_cross_channel_crosstalk_station.rs"
+
+[[bin]]
+name = "closed_robot_collision_force_limit_validation_station"
+path = "src/bin/closed_robot_collision_force_limit_validation_station.rs"
+
+[[bin]]
+name = "closed_incubator_humidity_recovery_load_challenge_station"
+path = "src/bin/closed_incubator_humidity_recovery_load_challenge_station.rs"

@@ -2569,6 +2569,168 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [250.0, 180.0, 80.0],
     },
     ExpectedOutput {
+        generator: "closed_cassette_transport_drop_shock_inspection_station",
+        path: "output/closed_cassette_transport_drop_shock_inspection_station_base_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_transport_drop_shock_inspection_station",
+        path: "output/closed_cassette_transport_drop_shock_inspection_station_cassette_receiving_nest.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_transport_drop_shock_inspection_station",
+        path: "output/closed_cassette_transport_drop_shock_inspection_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_condensate_material_compatibility_station",
+        path: "output/closed_humidity_condensate_material_compatibility_station_base_containment_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_condensate_material_compatibility_station",
+        path: "output/closed_humidity_condensate_material_compatibility_station_coupon_rack_cassettes.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_condensate_material_compatibility_station",
+        path: "output/closed_humidity_condensate_material_compatibility_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_culture_module_service_line_kink_occlusion_station",
+        path: "output/closed_culture_module_service_line_kink_occlusion_station_base_leak_tray_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_culture_module_service_line_kink_occlusion_station",
+        path: "output/closed_culture_module_service_line_kink_occlusion_station_service_bulkhead_coupon_nest.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_culture_module_service_line_kink_occlusion_station",
+        path: "output/closed_culture_module_service_line_kink_occlusion_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_sensor_calibration_drift_challenge_station",
+        path: "output/closed_inline_sensor_calibration_drift_challenge_station_base_leak_tray_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_sensor_calibration_drift_challenge_station",
+        path: "output/closed_inline_sensor_calibration_drift_challenge_station_sensor_cartridge_nest_array.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_sensor_calibration_drift_challenge_station",
+        path: "output/closed_inline_sensor_calibration_drift_challenge_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_multichannel_pressure_decay_leak_reference_station",
+        path: "output/closed_multichannel_pressure_decay_leak_reference_station_base_containment_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_multichannel_pressure_decay_leak_reference_station",
+        path: "output/closed_multichannel_pressure_decay_leak_reference_station_20_channel_reference_manifold_coupon.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_multichannel_pressure_decay_leak_reference_station",
+        path: "output/closed_multichannel_pressure_decay_leak_reference_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reservoir_mixing_homogeneity_validation_station",
+        path: "output/closed_media_reservoir_mixing_homogeneity_validation_station_base_leak_tray_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reservoir_mixing_homogeneity_validation_station",
+        path: "output/closed_media_reservoir_mixing_homogeneity_validation_station_sealed_reservoir_bag_cradle.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reservoir_mixing_homogeneity_validation_station",
+        path: "output/closed_media_reservoir_mixing_homogeneity_validation_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_pump_cross_channel_crosstalk_station",
+        path: "output/closed_perfusion_pump_cross_channel_crosstalk_station_base_leak_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_pump_cross_channel_crosstalk_station",
+        path: "output/closed_perfusion_pump_cross_channel_crosstalk_station_multi_channel_pump_mounts.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_pump_cross_channel_crosstalk_station",
+        path: "output/closed_perfusion_pump_cross_channel_crosstalk_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_collision_force_limit_validation_station",
+        path: "output/closed_robot_collision_force_limit_validation_station_base_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_collision_force_limit_validation_station",
+        path: "output/closed_robot_collision_force_limit_validation_station_force_gauge_targets.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_collision_force_limit_validation_station",
+        path: "output/closed_robot_collision_force_limit_validation_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_recovery_load_challenge_station",
+        path: "output/closed_incubator_humidity_recovery_load_challenge_station_base_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_recovery_load_challenge_station",
+        path: "output/closed_incubator_humidity_recovery_load_challenge_station_cassette_surrogate_load_rack.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_recovery_load_challenge_station",
+        path: "output/closed_incubator_humidity_recovery_load_challenge_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -3113,6 +3275,32 @@ mod tests {
             .iter()
             .any(|output| output.generator
                 == "closed_module_thermal_runaway_fault_injection_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cassette_transport_drop_shock_inspection_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_humidity_condensate_material_compatibility_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_culture_module_service_line_kink_occlusion_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_inline_sensor_calibration_drift_challenge_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_multichannel_pressure_decay_leak_reference_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_reservoir_mixing_homogeneity_validation_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_perfusion_pump_cross_channel_crosstalk_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_robot_collision_force_limit_validation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_humidity_recovery_load_challenge_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
