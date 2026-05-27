@@ -617,3 +617,51 @@ path = "src/bin/closed_microfluidic_chip_preflush_debubble_station.rs"
 [[bin]]
 name = "closed_media_osmolality_conductivity_qc_station"
 path = "src/bin/closed_media_osmolality_conductivity_qc_station.rs"
+
+[[bin]]
+name = "closed_media_buffer_hold_time_stability_station"
+path = "src/bin/closed_media_buffer_hold_time_stability_station.rs"
+
+[[bin]]
+name = "closed_inline_filter_preuse_integrity_test_station"
+path = "src/bin/closed_inline_filter_preuse_integrity_test_station.rs"
+
+[[bin]]
+name = "closed_growth_factor_cytokine_addition_qc_station"
+path = "src/bin/closed_growth_factor_cytokine_addition_qc_station.rs"
+
+[[bin]]
+name = "closed_chip_inlet_outlet_dead_volume_dye_recovery_station"
+path = "src/bin/closed_chip_inlet_outlet_dead_volume_dye_recovery_station.rs"
+
+[[bin]]
+name = "closed_teer_impedance_phantom_verification_station"
+path = "src/bin/closed_teer_impedance_phantom_verification_station.rs"
+
+[[bin]]
+name = "closed_reference_particle_flow_calibration_station"
+path = "src/bin/closed_reference_particle_flow_calibration_station.rs"
+
+[[bin]]
+name = "closed_pump_tubing_occlusion_endurance_station"
+path = "src/bin/closed_pump_tubing_occlusion_endurance_station.rs"
+
+[[bin]]
+name = "closed_sampling_carryover_flush_validation_station"
+path = "src/bin/closed_sampling_carryover_flush_validation_station.rs"
+
+[[bin]]
+name = "closed_low_volume_dose_accuracy_recovery_station"
+path = "src/bin/closed_low_volume_dose_accuracy_recovery_station.rs"
+
+[[bin]]
+name = "closed_reagent_additive_trace_dispense_verification_station"
+path = "src/bin/closed_reagent_additive_trace_dispense_verification_station.rs"
+
+[[bin]]
+name = "closed_optical_focus_drift_calibration_station"
+path = "src/bin/closed_optical_focus_drift_calibration_station.rs"
+
+[[bin]]
+name = "closed_reference_viscosity_media_rheology_station"
+path = "src/bin/closed_reference_viscosity_media_rheology_station.rs"

@@ -1921,6 +1921,222 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [300.0, 200.0, 50.0],
     },
     ExpectedOutput {
+        generator: "closed_media_buffer_hold_time_stability_station",
+        path: "output/closed_media_buffer_hold_time_stability_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_buffer_hold_time_stability_station",
+        path: "output/closed_media_buffer_hold_time_stability_station_timepoint_sample_loop.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 80.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_buffer_hold_time_stability_station",
+        path: "output/closed_media_buffer_hold_time_stability_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_filter_preuse_integrity_test_station",
+        path: "output/closed_inline_filter_preuse_integrity_test_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_filter_preuse_integrity_test_station",
+        path: "output/closed_inline_filter_preuse_integrity_test_station_filter_cartridge_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 80.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_filter_preuse_integrity_test_station",
+        path: "output/closed_inline_filter_preuse_integrity_test_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_growth_factor_cytokine_addition_qc_station",
+        path: "output/closed_growth_factor_cytokine_addition_qc_station_chilled_spill_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_growth_factor_cytokine_addition_qc_station",
+        path: "output/closed_growth_factor_cytokine_addition_qc_station_chilled_additive_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 80.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_growth_factor_cytokine_addition_qc_station",
+        path: "output/closed_growth_factor_cytokine_addition_qc_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_inlet_outlet_dead_volume_dye_recovery_station",
+        path: "output/closed_chip_inlet_outlet_dead_volume_dye_recovery_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_inlet_outlet_dead_volume_dye_recovery_station",
+        path: "output/closed_chip_inlet_outlet_dead_volume_dye_recovery_station_chip_cassette_surrogate.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 80.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_inlet_outlet_dead_volume_dye_recovery_station",
+        path: "output/closed_chip_inlet_outlet_dead_volume_dye_recovery_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_teer_impedance_phantom_verification_station",
+        path: "output/closed_teer_impedance_phantom_verification_station_base_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_teer_impedance_phantom_verification_station",
+        path: "output/closed_teer_impedance_phantom_verification_station_phantom_cartridge_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 80.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_teer_impedance_phantom_verification_station",
+        path: "output/closed_teer_impedance_phantom_verification_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reference_particle_flow_calibration_station",
+        path: "output/closed_reference_particle_flow_calibration_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reference_particle_flow_calibration_station",
+        path: "output/closed_reference_particle_flow_calibration_station_sterile_injection_loop.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 40.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reference_particle_flow_calibration_station",
+        path: "output/closed_reference_particle_flow_calibration_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_tubing_occlusion_endurance_station",
+        path: "output/closed_pump_tubing_occlusion_endurance_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_tubing_occlusion_endurance_station",
+        path: "output/closed_pump_tubing_occlusion_endurance_station_tubing_loop_strain_relief_combs.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 40.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pump_tubing_occlusion_endurance_station",
+        path: "output/closed_pump_tubing_occlusion_endurance_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sampling_carryover_flush_validation_station",
+        path: "output/closed_sampling_carryover_flush_validation_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sampling_carryover_flush_validation_station",
+        path: "output/closed_sampling_carryover_flush_validation_station_closed_sample_loop_cartridge_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 40.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sampling_carryover_flush_validation_station",
+        path: "output/closed_sampling_carryover_flush_validation_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_low_volume_dose_accuracy_recovery_station",
+        path: "output/closed_low_volume_dose_accuracy_recovery_station_base_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_low_volume_dose_accuracy_recovery_station",
+        path: "output/closed_low_volume_dose_accuracy_recovery_station_micro_dose_collection_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 40.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_low_volume_dose_accuracy_recovery_station",
+        path: "output/closed_low_volume_dose_accuracy_recovery_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_additive_trace_dispense_verification_station",
+        path: "output/closed_reagent_additive_trace_dispense_verification_station_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_additive_trace_dispense_verification_station",
+        path: "output/closed_reagent_additive_trace_dispense_verification_station_small_volume_dispense_wells.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 40.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_additive_trace_dispense_verification_station",
+        path: "output/closed_reagent_additive_trace_dispense_verification_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_optical_focus_drift_calibration_station",
+        path: "output/closed_optical_focus_drift_calibration_station_base_enclosure.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_optical_focus_drift_calibration_station",
+        path: "output/closed_optical_focus_drift_calibration_station_focus_step_phantom_blocks.stl",
+        min_triangles: 80,
+        min_size_mm: [80.0, 30.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_optical_focus_drift_calibration_station",
+        path: "output/closed_optical_focus_drift_calibration_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reference_viscosity_media_rheology_station",
+        path: "output/closed_reference_viscosity_media_rheology_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reference_viscosity_media_rheology_station",
+        path: "output/closed_reference_viscosity_media_rheology_station_capillary_restriction_coupon_holder.stl",
+        min_triangles: 80,
+        min_size_mm: [80.0, 40.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reference_viscosity_media_rheology_station",
+        path: "output/closed_reference_viscosity_media_rheology_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -2332,6 +2548,52 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_media_osmolality_conductivity_qc_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_media_buffer_hold_time_stability_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_inline_filter_preuse_integrity_test_station")
+        );
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_growth_factor_cytokine_addition_qc_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_chip_inlet_outlet_dead_volume_dye_recovery_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_teer_impedance_phantom_verification_station")
+        );
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_reference_particle_flow_calibration_station")
+        );
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_pump_tubing_occlusion_endurance_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_sampling_carryover_flush_validation_station")
+        );
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_low_volume_dose_accuracy_recovery_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_reagent_additive_trace_dispense_verification_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_optical_focus_drift_calibration_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_reference_viscosity_media_rheology_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
