@@ -4603,6 +4603,96 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_media_conditioning_gas_equilibration_hold_loop_station",
+        path: "output/closed_media_conditioning_gas_equilibration_hold_loop_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_gas_equilibration_hold_loop_station",
+        path: "output/closed_media_conditioning_gas_equilibration_hold_loop_station_co2_o2_blend_interface_panel.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_gas_equilibration_hold_loop_station",
+        path: "output/closed_media_conditioning_gas_equilibration_hold_loop_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_seeding_suspension_homogeneity_recirculation_station",
+        path: "output/closed_cell_seeding_suspension_homogeneity_recirculation_station_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_seeding_suspension_homogeneity_recirculation_station",
+        path: "output/closed_cell_seeding_suspension_homogeneity_recirculation_station_gentle_recirculation_mixing_path.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_seeding_suspension_homogeneity_recirculation_station",
+        path: "output/closed_cell_seeding_suspension_homogeneity_recirculation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_cassette_seeding_angle_and_dwell_station",
+        path: "output/closed_robotic_cassette_seeding_angle_and_dwell_station_closed_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_cassette_seeding_angle_and_dwell_station",
+        path: "output/closed_robotic_cassette_seeding_angle_and_dwell_station_angle_witness_saddles.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_cassette_seeding_angle_and_dwell_station",
+        path: "output/closed_robotic_cassette_seeding_angle_and_dwell_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_water_quality_biofilm_sentinel_station",
+        path: "output/closed_incubator_humidity_water_quality_biofilm_sentinel_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_water_quality_biofilm_sentinel_station",
+        path: "output/closed_incubator_humidity_water_quality_biofilm_sentinel_station_water_reservoir_pan_surrogate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_water_quality_biofilm_sentinel_station",
+        path: "output/closed_incubator_humidity_water_quality_biofilm_sentinel_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_analyte_sensor_calibration_carryover_station",
+        path: "output/closed_media_analyte_sensor_calibration_carryover_station_base_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_analyte_sensor_calibration_carryover_station",
+        path: "output/closed_media_analyte_sensor_calibration_carryover_station_calibration_standard_custody_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_analyte_sensor_calibration_carryover_station",
+        path: "output/closed_media_analyte_sensor_calibration_carryover_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -5476,6 +5566,18 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_sensor_stream_replay_audit_trail_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_conditioning_gas_equilibration_hold_loop_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cell_seeding_suspension_homogeneity_recirculation_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_robotic_cassette_seeding_angle_and_dwell_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_humidity_water_quality_biofilm_sentinel_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_analyte_sensor_calibration_carryover_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

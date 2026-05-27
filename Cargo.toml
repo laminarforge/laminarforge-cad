@@ -1213,3 +1213,23 @@ path = "src/bin/closed_alarm_escalation_run_hold_release_decision_station.rs"
 [[bin]]
 name = "closed_sensor_stream_replay_audit_trail_station"
 path = "src/bin/closed_sensor_stream_replay_audit_trail_station.rs"
+
+[[bin]]
+name = "closed_media_conditioning_gas_equilibration_hold_loop_station"
+path = "src/bin/closed_media_conditioning_gas_equilibration_hold_loop_station.rs"
+
+[[bin]]
+name = "closed_cell_seeding_suspension_homogeneity_recirculation_station"
+path = "src/bin/closed_cell_seeding_suspension_homogeneity_recirculation_station.rs"
+
+[[bin]]
+name = "closed_robotic_cassette_seeding_angle_and_dwell_station"
+path = "src/bin/closed_robotic_cassette_seeding_angle_and_dwell_station.rs"
+
+[[bin]]
+name = "closed_incubator_humidity_water_quality_biofilm_sentinel_station"
+path = "src/bin/closed_incubator_humidity_water_quality_biofilm_sentinel_station.rs"
+
+[[bin]]
+name = "closed_media_analyte_sensor_calibration_carryover_station"
+path = "src/bin/closed_media_analyte_sensor_calibration_carryover_station.rs"
