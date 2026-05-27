@@ -545,3 +545,51 @@ path = "src/bin/closed_pump_valve_manifold_calibration_station.rs"
 [[bin]]
 name = "closed_calibration_standard_custody_gate"
 path = "src/bin/closed_calibration_standard_custody_gate.rs"
+
+[[bin]]
+name = "closed_media_fill_run_simulation_fixture"
+path = "src/bin/closed_media_fill_run_simulation_fixture.rs"
+
+[[bin]]
+name = "closed_incubation_slot_map_verification_station"
+path = "src/bin/closed_incubation_slot_map_verification_station.rs"
+
+[[bin]]
+name = "closed_sterile_connector_lot_inspection_station"
+path = "src/bin/closed_sterile_connector_lot_inspection_station.rs"
+
+[[bin]]
+name = "closed_gasket_lot_incoming_inspection_station"
+path = "src/bin/closed_gasket_lot_incoming_inspection_station.rs"
+
+[[bin]]
+name = "closed_waste_bag_custody_weigh_seal_station"
+path = "src/bin/closed_waste_bag_custody_weigh_seal_station.rs"
+
+[[bin]]
+name = "sterile_tubing_weld_seal_coupon_test_station"
+path = "src/bin/sterile_tubing_weld_seal_coupon_test_station.rs"
+
+[[bin]]
+name = "closed_robot_end_effector_sterility_parking_station"
+path = "src/bin/closed_robot_end_effector_sterility_parking_station.rs"
+
+[[bin]]
+name = "closed_hepa_filter_scan_adapter_fixture"
+path = "src/bin/closed_hepa_filter_scan_adapter_fixture.rs"
+
+[[bin]]
+name = "closed_culture_module_power_data_quickconnect_validation_station"
+path = "src/bin/closed_culture_module_power_data_quickconnect_validation_station.rs"
+
+[[bin]]
+name = "closed_aseptic_tool_surface_bioburden_sampling_station"
+path = "src/bin/closed_aseptic_tool_surface_bioburden_sampling_station.rs"
+
+[[bin]]
+name = "closed_incubator_condensate_drain_validation_fixture"
+path = "src/bin/closed_incubator_condensate_drain_validation_fixture.rs"
+
+[[bin]]
+name = "closed_sample_label_print_apply_verify_station"
+path = "src/bin/closed_sample_label_print_apply_verify_station.rs"

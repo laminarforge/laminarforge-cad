@@ -1597,6 +1597,222 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [900.0, 540.0, 890.0],
     },
     ExpectedOutput {
+        generator: "closed_media_fill_run_simulation_fixture",
+        path: "output/closed_media_fill_run_simulation_fixture_baseplate.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_fill_run_simulation_fixture",
+        path: "output/closed_media_fill_run_simulation_fixture_sterile_connector_loop_routing.stl",
+        min_triangles: 80,
+        min_size_mm: [180.0, 80.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_fill_run_simulation_fixture",
+        path: "output/closed_media_fill_run_simulation_fixture_assembly.stl",
+        min_triangles: 400,
+        min_size_mm: [300.0, 200.0, 60.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubation_slot_map_verification_station",
+        path: "output/closed_incubation_slot_map_verification_station_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubation_slot_map_verification_station",
+        path: "output/closed_incubation_slot_map_verification_station_six_slot_rack_comb.stl",
+        min_triangles: 80,
+        min_size_mm: [180.0, 120.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubation_slot_map_verification_station",
+        path: "output/closed_incubation_slot_map_verification_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sterile_connector_lot_inspection_station",
+        path: "output/closed_sterile_connector_lot_inspection_station_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sterile_connector_lot_inspection_station",
+        path: "output/closed_sterile_connector_lot_inspection_station_gonogo_gauge_pockets.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 60.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sterile_connector_lot_inspection_station",
+        path: "output/closed_sterile_connector_lot_inspection_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gasket_lot_incoming_inspection_station",
+        path: "output/closed_gasket_lot_incoming_inspection_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gasket_lot_incoming_inspection_station",
+        path: "output/closed_gasket_lot_incoming_inspection_station_defect_imaging_bridge.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 30.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gasket_lot_incoming_inspection_station",
+        path: "output/closed_gasket_lot_incoming_inspection_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_bag_custody_weigh_seal_station",
+        path: "output/closed_waste_bag_custody_weigh_seal_station_base_leak_drip_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_bag_custody_weigh_seal_station",
+        path: "output/closed_waste_bag_custody_weigh_seal_station_gravimetric_pad.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 80.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_bag_custody_weigh_seal_station",
+        path: "output/closed_waste_bag_custody_weigh_seal_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_tubing_weld_seal_coupon_test_station",
+        path: "output/sterile_tubing_weld_seal_coupon_test_station_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_tubing_weld_seal_coupon_test_station",
+        path: "output/sterile_tubing_weld_seal_coupon_test_station_pressure_decay_ports.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 30.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_tubing_weld_seal_coupon_test_station",
+        path: "output/sterile_tubing_weld_seal_coupon_test_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_end_effector_sterility_parking_station",
+        path: "output/closed_robot_end_effector_sterility_parking_station_base_lane_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_end_effector_sterility_parking_station",
+        path: "output/closed_robot_end_effector_sterility_parking_station_covered_tool_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_end_effector_sterility_parking_station",
+        path: "output/closed_robot_end_effector_sterility_parking_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 180.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_hepa_filter_scan_adapter_fixture",
+        path: "output/closed_hepa_filter_scan_adapter_fixture_cleanable_base_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_hepa_filter_scan_adapter_fixture",
+        path: "output/closed_hepa_filter_scan_adapter_fixture_scan_wand_rails.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 40.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_hepa_filter_scan_adapter_fixture",
+        path: "output/closed_hepa_filter_scan_adapter_fixture_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_culture_module_power_data_quickconnect_validation_station",
+        path: "output/closed_culture_module_power_data_quickconnect_validation_station_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_culture_module_power_data_quickconnect_validation_station",
+        path: "output/closed_culture_module_power_data_quickconnect_validation_station_continuity_pogo_fixture.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 50.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_culture_module_power_data_quickconnect_validation_station",
+        path: "output/closed_culture_module_power_data_quickconnect_validation_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_aseptic_tool_surface_bioburden_sampling_station",
+        path: "output/closed_aseptic_tool_surface_bioburden_sampling_station_base_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_aseptic_tool_surface_bioburden_sampling_station",
+        path: "output/closed_aseptic_tool_surface_bioburden_sampling_station_swab_contact_plate_holders.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 60.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_aseptic_tool_surface_bioburden_sampling_station",
+        path: "output/closed_aseptic_tool_surface_bioburden_sampling_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_condensate_drain_validation_fixture",
+        path: "output/closed_incubator_condensate_drain_validation_fixture_base_spill_pan.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_condensate_drain_validation_fixture",
+        path: "output/closed_incubator_condensate_drain_validation_fixture_sloped_drain_coupon_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 60.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_condensate_drain_validation_fixture",
+        path: "output/closed_incubator_condensate_drain_validation_fixture_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_label_print_apply_verify_station",
+        path: "output/closed_sample_label_print_apply_verify_station_cleanable_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_label_print_apply_verify_station",
+        path: "output/closed_sample_label_print_apply_verify_station_barcode_rfid_verifier_camera_bridge.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 30.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_label_print_apply_verify_station",
+        path: "output/closed_sample_label_print_apply_verify_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -1950,6 +2166,42 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_calibration_standard_custody_gate"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_media_fill_run_simulation_fixture"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_incubation_slot_map_verification_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_sterile_connector_lot_inspection_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_gasket_lot_incoming_inspection_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_waste_bag_custody_weigh_seal_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "sterile_tubing_weld_seal_coupon_test_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_robot_end_effector_sterility_parking_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_hepa_filter_scan_adapter_fixture"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_culture_module_power_data_quickconnect_validation_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_aseptic_tool_surface_bioburden_sampling_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_incubator_condensate_drain_validation_fixture"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_sample_label_print_apply_verify_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
