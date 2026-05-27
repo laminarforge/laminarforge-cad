@@ -1145,3 +1145,27 @@ path = "src/bin/closed_perfusion_lane_flow_split_symmetry_station.rs"
 [[bin]]
 name = "closed_reagent_lot_barcode_reconcile_scale_station"
 path = "src/bin/closed_reagent_lot_barcode_reconcile_scale_station.rs"
+
+[[bin]]
+name = "closed_cassette_gasket_install_torque_compression_station"
+path = "src/bin/closed_cassette_gasket_install_torque_compression_station.rs"
+
+[[bin]]
+name = "closed_sensor_data_timestamp_alignment_station"
+path = "src/bin/closed_sensor_data_timestamp_alignment_station.rs"
+
+[[bin]]
+name = "closed_cleanroom_pressure_cascade_smoke_recovery_station"
+path = "src/bin/closed_cleanroom_pressure_cascade_smoke_recovery_station.rs"
+
+[[bin]]
+name = "closed_cassette_position_edge_center_effects_rebalance_station"
+path = "src/bin/closed_cassette_position_edge_center_effects_rebalance_station.rs"
+
+[[bin]]
+name = "closed_perfusion_alarm_response_quarantine_diverter_station"
+path = "src/bin/closed_perfusion_alarm_response_quarantine_diverter_station.rs"
+
+[[bin]]
+name = "closed_media_feed_harvest_bag_lot_mixup_prevention_station"
+path = "src/bin/closed_media_feed_harvest_bag_lot_mixup_prevention_station.rs"

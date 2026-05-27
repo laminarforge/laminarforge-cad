@@ -4297,6 +4297,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_cassette_gasket_install_torque_compression_station",
+        path: "output/closed_cassette_gasket_install_torque_compression_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_gasket_install_torque_compression_station",
+        path: "output/closed_cassette_gasket_install_torque_compression_station_cassette_datum_nest_16_slot.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_gasket_install_torque_compression_station",
+        path: "output/closed_cassette_gasket_install_torque_compression_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_data_timestamp_alignment_station",
+        path: "output/closed_sensor_data_timestamp_alignment_station_base_timebase_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_data_timestamp_alignment_station",
+        path: "output/closed_sensor_data_timestamp_alignment_station_timestamp_beacon_panel.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_data_timestamp_alignment_station",
+        path: "output/closed_sensor_data_timestamp_alignment_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_pressure_cascade_smoke_recovery_station",
+        path: "output/closed_cleanroom_pressure_cascade_smoke_recovery_station_base_cascade_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_pressure_cascade_smoke_recovery_station",
+        path: "output/closed_cleanroom_pressure_cascade_smoke_recovery_station_pressure_step_plenums.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_pressure_cascade_smoke_recovery_station",
+        path: "output/closed_cleanroom_pressure_cascade_smoke_recovery_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_edge_center_effects_rebalance_station",
+        path: "output/closed_cassette_position_edge_center_effects_rebalance_station_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_edge_center_effects_rebalance_station",
+        path: "output/closed_cassette_position_edge_center_effects_rebalance_station_cassette_surrogate_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_edge_center_effects_rebalance_station",
+        path: "output/closed_cassette_position_edge_center_effects_rebalance_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_alarm_response_quarantine_diverter_station",
+        path: "output/closed_perfusion_alarm_response_quarantine_diverter_station_base_leak_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_alarm_response_quarantine_diverter_station",
+        path: "output/closed_perfusion_alarm_response_quarantine_diverter_station_alarm_input_sensor_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_alarm_response_quarantine_diverter_station",
+        path: "output/closed_perfusion_alarm_response_quarantine_diverter_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_feed_harvest_bag_lot_mixup_prevention_station",
+        path: "output/closed_media_feed_harvest_bag_lot_mixup_prevention_station_base_leak_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_feed_harvest_bag_lot_mixup_prevention_station",
+        path: "output/closed_media_feed_harvest_bag_lot_mixup_prevention_station_feed_load_cell_bag_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_feed_harvest_bag_lot_mixup_prevention_station",
+        path: "output/closed_media_feed_harvest_bag_lot_mixup_prevention_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -5123,6 +5231,21 @@ mod tests {
                 .any(|output| output.generator
                     == "closed_reagent_lot_barcode_reconcile_scale_station")
         );
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_gasket_install_torque_compression_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_sensor_data_timestamp_alignment_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cleanroom_pressure_cascade_smoke_recovery_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_position_edge_center_effects_rebalance_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_alarm_response_quarantine_diverter_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_feed_harvest_bag_lot_mixup_prevention_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
