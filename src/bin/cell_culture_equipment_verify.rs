@@ -5827,6 +5827,96 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_robotic_connector_cap_drop_recovery_quarantine_station",
+        path: "output/closed_robotic_connector_cap_drop_recovery_quarantine_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_connector_cap_drop_recovery_quarantine_station",
+        path: "output/closed_robotic_connector_cap_drop_recovery_quarantine_station_dropped_cap_quarantine_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_connector_cap_drop_recovery_quarantine_station",
+        path: "output/closed_robotic_connector_cap_drop_recovery_quarantine_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_reservoir_fill_level_slosh_response_station",
+        path: "output/closed_humidity_reservoir_fill_level_slosh_response_station_base_motion_recovery_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_reservoir_fill_level_slosh_response_station",
+        path: "output/closed_humidity_reservoir_fill_level_slosh_response_station_slosh_baffle_coupon_cartridge.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_reservoir_fill_level_slosh_response_station",
+        path: "output/closed_humidity_reservoir_fill_level_slosh_response_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_line_dissolved_gas_bubble_nucleation_station",
+        path: "output/closed_media_line_dissolved_gas_bubble_nucleation_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_line_dissolved_gas_bubble_nucleation_station",
+        path: "output/closed_media_line_dissolved_gas_bubble_nucleation_station_transparent_bubble_witness_window_array.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_line_dissolved_gas_bubble_nucleation_station",
+        path: "output/closed_media_line_dissolved_gas_bubble_nucleation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_dissolved_oxygen_response_lag_mapping_station",
+        path: "output/closed_perfusion_dissolved_oxygen_response_lag_mapping_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_dissolved_oxygen_response_lag_mapping_station",
+        path: "output/closed_perfusion_dissolved_oxygen_response_lag_mapping_station_sensor_pocket_ladder.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_dissolved_oxygen_response_lag_mapping_station",
+        path: "output/closed_perfusion_dissolved_oxygen_response_lag_mapping_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_end_effector_autoclave_cycle_count_custody_station",
+        path: "output/closed_robotic_end_effector_autoclave_cycle_count_custody_station_base_cleanable_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_end_effector_autoclave_cycle_count_custody_station",
+        path: "output/closed_robotic_end_effector_autoclave_cycle_count_custody_station_cycle_count_token_wheel.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_end_effector_autoclave_cycle_count_custody_station",
+        path: "output/closed_robotic_end_effector_autoclave_cycle_count_custody_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -6862,6 +6952,16 @@ mod tests {
             == "closed_media_additive_precipitation_filter_blockage_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_incubator_slot_reassignment_after_excursion_balance_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_robotic_connector_cap_drop_recovery_quarantine_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_humidity_reservoir_fill_level_slosh_response_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_line_dissolved_gas_bubble_nucleation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_dissolved_oxygen_response_lag_mapping_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_robotic_end_effector_autoclave_cycle_count_custody_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

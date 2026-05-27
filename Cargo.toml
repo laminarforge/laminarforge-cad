@@ -1485,3 +1485,23 @@ path = "src/bin/closed_media_additive_precipitation_filter_blockage_station.rs"
 [[bin]]
 name = "closed_incubator_slot_reassignment_after_excursion_balance_station"
 path = "src/bin/closed_incubator_slot_reassignment_after_excursion_balance_station.rs"
+
+[[bin]]
+name = "closed_robotic_connector_cap_drop_recovery_quarantine_station"
+path = "src/bin/closed_robotic_connector_cap_drop_recovery_quarantine_station.rs"
+
+[[bin]]
+name = "closed_humidity_reservoir_fill_level_slosh_response_station"
+path = "src/bin/closed_humidity_reservoir_fill_level_slosh_response_station.rs"
+
+[[bin]]
+name = "closed_media_line_dissolved_gas_bubble_nucleation_station"
+path = "src/bin/closed_media_line_dissolved_gas_bubble_nucleation_station.rs"
+
+[[bin]]
+name = "closed_perfusion_dissolved_oxygen_response_lag_mapping_station"
+path = "src/bin/closed_perfusion_dissolved_oxygen_response_lag_mapping_station.rs"
+
+[[bin]]
+name = "closed_robotic_end_effector_autoclave_cycle_count_custody_station"
+path = "src/bin/closed_robotic_end_effector_autoclave_cycle_count_custody_station.rs"
