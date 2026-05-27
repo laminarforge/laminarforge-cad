@@ -131,6 +131,14 @@ name = "automated_seeding_coating_station"
 path = "src/bin/automated_seeding_coating_station.rs"
 
 [[bin]]
+name = "cell_suspension_prep_qc_module"
+path = "src/bin/cell_suspension_prep_qc_module.rs"
+
+[[bin]]
+name = "media_sampling_analyzer_interface"
+path = "src/bin/media_sampling_analyzer_interface.rs"
+
+[[bin]]
 name = "sterile_tubing_harness"
 path = "src/bin/sterile_tubing_harness.rs"
 
@@ -177,6 +185,26 @@ path = "src/bin/media_conditioning_perfusion_rack.rs"
 [[bin]]
 name = "pressure_driven_perfusion_panel"
 path = "src/bin/pressure_driven_perfusion_panel.rs"
+
+[[bin]]
+name = "flow_pressure_validation_fixture"
+path = "src/bin/flow_pressure_validation_fixture.rs"
+
+[[bin]]
+name = "workcell_calibration_drawer"
+path = "src/bin/workcell_calibration_drawer.rs"
+
+[[bin]]
+name = "media_reagent_quarantine_pod"
+path = "src/bin/media_reagent_quarantine_pod.rs"
+
+[[bin]]
+name = "sterile_consumable_cartridge_hotel"
+path = "src/bin/sterile_consumable_cartridge_hotel.rs"
+
+[[bin]]
+name = "waste_decon_service_pod"
+path = "src/bin/waste_decon_service_pod.rs"
 
 [[bin]]
 name = "aseptic_transfer_hatch"

@@ -33,9 +33,10 @@ The core strategy is:
 | ECM/coating variability | Standardized coating protocol, timed automation, controlled incubation, documented lot IDs | Coating volume/timing check, surface wetting check, lot-to-lot comparison | Coating/priming fixture and protocol record |
 | Media exchange inconsistency | Sterile tubing harness, pump-controlled media exchange, reservoir tracking, no routine manual pipetting | Delivered volume, residual/carryover, timing repeatability, media recovery check | Closed media exchange recipe and calibration tool |
 | Passage number / cell lot drift | Run metadata, lot/passaging log, acceptance gates before chip seeding | Passage range lock, viability/count acceptance, lot comparison controls | Data model and inventory/run tracker |
+| Media/reagent lot drift | Physical quarantine/released segregation, lot scan, temperature-zone placeholders, QC sampling drawer, cold-chain metadata, and release status | Incoming/released lot reconciliation, storage excursion check, COA/sterility record review, opened-use timer, and lot-to-run traceability | Media/reagent quarantine pod and inventory release records |
 | Timing drift | Automated schedules, event logs, controller timestamps, sensor timestamps | Media-change timing accuracy, incubation duration audit, missed-event alarms | Controller software and run manifest |
-| Insufficient drift measurement | Multimodal monitoring design: flow/pressure, temp/CO2/RH, TEER/impedance, pH/O2, metabolites, imaging triage | Sensor calibration, missing-data fail, image/sensor disagreement review | Sensor backplane, inline service module, imaging station |
-| Poor repeatability evidence | Staged validation: no-cell, media-only, simple cell line, single-chip pilot, multi-chip pilot, batch/operator study | Predefined acceptance criteria, repeated runs, negative/positive controls, operator/batch records | Formal validation plan and analysis scripts |
+| Insufficient drift measurement | Multimodal monitoring design: flow/pressure, temp/CO2/RH, TEER/impedance, pH/O2, metabolites, imaging triage | Sensor calibration, missing-data fail, sample custody/data traceability, image/sensor disagreement review | Sensor backplane, inline service module, media sampling interface, imaging station |
+| Poor repeatability evidence | Staged validation: no-cell, media-only, simple cell line, single-chip pilot, multi-chip pilot, batch/operator study | Predefined acceptance criteria, repeated runs, negative/positive controls, operator/batch records, immutable run/audit records | Formal validation plan, electronic batch-record schema, and analysis scripts |
 
 ## Quantitative Acceptance Targets
 
@@ -50,6 +51,9 @@ Use these as initial engineering gates for CAD modules and test fixtures. They a
 | Sterility transfer | Media-fill or media-only hold for 7-14 days with no turbidity/CFU growth, waste backflow/siphon tests passing, and microbial-ingress challenge planning for single-use assemblies. |
 | Perfusion control | Lane flow within +/-5% in single-lane mode and +/-10% in multiplex mode, wall shear stress within +/-15% of target, and operating pressure <=50% of verified leak/burst threshold. |
 | Pressure-driven perfusion | Purchased controller zero/span checks pass, each reservoir headspace path holds pressure, occluding one lane changes remaining lane flow <=10% in multiplex tests, relief valves open below validated hardware limits, and pressure sensors remain within calibration drift limits over a no-cell endurance run. |
+| No-cell flow validation | Known restriction coupons produce the expected pressure order, row flow CV <=10%, row pressure-map repeatability within +/-5%, leak-witness response passes, and bubble challenge produces no downstream detector events. |
+| Workcell calibration standards | Required flow, pressure/leak, TEER phantom, pH/DO/O2, imaging, and environmental logger standards present, scanned, released, unexpired, in calibration, and recorded with as-found/as-left results. |
+| Waste/decon service packaging | Secondary containment captures worst-case local spill, level/overflow interlocks trip, vent/filter fit checks pass, drain routing holds pressure/leak tests, and waste backflow/siphon tests pass before live media waste. |
 | Environmental conditioning | Chip temperature 37 +/-0.3 C, pH within +/-0.05-0.10 of target, O2 within the model target band, reservoir mass loss <=2% over 72 hours, and no bubbles at chip outlet under challenge flow. |
 | Cell suspension prep/QC | Reservoir and first/middle/last dose concentration CV <=10%, final viable-cell concentration within +/-10%, viability loss <=5 percentage points, final viability >=85% unless justified, viable cells/chip within +/-10-15%, count CV <=10%, viability repeatability within +/-5 percentage points, recovery >=70-80% early target, dead volume <=one chip dose or <=10% of formulated volume, and zero bubble detector events downstream. |
 
@@ -84,20 +88,28 @@ After engineering gates pass, scale biology in this order:
 The current LaminarForge hardware direction reduces manual variability:
 
 - `automated_media_exchange_cassette`: fixed 20-chip geometry and row media rails.
+- `cell_suspension_prep_qc_module`: closed bag holder, gentle mixing/recirculation, temperature hold, count/viability QC loop, bubble/dead-volume block, sterile connector panel, prime/waste tray, and row handoff manifold before cassette seeding.
 - `automated_seeding_coating_station`: constrained cassette seeding/coating deck with reservoir/mixer placeholders, degassing, priming, pump/valve packaging, pressure/flow/bubble sensing, waste routing, and service clearances.
 - `media_conditioning_perfusion_rack`: media bag, warming, degassing, pump, valve/filter, pressure relief, waste, and service-panel packaging for no-cell conditioning/perfusion validation.
 - `pressure_driven_perfusion_panel`: bought pressure-controller packaging, reservoir headspace ports, vacuum reference, sterile gas filters, relief valves, pressure sensors, calibration ports, and strain relief for multiplexed low-shear perfusion.
+- `flow_pressure_validation_fixture`: no-cell dummy coupon carrier, row manifold tree, bubble challenge insert, pressure sensor bar, and leak witness tray for pump/manifold/sensor qualification before live culture.
+- `media_sampling_analyzer_interface`: lane selectors, sample loops, flush/waste routing, cold-block fraction collection, analyzer dock, sterile bulkhead, and bubble/dead-volume controls for closed media sampling.
 - `sterile_tubing_harness`: disposable/replaceable fluid path and branch strain relief.
 - `cassette_bench_nest`: repeatable datum, tube clearance, leak tray, drain corner, and fiducials.
 - `sealed_culture_module`: closed cassette envelope, gasketed lid, thermal plate, and rear service bulkhead.
 - `sealed_module_docking_bay`: repeatable pod-side receiver with leak capture, datum rails, latch/presence features, and standardized service coupler region.
 - `culture_module_service_skid`: service-side pump/reservoir/waste/sensor packaging outside the culture module.
 - `closed_isolator_workcell`, `aseptic_transfer_hatch`, and `clean_support_pod_shell`: sterile boundary, transfer architecture, pressure/HEPA/VHP placeholders, and support-pod space planning.
+- `sterile_consumable_cartridge_hotel`: segregated clean/used consumable staging, transfer-tray datum, lot/barcode lands, service clearances, and VHP/UV exposure clearance placeholders.
+- `media_reagent_quarantine_pod`: receiving shelf, quarantine/released bays, temperature-zone placeholders, barcode/QC station, sampling drawers, thermal buffers, spill/waste tray, and pressure/HEPA/VHP clearances.
+- `workcell_calibration_drawer`: physical staging for flow restrictors, pressure/leak adapters, TEER phantoms, pH/DO/O2 standards, imaging targets, logger holders, clean/used segregation, and lot labels.
 - `environmental_utility_skid`: external gas, humidification, pressure cascade, thermal loop, drain, and cylinder service routing.
 - `inline_sensor_service_module`: pressure, flow, bubble, pH/DO, bypass, purge, and cable routing around a sealed module path.
+- Electronic batch-record traceability: immutable run, recipe, material, connector-topology, calibration, sample, image, sensor-stream, alarm, deviation, and audit records are required before scaled repeatability claims.
 - `cassette_sensor_backplane`: dry cassette-level electrical access for TEER/impedance without manual probing.
 - `automated_culture_imaging_module`: repeatable dark/clean cassette imaging envelope with datum nest, XY/focus placeholders, transmitted/epi illumination, calibration target, and service panels.
 - `sterility_validation_challenge_rack`: fixed coupon, media-fill surrogate, settle/contact plate, sensor, transfer-datum, and leak-witness locations for non-cell qualification.
+- `waste_decon_service_pod`: secondary containment, liquid waste cassette, vent/filter placeholders, contact-time/neutralization placeholders, solid pass-out drawer, overflow interlocks, drain routing, and service panels.
 - `cell_culture_logger_enclosure`: independent validation logger.
 - `co2_sensor_service_module`: keeps CO2 measurement/control electronics outside the humid chamber.
 - `media_reservoir` and `peltier_reservoir_block`: structured reservoir and media-temperature handling.

@@ -144,6 +144,66 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [1200.0, 850.0, 150.0],
     },
     ExpectedOutput {
+        generator: "cell_suspension_prep_qc_module",
+        path: "output/cell_suspension_prep_qc_module_baseplate.stl",
+        min_triangles: 300,
+        min_size_mm: [750.0, 420.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "cell_suspension_prep_qc_module",
+        path: "output/cell_suspension_prep_qc_module_bag_holder.stl",
+        min_triangles: 250,
+        min_size_mm: [300.0, 200.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "cell_suspension_prep_qc_module",
+        path: "output/cell_suspension_prep_qc_module_qc_loop_cartridge.stl",
+        min_triangles: 450,
+        min_size_mm: [280.0, 140.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "cell_suspension_prep_qc_module",
+        path: "output/cell_suspension_prep_qc_module_handoff_manifold.stl",
+        min_triangles: 450,
+        min_size_mm: [430.0, 130.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "cell_suspension_prep_qc_module",
+        path: "output/cell_suspension_prep_qc_module_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [830.0, 430.0, 210.0],
+    },
+    ExpectedOutput {
+        generator: "media_sampling_analyzer_interface",
+        path: "output/media_sampling_analyzer_interface_baseplate.stl",
+        min_triangles: 250,
+        min_size_mm: [750.0, 430.0, 45.0],
+    },
+    ExpectedOutput {
+        generator: "media_sampling_analyzer_interface",
+        path: "output/media_sampling_analyzer_interface_selector_manifold.stl",
+        min_triangles: 600,
+        min_size_mm: [610.0, 80.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "media_sampling_analyzer_interface",
+        path: "output/media_sampling_analyzer_interface_sterile_bulkhead_panel.stl",
+        min_triangles: 800,
+        min_size_mm: [690.0, 40.0, 280.0],
+    },
+    ExpectedOutput {
+        generator: "media_sampling_analyzer_interface",
+        path: "output/media_sampling_analyzer_interface_bubble_dead_volume_control.stl",
+        min_triangles: 800,
+        min_size_mm: [590.0, 85.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "media_sampling_analyzer_interface",
+        path: "output/media_sampling_analyzer_interface_assembly.stl",
+        min_triangles: 2200,
+        min_size_mm: [750.0, 440.0, 300.0],
+    },
+    ExpectedOutput {
         generator: "sterile_tubing_harness",
         path: "output/sterile_tubing_harness_manifold_insert.stl",
         min_triangles: 160,
@@ -268,6 +328,90 @@ const OUTPUTS: &[ExpectedOutput] = &[
         path: "output/pressure_driven_perfusion_panel_assembly.stl",
         min_triangles: 2200,
         min_size_mm: [840.0, 360.0, 430.0],
+    },
+    ExpectedOutput {
+        generator: "flow_pressure_validation_fixture",
+        path: "output/flow_pressure_validation_fixture_baseplate.stl",
+        min_triangles: 400,
+        min_size_mm: [880.0, 700.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "flow_pressure_validation_fixture",
+        path: "output/flow_pressure_validation_fixture_restrictor_coupon_carrier.stl",
+        min_triangles: 1000,
+        min_size_mm: [650.0, 550.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "flow_pressure_validation_fixture",
+        path: "output/flow_pressure_validation_fixture_row_manifold_tree.stl",
+        min_triangles: 500,
+        min_size_mm: [180.0, 600.0, 75.0],
+    },
+    ExpectedOutput {
+        generator: "flow_pressure_validation_fixture",
+        path: "output/flow_pressure_validation_fixture_assembly.stl",
+        min_triangles: 2000,
+        min_size_mm: [900.0, 700.0, 110.0],
+    },
+    ExpectedOutput {
+        generator: "workcell_calibration_drawer",
+        path: "output/workcell_calibration_drawer_base_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [620.0, 400.0, 45.0],
+    },
+    ExpectedOutput {
+        generator: "workcell_calibration_drawer",
+        path: "output/workcell_calibration_drawer_flow_restrictor_caddy.stl",
+        min_triangles: 300,
+        min_size_mm: [240.0, 65.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "workcell_calibration_drawer",
+        path: "output/workcell_calibration_drawer_pressure_leak_adapter_panel.stl",
+        min_triangles: 300,
+        min_size_mm: [210.0, 90.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "workcell_calibration_drawer",
+        path: "output/workcell_calibration_drawer_chemistry_standard_block.stl",
+        min_triangles: 500,
+        min_size_mm: [240.0, 110.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "workcell_calibration_drawer",
+        path: "output/workcell_calibration_drawer_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [620.0, 400.0, 60.0],
+    },
+    ExpectedOutput {
+        generator: "media_reagent_quarantine_pod",
+        path: "output/media_reagent_quarantine_pod_shell.stl",
+        min_triangles: 300,
+        min_size_mm: [1200.0, 730.0, 1350.0],
+    },
+    ExpectedOutput {
+        generator: "media_reagent_quarantine_pod",
+        path: "output/media_reagent_quarantine_pod_segregation_bays.stl",
+        min_triangles: 600,
+        min_size_mm: [950.0, 400.0, 300.0],
+    },
+    ExpectedOutput {
+        generator: "media_reagent_quarantine_pod",
+        path: "output/media_reagent_quarantine_pod_sampling_drawers.stl",
+        min_triangles: 600,
+        min_size_mm: [390.0, 280.0, 110.0],
+    },
+    ExpectedOutput {
+        generator: "media_reagent_quarantine_pod",
+        path: "output/media_reagent_quarantine_pod_spill_waste_capture.stl",
+        min_triangles: 500,
+        min_size_mm: [1050.0, 600.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "media_reagent_quarantine_pod",
+        path: "output/media_reagent_quarantine_pod_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1200.0, 730.0, 1350.0],
     },
     ExpectedOutput {
         generator: "closed_isolator_workcell",
@@ -424,6 +568,60 @@ const OUTPUTS: &[ExpectedOutput] = &[
         path: "output/sterility_validation_challenge_rack_assembly.stl",
         min_triangles: 700,
         min_size_mm: [700.0, 530.0, 220.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_consumable_cartridge_hotel",
+        path: "output/sterile_consumable_cartridge_hotel_base_tray.stl",
+        min_triangles: 300,
+        min_size_mm: [710.0, 520.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_consumable_cartridge_hotel",
+        path: "output/sterile_consumable_cartridge_hotel_clean_shelf_stack.stl",
+        min_triangles: 600,
+        min_size_mm: [710.0, 490.0, 520.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_consumable_cartridge_hotel",
+        path: "output/sterile_consumable_cartridge_hotel_used_return_shelf.stl",
+        min_triangles: 400,
+        min_size_mm: [300.0, 360.0, 120.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_consumable_cartridge_hotel",
+        path: "output/sterile_consumable_cartridge_hotel_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [1000.0, 1000.0, 550.0],
+    },
+    ExpectedOutput {
+        generator: "waste_decon_service_pod",
+        path: "output/waste_decon_service_pod_frame.stl",
+        min_triangles: 400,
+        min_size_mm: [900.0, 540.0, 880.0],
+    },
+    ExpectedOutput {
+        generator: "waste_decon_service_pod",
+        path: "output/waste_decon_service_pod_secondary_containment.stl",
+        min_triangles: 300,
+        min_size_mm: [800.0, 450.0, 55.0],
+    },
+    ExpectedOutput {
+        generator: "waste_decon_service_pod",
+        path: "output/waste_decon_service_pod_liquid_waste_cassette.stl",
+        min_triangles: 700,
+        min_size_mm: [540.0, 250.0, 300.0],
+    },
+    ExpectedOutput {
+        generator: "waste_decon_service_pod",
+        path: "output/waste_decon_service_pod_filtered_vent_stack.stl",
+        min_triangles: 600,
+        min_size_mm: [450.0, 70.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "waste_decon_service_pod",
+        path: "output/waste_decon_service_pod_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [900.0, 540.0, 890.0],
     },
     ExpectedOutput {
         generator: "pipette_tip_organizer",
@@ -657,6 +855,12 @@ mod tests {
             .any(|output| output.generator == "automated_seeding_coating_station"));
         assert!(OUTPUTS
             .iter()
+            .any(|output| output.generator == "cell_suspension_prep_qc_module"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "media_sampling_analyzer_interface"));
+        assert!(OUTPUTS
+            .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
         assert!(OUTPUTS
             .iter()
@@ -676,6 +880,15 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "pressure_driven_perfusion_panel"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "flow_pressure_validation_fixture"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "workcell_calibration_drawer"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "media_reagent_quarantine_pod"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_isolator_workcell"));
@@ -700,5 +913,11 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterility_validation_challenge_rack"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "sterile_consumable_cartridge_hotel"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "waste_decon_service_pod"));
     }
 }
