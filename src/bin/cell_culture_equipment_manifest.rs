@@ -124,7 +124,11 @@ fn manifest() -> Vec<Equipment> {
             disposition: Disposition::Buy,
             readiness: Readiness::RequiredBeforeCulture,
             culture_use: CultureUse::RealCulture,
-            cad_bins: &["wash_station", "media_reservoir"],
+            cad_bins: &[
+                "wash_station",
+                "media_reservoir",
+                "aspirator_waste_trap_holder",
+            ],
             validation_gate: "Vacuum trap, disinfectant contact, splash control, and facility-approved biohazard disposal path.",
             notes: "Aspirated media is biohazard waste when cultures are live or potentially contaminated.",
         },

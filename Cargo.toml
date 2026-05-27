@@ -115,6 +115,10 @@ name = "co2_sensor_service_module"
 path = "src/bin/co2_sensor_service_module.rs"
 
 [[bin]]
+name = "aspirator_waste_trap_holder"
+path = "src/bin/aspirator_waste_trap_holder.rs"
+
+[[bin]]
 name = "water_bath"
 path = "src/bin/water_bath.rs"
 

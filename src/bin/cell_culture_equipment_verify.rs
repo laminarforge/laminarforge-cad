@@ -84,6 +84,18 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [150.0, 150.0, 200.0],
     },
     ExpectedOutput {
+        generator: "aspirator_waste_trap_holder",
+        path: "output/aspirator_waste_trap_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [300.0, 140.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "aspirator_waste_trap_holder",
+        path: "output/aspirator_waste_trap_bottle_cradle.stl",
+        min_triangles: 80,
+        min_size_mm: [200.0, 80.0, 50.0],
+    },
+    ExpectedOutput {
         generator: "sample_cold_block",
         path: "output/sample_cold_block.stl",
         min_triangles: 50,
@@ -271,5 +283,8 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "co2_incubator"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "aspirator_waste_trap_holder"));
     }
 }

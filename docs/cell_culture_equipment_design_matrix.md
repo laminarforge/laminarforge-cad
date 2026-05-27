@@ -13,7 +13,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | Warming | 37 C media water bath or dry warming block | Build or buy | `water_bath`, `heating_block` | Independent temperature probe, leak/electrical safety test |
 | Observation | Inverted phase-contrast microscope | Buy/access | `optical_mount` support only | Culture vessel/chip morphology and contamination inspection |
 | Manual liquid handling | P20/P200/P1000, filtered tips, serological pipettes | Buy | `tube_holder`, `column_rack` support only | Calibration status and sterile consumable availability |
-| Aspiration/waste | Vacuum aspirator, trap, disinfectant, biohazard waste path | Buy/access | `wash_station`, `media_reservoir` support only | Facility-approved disposal and splash/aerosol control |
+| Aspiration/waste | Vacuum aspirator, trap, disinfectant, biohazard waste path | Buy/access | `wash_station`, `media_reservoir`, `aspirator_waste_trap_holder` support only | Facility-approved disposal and splash/aerosol control |
 | Centrifugation | Benchtop centrifuge with correct rotor/buckets | Buy | `centrifuge_adapter` organization only | Manufacturer-rated rotor; no printed safety-critical rotor substitution |
 | Cold storage | 4 C refrigerator and -20 C freezer | Buy/access | `sample_cold_block`, `peltier_reservoir_block` bench support only | Temperature logging and lab-only storage segregation |
 | Cryostorage | LN2 or approved cryostorage access | Access | None | Inventory, PPE, controlled-rate freezing, facility approval |
@@ -38,7 +38,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | P0 | CO2 sensor/regulator mounting after exact sensor selection | The current incubator has ports, but no final sensor package mount. |
 | P0 | Independent logger enclosure and probe routing | Initial CAD exists in `cell_culture_logger_enclosure`; validation must not depend on the controller's own sensors. |
 | P0 | External CO2 service module | Initial CAD exists in `co2_sensor_service_module`; final dimensions depend on selected 0-20% NDIR sensor, pump, filters, and fittings. |
-| P0 | Aspirator trap/waste bottle holder | Waste handling is required before real culture and should be mechanically stable. |
+| P0 | Aspirator trap/waste bottle holder | Initial CAD exists in `aspirator_waste_trap_holder`; final use still depends on facility-approved disinfectant, filter, trap, and disposal SOP. |
 | P1 | Pipette/tip/conical organization module | Reduces workflow errors and improves clean bench ergonomics. |
 | P1 | Chip priming fixture with tubing clips and bubble observation | Needed before real microfluidic culture trials. |
 | P1 | Water bath safety revision with probe clamp and bottle rack | Media warming needs repeatable placement and safe cable routing. |
@@ -55,6 +55,8 @@ cargo run --release --bin cell_culture_equipment_manifest
 ```
 
 The manifest emits JSON rows for each equipment item, including disposition, readiness, culture use, CAD bins, validation gate, and notes. Keep this aligned with this document before any website publication or BOM export.
+
+Starter sourcing research is tracked in `docs/cell_culture_starter_bom_research.md`. Treat prices and example vendors as planning inputs, not locked purchasing decisions.
 
 Run the starter equipment STL gate after generating the listed CAD outputs:
 
