@@ -4693,6 +4693,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_cleanroom_recovery_particle_count_settle_plate_station",
+        path: "output/closed_cleanroom_recovery_particle_count_settle_plate_station_base_recovery_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_recovery_particle_count_settle_plate_station",
+        path: "output/closed_cleanroom_recovery_particle_count_settle_plate_station_settle_contact_plate_cassette_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_recovery_particle_count_settle_plate_station",
+        path: "output/closed_cleanroom_recovery_particle_count_settle_plate_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station",
+        path: "output/closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station_base_recovery_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station",
+        path: "output/closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station_dual_supply_inlet_panel.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station",
+        path: "output/closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_media_bag_spike_and_prime_sequence_station",
+        path: "output/closed_robotic_media_bag_spike_and_prime_sequence_station_base_leak_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_media_bag_spike_and_prime_sequence_station",
+        path: "output/closed_robotic_media_bag_spike_and_prime_sequence_station_prime_loop_waste_diversion_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_media_bag_spike_and_prime_sequence_station",
+        path: "output/closed_robotic_media_bag_spike_and_prime_sequence_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_microplate_footprint_module_adapter_station",
+        path: "output/closed_incubator_microplate_footprint_module_adapter_station_base_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_microplate_footprint_module_adapter_station",
+        path: "output/closed_incubator_microplate_footprint_module_adapter_station_standard_footprint_datum_plate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_microplate_footprint_module_adapter_station",
+        path: "output/closed_incubator_microplate_footprint_module_adapter_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_lot_viscosity_temperature_dispense_window_station",
+        path: "output/closed_ecm_lot_viscosity_temperature_dispense_window_station_base_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_lot_viscosity_temperature_dispense_window_station",
+        path: "output/closed_ecm_lot_viscosity_temperature_dispense_window_station_temperature_equilibration_blocks.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_lot_viscosity_temperature_dispense_window_station",
+        path: "output/closed_ecm_lot_viscosity_temperature_dispense_window_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_thermal_contact_preload_uniformity_station",
+        path: "output/closed_chip_cassette_thermal_contact_preload_uniformity_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_thermal_contact_preload_uniformity_station",
+        path: "output/closed_chip_cassette_thermal_contact_preload_uniformity_station_thermal_pad_coupon_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_thermal_contact_preload_uniformity_station",
+        path: "output/closed_chip_cassette_thermal_contact_preload_uniformity_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -5578,6 +5686,18 @@ mod tests {
             == "closed_incubator_humidity_water_quality_biofilm_sentinel_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_media_analyte_sensor_calibration_carryover_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cleanroom_recovery_particle_count_settle_plate_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_robotic_media_bag_spike_and_prime_sequence_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_microplate_footprint_module_adapter_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_ecm_lot_viscosity_temperature_dispense_window_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_chip_cassette_thermal_contact_preload_uniformity_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

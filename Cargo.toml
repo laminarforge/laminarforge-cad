@@ -1233,3 +1233,27 @@ path = "src/bin/closed_incubator_humidity_water_quality_biofilm_sentinel_station
 [[bin]]
 name = "closed_media_analyte_sensor_calibration_carryover_station"
 path = "src/bin/closed_media_analyte_sensor_calibration_carryover_station.rs"
+
+[[bin]]
+name = "closed_cleanroom_recovery_particle_count_settle_plate_station"
+path = "src/bin/closed_cleanroom_recovery_particle_count_settle_plate_station.rs"
+
+[[bin]]
+name = "closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station"
+path = "src/bin/closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station.rs"
+
+[[bin]]
+name = "closed_robotic_media_bag_spike_and_prime_sequence_station"
+path = "src/bin/closed_robotic_media_bag_spike_and_prime_sequence_station.rs"
+
+[[bin]]
+name = "closed_incubator_microplate_footprint_module_adapter_station"
+path = "src/bin/closed_incubator_microplate_footprint_module_adapter_station.rs"
+
+[[bin]]
+name = "closed_ecm_lot_viscosity_temperature_dispense_window_station"
+path = "src/bin/closed_ecm_lot_viscosity_temperature_dispense_window_station.rs"
+
+[[bin]]
+name = "closed_chip_cassette_thermal_contact_preload_uniformity_station"
+path = "src/bin/closed_chip_cassette_thermal_contact_preload_uniformity_station.rs"
