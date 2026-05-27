@@ -1,6 +1,6 @@
 # Cell Culture Equipment Design Matrix
 
-This matrix expands the starter plan from a single CO2 incubator into the full minimum equipment set needed for responsible mammalian cell-culture workflow development. The design boundary is not a stop sign: it is broken down in `docs/cell_culture_equipment_boundary_breakdown.md` into CAD prototype, engineering prototype, biological pilot, internal production tool, and certified/compliant equipment gates.
+This matrix expands the starter plan from a single CO2 incubator into the full minimum equipment set needed for responsible mammalian cell-culture workflow development. The design boundary is not a stop sign: it is broken down in `docs/cell_culture_equipment_boundary_breakdown.md` into CAD prototype, engineering prototype, biological pilot, internal production tool, and certified/compliant equipment gates. The monitoring architecture is documented in `docs/cell_culture_multimodal_monitoring_design.md`: visual inspection is useful, but culture automation should primarily combine fluidic, electrical, chemical, metabolic, and environmental signals.
 
 ## Equipment Coverage
 
@@ -21,6 +21,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | Mixing | Orbital shaker, rack rocker, magnetic stirrer | Build or buy | `orbital_shaker`, `rack_rocker`, `rack_rocker_2axis`, `magnetic_stirrer` | RPM/tilt verification, spill containment, sterility plan |
 | Microfluidics | Syringe pump, chip fixtures, reservoirs, tubing management | Build | `syringe_pump_standalone`, `chip_adapter_plate`, `chip_stack_rack`, `chip_priming_tubing_fixture`, `automated_media_exchange_cassette`, `sterile_tubing_harness`, `cassette_bench_nest`, `media_reservoir`, `pbmc_flow_cell_mount` | Flow calibration, leak/bubble/dead-volume test, disposable sterile fluid path |
 | Environmental logging | Independent temp/CO2/RH/power logging | Buy/build support | `controller_enclosure`, `cell_culture_logger_enclosure`, `co2_sensor_service_module` | Logger agreement with controller over warmup, steady state, recovery, overnight hold |
+| Multimodal culture monitoring | Pressure/flow, TEER/impedance, pH/O2, metabolites, imaging triage | Build/buy/access | Planned: `cassette_sensor_backplane`, `inline_sensor_service_module`, `cassette_imaging_station`, `sensorized_chip_revision` | Sensor calibration, no-cell endurance run, image/sensor disagreement review, no single-signal biological claims |
 | Safety and waste | PPE, disinfectant, spill kit, sharps, biohazard bags | Buy/access | None | Facility SOP and disposal chain before live work |
 | Automation scale-up | High-density chip incubator and chip farm | Defer | `chip_incubator_v3`, `chip_farm_assembly`, `chip_farm_assembly_v2`, `lh_interface` | Starter incubator and single-chip automated workflow pass first |
 
@@ -42,6 +43,8 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | P0 | Aspirator trap/waste bottle holder | Initial CAD exists in `aspirator_waste_trap_holder`; final use still depends on facility-approved disinfectant, filter, trap, and disposal SOP. |
 | P1 | Disposable sterile tubing harness for the 20-chip cassette | Initial CAD exists in `sterile_tubing_harness`; replaceable manifold insert, branch comb, and keyed pump couplers keep media exchange automation-first and avoid routine manual pipetting. |
 | P1 | Cassette bench/deck nest | Initial CAD exists in `cassette_bench_nest`; gives the 20-chip cassette a repeatable datum, leak tray, tube clearance, latch posts, and robot fiducials for bench validation. |
+| P1 | Inline sensor service module | Needed for pressure/flow first, then pH/O2/conductivity around the cassette without making visual inspection the primary control signal. |
+| P1 | Cassette sensor backplane | Dry reusable electrical contact layer for TEER/impedance pads on future sensorized chips or cassette inserts. |
 | P1 | Closed-fluid-path staging and tubing organization | Initial CAD exists in `automated_media_exchange_cassette`; 20-chip cassette/shelf replaces routine manual transfer with repeatable pump/reservoir/tubing layout. |
 | P1 | Chip priming fixture with tubing clips and bubble observation | Initial CAD exists in `chip_priming_tubing_fixture`; needed before real microfluidic culture trials. |
 | P1 | Water bath safety revision with probe clamp and bottle rack | Initial CAD exists in `water_bath_safety_kit`; media warming needs repeatable placement and safe cable routing. |
