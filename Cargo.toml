@@ -1093,3 +1093,27 @@ path = "src/bin/closed_cassette_transport_temperature_shock_recovery_station.rs"
 [[bin]]
 name = "closed_bubble_trap_degas_pressure_pulse_challenge_station"
 path = "src/bin/closed_bubble_trap_degas_pressure_pulse_challenge_station.rs"
+
+[[bin]]
+name = "closed_passage_number_lot_chain_identity_station"
+path = "src/bin/closed_passage_number_lot_chain_identity_station.rs"
+
+[[bin]]
+name = "closed_ecm_coating_uniformity_witness_coupon_station"
+path = "src/bin/closed_ecm_coating_uniformity_witness_coupon_station.rs"
+
+[[bin]]
+name = "closed_perfusion_shear_stress_calibration_lane_station"
+path = "src/bin/closed_perfusion_shear_stress_calibration_lane_station.rs"
+
+[[bin]]
+name = "closed_robotic_lid_peel_seal_reseat_validation_station"
+path = "src/bin/closed_robotic_lid_peel_seal_reseat_validation_station.rs"
+
+[[bin]]
+name = "closed_media_conditioning_ph_osmolality_release_gate_station"
+path = "src/bin/closed_media_conditioning_ph_osmolality_release_gate_station.rs"
+
+[[bin]]
+name = "closed_cleaning_residual_toc_conductivity_release_station"
+path = "src/bin/closed_cleaning_residual_toc_conductivity_release_station.rs"

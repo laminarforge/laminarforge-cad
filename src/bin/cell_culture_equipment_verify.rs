@@ -4063,6 +4063,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_passage_number_lot_chain_identity_station",
+        path: "output/closed_passage_number_lot_chain_identity_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_passage_number_lot_chain_identity_station",
+        path: "output/closed_passage_number_lot_chain_identity_station_cassette_identity_gate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_passage_number_lot_chain_identity_station",
+        path: "output/closed_passage_number_lot_chain_identity_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleaning_residual_toc_conductivity_release_station",
+        path: "output/closed_cleaning_residual_toc_conductivity_release_station_base_drip_containment_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleaning_residual_toc_conductivity_release_station",
+        path: "output/closed_cleaning_residual_toc_conductivity_release_station_conductivity_cell_flow_block.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleaning_residual_toc_conductivity_release_station",
+        path: "output/closed_cleaning_residual_toc_conductivity_release_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_uniformity_witness_coupon_station",
+        path: "output/closed_ecm_coating_uniformity_witness_coupon_station_base_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_uniformity_witness_coupon_station",
+        path: "output/closed_ecm_coating_uniformity_witness_coupon_station_multi_chip_cassette_datum_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_uniformity_witness_coupon_station",
+        path: "output/closed_ecm_coating_uniformity_witness_coupon_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_shear_stress_calibration_lane_station",
+        path: "output/closed_perfusion_shear_stress_calibration_lane_station_base_containment_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_shear_stress_calibration_lane_station",
+        path: "output/closed_perfusion_shear_stress_calibration_lane_station_chip_lane_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_shear_stress_calibration_lane_station",
+        path: "output/closed_perfusion_shear_stress_calibration_lane_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_lid_peel_seal_reseat_validation_station",
+        path: "output/closed_robotic_lid_peel_seal_reseat_validation_station_base_containment_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_lid_peel_seal_reseat_validation_station",
+        path: "output/closed_robotic_lid_peel_seal_reseat_validation_station_lid_reseat_cassette_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_lid_peel_seal_reseat_validation_station",
+        path: "output/closed_robotic_lid_peel_seal_reseat_validation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_ph_osmolality_release_gate_station",
+        path: "output/closed_media_conditioning_ph_osmolality_release_gate_station_leak_tray_base.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_ph_osmolality_release_gate_station",
+        path: "output/closed_media_conditioning_ph_osmolality_release_gate_station_sensor_measurement_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_ph_osmolality_release_gate_station",
+        path: "output/closed_media_conditioning_ph_osmolality_release_gate_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -4846,6 +4954,24 @@ mod tests {
             == "closed_cassette_transport_temperature_shock_recovery_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_bubble_trap_degas_pressure_pulse_challenge_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_passage_number_lot_chain_identity_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cleaning_residual_toc_conductivity_release_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_ecm_coating_uniformity_witness_coupon_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_perfusion_shear_stress_calibration_lane_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_robotic_lid_peel_seal_reseat_validation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_conditioning_ph_osmolality_release_gate_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
