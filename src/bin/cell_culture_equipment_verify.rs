@@ -2731,6 +2731,96 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [250.0, 180.0, 70.0],
     },
     ExpectedOutput {
+        generator: "closed_airlock_pressure_decay_interlock_challenge_station",
+        path: "output/closed_airlock_pressure_decay_interlock_challenge_station_base_validation_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_pressure_decay_interlock_challenge_station",
+        path: "output/closed_airlock_pressure_decay_interlock_challenge_station_door_surrogate_plates.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_pressure_decay_interlock_challenge_station",
+        path: "output/closed_airlock_pressure_decay_interlock_challenge_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_barcode_rfid_mismatch_reconciliation_station",
+        path: "output/closed_cassette_barcode_rfid_mismatch_reconciliation_station_cleanable_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_barcode_rfid_mismatch_reconciliation_station",
+        path: "output/closed_cassette_barcode_rfid_mismatch_reconciliation_station_sixteen_slot_cassette_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_barcode_rfid_mismatch_reconciliation_station",
+        path: "output/closed_cassette_barcode_rfid_mismatch_reconciliation_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_gowning_material_shedding_surrogate_station",
+        path: "output/closed_cleanroom_gowning_material_shedding_surrogate_station_base_particle_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_gowning_material_shedding_surrogate_station",
+        path: "output/closed_cleanroom_gowning_material_shedding_surrogate_station_sample_clamp_rails.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 60.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_gowning_material_shedding_surrogate_station",
+        path: "output/closed_cleanroom_gowning_material_shedding_surrogate_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reagent_cold_chain_excursion_unpack_station",
+        path: "output/closed_media_reagent_cold_chain_excursion_unpack_station_base_drain_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reagent_cold_chain_excursion_unpack_station",
+        path: "output/closed_media_reagent_cold_chain_excursion_unpack_station_sealed_tote_receiver.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_reagent_cold_chain_excursion_unpack_station",
+        path: "output/closed_media_reagent_cold_chain_excursion_unpack_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_manifold_residual_volume_drainability_station",
+        path: "output/closed_perfusion_manifold_residual_volume_drainability_station_base_leak_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_manifold_residual_volume_drainability_station",
+        path: "output/closed_perfusion_manifold_residual_volume_drainability_station_manifold_nest.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_manifold_residual_volume_drainability_station",
+        path: "output/closed_perfusion_manifold_residual_volume_drainability_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -3301,6 +3391,18 @@ mod tests {
                 == "closed_robot_collision_force_limit_validation_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_incubator_humidity_recovery_load_challenge_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_airlock_pressure_decay_interlock_challenge_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_barcode_rfid_mismatch_reconciliation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cleanroom_gowning_material_shedding_surrogate_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_media_reagent_cold_chain_excursion_unpack_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_manifold_residual_volume_drainability_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

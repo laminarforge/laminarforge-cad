@@ -797,3 +797,23 @@ path = "src/bin/closed_robot_collision_force_limit_validation_station.rs"
 [[bin]]
 name = "closed_incubator_humidity_recovery_load_challenge_station"
 path = "src/bin/closed_incubator_humidity_recovery_load_challenge_station.rs"
+
+[[bin]]
+name = "closed_airlock_pressure_decay_interlock_challenge_station"
+path = "src/bin/closed_airlock_pressure_decay_interlock_challenge_station.rs"
+
+[[bin]]
+name = "closed_cassette_barcode_rfid_mismatch_reconciliation_station"
+path = "src/bin/closed_cassette_barcode_rfid_mismatch_reconciliation_station.rs"
+
+[[bin]]
+name = "closed_cleanroom_gowning_material_shedding_surrogate_station"
+path = "src/bin/closed_cleanroom_gowning_material_shedding_surrogate_station.rs"
+
+[[bin]]
+name = "closed_media_reagent_cold_chain_excursion_unpack_station"
+path = "src/bin/closed_media_reagent_cold_chain_excursion_unpack_station.rs"
+
+[[bin]]
+name = "closed_perfusion_manifold_residual_volume_drainability_station"
+path = "src/bin/closed_perfusion_manifold_residual_volume_drainability_station.rs"

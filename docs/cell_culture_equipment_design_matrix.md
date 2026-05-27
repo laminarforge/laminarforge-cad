@@ -56,6 +56,11 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Liquid handling | `closed_perfusion_pump_cross_channel_crosstalk_station` | Pump lane independence, parallel tubing layout, pressure/flow sensor ports, occlusion valve challenge, crosstalk witness manifold, and restrictor coupons. |
 | Automation safety | `closed_robot_collision_force_limit_validation_station` | Robot force-limit targets, compliant cassette surrogate, staged collision posts, hard/soft stop coupons, calibration mass pockets, and evidence bridge. |
 | Incubation | `closed_incubator_humidity_recovery_load_challenge_station` | Humidity/dewpoint recovery under cassette load using wet/dry coupons, door-event tokens, condensate capture, and logger/probe nests. |
+| Sterile handling | `closed_airlock_pressure_decay_interlock_challenge_station` | Airlock door surrogate sealing, pressure-decay witness ports, HEPA purge interface, interlock flags, lockout evidence, and release/hold/reject disposition. |
+| Traceability | `closed_cassette_barcode_rfid_mismatch_reconciliation_station` | Sixteen-slot cassette tray, barcode camera window, RFID antenna zone, mismatch pocket, fiducials, service indicators, and evidence bridge for cassette identity disputes. |
+| Sterile validation | `closed_cleanroom_gowning_material_shedding_surrogate_station` | Gowning/material particle-shedding surrogate with clamp rails, particle funnel, airflow duct, coupon holders, airflow arrows, and evidence bridge. |
+| Cold chain | `closed_media_reagent_cold_chain_excursion_unpack_station` | Sealed tote receiving, temperature logger nest, cold-pack witnesses, thaw/hold status, sampling coupons, clean/used segregation, and release evidence. |
+| Liquid handling | `closed_perfusion_manifold_residual_volume_drainability_station` | Manifold low-point drain witnesses, calibrated capture wells, tilt references, dye recovery pockets, bubble/wetness windows, and service keepouts. |
 
 ## Build Order
 

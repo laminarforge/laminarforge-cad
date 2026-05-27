@@ -298,6 +298,11 @@ The current LaminarForge hardware direction reduces manual variability:
 - `closed_perfusion_pump_cross_channel_crosstalk_station`: multi-channel pump mounts, parallel tubing lanes, pressure/flow sensor ports, occlusion valve bridge, reference reservoirs, crosstalk witness manifold, and restrictor coupons for channel independence checks.
 - `closed_robot_collision_force_limit_validation_station`: force gauge targets, compliant cassette surrogate, staged collision posts, soft/hard stop coupons, calibration mass pockets, and evidence bridge for robot contact-force limits.
 - `closed_incubator_humidity_recovery_load_challenge_station`: cassette surrogate load rack, RH/dewpoint probe nests, wet/dry load coupons, door-event token lane, condensate capture, and evidence bridge for humidification recovery under load.
+- `closed_airlock_pressure_decay_interlock_challenge_station`: door surrogate plates, seal-compression coupons, pressure witness ports, HEPA purge interface, interlock/lockout flags, traceability lands, and evidence bridge for transfer-boundary release evidence.
+- `closed_cassette_barcode_rfid_mismatch_reconciliation_station`: cassette tray, barcode camera window, RFID antenna zone, mismatch pocket, alignment fiducials, service indicators, and evidence bridge for identity reconciliation before cassette release.
+- `closed_cleanroom_gowning_material_shedding_surrogate_station`: contained particle tray, sample clamp rails, collection funnel, airflow challenge duct, coupon holders, airflow arrows, and evidence bridge for material/gowning shedding evidence.
+- `closed_media_reagent_cold_chain_excursion_unpack_station`: sealed tote receiver, temperature logger nest, cold-pack witness pockets, thaw/hold status lanes, sampling coupons, release lanes, and clean/used segregation for incoming material excursions.
+- `closed_perfusion_manifold_residual_volume_drainability_station`: manifold nest, low-point drain lanes, calibrated capture wells, tilt-reference feet, dye-recovery pockets, bubble/wetness windows, and evidence bridge for residual-volume checks.
 
 ## What Still Requires Process Validation
 
