@@ -10,7 +10,7 @@ Use three tiers, then push each item through the readiness levels in `docs/cell_
 
 1. Buy anything that directly affects sterility, biosafety, or measurement confidence.
 2. Build low-risk support equipment where failure is visible and recoverable.
-3. Defer automation-specific hardware until baseline manual culture is working.
+3. Defer high-density automation until the single-chip closed-fluid workflow is working.
 
 The current CAD repo already has printable or reference models for the first build wave:
 
@@ -37,10 +37,11 @@ The current CAD repo already has printable or reference models for the first bui
 | Cold storage | 4 C lab refrigerator | Buy/access | Required | Media and short-term reagent storage. |
 | Cold storage | -20 C freezer | Buy/access | Required | Common reagents, aliquots, enzymes where applicable. |
 | Water | Sterile DI/distilled water | Buy | Required | For humidification tray and reagent prep where specified. |
-| Pipetting | P20, P200, P1000 pipettes | Buy | Required | Buy reliable used or new; accuracy matters. |
+| Automated liquid handling | Syringe/peristaltic pumps, sterile tubing, reservoirs, connectors, chip fixtures | Build/buy | Required | Intended process should avoid routine manual transfers. Validate flow rate, leaks, bubbles, dead volume, and sterile disposable path. |
+| Pipettes | P20, P200, P1000 pipettes | Buy | Debug only | Keep for calibration, setup, rescue, and non-production validation. They are not part of the intended workflow. |
 | Pipetting | Sterile filtered tips | Buy | Required | 10 uL, 200 uL, 1000 uL. |
 | Vessels | T25/T75 flasks, 6/12/24/96-well plates | Buy | Required | Match practice cell line and chip workflow. |
-| Consumables | Serological pipettes, conical tubes, microcentrifuge tubes | Buy | Required | 5/10/25 mL pipettes, 15/50 mL tubes, 1.5/2.0 mL tubes. |
+| Consumables | Sterile tubing, connectors, reservoirs, conical tubes, microcentrifuge tubes | Buy | Required | Prioritize closed fluid-path consumables over open manual pipetting supplies. |
 | PPE | Gloves, lab coat, eye protection | Buy | Required | Facility rules override this list. |
 | Waste | Biohazard bags, sharps container, disinfectant | Buy/access | Required | Use facility-approved disposal. |
 | Warm handling | 37 C water bath | Build or buy | Early build | Existing `water_bath` is fine for media warming if leak-tested and temperature-validated. |

@@ -15,7 +15,8 @@ This is a practical sourcing snapshot for the starter cell-culture equipment mat
 | PPE/waste basics | Lab coat/gown, nitrile gloves, eye protection, biohazard bags, sharps container, disinfectant, spill kit, liquid waste bottle/trap | $150-$500 starter | Buy | Facility biosafety rules override this list. No DIY disposal assumptions for human, iPSC, or viral workflows. |
 | Microscope | Accu-Scope EXI-310 inverted phase contrast, Globe/Oxion Inverso, AmScope IN330TC class | $2,000-$5,000+ | Buy/access | Must be inverted phase contrast for routine mammalian culture. Brightfield upright scope is not sufficient for flasks/plates. |
 | Centrifuge | Drucker BOOST 4, Eppendorf 5702/5810 class, clinical/bench centrifuge with 15/50 mL support | $2,000-$8,000+ | Buy | Do not DIY centrifuges. Use correct RCF, rotor/bucket compatibility, imbalance safety, and cleanable carriers. |
-| Pipettes | Gilson PIPETMAN P20/P200/P1000, Rainin Classic, Eppendorf Research plus, pipette aid | Refurb $300-$700; new $900-$1,500+ | Buy | Use calibrated micropipettes, filtered sterile tips, and preferably a separate culture set. |
+| Automated liquid handling path | Syringe/peristaltic pumps, sterile tubing, reservoirs, sterile connectors, chip fixtures | Prototype path varies; pump/channel and sterile disposable path dominate cost | Build/buy | Primary LaminarForge process target. Validate flow rates, leaks, bubbles, dead volume, and disposable sterile path before live culture. |
+| Pipettes | Gilson PIPETMAN P20/P200/P1000, Rainin Classic, Eppendorf Research plus, pipette aid | Refurb $300-$700; new $900-$1,500+ | Buy only for debug/calibration | Not part of the intended process. Keep only for calibration, setup, rescue, and non-production validation work. |
 
 ## CAD Impact
 

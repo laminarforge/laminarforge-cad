@@ -12,8 +12,9 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | Incubation prototype | Starter DIY CO2 cabinet | Prototype only | `co2_incubator`, `co2_incubator_verify`, `co2_incubator_sim` | CAD verifier, lumped sim, empty-chamber commissioning, independent logger agreement |
 | Warming | 37 C media water bath or dry warming block | Build or buy | `water_bath`, `water_bath_safety_kit`, `heating_block` | Independent temperature probe, leak/electrical safety test |
 | Observation | Inverted phase-contrast microscope | Buy/access | `optical_mount` support only | Culture vessel/chip morphology and contamination inspection |
-| Manual liquid handling | P20/P200/P1000, filtered tips, serological pipettes | Buy | `tube_holder`, `column_rack`, `pipette_tip_organizer` support only | Calibration status and sterile consumable availability |
-| Aspiration/waste | Vacuum aspirator, trap, disinfectant, biohazard waste path | Buy/access | `wash_station`, `media_reservoir`, `aspirator_waste_trap_holder` support only | Facility-approved disposal and splash/aerosol control |
+| Automated liquid handling | Closed fluid path with pumps, reservoirs, sterile tubing, chip fixtures, and validated connectors | Build/buy/access | `syringe_pump_standalone`, `media_reservoir`, `chip_priming_tubing_fixture` | Flow calibration, sterile disposable path, leak/bubble/dead-volume checks, no routine manual transfers |
+| Pipettes for validation/debug only | P20/P200/P1000, filtered tips, serological pipettes | Buy, not production workflow | `tube_holder`, `column_rack`, `pipette_tip_organizer` support only | Calibration/setup/rescue use only; not part of intended culture process |
+| Aspiration/waste | Closed vacuum aspirator, trap, disinfectant, biohazard waste path | Buy/access | `wash_station`, `media_reservoir`, `aspirator_waste_trap_holder` support only | Facility-approved disposal and splash/aerosol control |
 | Centrifugation | Benchtop centrifuge with correct rotor/buckets | Buy | `centrifuge_adapter` organization only | Manufacturer-rated rotor; no printed safety-critical rotor substitution |
 | Cold storage | 4 C refrigerator and -20 C freezer | Buy/access | `sample_cold_block`, `peltier_reservoir_block` bench support only | Temperature logging and lab-only storage segregation |
 | Cryostorage | LN2 or approved cryostorage access | Access | None | Inventory, PPE, controlled-rate freezing, facility approval |
@@ -21,15 +22,15 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | Microfluidics | Syringe pump, chip fixtures, reservoirs, tubing management | Build | `syringe_pump_standalone`, `chip_adapter_plate`, `chip_stack_rack`, `chip_priming_tubing_fixture`, `media_reservoir`, `pbmc_flow_cell_mount` | Flow calibration, leak/bubble/dead-volume test, disposable sterile fluid path |
 | Environmental logging | Independent temp/CO2/RH/power logging | Buy/build support | `controller_enclosure`, `cell_culture_logger_enclosure`, `co2_sensor_service_module` | Logger agreement with controller over warmup, steady state, recovery, overnight hold |
 | Safety and waste | PPE, disinfectant, spill kit, sharps, biohazard bags | Buy/access | None | Facility SOP and disposal chain before live work |
-| Automation scale-up | High-density chip incubator and chip farm | Defer | `chip_incubator_v3`, `chip_farm_assembly`, `chip_farm_assembly_v2`, `lh_interface` | Starter incubator and manual chip culture workflow pass first |
+| Automation scale-up | High-density chip incubator and chip farm | Defer | `chip_incubator_v3`, `chip_farm_assembly`, `chip_farm_assembly_v2`, `lh_interface` | Starter incubator and single-chip automated workflow pass first |
 
 ## Build Order
 
-1. Secure or buy the non-negotiables for real culture: certified sterile handling, validated CO2 incubation, microscope access, cold/cryostorage, centrifuge, pipettes, consumables, waste, PPE, and facility SOPs.
-2. Build support hardware with low biosafety risk: water bath, tube/tip organization, still-air practice enclosure, environmental logging, and chip fixtures.
+1. Secure or buy the non-negotiables for real culture: certified sterile handling, validated CO2 incubation, microscope access, cold/cryostorage, centrifuge, sterile consumables/connectors, waste, PPE, and facility SOPs.
+2. Build support hardware with low biosafety risk: water bath, closed-fluid-path fixtures, still-air practice enclosure, environmental logging, and chip fixtures.
 3. Continue the DIY CO2 incubator as an engineering prototype: CAD verification, thermal/CO2 simulation, empty-chamber commissioning, then independent sensor comparison.
 4. Build microfluidic support: syringe pump, reservoirs, tubing clips, bubble traps, chip holders, and flow calibration fixtures.
-5. Defer high-density automation until manual culture and single-chip workflows are stable.
+5. Defer high-density automation until the single-chip automated fluid workflow is stable.
 
 ## Design Backlog
 
@@ -39,10 +40,10 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | P0 | Independent logger enclosure and probe routing | Initial CAD exists in `cell_culture_logger_enclosure`; validation must not depend on the controller's own sensors. |
 | P0 | External CO2 service module | Initial CAD exists in `co2_sensor_service_module`; final dimensions depend on selected 0-20% NDIR sensor, pump, filters, and fittings. |
 | P0 | Aspirator trap/waste bottle holder | Initial CAD exists in `aspirator_waste_trap_holder`; final use still depends on facility-approved disinfectant, filter, trap, and disposal SOP. |
-| P1 | Pipette/tip/conical organization module | Reduces workflow errors and improves clean bench ergonomics. |
+| P1 | Closed-fluid-path staging and tubing organization | Replaces routine manual transfer with repeatable pump/reservoir/tubing layout. |
 | P1 | Chip priming fixture with tubing clips and bubble observation | Initial CAD exists in `chip_priming_tubing_fixture`; needed before real microfluidic culture trials. |
 | P1 | Water bath safety revision with probe clamp and bottle rack | Initial CAD exists in `water_bath_safety_kit`; media warming needs repeatable placement and safe cable routing. |
-| P1 | Pipette and sterile-tip staging organizer | Initial CAD exists in `pipette_tip_organizer`; buy calibrated pipettes and sterile filtered tips, but build layout aids that reduce handling errors. |
+| P2 | Pipette and sterile-tip staging organizer | Initial CAD exists in `pipette_tip_organizer`; keep as calibration/debug/rescue support only, not as intended process equipment. |
 | P2 | Still-air practice pass-through tray | Good for training and nonhazardous dry runs, not for real culture. |
 | P2 | Microscope chip-stage adapter | Lets LaminarForge chips be inspected repeatably on an inverted microscope. |
 | P3 | `chip_incubator_v3` scale-up review | Only after the starter incubator validation data is credible. |
