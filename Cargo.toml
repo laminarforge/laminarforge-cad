@@ -123,6 +123,10 @@ name = "chip_priming_tubing_fixture"
 path = "src/bin/chip_priming_tubing_fixture.rs"
 
 [[bin]]
+name = "pipette_tip_organizer"
+path = "src/bin/pipette_tip_organizer.rs"
+
+[[bin]]
 name = "water_bath"
 path = "src/bin/water_bath.rs"
 

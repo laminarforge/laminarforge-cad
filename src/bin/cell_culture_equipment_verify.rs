@@ -108,6 +108,18 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [110.0, 100.0, 10.0],
     },
     ExpectedOutput {
+        generator: "pipette_tip_organizer",
+        path: "output/pipette_tip_organizer_pipette_stand.stl",
+        min_triangles: 80,
+        min_size_mm: [240.0, 80.0, 100.0],
+    },
+    ExpectedOutput {
+        generator: "pipette_tip_organizer",
+        path: "output/pipette_tip_organizer_tip_box_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [280.0, 115.0, 15.0],
+    },
+    ExpectedOutput {
         generator: "aspirator_waste_trap_holder",
         path: "output/aspirator_waste_trap_base_tray.stl",
         min_triangles: 20,
@@ -316,5 +328,8 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "water_bath_safety_kit"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "pipette_tip_organizer"));
     }
 }

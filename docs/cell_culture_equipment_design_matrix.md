@@ -12,7 +12,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | Incubation prototype | Starter DIY CO2 cabinet | Prototype only | `co2_incubator`, `co2_incubator_verify`, `co2_incubator_sim` | CAD verifier, lumped sim, empty-chamber commissioning, independent logger agreement |
 | Warming | 37 C media water bath or dry warming block | Build or buy | `water_bath`, `water_bath_safety_kit`, `heating_block` | Independent temperature probe, leak/electrical safety test |
 | Observation | Inverted phase-contrast microscope | Buy/access | `optical_mount` support only | Culture vessel/chip morphology and contamination inspection |
-| Manual liquid handling | P20/P200/P1000, filtered tips, serological pipettes | Buy | `tube_holder`, `column_rack` support only | Calibration status and sterile consumable availability |
+| Manual liquid handling | P20/P200/P1000, filtered tips, serological pipettes | Buy | `tube_holder`, `column_rack`, `pipette_tip_organizer` support only | Calibration status and sterile consumable availability |
 | Aspiration/waste | Vacuum aspirator, trap, disinfectant, biohazard waste path | Buy/access | `wash_station`, `media_reservoir`, `aspirator_waste_trap_holder` support only | Facility-approved disposal and splash/aerosol control |
 | Centrifugation | Benchtop centrifuge with correct rotor/buckets | Buy | `centrifuge_adapter` organization only | Manufacturer-rated rotor; no printed safety-critical rotor substitution |
 | Cold storage | 4 C refrigerator and -20 C freezer | Buy/access | `sample_cold_block`, `peltier_reservoir_block` bench support only | Temperature logging and lab-only storage segregation |
@@ -42,6 +42,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | P1 | Pipette/tip/conical organization module | Reduces workflow errors and improves clean bench ergonomics. |
 | P1 | Chip priming fixture with tubing clips and bubble observation | Initial CAD exists in `chip_priming_tubing_fixture`; needed before real microfluidic culture trials. |
 | P1 | Water bath safety revision with probe clamp and bottle rack | Initial CAD exists in `water_bath_safety_kit`; media warming needs repeatable placement and safe cable routing. |
+| P1 | Pipette and sterile-tip staging organizer | Initial CAD exists in `pipette_tip_organizer`; buy calibrated pipettes and sterile filtered tips, but build layout aids that reduce handling errors. |
 | P2 | Still-air practice pass-through tray | Good for training and nonhazardous dry runs, not for real culture. |
 | P2 | Microscope chip-stage adapter | Lets LaminarForge chips be inspected repeatably on an inverted microscope. |
 | P3 | `chip_incubator_v3` scale-up review | Only after the starter incubator validation data is credible. |

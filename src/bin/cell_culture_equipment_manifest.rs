@@ -114,7 +114,7 @@ fn manifest() -> Vec<Equipment> {
             disposition: Disposition::Buy,
             readiness: Readiness::RequiredBeforeCulture,
             culture_use: CultureUse::RealCulture,
-            cad_bins: &["tube_holder", "column_rack"],
+            cad_bins: &["tube_holder", "column_rack", "pipette_tip_organizer"],
             validation_gate: "P20/P200/P1000 coverage, filtered sterile tips, and calibration status acceptable for protocol tolerances.",
             notes: "Pipette accuracy affects culture health and assay repeatability; buy reliable units.",
         },
