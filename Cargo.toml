@@ -139,6 +139,38 @@ name = "sealed_culture_module"
 path = "src/bin/sealed_culture_module.rs"
 
 [[bin]]
+name = "sealed_module_docking_bay"
+path = "src/bin/sealed_module_docking_bay.rs"
+
+[[bin]]
+name = "culture_module_service_skid"
+path = "src/bin/culture_module_service_skid.rs"
+
+[[bin]]
+name = "closed_isolator_workcell"
+path = "src/bin/closed_isolator_workcell.rs"
+
+[[bin]]
+name = "inline_sensor_service_module"
+path = "src/bin/inline_sensor_service_module.rs"
+
+[[bin]]
+name = "cassette_sensor_backplane"
+path = "src/bin/cassette_sensor_backplane.rs"
+
+[[bin]]
+name = "environmental_utility_skid"
+path = "src/bin/environmental_utility_skid.rs"
+
+[[bin]]
+name = "aseptic_transfer_hatch"
+path = "src/bin/aseptic_transfer_hatch.rs"
+
+[[bin]]
+name = "clean_support_pod_shell"
+path = "src/bin/clean_support_pod_shell.rs"
+
+[[bin]]
 name = "pipette_tip_organizer"
 path = "src/bin/pipette_tip_organizer.rs"
 

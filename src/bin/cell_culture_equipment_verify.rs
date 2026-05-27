@@ -162,6 +162,150 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [850.0, 780.0, 85.0],
     },
     ExpectedOutput {
+        generator: "sealed_module_docking_bay",
+        path: "output/sealed_module_docking_bay_tray.stl",
+        min_triangles: 100,
+        min_size_mm: [950.0, 900.0, 45.0],
+    },
+    ExpectedOutput {
+        generator: "sealed_module_docking_bay",
+        path: "output/sealed_module_docking_bay_service_receiver.stl",
+        min_triangles: 180,
+        min_size_mm: [800.0, 50.0, 120.0],
+    },
+    ExpectedOutput {
+        generator: "sealed_module_docking_bay",
+        path: "output/sealed_module_docking_bay_assembly.stl",
+        min_triangles: 300,
+        min_size_mm: [950.0, 940.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "culture_module_service_skid",
+        path: "output/culture_module_service_skid_deck.stl",
+        min_triangles: 180,
+        min_size_mm: [1100.0, 900.0, 55.0],
+    },
+    ExpectedOutput {
+        generator: "culture_module_service_skid",
+        path: "output/culture_module_service_skid_utility_panel.stl",
+        min_triangles: 180,
+        min_size_mm: [980.0, 15.0, 120.0],
+    },
+    ExpectedOutput {
+        generator: "culture_module_service_skid",
+        path: "output/culture_module_service_skid_assembly.stl",
+        min_triangles: 300,
+        min_size_mm: [1100.0, 900.0, 140.0],
+    },
+    ExpectedOutput {
+        generator: "closed_isolator_workcell",
+        path: "output/closed_isolator_workcell_shell.stl",
+        min_triangles: 200,
+        min_size_mm: [2300.0, 1050.0, 1700.0],
+    },
+    ExpectedOutput {
+        generator: "closed_isolator_workcell",
+        path: "output/closed_isolator_workcell_hepa_plenum.stl",
+        min_triangles: 80,
+        min_size_mm: [2200.0, 950.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "closed_isolator_workcell",
+        path: "output/closed_isolator_workcell_assembly.stl",
+        min_triangles: 500,
+        min_size_mm: [2450.0, 1200.0, 1750.0],
+    },
+    ExpectedOutput {
+        generator: "inline_sensor_service_module",
+        path: "output/inline_sensor_service_module_baseplate.stl",
+        min_triangles: 180,
+        min_size_mm: [400.0, 190.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "inline_sensor_service_module",
+        path: "output/inline_sensor_service_module_manifold.stl",
+        min_triangles: 220,
+        min_size_mm: [320.0, 45.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "inline_sensor_service_module",
+        path: "output/inline_sensor_service_module_assembly.stl",
+        min_triangles: 500,
+        min_size_mm: [400.0, 190.0, 90.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_sensor_backplane",
+        path: "output/cassette_sensor_backplane_substrate.stl",
+        min_triangles: 500,
+        min_size_mm: [620.0, 540.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_sensor_backplane",
+        path: "output/cassette_sensor_backplane_spring_pin_carrier.stl",
+        min_triangles: 1000,
+        min_size_mm: [600.0, 520.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_sensor_backplane",
+        path: "output/cassette_sensor_backplane_assembly.stl",
+        min_triangles: 2000,
+        min_size_mm: [620.0, 600.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_utility_skid",
+        path: "output/environmental_utility_skid_frame.stl",
+        min_triangles: 120,
+        min_size_mm: [1200.0, 500.0, 1600.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_utility_skid",
+        path: "output/environmental_utility_skid_gas_panel.stl",
+        min_triangles: 300,
+        min_size_mm: [500.0, 30.0, 600.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_utility_skid",
+        path: "output/environmental_utility_skid_assembly.stl",
+        min_triangles: 800,
+        min_size_mm: [1200.0, 600.0, 1600.0],
+    },
+    ExpectedOutput {
+        generator: "aseptic_transfer_hatch",
+        path: "output/aseptic_transfer_hatch_body.stl",
+        min_triangles: 150,
+        min_size_mm: [700.0, 350.0, 450.0],
+    },
+    ExpectedOutput {
+        generator: "aseptic_transfer_hatch",
+        path: "output/aseptic_transfer_hatch_rtp_alpha_placeholders.stl",
+        min_triangles: 400,
+        min_size_mm: [550.0, 25.0, 270.0],
+    },
+    ExpectedOutput {
+        generator: "aseptic_transfer_hatch",
+        path: "output/aseptic_transfer_hatch_assembly.stl",
+        min_triangles: 700,
+        min_size_mm: [700.0, 400.0, 500.0],
+    },
+    ExpectedOutput {
+        generator: "clean_support_pod_shell",
+        path: "output/clean_support_pod_shell_floor_and_zones.stl",
+        min_triangles: 40,
+        min_size_mm: [3500.0, 2100.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "clean_support_pod_shell",
+        path: "output/clean_support_pod_shell_modular_panels.stl",
+        min_triangles: 80,
+        min_size_mm: [3500.0, 2000.0, 1800.0],
+    },
+    ExpectedOutput {
+        generator: "clean_support_pod_shell",
+        path: "output/clean_support_pod_shell_assembly.stl",
+        min_triangles: 500,
+        min_size_mm: [3500.0, 2100.0, 1900.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -397,5 +541,29 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sealed_culture_module"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "sealed_module_docking_bay"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "culture_module_service_skid"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_isolator_workcell"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "inline_sensor_service_module"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "cassette_sensor_backplane"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "environmental_utility_skid"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "aseptic_transfer_hatch"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "clean_support_pod_shell"));
     }
 }
