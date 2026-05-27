@@ -2821,6 +2821,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [250.0, 180.0, 70.0],
     },
     ExpectedOutput {
+        generator: "closed_module_external_surface_disinfectant_contact_time_station",
+        path: "output/closed_module_external_surface_disinfectant_contact_time_station_base_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_external_surface_disinfectant_contact_time_station",
+        path: "output/closed_module_external_surface_disinfectant_contact_time_station_module_cradle.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_external_surface_disinfectant_contact_time_station",
+        path: "output/closed_module_external_surface_disinfectant_contact_time_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_condensate_ingress_witness_station",
+        path: "output/closed_chip_cassette_condensate_ingress_witness_station_base_containment_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_condensate_ingress_witness_station",
+        path: "output/closed_chip_cassette_condensate_ingress_witness_station_sealed_cassette_nest.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_condensate_ingress_witness_station",
+        path: "output/closed_chip_cassette_condensate_ingress_witness_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_bubble_sensor_false_positive_negative_challenge_station",
+        path: "output/closed_inline_bubble_sensor_false_positive_negative_challenge_station_base_validation_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_bubble_sensor_false_positive_negative_challenge_station",
+        path: "output/closed_inline_bubble_sensor_false_positive_negative_challenge_station_transparent_surrogate_channel_nests.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 60.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_inline_bubble_sensor_false_positive_negative_challenge_station",
+        path: "output/closed_inline_bubble_sensor_false_positive_negative_challenge_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pass_through_tote_pressure_equalization_flow_balance_station",
+        path: "output/closed_pass_through_tote_pressure_equalization_flow_balance_station_base_service_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pass_through_tote_pressure_equalization_flow_balance_station",
+        path: "output/closed_pass_through_tote_pressure_equalization_flow_balance_station_sealed_tote_receiver.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_pass_through_tote_pressure_equalization_flow_balance_station",
+        path: "output/closed_pass_through_tote_pressure_equalization_flow_balance_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_bag_pressure_hold_creep_station",
+        path: "output/closed_reagent_bag_pressure_hold_creep_station_secondary_containment_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_bag_pressure_hold_creep_station",
+        path: "output/closed_reagent_bag_pressure_hold_creep_station_guarded_bag_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_bag_pressure_hold_creep_station",
+        path: "output/closed_reagent_bag_pressure_hold_creep_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_static_charge_particle_attraction_station",
+        path: "output/closed_chip_cassette_static_charge_particle_attraction_station_secondary_containment_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_static_charge_particle_attraction_station",
+        path: "output/closed_chip_cassette_static_charge_particle_attraction_station_cassette_nest.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_cassette_static_charge_particle_attraction_station",
+        path: "output/closed_chip_cassette_static_charge_particle_attraction_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -3403,6 +3511,21 @@ mod tests {
                 == "closed_media_reagent_cold_chain_excursion_unpack_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_perfusion_manifold_residual_volume_drainability_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_module_external_surface_disinfectant_contact_time_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_chip_cassette_condensate_ingress_witness_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_inline_bubble_sensor_false_positive_negative_challenge_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_pass_through_tote_pressure_equalization_flow_balance_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_reagent_bag_pressure_hold_creep_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_chip_cassette_static_charge_particle_attraction_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

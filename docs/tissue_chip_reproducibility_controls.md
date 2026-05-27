@@ -303,6 +303,12 @@ The current LaminarForge hardware direction reduces manual variability:
 - `closed_cleanroom_gowning_material_shedding_surrogate_station`: contained particle tray, sample clamp rails, collection funnel, airflow challenge duct, coupon holders, airflow arrows, and evidence bridge for material/gowning shedding evidence.
 - `closed_media_reagent_cold_chain_excursion_unpack_station`: sealed tote receiver, temperature logger nest, cold-pack witness pockets, thaw/hold status lanes, sampling coupons, release lanes, and clean/used segregation for incoming material excursions.
 - `closed_perfusion_manifold_residual_volume_drainability_station`: manifold nest, low-point drain lanes, calibrated capture wells, tilt-reference feet, dye-recovery pockets, bubble/wetness windows, and evidence bridge for residual-volume checks.
+- `closed_module_external_surface_disinfectant_contact_time_station`: module cradle, removable coupons, wetness/contact-time tokens, disinfectant cartridge pockets, wipe-path gauges, barcode/certificate lands, and evidence bridge for repeatable external surface disinfection evidence.
+- `closed_chip_cassette_condensate_ingress_witness_station`: sealed cassette nest, condensate drip rail, ingress coupon windows, humidity logger pockets, dye recovery wells, gasket witness lanes, and evidence bridge for humidity-driven ingress checks.
+- `closed_inline_bubble_sensor_false_positive_negative_challenge_station`: transparent surrogate channel nests, air-slug coupons, refractive-index media pockets, optical sensor mounts, pressure/flow ports, and clean/used segregation for bubble-alarm qualification.
+- `closed_pass_through_tote_pressure_equalization_flow_balance_station`: tote receiver, dual pressure-port panel, HEPA purge duct surrogate, flow witness vanes, seal coupons, pressure-decay tokens, and evidence bridge for pass-through pressure-balance checks.
+- `closed_reagent_bag_pressure_hold_creep_station`: guarded bag tray, pressure I/O bulkheads, reference gauge bracket, displacement scale, clamp rails, leak witness containment, surrogate coupons, and strain relief for bag pressure-hold drift evidence.
+- `closed_chip_cassette_static_charge_particle_attraction_station`: cassette nest, ionizer/placebo zone, particle witness coupon lands, charge probe pocket, grounded/ungrounded comparison lanes, evidence window, and custody labels for static-charge particle controls.
 
 ## What Still Requires Process Validation
 

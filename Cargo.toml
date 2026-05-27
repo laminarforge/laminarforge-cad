@@ -817,3 +817,27 @@ path = "src/bin/closed_media_reagent_cold_chain_excursion_unpack_station.rs"
 [[bin]]
 name = "closed_perfusion_manifold_residual_volume_drainability_station"
 path = "src/bin/closed_perfusion_manifold_residual_volume_drainability_station.rs"
+
+[[bin]]
+name = "closed_module_external_surface_disinfectant_contact_time_station"
+path = "src/bin/closed_module_external_surface_disinfectant_contact_time_station.rs"
+
+[[bin]]
+name = "closed_chip_cassette_condensate_ingress_witness_station"
+path = "src/bin/closed_chip_cassette_condensate_ingress_witness_station.rs"
+
+[[bin]]
+name = "closed_inline_bubble_sensor_false_positive_negative_challenge_station"
+path = "src/bin/closed_inline_bubble_sensor_false_positive_negative_challenge_station.rs"
+
+[[bin]]
+name = "closed_pass_through_tote_pressure_equalization_flow_balance_station"
+path = "src/bin/closed_pass_through_tote_pressure_equalization_flow_balance_station.rs"
+
+[[bin]]
+name = "closed_reagent_bag_pressure_hold_creep_station"
+path = "src/bin/closed_reagent_bag_pressure_hold_creep_station.rs"
+
+[[bin]]
+name = "closed_chip_cassette_static_charge_particle_attraction_station"
+path = "src/bin/closed_chip_cassette_static_charge_particle_attraction_station.rs"

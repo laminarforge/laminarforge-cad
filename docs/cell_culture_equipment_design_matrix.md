@@ -61,6 +61,12 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Sterile validation | `closed_cleanroom_gowning_material_shedding_surrogate_station` | Gowning/material particle-shedding surrogate with clamp rails, particle funnel, airflow duct, coupon holders, airflow arrows, and evidence bridge. |
 | Cold chain | `closed_media_reagent_cold_chain_excursion_unpack_station` | Sealed tote receiving, temperature logger nest, cold-pack witnesses, thaw/hold status, sampling coupons, clean/used segregation, and release evidence. |
 | Liquid handling | `closed_perfusion_manifold_residual_volume_drainability_station` | Manifold low-point drain witnesses, calibrated capture wells, tilt references, dye recovery pockets, bubble/wetness windows, and service keepouts. |
+| Cleaning validation | `closed_module_external_surface_disinfectant_contact_time_station` | Module cradle, removable surface coupons, wetness/contact-time token lanes, disinfectant cartridge pockets, wipe-path gauges, and evidence bridge. |
+| Incubation | `closed_chip_cassette_condensate_ingress_witness_station` | Sealed cassette nest, condensate drip rail, ingress witness coupon windows, humidity logger pockets, dye recovery wells, and gasket witness lanes. |
+| Monitoring | `closed_inline_bubble_sensor_false_positive_negative_challenge_station` | Transparent surrogate channels, air-slug coupon bank, refractive-index media pockets, optical sensor mounts, pressure/flow witnesses, and clean/used segregation. |
+| Sterile handling | `closed_pass_through_tote_pressure_equalization_flow_balance_station` | Pass-through tote receiver, dual pressure-port panel, HEPA purge duct surrogate, flow witness vanes, seal coupons, and pressure-decay tokens. |
+| Liquid handling | `closed_reagent_bag_pressure_hold_creep_station` | Guarded reagent/media bag tray, pressure I/O bulkheads, reference gauge bracket, creep witness scale, clamp rails, leak containment, and strain relief. |
+| Sterile validation | `closed_chip_cassette_static_charge_particle_attraction_station` | Cassette nest, ionizer/placebo zone, particle witness coupons, charge probe pocket, grounded/ungrounded lanes, and evidence window frame. |
 
 ## Build Order
 
