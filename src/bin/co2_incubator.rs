@@ -2,13 +2,17 @@ use vcad::{centered_cube, centered_cylinder, Part};
 
 // ─── CO2 Incubator ───
 //
-// 3D-printed (PETG) starter CO2 incubator cabinet for cell culture.
+// 3D-printed (PETG) starter CO2 incubator cabinet prototype.
 // Features a gas-tight inner chamber with shelf rails, sensor pocket,
 // rear service manifold, external electronics bay, heater diffuser, and
 // ports for heater, redundant temperature sensing, fan, CO2 inlet, and
 // cable glands. An outer shell provides a 25mm insulation gap. Includes
 // a gasketed door with acrylic window, ventilated shelves, and a humidity
 // water tray.
+//
+// Research status: internal prototype only. Do not publish as a public
+// build until the 0-20% CO2 sensor, gas relief path, sealing approach,
+// and commissioning data are locked down.
 //
 // Exports:
 //   - co2_incubator_chamber.stl  (inner PETG box)
@@ -76,8 +80,9 @@ fn main() {
     }
 
     // ── Sensor pockets on rear wall ──
-    // CO2 pocket is sized for common small NDIR modules; temp/RH is separate
-    // so it can be mounted away from the CO2 injection stream.
+    // CO2 pocket is a placeholder for an incubator-range 0-20% NDIR module.
+    // The prior MH-Z19B-class 0-5000 ppm assumption is not valid for 5% CO2.
+    // Final pocket dimensions must be revised after exact sensor selection.
     let co2_sensor_pocket = centered_cube("co2_sensor_pocket", 35.0, 8.0, 25.0).translate(
         -55.0,
         inner_y / 2.0 - 8.0 / 2.0,
