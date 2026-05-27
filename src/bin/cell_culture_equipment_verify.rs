@@ -4171,6 +4171,132 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_chip_lane_pressure_relief_burst_guard_station",
+        path: "output/closed_chip_lane_pressure_relief_burst_guard_station_base_containment_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_lane_pressure_relief_burst_guard_station",
+        path: "output/closed_chip_lane_pressure_relief_burst_guard_station_lane_restrictor_coupon_sled.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_lane_pressure_relief_burst_guard_station",
+        path: "output/closed_chip_lane_pressure_relief_burst_guard_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_material_transfer_bagout_integrity_station",
+        path: "output/closed_airlock_material_transfer_bagout_integrity_station_boundary_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_material_transfer_bagout_integrity_station",
+        path: "output/closed_airlock_material_transfer_bagout_integrity_station_double_door_interlock_bay.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_material_transfer_bagout_integrity_station",
+        path: "output/closed_airlock_material_transfer_bagout_integrity_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_settling_time_mixing_hold_station",
+        path: "output/closed_cell_settling_time_mixing_hold_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_settling_time_mixing_hold_station",
+        path: "output/closed_cell_settling_time_mixing_hold_station_source_bag_vial_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_settling_time_mixing_hold_station",
+        path: "output/closed_cell_settling_time_mixing_hold_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_connector_mate_demate_force_trace_station",
+        path: "output/closed_robotic_connector_mate_demate_force_trace_station_base_metrology_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_connector_mate_demate_force_trace_station",
+        path: "output/closed_robotic_connector_mate_demate_force_trace_station_male_female_connector_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_connector_mate_demate_force_trace_station",
+        path: "output/closed_robotic_connector_mate_demate_force_trace_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_scale_drift_bubble_false_mass_station",
+        path: "output/closed_media_bag_scale_drift_bubble_false_mass_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_scale_drift_bubble_false_mass_station",
+        path: "output/closed_media_bag_scale_drift_bubble_false_mass_station_hanging_bag_mode_frame.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_scale_drift_bubble_false_mass_station",
+        path: "output/closed_media_bag_scale_drift_bubble_false_mass_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_lane_flow_split_symmetry_station",
+        path: "output/closed_perfusion_lane_flow_split_symmetry_station_base_leak_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_lane_flow_split_symmetry_station",
+        path: "output/closed_perfusion_lane_flow_split_symmetry_station_twenty_outlet_lane_plate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_lane_flow_split_symmetry_station",
+        path: "output/closed_perfusion_lane_flow_split_symmetry_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_lot_barcode_reconcile_scale_station",
+        path: "output/closed_reagent_lot_barcode_reconcile_scale_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_lot_barcode_reconcile_scale_station",
+        path: "output/closed_reagent_lot_barcode_reconcile_scale_station_media_bag_vial_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_lot_barcode_reconcile_scale_station",
+        path: "output/closed_reagent_lot_barcode_reconcile_scale_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -4972,6 +5098,31 @@ mod tests {
                 == "closed_robotic_lid_peel_seal_reseat_validation_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_media_conditioning_ph_osmolality_release_gate_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_chip_lane_pressure_relief_burst_guard_station"
+        ));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_airlock_material_transfer_bagout_integrity_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_cell_settling_time_mixing_hold_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_robotic_connector_mate_demate_force_trace_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_media_bag_scale_drift_bubble_false_mass_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_perfusion_lane_flow_split_symmetry_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_reagent_lot_barcode_reconcile_scale_station")
+        );
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

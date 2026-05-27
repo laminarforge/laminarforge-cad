@@ -1117,3 +1117,31 @@ path = "src/bin/closed_media_conditioning_ph_osmolality_release_gate_station.rs"
 [[bin]]
 name = "closed_cleaning_residual_toc_conductivity_release_station"
 path = "src/bin/closed_cleaning_residual_toc_conductivity_release_station.rs"
+
+[[bin]]
+name = "closed_chip_lane_pressure_relief_burst_guard_station"
+path = "src/bin/closed_chip_lane_pressure_relief_burst_guard_station.rs"
+
+[[bin]]
+name = "closed_airlock_material_transfer_bagout_integrity_station"
+path = "src/bin/closed_airlock_material_transfer_bagout_integrity_station.rs"
+
+[[bin]]
+name = "closed_cell_settling_time_mixing_hold_station"
+path = "src/bin/closed_cell_settling_time_mixing_hold_station.rs"
+
+[[bin]]
+name = "closed_robotic_connector_mate_demate_force_trace_station"
+path = "src/bin/closed_robotic_connector_mate_demate_force_trace_station.rs"
+
+[[bin]]
+name = "closed_media_bag_scale_drift_bubble_false_mass_station"
+path = "src/bin/closed_media_bag_scale_drift_bubble_false_mass_station.rs"
+
+[[bin]]
+name = "closed_perfusion_lane_flow_split_symmetry_station"
+path = "src/bin/closed_perfusion_lane_flow_split_symmetry_station.rs"
+
+[[bin]]
+name = "closed_reagent_lot_barcode_reconcile_scale_station"
+path = "src/bin/closed_reagent_lot_barcode_reconcile_scale_station.rs"
