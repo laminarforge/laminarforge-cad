@@ -127,6 +127,10 @@ name = "automated_media_exchange_cassette"
 path = "src/bin/automated_media_exchange_cassette.rs"
 
 [[bin]]
+name = "sterile_tubing_harness"
+path = "src/bin/sterile_tubing_harness.rs"
+
+[[bin]]
 name = "pipette_tip_organizer"
 path = "src/bin/pipette_tip_organizer.rs"
 
