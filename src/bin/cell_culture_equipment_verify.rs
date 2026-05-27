@@ -3163,6 +3163,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [250.0, 180.0, 70.0],
     },
     ExpectedOutput {
+        generator: "closed_co2_supply_regulator_drift_changeover_station",
+        path: "output/closed_co2_supply_regulator_drift_changeover_station_base_closed_cabinet_leak_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_co2_supply_regulator_drift_changeover_station",
+        path: "output/closed_co2_supply_regulator_drift_changeover_station_cylinder_regulator_surrogate_restraints.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_co2_supply_regulator_drift_changeover_station",
+        path: "output/closed_co2_supply_regulator_drift_changeover_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_probe_storage_hydration_drift_station",
+        path: "output/closed_sensor_probe_storage_hydration_drift_station_base_leak_tray_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_probe_storage_hydration_drift_station",
+        path: "output/closed_sensor_probe_storage_hydration_drift_station_hydrated_probe_nest_bank.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_probe_storage_hydration_drift_station",
+        path: "output/closed_sensor_probe_storage_hydration_drift_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_dewpoint_condensation_boundary_map_station",
+        path: "output/closed_incubator_dewpoint_condensation_boundary_map_station_base_boundary_map_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_dewpoint_condensation_boundary_map_station",
+        path: "output/closed_incubator_dewpoint_condensation_boundary_map_station_thermal_gradient_coupon_rack.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_dewpoint_condensation_boundary_map_station",
+        path: "output/closed_incubator_dewpoint_condensation_boundary_map_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_filter_bypass_relief_validation_station",
+        path: "output/closed_perfusion_filter_bypass_relief_validation_station_base_containment_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_filter_bypass_relief_validation_station",
+        path: "output/closed_perfusion_filter_bypass_relief_validation_station_filter_cartridge_nests.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_filter_bypass_relief_validation_station",
+        path: "output/closed_perfusion_filter_bypass_relief_validation_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_water_reservoir_biofilm_witness_station",
+        path: "output/closed_humidity_water_reservoir_biofilm_witness_station_base_containment_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_water_reservoir_biofilm_witness_station",
+        path: "output/closed_humidity_water_reservoir_biofilm_witness_station_removable_reservoir_surrogate.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_water_reservoir_biofilm_witness_station",
+        path: "output/closed_humidity_water_reservoir_biofilm_witness_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_vhp_residue_aeration_witness_station",
+        path: "output/closed_airlock_vhp_residue_aeration_witness_station_base_validation_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_vhp_residue_aeration_witness_station",
+        path: "output/closed_airlock_vhp_residue_aeration_witness_station_closed_transfer_airlock_reference.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_vhp_residue_aeration_witness_station",
+        path: "output/closed_airlock_vhp_residue_aeration_witness_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -3801,6 +3909,25 @@ mod tests {
             .any(|output| output.generator == "closed_sensor_probe_cleanability_residue_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_tubing_set_barcode_length_route_verification_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_co2_supply_regulator_drift_changeover_station"
+        ));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_sensor_probe_storage_hydration_drift_station"
+        ));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_dewpoint_condensation_boundary_map_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_perfusion_filter_bypass_relief_validation_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_humidity_water_reservoir_biofilm_witness_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_airlock_vhp_residue_aeration_witness_station"
+        ));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

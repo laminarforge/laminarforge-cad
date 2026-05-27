@@ -80,6 +80,12 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Liquid handling | `closed_module_luer_lock_misassembly_prevention_station` | Keyed connector nests, go/no-go gauges, leak witness tray, route verification pads, capped/uncapped segregation, torque witness scale, and harness reference frame. |
 | Monitoring/cleanability | `closed_sensor_probe_cleanability_residue_station` | Probe nests, rinse/soak wells, swab slots, residue witness coupons, drying rack, clean/used segregation, barcode residue labels, evidence bridge, and waste monitoring. |
 | Traceability/liquid handling | `closed_tubing_set_barcode_length_route_verification_station` | Barcode scan lands, length-gauge channels, bend-radius route combs, connector endpoint nests, misroute witness pockets, leak tray, route window bridge, and service keepouts. |
+| Environmental utilities | `closed_co2_supply_regulator_drift_changeover_station` | Cylinder/regulator surrogate restraints, dual regulator bays, pressure-gauge witness pockets, zero/span gas reference lands, changeover valve panel, leak witness tray, custody labels, and keepout gauges. |
+| Monitoring | `closed_sensor_probe_storage_hydration_drift_station` | Hydrated/dry probe nests, reference standard wells, dark cover witness, time tokens, cable strain relief, barcode/certificate lands, leak tray insert, and release/hold/reject lanes. |
+| Incubation | `closed_incubator_dewpoint_condensation_boundary_map_station` | Thermal-gradient coupon rack, cold-wall surrogate plate, RH/temp probe mast pockets, condensate witness channels, droplet wells, anti-drip baffle coupons, and labels. |
+| Liquid handling | `closed_perfusion_filter_bypass_relief_validation_station` | Filter cartridge nests, bypass-loop witness channels, relief-valve surrogate ports, pressure sensor pockets, bubble/wetness windows, waste capture wells, and status labels. |
+| Environmental utilities | `closed_humidity_water_reservoir_biofilm_witness_station` | Removable reservoir surrogate, biofilm coupon carriers, drain low-point wells, UV/decon witness lands, conductivity/turbidity sensor pockets, and clean/dirty segregation. |
+| Sterile handling | `closed_airlock_vhp_residue_aeration_witness_station` | Airlock reference, residue coupon racks, aeration timer lanes, peroxide sensor pockets, purge-flow witness vanes, door-gasket coupons, and clean/dirty segregation. |
 
 ## Build Order
 

@@ -893,3 +893,27 @@ path = "src/bin/closed_sensor_probe_cleanability_residue_station.rs"
 [[bin]]
 name = "closed_tubing_set_barcode_length_route_verification_station"
 path = "src/bin/closed_tubing_set_barcode_length_route_verification_station.rs"
+
+[[bin]]
+name = "closed_co2_supply_regulator_drift_changeover_station"
+path = "src/bin/closed_co2_supply_regulator_drift_changeover_station.rs"
+
+[[bin]]
+name = "closed_sensor_probe_storage_hydration_drift_station"
+path = "src/bin/closed_sensor_probe_storage_hydration_drift_station.rs"
+
+[[bin]]
+name = "closed_incubator_dewpoint_condensation_boundary_map_station"
+path = "src/bin/closed_incubator_dewpoint_condensation_boundary_map_station.rs"
+
+[[bin]]
+name = "closed_perfusion_filter_bypass_relief_validation_station"
+path = "src/bin/closed_perfusion_filter_bypass_relief_validation_station.rs"
+
+[[bin]]
+name = "closed_humidity_water_reservoir_biofilm_witness_station"
+path = "src/bin/closed_humidity_water_reservoir_biofilm_witness_station.rs"
+
+[[bin]]
+name = "closed_airlock_vhp_residue_aeration_witness_station"
+path = "src/bin/closed_airlock_vhp_residue_aeration_witness_station.rs"
