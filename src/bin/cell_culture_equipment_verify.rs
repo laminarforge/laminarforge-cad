@@ -204,6 +204,144 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [750.0, 440.0, 300.0],
     },
     ExpectedOutput {
+        generator: "connector_topology_scan_station",
+        path: "output/connector_topology_scan_station_deck.stl",
+        min_triangles: 300,
+        min_size_mm: [1100.0, 800.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "connector_topology_scan_station",
+        path: "output/connector_topology_scan_station_twenty_chip_cassette_datum.stl",
+        min_triangles: 800,
+        min_size_mm: [600.0, 530.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "connector_topology_scan_station",
+        path: "output/connector_topology_scan_station_connector_id_scan_comb.stl",
+        min_triangles: 1000,
+        min_size_mm: [170.0, 500.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "connector_topology_scan_station",
+        path: "output/connector_topology_scan_station_camera_illumination_scan_bridge.stl",
+        min_triangles: 500,
+        min_size_mm: [700.0, 50.0, 110.0],
+    },
+    ExpectedOutput {
+        generator: "connector_topology_scan_station",
+        path: "output/connector_topology_scan_station_assembly.stl",
+        min_triangles: 2200,
+        min_size_mm: [1100.0, 800.0, 130.0],
+    },
+    ExpectedOutput {
+        generator: "incubator_cassette_shuttle_airlock",
+        path: "output/incubator_cassette_shuttle_airlock_shell.stl",
+        min_triangles: 300,
+        min_size_mm: [880.0, 840.0, 350.0],
+    },
+    ExpectedOutput {
+        generator: "incubator_cassette_shuttle_airlock",
+        path: "output/incubator_cassette_shuttle_airlock_sealed_tray.stl",
+        min_triangles: 500,
+        min_size_mm: [680.0, 600.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "incubator_cassette_shuttle_airlock",
+        path: "output/incubator_cassette_shuttle_airlock_dual_door_interlock.stl",
+        min_triangles: 600,
+        min_size_mm: [800.0, 850.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "incubator_cassette_shuttle_airlock",
+        path: "output/incubator_cassette_shuttle_airlock_assembly.stl",
+        min_triangles: 2000,
+        min_size_mm: [880.0, 850.0, 360.0],
+    },
+    ExpectedOutput {
+        generator: "robotic_cassette_gripper_end_effector",
+        path: "output/robotic_cassette_gripper_end_effector_wrist_plate.stl",
+        min_triangles: 300,
+        min_size_mm: [120.0, 120.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "robotic_cassette_gripper_end_effector",
+        path: "output/robotic_cassette_gripper_end_effector_finger_bodies.stl",
+        min_triangles: 500,
+        min_size_mm: [600.0, 520.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "robotic_cassette_gripper_end_effector",
+        path: "output/robotic_cassette_gripper_end_effector_collision_keepout.stl",
+        min_triangles: 100,
+        min_size_mm: [840.0, 630.0, 230.0],
+    },
+    ExpectedOutput {
+        generator: "robotic_cassette_gripper_end_effector",
+        path: "output/robotic_cassette_gripper_end_effector_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [840.0, 630.0, 230.0],
+    },
+    ExpectedOutput {
+        generator: "chip_cassette_position_randomization_tray",
+        path: "output/chip_cassette_position_randomization_tray_base_tray.stl",
+        min_triangles: 200,
+        min_size_mm: [960.0, 660.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "chip_cassette_position_randomization_tray",
+        path: "output/chip_cassette_position_randomization_tray_cassette_datum.stl",
+        min_triangles: 300,
+        min_size_mm: [560.0, 480.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "chip_cassette_position_randomization_tray",
+        path: "output/chip_cassette_position_randomization_tray_clean_chip_staging_pockets.stl",
+        min_triangles: 300,
+        min_size_mm: [280.0, 230.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "chip_cassette_position_randomization_tray",
+        path: "output/chip_cassette_position_randomization_tray_robot_pick_clearances.stl",
+        min_triangles: 100,
+        min_size_mm: [560.0, 480.0, 90.0],
+    },
+    ExpectedOutput {
+        generator: "chip_cassette_position_randomization_tray",
+        path: "output/chip_cassette_position_randomization_tray_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [960.0, 660.0, 90.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_mapping_cassette_surrogate",
+        path: "output/environmental_mapping_cassette_surrogate_body_frame.stl",
+        min_triangles: 400,
+        min_size_mm: [580.0, 500.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_mapping_cassette_surrogate",
+        path: "output/environmental_mapping_cassette_surrogate_sensor_pockets.stl",
+        min_triangles: 1000,
+        min_size_mm: [500.0, 400.0, 6.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_mapping_cassette_surrogate",
+        path: "output/environmental_mapping_cassette_surrogate_flow_dummy_channels.stl",
+        min_triangles: 300,
+        min_size_mm: [500.0, 380.0, 3.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_mapping_cassette_surrogate",
+        path: "output/environmental_mapping_cassette_surrogate_cable_strain_relief.stl",
+        min_triangles: 300,
+        min_size_mm: [250.0, 25.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_mapping_cassette_surrogate",
+        path: "output/environmental_mapping_cassette_surrogate_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [580.0, 500.0, 35.0],
+    },
+    ExpectedOutput {
         generator: "sterile_tubing_harness",
         path: "output/sterile_tubing_harness_manifold_insert.stl",
         min_triangles: 160,
@@ -859,6 +997,21 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "media_sampling_analyzer_interface"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "connector_topology_scan_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "incubator_cassette_shuttle_airlock"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "robotic_cassette_gripper_end_effector"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "chip_cassette_position_randomization_tray"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "environmental_mapping_cassette_surrogate"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

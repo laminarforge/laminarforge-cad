@@ -139,6 +139,26 @@ name = "media_sampling_analyzer_interface"
 path = "src/bin/media_sampling_analyzer_interface.rs"
 
 [[bin]]
+name = "connector_topology_scan_station"
+path = "src/bin/connector_topology_scan_station.rs"
+
+[[bin]]
+name = "incubator_cassette_shuttle_airlock"
+path = "src/bin/incubator_cassette_shuttle_airlock.rs"
+
+[[bin]]
+name = "robotic_cassette_gripper_end_effector"
+path = "src/bin/robotic_cassette_gripper_end_effector.rs"
+
+[[bin]]
+name = "chip_cassette_position_randomization_tray"
+path = "src/bin/chip_cassette_position_randomization_tray.rs"
+
+[[bin]]
+name = "environmental_mapping_cassette_surrogate"
+path = "src/bin/environmental_mapping_cassette_surrogate.rs"
+
+[[bin]]
 name = "sterile_tubing_harness"
 path = "src/bin/sterile_tubing_harness.rs"
 
