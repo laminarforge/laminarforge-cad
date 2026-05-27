@@ -1037,3 +1037,39 @@ path = "src/bin/closed_perfusion_manifold_dead_volume_dye_clearance_station.rs"
 [[bin]]
 name = "closed_reagent_cold_chain_unload_warmup_excursion_station"
 path = "src/bin/closed_reagent_cold_chain_unload_warmup_excursion_station.rs"
+
+[[bin]]
+name = "closed_incubator_rack_door_sweep_clearance_collision_station"
+path = "src/bin/closed_incubator_rack_door_sweep_clearance_collision_station.rs"
+
+[[bin]]
+name = "closed_media_bag_spike_port_swab_residue_station"
+path = "src/bin/closed_media_bag_spike_port_swab_residue_station.rs"
+
+[[bin]]
+name = "closed_cassette_humidity_edge_evaporation_balance_station"
+path = "src/bin/closed_cassette_humidity_edge_evaporation_balance_station.rs"
+
+[[bin]]
+name = "closed_incubator_water_pan_refill_overflow_decon_station"
+path = "src/bin/closed_incubator_water_pan_refill_overflow_decon_station.rs"
+
+[[bin]]
+name = "closed_waste_container_vent_filter_condensate_breakthrough_station"
+path = "src/bin/closed_waste_container_vent_filter_condensate_breakthrough_station.rs"
+
+[[bin]]
+name = "closed_cassette_barrier_breach_dye_trace_quarantine_station"
+path = "src/bin/closed_cassette_barrier_breach_dye_trace_quarantine_station.rs"
+
+[[bin]]
+name = "closed_cell_seeding_nozzle_wetout_shear_recovery_station"
+path = "src/bin/closed_cell_seeding_nozzle_wetout_shear_recovery_station.rs"
+
+[[bin]]
+name = "closed_reagent_addition_order_mixing_witness_station"
+path = "src/bin/closed_reagent_addition_order_mixing_witness_station.rs"
+
+[[bin]]
+name = "closed_perfusion_bypass_valve_fail_position_witness_station"
+path = "src/bin/closed_perfusion_bypass_valve_fail_position_witness_station.rs"

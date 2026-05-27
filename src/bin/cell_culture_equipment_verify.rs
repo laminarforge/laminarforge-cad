@@ -3811,6 +3811,168 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_incubator_rack_door_sweep_clearance_collision_station",
+        path: "output/closed_incubator_rack_door_sweep_clearance_collision_station_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_rack_door_sweep_clearance_collision_station",
+        path: "output/closed_incubator_rack_door_sweep_clearance_collision_station_rack_surrogate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_rack_door_sweep_clearance_collision_station",
+        path: "output/closed_incubator_rack_door_sweep_clearance_collision_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_spike_port_swab_residue_station",
+        path: "output/closed_media_bag_spike_port_swab_residue_station_base_leak_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_spike_port_swab_residue_station",
+        path: "output/closed_media_bag_spike_port_swab_residue_station_media_bag_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_spike_port_swab_residue_station",
+        path: "output/closed_media_bag_spike_port_swab_residue_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_humidity_edge_evaporation_balance_station",
+        path: "output/closed_cassette_humidity_edge_evaporation_balance_station_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_humidity_edge_evaporation_balance_station",
+        path: "output/closed_cassette_humidity_edge_evaporation_balance_station_edge_center_surrogate_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_humidity_edge_evaporation_balance_station",
+        path: "output/closed_cassette_humidity_edge_evaporation_balance_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_water_pan_refill_overflow_decon_station",
+        path: "output/closed_incubator_water_pan_refill_overflow_decon_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_water_pan_refill_overflow_decon_station",
+        path: "output/closed_incubator_water_pan_refill_overflow_decon_station_water_pan_surrogate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_water_pan_refill_overflow_decon_station",
+        path: "output/closed_incubator_water_pan_refill_overflow_decon_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_container_vent_filter_condensate_breakthrough_station",
+        path: "output/closed_waste_container_vent_filter_condensate_breakthrough_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_container_vent_filter_condensate_breakthrough_station",
+        path: "output/closed_waste_container_vent_filter_condensate_breakthrough_station_hydrophobic_vent_filter_cartridge_dock.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_container_vent_filter_condensate_breakthrough_station",
+        path: "output/closed_waste_container_vent_filter_condensate_breakthrough_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_barrier_breach_dye_trace_quarantine_station",
+        path: "output/closed_cassette_barrier_breach_dye_trace_quarantine_station_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_barrier_breach_dye_trace_quarantine_station",
+        path: "output/closed_cassette_barrier_breach_dye_trace_quarantine_station_sealed_cassette_nest_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_barrier_breach_dye_trace_quarantine_station",
+        path: "output/closed_cassette_barrier_breach_dye_trace_quarantine_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_seeding_nozzle_wetout_shear_recovery_station",
+        path: "output/closed_cell_seeding_nozzle_wetout_shear_recovery_station_containment_base.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_seeding_nozzle_wetout_shear_recovery_station",
+        path: "output/closed_cell_seeding_nozzle_wetout_shear_recovery_station_nozzle_nest_array.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_seeding_nozzle_wetout_shear_recovery_station",
+        path: "output/closed_cell_seeding_nozzle_wetout_shear_recovery_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_addition_order_mixing_witness_station",
+        path: "output/closed_reagent_addition_order_mixing_witness_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_addition_order_mixing_witness_station",
+        path: "output/closed_reagent_addition_order_mixing_witness_station_staged_vial_bag_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_addition_order_mixing_witness_station",
+        path: "output/closed_reagent_addition_order_mixing_witness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_bypass_valve_fail_position_witness_station",
+        path: "output/closed_perfusion_bypass_valve_fail_position_witness_station_containment_leak_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_bypass_valve_fail_position_witness_station",
+        path: "output/closed_perfusion_bypass_valve_fail_position_witness_station_valve_cartridge_nest_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_bypass_valve_fail_position_witness_station",
+        path: "output/closed_perfusion_bypass_valve_fail_position_witness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -4560,6 +4722,30 @@ mod tests {
             == "closed_perfusion_manifold_dead_volume_dye_clearance_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_reagent_cold_chain_unload_warmup_excursion_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_rack_door_sweep_clearance_collision_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_media_bag_spike_port_swab_residue_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_humidity_edge_evaporation_balance_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_incubator_water_pan_refill_overflow_decon_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_waste_container_vent_filter_condensate_breakthrough_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_barrier_breach_dye_trace_quarantine_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cell_seeding_nozzle_wetout_shear_recovery_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_reagent_addition_order_mixing_witness_station"
+        ));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_bypass_valve_fail_position_witness_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

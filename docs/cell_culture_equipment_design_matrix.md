@@ -116,6 +116,15 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Incubation airflow | `closed_cassette_lane_airflow_shadow_smoke_witness_station` | Containment deck, cassette lane surrogate rack, smoke/witness vanes, airflow shadow markers, logger pockets, fan obstruction coupons, camera bridge, and service keepouts. |
 | Perfusion dead volume | `closed_perfusion_manifold_dead_volume_dye_clearance_station` | Leak tray, equal-length perfusion lanes, dye slug reservoirs, transparent witness windows, bubble traps, pressure/flow sensor pockets, timed fraction nests, and flush tokens. |
 | Cold-chain release | `closed_reagent_cold_chain_unload_warmup_excursion_station` | Containment drain deck, chilled tote docks, logger pockets, warmup clock rails, quarantine/release gate, COA custody plate, wetness witnesses, transfer-port gauge, and evidence bridge. |
+| Incubator clearance | `closed_incubator_rack_door_sweep_clearance_collision_station` | Base tray, rack surrogate, door-sweep envelope, cassette overhang gauges, collision witness blocks, latch-state tokens, evidence bridge, and service keepouts. |
+| Media bag residue | `closed_media_bag_spike_port_swab_residue_station` | Base leak tray, media-bag nest, spike-port dock, swab residue coupon lands, rinse/recovery wells, clean/used segregation, barcode lands, and evidence bridge. |
+| Humidity edge balance | `closed_cassette_humidity_edge_evaporation_balance_station` | Base tray, edge/center surrogate grid, mass-balance pockets, RH/temp logger docks, condensate capture lanes, barcode/status lanes, and evidence bridge. |
+| Humidification service | `closed_incubator_water_pan_refill_overflow_decon_station` | Containment deck, water-pan surrogate, refill/overflow route, decon coupon lands, level witness pockets, spill capture, and service keepouts. |
+| Waste vent breakthrough | `closed_waste_container_vent_filter_condensate_breakthrough_station` | Secondary containment deck, vent-filter cartridge dock, condensate witness wells, backpressure gauge pocket, leak route, custody lands, and status lanes. |
+| Barrier quarantine | `closed_cassette_barrier_breach_dye_trace_quarantine_station` | Sealed cassette nest grid, dye-trace challenge wells, breach witness coupons, quarantine cover, custody lands, release/hold/reject lanes, and evidence bridge. |
+| Seeding nozzle wetout | `closed_cell_seeding_nozzle_wetout_shear_recovery_station` | Containment base, nozzle nest array, wetout coupons, shear-recovery witness channels, capture wells, bubble windows, and custody lands. |
+| Reagent recipe order | `closed_reagent_addition_order_mixing_witness_station` | Containment deck, staged vial/bag nests, addition-order token rail, mixing witness wells, cold/light protection lands, sterile bulkhead, and evidence bridge. |
+| Perfusion bypass fail-state | `closed_perfusion_bypass_valve_fail_position_witness_station` | Leak tray, valve cartridge nest bank, bypass route witnesses, pressure/flow pockets, fail-position tokens, status lanes, and service keepouts. |
 
 ## Build Order
 
