@@ -1365,3 +1365,43 @@ path = "src/bin/closed_cassette_module_barrier_pressure_equalization_station.rs"
 [[bin]]
 name = "closed_cell_culture_run_abort_safe_state_station"
 path = "src/bin/closed_cell_culture_run_abort_safe_state_station.rs"
+
+[[bin]]
+name = "closed_incubator_gas_recovery_after_service_port_opening_station"
+path = "src/bin/closed_incubator_gas_recovery_after_service_port_opening_station.rs"
+
+[[bin]]
+name = "closed_perfusion_flow_sensor_drift_redundancy_voting_station"
+path = "src/bin/closed_perfusion_flow_sensor_drift_redundancy_voting_station.rs"
+
+[[bin]]
+name = "closed_perfusion_reagent_temperature_mismatch_interlock_station"
+path = "src/bin/closed_perfusion_reagent_temperature_mismatch_interlock_station.rs"
+
+[[bin]]
+name = "closed_cassette_barcode_image_focus_occlusion_station"
+path = "src/bin/closed_cassette_barcode_image_focus_occlusion_station.rs"
+
+[[bin]]
+name = "closed_module_sterile_air_purge_duration_validation_station"
+path = "src/bin/closed_module_sterile_air_purge_duration_validation_station.rs"
+
+[[bin]]
+name = "closed_culture_media_sampling_bag_deadleg_flush_station"
+path = "src/bin/closed_culture_media_sampling_bag_deadleg_flush_station.rs"
+
+[[bin]]
+name = "closed_perfusion_alarm_root_cause_evidence_bundle_station"
+path = "src/bin/closed_perfusion_alarm_root_cause_evidence_bundle_station.rs"
+
+[[bin]]
+name = "closed_robotic_cassette_quarantine_lid_lockout_station"
+path = "src/bin/closed_robotic_cassette_quarantine_lid_lockout_station.rs"
+
+[[bin]]
+name = "closed_media_additive_microdose_recovery_gravimetric_station"
+path = "src/bin/closed_media_additive_microdose_recovery_gravimetric_station.rs"
+
+[[bin]]
+name = "closed_incubator_condensate_drain_alarm_recovery_station"
+path = "src/bin/closed_incubator_condensate_drain_alarm_recovery_station.rs"

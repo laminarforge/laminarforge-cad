@@ -288,39 +288,37 @@ fn containment_rim() -> Part {
 }
 
 fn deck_datums() -> Part {
-    let mut datums = centered_cube(
-        "closed_deadleg_flush_station_datum_reference_strip",
-        1.0,
-        1.0,
-        1.0,
-    )
-    .translate(-5000.0, -5000.0, -5000.0);
-
-    for i in 0..DATUM_BOSSES {
-        let x = -DECK_X / 2.0 + 78.0 + i as f64 * ((DECK_X - 156.0) / 9.0);
-        let y = if i % 2 == 0 {
-            DECK_Y / 2.0 - 70.0
-        } else {
-            -DECK_Y / 2.0 + 70.0
-        };
-        let pad = centered_cylinder(
-            format!("closed_deadleg_flush_station_datum_pad_{i}"),
-            7.0,
-            5.0,
-            32,
-        )
-        .translate(x, y, top_z(5.0));
-        let bore = centered_cylinder(
-            format!("closed_deadleg_flush_station_datum_bore_{i}"),
-            1.8,
-            9.0,
-            20,
-        )
-        .translate(x, y, top_z(9.0));
-        datums = datums + pad - bore;
+    let mut datums = datum_boss(0);
+    for i in 1..DATUM_BOSSES {
+        datums = datums + datum_boss(i);
     }
 
     datums
+}
+
+fn datum_boss(i: usize) -> Part {
+    let x = -DECK_X / 2.0 + 78.0 + i as f64 * ((DECK_X - 156.0) / 9.0);
+    let y = if i % 2 == 0 {
+        DECK_Y / 2.0 - 70.0
+    } else {
+        -DECK_Y / 2.0 + 70.0
+    };
+    let pad = centered_cylinder(
+        format!("closed_deadleg_flush_station_datum_pad_{i}"),
+        7.0,
+        5.0,
+        32,
+    )
+    .translate(x, y, top_z(5.0));
+    let bore = centered_cylinder(
+        format!("closed_deadleg_flush_station_datum_bore_{i}"),
+        1.8,
+        9.0,
+        20,
+    )
+    .translate(x, y, top_z(9.0));
+
+    pad - bore
 }
 
 fn station_landing_pockets() -> Part {
