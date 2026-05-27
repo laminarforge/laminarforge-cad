@@ -3703,6 +3703,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_incubator_rack_slot_identity_load_history_station",
+        path: "output/closed_incubator_rack_slot_identity_load_history_station_base_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_rack_slot_identity_load_history_station",
+        path: "output/closed_incubator_rack_slot_identity_load_history_station_six_slot_rack_surrogate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_rack_slot_identity_load_history_station",
+        path: "output/closed_incubator_rack_slot_identity_load_history_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_transfer_cart_cassette_orientation_error_station",
+        path: "output/closed_airlock_transfer_cart_cassette_orientation_error_station_base_validation_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_transfer_cart_cassette_orientation_error_station",
+        path: "output/closed_airlock_transfer_cart_cassette_orientation_error_station_cart_docking_rails.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_airlock_transfer_cart_cassette_orientation_error_station",
+        path: "output/closed_airlock_transfer_cart_cassette_orientation_error_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_gripper_decon_residue_swab_recovery_station",
+        path: "output/closed_robotic_gripper_decon_residue_swab_recovery_station_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_gripper_decon_residue_swab_recovery_station",
+        path: "output/closed_robotic_gripper_decon_residue_swab_recovery_station_gripper_jaw_nests.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_gripper_decon_residue_swab_recovery_station",
+        path: "output/closed_robotic_gripper_decon_residue_swab_recovery_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_lane_airflow_shadow_smoke_witness_station",
+        path: "output/closed_cassette_lane_airflow_shadow_smoke_witness_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_lane_airflow_shadow_smoke_witness_station",
+        path: "output/closed_cassette_lane_airflow_shadow_smoke_witness_station_cassette_lane_surrogate_rack.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_lane_airflow_shadow_smoke_witness_station",
+        path: "output/closed_cassette_lane_airflow_shadow_smoke_witness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_manifold_dead_volume_dye_clearance_station",
+        path: "output/closed_perfusion_manifold_dead_volume_dye_clearance_station_base_leak_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_manifold_dead_volume_dye_clearance_station",
+        path: "output/closed_perfusion_manifold_dead_volume_dye_clearance_station_equal_length_perfusion_lanes.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_manifold_dead_volume_dye_clearance_station",
+        path: "output/closed_perfusion_manifold_dead_volume_dye_clearance_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_cold_chain_unload_warmup_excursion_station",
+        path: "output/closed_reagent_cold_chain_unload_warmup_excursion_station_containment_drain_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_cold_chain_unload_warmup_excursion_station",
+        path: "output/closed_reagent_cold_chain_unload_warmup_excursion_station_chilled_tote_docks.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_cold_chain_unload_warmup_excursion_station",
+        path: "output/closed_reagent_cold_chain_unload_warmup_excursion_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -4438,6 +4546,20 @@ mod tests {
             == "closed_connector_cap_loss_open_port_exposure_prevention_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_reagent_thaw_bubble_ingress_connector_wetness_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_incubator_rack_slot_identity_load_history_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_airlock_transfer_cart_cassette_orientation_error_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_robotic_gripper_decon_residue_swab_recovery_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_lane_airflow_shadow_smoke_witness_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_manifold_dead_volume_dye_clearance_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_reagent_cold_chain_unload_warmup_excursion_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

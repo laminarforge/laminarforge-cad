@@ -110,6 +110,12 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Monitoring | `closed_inline_sensor_response_lag_flow_step_station` | Sensor cartridge nests, step-change reservoirs, bypass valve surrogate, timed slug channel, flow reference pocket, temperature pocket, flush routing, and certificate lands. |
 | Connector handling | `closed_connector_cap_loss_open_port_exposure_prevention_station` | Connector nests, cap/plug parking, open-port witness windows, exposure tokens, pressure-decay ports, quarantine lanes, custody lands, tamper pockets, and clean/used tray. |
 | Reagent thaw | `closed_reagent_thaw_bubble_ingress_connector_wetness_station` | Thawed bag/vial nest, connector wetness slots, bubble-ingress windows, check-valve rail, quick-connect capture, temperature/time rail, pressure ports, and custody/status lanes. |
+| Incubation slot history | `closed_incubator_rack_slot_identity_load_history_station` | Base deck, six-slot rack surrogate, slot identity tokens, load-history rails, logger pockets, camera bridge, transfer datum, and robot/service keepouts. |
+| Transfer orientation | `closed_airlock_transfer_cart_cassette_orientation_error_station` | Base validation deck, cart docking rails, keyed cassette nests, wrong-orientation challenge blocks, latch witnesses, custody lands, evidence bridge, and keepout gauges. |
+| Robot decon residue | `closed_robotic_gripper_decon_residue_swab_recovery_station` | Base tray, gripper jaw nests, swab coupon grid, rinse capture channels, clean/dirty bulkhead, residue witness tokens, sample quiver, and approach gauges. |
+| Incubation airflow | `closed_cassette_lane_airflow_shadow_smoke_witness_station` | Containment deck, cassette lane surrogate rack, smoke/witness vanes, airflow shadow markers, logger pockets, fan obstruction coupons, camera bridge, and service keepouts. |
+| Perfusion dead volume | `closed_perfusion_manifold_dead_volume_dye_clearance_station` | Leak tray, equal-length perfusion lanes, dye slug reservoirs, transparent witness windows, bubble traps, pressure/flow sensor pockets, timed fraction nests, and flush tokens. |
+| Cold-chain release | `closed_reagent_cold_chain_unload_warmup_excursion_station` | Containment drain deck, chilled tote docks, logger pockets, warmup clock rails, quarantine/release gate, COA custody plate, wetness witnesses, transfer-port gauge, and evidence bridge. |
 
 ## Build Order
 

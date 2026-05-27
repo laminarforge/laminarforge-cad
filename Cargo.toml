@@ -1013,3 +1013,27 @@ path = "src/bin/closed_connector_cap_loss_open_port_exposure_prevention_station.
 [[bin]]
 name = "closed_reagent_thaw_bubble_ingress_connector_wetness_station"
 path = "src/bin/closed_reagent_thaw_bubble_ingress_connector_wetness_station.rs"
+
+[[bin]]
+name = "closed_incubator_rack_slot_identity_load_history_station"
+path = "src/bin/closed_incubator_rack_slot_identity_load_history_station.rs"
+
+[[bin]]
+name = "closed_airlock_transfer_cart_cassette_orientation_error_station"
+path = "src/bin/closed_airlock_transfer_cart_cassette_orientation_error_station.rs"
+
+[[bin]]
+name = "closed_robotic_gripper_decon_residue_swab_recovery_station"
+path = "src/bin/closed_robotic_gripper_decon_residue_swab_recovery_station.rs"
+
+[[bin]]
+name = "closed_cassette_lane_airflow_shadow_smoke_witness_station"
+path = "src/bin/closed_cassette_lane_airflow_shadow_smoke_witness_station.rs"
+
+[[bin]]
+name = "closed_perfusion_manifold_dead_volume_dye_clearance_station"
+path = "src/bin/closed_perfusion_manifold_dead_volume_dye_clearance_station.rs"
+
+[[bin]]
+name = "closed_reagent_cold_chain_unload_warmup_excursion_station"
+path = "src/bin/closed_reagent_cold_chain_unload_warmup_excursion_station.rs"
