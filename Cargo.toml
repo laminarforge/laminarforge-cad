@@ -689,3 +689,35 @@ path = "src/bin/closed_gas_filter_integrity_leak_test_station.rs"
 [[bin]]
 name = "closed_cassette_gasket_compression_set_aging_station"
 path = "src/bin/closed_cassette_gasket_compression_set_aging_station.rs"
+
+[[bin]]
+name = "closed_module_port_dry_break_cycle_life_station"
+path = "src/bin/closed_module_port_dry_break_cycle_life_station.rs"
+
+[[bin]]
+name = "closed_gas_mfc_zero_span_crosscheck_station"
+path = "src/bin/closed_gas_mfc_zero_span_crosscheck_station.rs"
+
+[[bin]]
+name = "closed_uv_h2o2_decon_shadow_mapping_coupon_station"
+path = "src/bin/closed_uv_h2o2_decon_shadow_mapping_coupon_station.rs"
+
+[[bin]]
+name = "closed_cassette_position_environmental_equivalence_station"
+path = "src/bin/closed_cassette_position_environmental_equivalence_station.rs"
+
+[[bin]]
+name = "closed_module_thermal_contact_resistance_mapping_station"
+path = "src/bin/closed_module_thermal_contact_resistance_mapping_station.rs"
+
+[[bin]]
+name = "closed_waste_container_neutralization_contact_time_station"
+path = "src/bin/closed_waste_container_neutralization_contact_time_station.rs"
+
+[[bin]]
+name = "closed_supply_cylinder_lot_changeover_custody_station"
+path = "src/bin/closed_supply_cylinder_lot_changeover_custody_station.rs"
+
+[[bin]]
+name = "closed_incubator_rack_vibration_tilt_mapping_station"
+path = "src/bin/closed_incubator_rack_vibration_tilt_mapping_station.rs"

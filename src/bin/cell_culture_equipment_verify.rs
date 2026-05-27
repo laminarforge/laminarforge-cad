@@ -2245,6 +2245,150 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [900.0, 600.0, 80.0],
     },
     ExpectedOutput {
+        generator: "closed_module_port_dry_break_cycle_life_station",
+        path: "output/closed_module_port_dry_break_cycle_life_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [1100.0, 700.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_port_dry_break_cycle_life_station",
+        path: "output/closed_module_port_dry_break_cycle_life_station_male_coupler_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 120.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_port_dry_break_cycle_life_station",
+        path: "output/closed_module_port_dry_break_cycle_life_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [1200.0, 750.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gas_mfc_zero_span_crosscheck_station",
+        path: "output/closed_gas_mfc_zero_span_crosscheck_station_base_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [1000.0, 740.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gas_mfc_zero_span_crosscheck_station",
+        path: "output/closed_gas_mfc_zero_span_crosscheck_station_mfc_pocket_array.stl",
+        min_triangles: 80,
+        min_size_mm: [480.0, 120.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gas_mfc_zero_span_crosscheck_station",
+        path: "output/closed_gas_mfc_zero_span_crosscheck_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [1050.0, 760.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "closed_uv_h2o2_decon_shadow_mapping_coupon_station",
+        path: "output/closed_uv_h2o2_decon_shadow_mapping_coupon_station_base_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [1200.0, 700.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "closed_uv_h2o2_decon_shadow_mapping_coupon_station",
+        path: "output/closed_uv_h2o2_decon_shadow_mapping_coupon_station_coupon_grid_carrier.stl",
+        min_triangles: 80,
+        min_size_mm: [400.0, 250.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_uv_h2o2_decon_shadow_mapping_coupon_station",
+        path: "output/closed_uv_h2o2_decon_shadow_mapping_coupon_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [1200.0, 700.0, 180.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_environmental_equivalence_station",
+        path: "output/closed_cassette_position_environmental_equivalence_station_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [1200.0, 760.0, 18.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_environmental_equivalence_station",
+        path: "output/closed_cassette_position_environmental_equivalence_station_cassette_surrogate_nest.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_position_environmental_equivalence_station",
+        path: "output/closed_cassette_position_environmental_equivalence_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [1200.0, 760.0, 120.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_thermal_contact_resistance_mapping_station",
+        path: "output/closed_module_thermal_contact_resistance_mapping_station_base_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [1050.0, 680.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_thermal_contact_resistance_mapping_station",
+        path: "output/closed_module_thermal_contact_resistance_mapping_station_cassette_module_datum_nest.stl",
+        min_triangles: 80,
+        min_size_mm: [250.0, 180.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_thermal_contact_resistance_mapping_station",
+        path: "output/closed_module_thermal_contact_resistance_mapping_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [1050.0, 680.0, 120.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_container_neutralization_contact_time_station",
+        path: "output/closed_waste_container_neutralization_contact_time_station_secondary_containment_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [1200.0, 800.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_container_neutralization_contact_time_station",
+        path: "output/closed_waste_container_neutralization_contact_time_station_waste_container_cradle.stl",
+        min_triangles: 80,
+        min_size_mm: [450.0, 250.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_container_neutralization_contact_time_station",
+        path: "output/closed_waste_container_neutralization_contact_time_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [1200.0, 820.0, 200.0],
+    },
+    ExpectedOutput {
+        generator: "closed_supply_cylinder_lot_changeover_custody_station",
+        path: "output/closed_supply_cylinder_lot_changeover_custody_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [1350.0, 800.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_supply_cylinder_lot_changeover_custody_station",
+        path: "output/closed_supply_cylinder_lot_changeover_custody_station_cylinder_restraints.stl",
+        min_triangles: 80,
+        min_size_mm: [1000.0, 250.0, 120.0],
+    },
+    ExpectedOutput {
+        generator: "closed_supply_cylinder_lot_changeover_custody_station",
+        path: "output/closed_supply_cylinder_lot_changeover_custody_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [1350.0, 800.0, 350.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_rack_vibration_tilt_mapping_station",
+        path: "output/closed_incubator_rack_vibration_tilt_mapping_station_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [1000.0, 700.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_rack_vibration_tilt_mapping_station",
+        path: "output/closed_incubator_rack_vibration_tilt_mapping_station_rack_datum_plate.stl",
+        min_triangles: 80,
+        min_size_mm: [700.0, 380.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_rack_vibration_tilt_mapping_station",
+        path: "output/closed_incubator_rack_vibration_tilt_mapping_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [1000.0, 700.0, 120.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -2720,6 +2864,33 @@ mod tests {
             .any(|output| output.generator == "closed_gas_filter_integrity_leak_test_station"));
         assert!(OUTPUTS.iter().any(
             |output| output.generator == "closed_cassette_gasket_compression_set_aging_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_module_port_dry_break_cycle_life_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_gas_mfc_zero_span_crosscheck_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_uv_h2o2_decon_shadow_mapping_coupon_station")
+        );
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_position_environmental_equivalence_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_module_thermal_contact_resistance_mapping_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_waste_container_neutralization_contact_time_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_supply_cylinder_lot_changeover_custody_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_incubator_rack_vibration_tilt_mapping_station"
         ));
         assert!(OUTPUTS
             .iter()
