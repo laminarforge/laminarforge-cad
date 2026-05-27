@@ -1405,3 +1405,47 @@ path = "src/bin/closed_media_additive_microdose_recovery_gravimetric_station.rs"
 [[bin]]
 name = "closed_incubator_condensate_drain_alarm_recovery_station"
 path = "src/bin/closed_incubator_condensate_drain_alarm_recovery_station.rs"
+
+[[bin]]
+name = "closed_robotic_probe_clean_storage_rehydration_station"
+path = "src/bin/closed_robotic_probe_clean_storage_rehydration_station.rs"
+
+[[bin]]
+name = "closed_media_bag_lot_thaw_pooling_order_interlock_station"
+path = "src/bin/closed_media_bag_lot_thaw_pooling_order_interlock_station.rs"
+
+[[bin]]
+name = "closed_cell_lot_split_pooling_identity_balance_station"
+path = "src/bin/closed_cell_lot_split_pooling_identity_balance_station.rs"
+
+[[bin]]
+name = "closed_media_bag_connector_wetness_capillary_holdover_station"
+path = "src/bin/closed_media_bag_connector_wetness_capillary_holdover_station.rs"
+
+[[bin]]
+name = "closed_inline_metabolite_sampling_timing_aliasing_station"
+path = "src/bin/closed_inline_metabolite_sampling_timing_aliasing_station.rs"
+
+[[bin]]
+name = "closed_media_exchange_osmotic_shock_ramp_station"
+path = "src/bin/closed_media_exchange_osmotic_shock_ramp_station.rs"
+
+[[bin]]
+name = "closed_incubator_evaporation_media_level_sensor_crosscheck_station"
+path = "src/bin/closed_incubator_evaporation_media_level_sensor_crosscheck_station.rs"
+
+[[bin]]
+name = "closed_cell_source_transport_shock_preseed_recovery_station"
+path = "src/bin/closed_cell_source_transport_shock_preseed_recovery_station.rs"
+
+[[bin]]
+name = "closed_cassette_flow_path_pre_run_air_slug_displacement_station"
+path = "src/bin/closed_cassette_flow_path_pre_run_air_slug_displacement_station.rs"
+
+[[bin]]
+name = "closed_cassette_waste_port_misroute_colorimetric_witness_station"
+path = "src/bin/closed_cassette_waste_port_misroute_colorimetric_witness_station.rs"
+
+[[bin]]
+name = "closed_incubator_airflow_filter_loading_recovery_station"
+path = "src/bin/closed_incubator_airflow_filter_loading_recovery_station.rs"
