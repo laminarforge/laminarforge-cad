@@ -5665,6 +5665,78 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_perfusion_backpressure_waveform_signature_station",
+        path: "output/closed_perfusion_backpressure_waveform_signature_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_backpressure_waveform_signature_station",
+        path: "output/closed_perfusion_backpressure_waveform_signature_station_pressure_transducer_dock_panel.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_backpressure_waveform_signature_station",
+        path: "output/closed_perfusion_backpressure_waveform_signature_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_seed_density_gradient_settle_witness_station",
+        path: "output/closed_cassette_seed_density_gradient_settle_witness_station_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_seed_density_gradient_settle_witness_station",
+        path: "output/closed_cassette_seed_density_gradient_settle_witness_station_cassette_chip_position_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_seed_density_gradient_settle_witness_station",
+        path: "output/closed_cassette_seed_density_gradient_settle_witness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_recirculation_dead_zone_tracer_station",
+        path: "output/closed_media_conditioning_recirculation_dead_zone_tracer_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_recirculation_dead_zone_tracer_station",
+        path: "output/closed_media_conditioning_recirculation_dead_zone_tracer_station_recirculation_loop_surrogate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_conditioning_recirculation_dead_zone_tracer_station",
+        path: "output/closed_media_conditioning_recirculation_dead_zone_tracer_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_retain_sample_temperature_chain_custody_station",
+        path: "output/closed_waste_retain_sample_temperature_chain_custody_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_retain_sample_temperature_chain_custody_station",
+        path: "output/closed_waste_retain_sample_temperature_chain_custody_station_temperature_logger_pockets.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_retain_sample_temperature_chain_custody_station",
+        path: "output/closed_waste_retain_sample_temperature_chain_custody_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -6678,6 +6750,16 @@ mod tests {
             .iter()
             .any(|output| output.generator
                 == "closed_incubator_airflow_filter_loading_recovery_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_perfusion_backpressure_waveform_signature_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_seed_density_gradient_settle_witness_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_conditioning_recirculation_dead_zone_tracer_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_waste_retain_sample_temperature_chain_custody_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

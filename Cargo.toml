@@ -1449,3 +1449,19 @@ path = "src/bin/closed_cassette_waste_port_misroute_colorimetric_witness_station
 [[bin]]
 name = "closed_incubator_airflow_filter_loading_recovery_station"
 path = "src/bin/closed_incubator_airflow_filter_loading_recovery_station.rs"
+
+[[bin]]
+name = "closed_perfusion_backpressure_waveform_signature_station"
+path = "src/bin/closed_perfusion_backpressure_waveform_signature_station.rs"
+
+[[bin]]
+name = "closed_cassette_seed_density_gradient_settle_witness_station"
+path = "src/bin/closed_cassette_seed_density_gradient_settle_witness_station.rs"
+
+[[bin]]
+name = "closed_media_conditioning_recirculation_dead_zone_tracer_station"
+path = "src/bin/closed_media_conditioning_recirculation_dead_zone_tracer_station.rs"
+
+[[bin]]
+name = "closed_waste_retain_sample_temperature_chain_custody_station"
+path = "src/bin/closed_waste_retain_sample_temperature_chain_custody_station.rs"
