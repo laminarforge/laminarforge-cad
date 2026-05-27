@@ -10,7 +10,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | Sterile handling practice | Still-air enclosure | Prototype only | `still_air_box_corner`, `still_air_box_rail`, `still_air_box_accessories`, `arm_hole_grommet`, `workstation_enclosure` | Fit/cleanability check; nonhazardous practice only |
 | Incubation | Validated commercial/accessed CO2 incubator | Buy/access | None | Independent 37 C / 5% CO2 / humidity / recovery logs |
 | Incubation prototype | Starter DIY CO2 cabinet | Prototype only | `co2_incubator`, `co2_incubator_verify`, `co2_incubator_sim` | CAD verifier, lumped sim, empty-chamber commissioning, independent logger agreement |
-| Warming | 37 C media water bath or dry warming block | Build or buy | `water_bath`, `heating_block` | Independent temperature probe, leak/electrical safety test |
+| Warming | 37 C media water bath or dry warming block | Build or buy | `water_bath`, `water_bath_safety_kit`, `heating_block` | Independent temperature probe, leak/electrical safety test |
 | Observation | Inverted phase-contrast microscope | Buy/access | `optical_mount` support only | Culture vessel/chip morphology and contamination inspection |
 | Manual liquid handling | P20/P200/P1000, filtered tips, serological pipettes | Buy | `tube_holder`, `column_rack` support only | Calibration status and sterile consumable availability |
 | Aspiration/waste | Vacuum aspirator, trap, disinfectant, biohazard waste path | Buy/access | `wash_station`, `media_reservoir`, `aspirator_waste_trap_holder` support only | Facility-approved disposal and splash/aerosol control |
@@ -41,7 +41,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | P0 | Aspirator trap/waste bottle holder | Initial CAD exists in `aspirator_waste_trap_holder`; final use still depends on facility-approved disinfectant, filter, trap, and disposal SOP. |
 | P1 | Pipette/tip/conical organization module | Reduces workflow errors and improves clean bench ergonomics. |
 | P1 | Chip priming fixture with tubing clips and bubble observation | Initial CAD exists in `chip_priming_tubing_fixture`; needed before real microfluidic culture trials. |
-| P1 | Water bath safety revision with probe clamp and bottle rack | Media warming needs repeatable placement and safe cable routing. |
+| P1 | Water bath safety revision with probe clamp and bottle rack | Initial CAD exists in `water_bath_safety_kit`; media warming needs repeatable placement and safe cable routing. |
 | P2 | Still-air practice pass-through tray | Good for training and nonhazardous dry runs, not for real culture. |
 | P2 | Microscope chip-stage adapter | Lets LaminarForge chips be inspected repeatably on an inverted microscope. |
 | P3 | `chip_incubator_v3` scale-up review | Only after the starter incubator validation data is credible. |

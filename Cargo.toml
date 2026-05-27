@@ -127,6 +127,10 @@ name = "water_bath"
 path = "src/bin/water_bath.rs"
 
 [[bin]]
+name = "water_bath_safety_kit"
+path = "src/bin/water_bath_safety_kit.rs"
+
+[[bin]]
 name = "heating_block"
 path = "src/bin/heating_block.rs"
 

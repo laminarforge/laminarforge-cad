@@ -94,7 +94,7 @@ fn manifest() -> Vec<Equipment> {
             disposition: Disposition::Build,
             readiness: Readiness::EarlyBuild,
             culture_use: CultureUse::Support,
-            cad_bins: &["water_bath", "heating_block"],
+            cad_bins: &["water_bath", "water_bath_safety_kit", "heating_block"],
             validation_gate: "Independent probe shows 37 C setpoint stability and no leak/electrical hazard during a multi-hour run.",
             notes: "Useful for warming media and reagents; keep bottles sealed and disinfected.",
         },

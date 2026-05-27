@@ -60,6 +60,18 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [100.0, 100.0, 40.0],
     },
     ExpectedOutput {
+        generator: "water_bath_safety_kit",
+        path: "output/water_bath_safety_bottle_rack.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 60.0, 45.0],
+    },
+    ExpectedOutput {
+        generator: "water_bath_safety_kit",
+        path: "output/water_bath_safety_spill_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [200.0, 150.0, 10.0],
+    },
+    ExpectedOutput {
         generator: "heating_block",
         path: "output/heating_block.stl",
         min_triangles: 50,
@@ -301,5 +313,8 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "chip_priming_tubing_fixture"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "water_bath_safety_kit"));
     }
 }
