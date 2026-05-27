@@ -108,6 +108,18 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [110.0, 100.0, 10.0],
     },
     ExpectedOutput {
+        generator: "automated_media_exchange_cassette",
+        path: "output/automated_media_exchange_cassette_base.stl",
+        min_triangles: 80,
+        min_size_mm: [550.0, 470.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "automated_media_exchange_cassette",
+        path: "output/automated_media_exchange_cassette_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [610.0, 470.0, 30.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -331,5 +343,8 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "pipette_tip_organizer"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "automated_media_exchange_cassette"));
     }
 }
