@@ -144,6 +144,36 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [1200.0, 850.0, 150.0],
     },
     ExpectedOutput {
+        generator: "automated_ecm_coating_qc_station",
+        path: "output/automated_ecm_coating_qc_station_baseplate.stl",
+        min_triangles: 300,
+        min_size_mm: [1160.0, 740.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "automated_ecm_coating_qc_station",
+        path: "output/automated_ecm_coating_qc_station_cassette_datum_nest.stl",
+        min_triangles: 300,
+        min_size_mm: [650.0, 600.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "automated_ecm_coating_qc_station",
+        path: "output/automated_ecm_coating_qc_station_dispense_recirculation_lanes.stl",
+        min_triangles: 500,
+        min_size_mm: [350.0, 300.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "automated_ecm_coating_qc_station",
+        path: "output/automated_ecm_coating_qc_station_timed_wetness_witness_pockets.stl",
+        min_triangles: 800,
+        min_size_mm: [600.0, 520.0, 8.0],
+    },
+    ExpectedOutput {
+        generator: "automated_ecm_coating_qc_station",
+        path: "output/automated_ecm_coating_qc_station_assembly.stl",
+        min_triangles: 2200,
+        min_size_mm: [1160.0, 740.0, 140.0],
+    },
+    ExpectedOutput {
         generator: "cell_suspension_prep_qc_module",
         path: "output/cell_suspension_prep_qc_module_baseplate.stl",
         min_triangles: 300,
@@ -202,6 +232,36 @@ const OUTPUTS: &[ExpectedOutput] = &[
         path: "output/media_sampling_analyzer_interface_assembly.stl",
         min_triangles: 2200,
         min_size_mm: [750.0, 440.0, 300.0],
+    },
+    ExpectedOutput {
+        generator: "run_record_material_scan_station",
+        path: "output/run_record_material_scan_station_cleanable_deck.stl",
+        min_triangles: 300,
+        min_size_mm: [1020.0, 700.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "run_record_material_scan_station",
+        path: "output/run_record_material_scan_station_barcode_rfid_scanner_bridge.stl",
+        min_triangles: 300,
+        min_size_mm: [600.0, 70.0, 120.0],
+    },
+    ExpectedOutput {
+        generator: "run_record_material_scan_station",
+        path: "output/run_record_material_scan_station_lot_staging_pockets.stl",
+        min_triangles: 1000,
+        min_size_mm: [500.0, 450.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "run_record_material_scan_station",
+        path: "output/run_record_material_scan_station_weigh_scale_load_cell_placeholder.stl",
+        min_triangles: 300,
+        min_size_mm: [170.0, 140.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "run_record_material_scan_station",
+        path: "output/run_record_material_scan_station_assembly.stl",
+        min_triangles: 2200,
+        min_size_mm: [1020.0, 700.0, 170.0],
     },
     ExpectedOutput {
         generator: "connector_topology_scan_station",
@@ -340,6 +400,325 @@ const OUTPUTS: &[ExpectedOutput] = &[
         path: "output/environmental_mapping_cassette_surrogate_assembly.stl",
         min_triangles: 2500,
         min_size_mm: [580.0, 500.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_sensor_calibration_station",
+        path: "output/environmental_sensor_calibration_station_base_tray.stl",
+        min_triangles: 300,
+        min_size_mm: [800.0, 540.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_sensor_calibration_station",
+        path: "output/environmental_sensor_calibration_station_gas_reference_manifold.stl",
+        min_triangles: 300,
+        min_size_mm: [300.0, 80.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_sensor_calibration_station",
+        path: "output/environmental_sensor_calibration_station_humidity_standard_block.stl",
+        min_triangles: 300,
+        min_size_mm: [240.0, 100.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_sensor_calibration_station",
+        path: "output/environmental_sensor_calibration_station_leak_capture_tray.stl",
+        min_triangles: 100,
+        min_size_mm: [700.0, 45.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "environmental_sensor_calibration_station",
+        path: "output/environmental_sensor_calibration_station_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [800.0, 540.0, 100.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_storage_recovery_incubator_rack",
+        path: "output/cassette_storage_recovery_incubator_rack_leak_tray_base.stl",
+        min_triangles: 300,
+        min_size_mm: [700.0, 720.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_storage_recovery_incubator_rack",
+        path: "output/cassette_storage_recovery_incubator_rack_multi_cassette_slot_rails.stl",
+        min_triangles: 500,
+        min_size_mm: [600.0, 500.0, 350.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_storage_recovery_incubator_rack",
+        path: "output/cassette_storage_recovery_incubator_rack_airflow_thermal_spacing.stl",
+        min_triangles: 300,
+        min_size_mm: [640.0, 550.0, 300.0],
+    },
+    ExpectedOutput {
+        generator: "cassette_storage_recovery_incubator_rack",
+        path: "output/cassette_storage_recovery_incubator_rack_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [720.0, 740.0, 540.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_harvest_passaging_module",
+        path: "output/closed_cell_harvest_passaging_module_base_deck.stl",
+        min_triangles: 200,
+        min_size_mm: [1300.0, 800.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_harvest_passaging_module",
+        path: "output/closed_cell_harvest_passaging_module_vessel_docking_bay.stl",
+        min_triangles: 300,
+        min_size_mm: [400.0, 300.0, 100.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_harvest_passaging_module",
+        path: "output/closed_cell_harvest_passaging_module_pump_valve_bank.stl",
+        min_triangles: 300,
+        min_size_mm: [600.0, 150.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_harvest_passaging_module",
+        path: "output/closed_cell_harvest_passaging_module_assembly.stl",
+        min_triangles: 1500,
+        min_size_mm: [1300.0, 800.0, 180.0],
+    },
+    ExpectedOutput {
+        generator: "perfusion_bubble_management_module",
+        path: "output/perfusion_bubble_management_module_base_leak_tray.stl",
+        min_triangles: 100,
+        min_size_mm: [620.0, 320.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "perfusion_bubble_management_module",
+        path: "output/perfusion_bubble_management_module_upstream_debubbler.stl",
+        min_triangles: 300,
+        min_size_mm: [500.0, 80.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "perfusion_bubble_management_module",
+        path: "output/perfusion_bubble_management_module_optical_sensor_blocks.stl",
+        min_triangles: 300,
+        min_size_mm: [350.0, 80.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "perfusion_bubble_management_module",
+        path: "output/perfusion_bubble_management_module_assembly.stl",
+        min_triangles: 1200,
+        min_size_mm: [620.0, 300.0, 110.0],
+    },
+    ExpectedOutput {
+        generator: "automated_cell_seeding_distribution_manifold",
+        path: "output/automated_cell_seeding_distribution_manifold_datum_plate.stl",
+        min_triangles: 300,
+        min_size_mm: [820.0, 720.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "automated_cell_seeding_distribution_manifold",
+        path: "output/automated_cell_seeding_distribution_manifold_equalized_20_way_channels.stl",
+        min_triangles: 500,
+        min_size_mm: [500.0, 360.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "automated_cell_seeding_distribution_manifold",
+        path:
+            "output/automated_cell_seeding_distribution_manifold_pressure_shear_sensor_pockets.stl",
+        min_triangles: 500,
+        min_size_mm: [420.0, 400.0, 12.0],
+    },
+    ExpectedOutput {
+        generator: "automated_cell_seeding_distribution_manifold",
+        path: "output/automated_cell_seeding_distribution_manifold_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [820.0, 720.0, 140.0],
+    },
+    ExpectedOutput {
+        generator: "inline_media_conditioning_qc_module",
+        path: "output/inline_media_conditioning_qc_module_baseplate.stl",
+        min_triangles: 200,
+        min_size_mm: [840.0, 500.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "inline_media_conditioning_qc_module",
+        path: "output/inline_media_conditioning_qc_module_water_jacket_block.stl",
+        min_triangles: 300,
+        min_size_mm: [300.0, 100.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "inline_media_conditioning_qc_module",
+        path: "output/inline_media_conditioning_qc_module_sensor_qc_manifold.stl",
+        min_triangles: 300,
+        min_size_mm: [260.0, 80.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "inline_media_conditioning_qc_module",
+        path: "output/inline_media_conditioning_qc_module_assembly.stl",
+        min_triangles: 1600,
+        min_size_mm: [840.0, 500.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "gas_humidity_service_panel",
+        path: "output/gas_humidity_service_panel_baseplate.stl",
+        min_triangles: 100,
+        min_size_mm: [740.0, 340.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "gas_humidity_service_panel",
+        path: "output/gas_humidity_service_panel_bulkhead_panel.stl",
+        min_triangles: 100,
+        min_size_mm: [680.0, 20.0, 440.0],
+    },
+    ExpectedOutput {
+        generator: "gas_humidity_service_panel",
+        path: "output/gas_humidity_service_panel_gas_control_bank.stl",
+        min_triangles: 500,
+        min_size_mm: [400.0, 70.0, 150.0],
+    },
+    ExpectedOutput {
+        generator: "gas_humidity_service_panel",
+        path: "output/gas_humidity_service_panel_assembly.stl",
+        min_triangles: 1400,
+        min_size_mm: [740.0, 340.0, 440.0],
+    },
+    ExpectedOutput {
+        generator: "robot_tool_change_and_end_effector_rack",
+        path: "output/robot_tool_change_and_end_effector_rack_drip_tray.stl",
+        min_triangles: 100,
+        min_size_mm: [880.0, 440.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "robot_tool_change_and_end_effector_rack",
+        path: "output/robot_tool_change_and_end_effector_rack_clean_pocket_bank.stl",
+        min_triangles: 300,
+        min_size_mm: [700.0, 150.0, 60.0],
+    },
+    ExpectedOutput {
+        generator: "robot_tool_change_and_end_effector_rack",
+        path: "output/robot_tool_change_and_end_effector_rack_collision_service_keepouts.stl",
+        min_triangles: 100,
+        min_size_mm: [850.0, 420.0, 260.0],
+    },
+    ExpectedOutput {
+        generator: "robot_tool_change_and_end_effector_rack",
+        path: "output/robot_tool_change_and_end_effector_rack_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [880.0, 440.0, 300.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_fluid_path_integrity_tester",
+        path: "output/sterile_fluid_path_integrity_tester_baseplate.stl",
+        min_triangles: 200,
+        min_size_mm: [960.0, 740.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_fluid_path_integrity_tester",
+        path: "output/sterile_fluid_path_integrity_tester_cassette_datum_nest.stl",
+        min_triangles: 300,
+        min_size_mm: [600.0, 520.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_fluid_path_integrity_tester",
+        path: "output/sterile_fluid_path_integrity_tester_pressure_decay_sensor_matrix.stl",
+        min_triangles: 500,
+        min_size_mm: [600.0, 150.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "sterile_fluid_path_integrity_tester",
+        path: "output/sterile_fluid_path_integrity_tester_assembly.stl",
+        min_triangles: 1800,
+        min_size_mm: [960.0, 740.0, 100.0],
+    },
+    ExpectedOutput {
+        generator: "aseptic_tubing_weld_seal_station",
+        path: "output/aseptic_tubing_weld_seal_station_deck.stl",
+        min_triangles: 200,
+        min_size_mm: [1260.0, 800.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "aseptic_tubing_weld_seal_station",
+        path: "output/aseptic_tubing_weld_seal_station_equipment_envelopes.stl",
+        min_triangles: 200,
+        min_size_mm: [600.0, 250.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "aseptic_tubing_weld_seal_station",
+        path: "output/aseptic_tubing_weld_seal_station_cut_weld_seal_lanes.stl",
+        min_triangles: 300,
+        min_size_mm: [850.0, 200.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "aseptic_tubing_weld_seal_station",
+        path: "output/aseptic_tubing_weld_seal_station_assembly.stl",
+        min_triangles: 1600,
+        min_size_mm: [1260.0, 800.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_thaw_equilibration_station",
+        path: "output/closed_reagent_thaw_equilibration_station_base_leak_tray.stl",
+        min_triangles: 300,
+        min_size_mm: [1200.0, 740.0, 25.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_thaw_equilibration_station",
+        path: "output/closed_reagent_thaw_equilibration_station_controlled_thaw_block.stl",
+        min_triangles: 500,
+        min_size_mm: [500.0, 300.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_thaw_equilibration_station",
+        path: "output/closed_reagent_thaw_equilibration_station_sterile_connector_bulkhead.stl",
+        min_triangles: 700,
+        min_size_mm: [720.0, 30.0, 200.0],
+    },
+    ExpectedOutput {
+        generator: "closed_reagent_thaw_equilibration_station",
+        path: "output/closed_reagent_thaw_equilibration_station_assembly.stl",
+        min_triangles: 2000,
+        min_size_mm: [1200.0, 740.0, 250.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_fraction_archive_module",
+        path: "output/closed_sample_fraction_archive_module_leak_tray_base.stl",
+        min_triangles: 300,
+        min_size_mm: [700.0, 480.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_fraction_archive_module",
+        path: "output/closed_sample_fraction_archive_module_fraction_tube_nest.stl",
+        min_triangles: 1000,
+        min_size_mm: [180.0, 130.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_fraction_archive_module",
+        path: "output/closed_sample_fraction_archive_module_sterile_sample_loop_handoff.stl",
+        min_triangles: 700,
+        min_size_mm: [400.0, 90.0, 55.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sample_fraction_archive_module",
+        path: "output/closed_sample_fraction_archive_module_assembly.stl",
+        min_triangles: 2200,
+        min_size_mm: [700.0, 480.0, 200.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleaning_sanitization_validation_cart",
+        path: "output/closed_cleaning_sanitization_validation_cart_frame.stl",
+        min_triangles: 400,
+        min_size_mm: [950.0, 450.0, 750.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleaning_sanitization_validation_cart",
+        path: "output/closed_cleaning_sanitization_validation_cart_leak_tray.stl",
+        min_triangles: 100,
+        min_size_mm: [900.0, 450.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleaning_sanitization_validation_cart",
+        path: "output/closed_cleaning_sanitization_validation_cart_flush_ports.stl",
+        min_triangles: 700,
+        min_size_mm: [600.0, 30.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleaning_sanitization_validation_cart",
+        path: "output/closed_cleaning_sanitization_validation_cart_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [1100.0, 600.0, 1100.0],
     },
     ExpectedOutput {
         generator: "sterile_tubing_harness",
@@ -993,10 +1372,16 @@ mod tests {
             .any(|output| output.generator == "automated_seeding_coating_station"));
         assert!(OUTPUTS
             .iter()
+            .any(|output| output.generator == "automated_ecm_coating_qc_station"));
+        assert!(OUTPUTS
+            .iter()
             .any(|output| output.generator == "cell_suspension_prep_qc_module"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "media_sampling_analyzer_interface"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "run_record_material_scan_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "connector_topology_scan_station"));
@@ -1012,6 +1397,45 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "environmental_mapping_cassette_surrogate"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "environmental_sensor_calibration_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "cassette_storage_recovery_incubator_rack"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_cell_harvest_passaging_module"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "perfusion_bubble_management_module"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "automated_cell_seeding_distribution_manifold"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "inline_media_conditioning_qc_module"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "gas_humidity_service_panel"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "robot_tool_change_and_end_effector_rack"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "sterile_fluid_path_integrity_tester"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "aseptic_tubing_weld_seal_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_reagent_thaw_equilibration_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_sample_fraction_archive_module"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_cleaning_sanitization_validation_cart"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

@@ -131,6 +131,10 @@ name = "automated_seeding_coating_station"
 path = "src/bin/automated_seeding_coating_station.rs"
 
 [[bin]]
+name = "automated_ecm_coating_qc_station"
+path = "src/bin/automated_ecm_coating_qc_station.rs"
+
+[[bin]]
 name = "cell_suspension_prep_qc_module"
 path = "src/bin/cell_suspension_prep_qc_module.rs"
 
@@ -139,12 +143,24 @@ name = "media_sampling_analyzer_interface"
 path = "src/bin/media_sampling_analyzer_interface.rs"
 
 [[bin]]
+name = "closed_sample_fraction_archive_module"
+path = "src/bin/closed_sample_fraction_archive_module.rs"
+
+[[bin]]
+name = "closed_reagent_thaw_equilibration_station"
+path = "src/bin/closed_reagent_thaw_equilibration_station.rs"
+
+[[bin]]
 name = "connector_topology_scan_station"
 path = "src/bin/connector_topology_scan_station.rs"
 
 [[bin]]
 name = "incubator_cassette_shuttle_airlock"
 path = "src/bin/incubator_cassette_shuttle_airlock.rs"
+
+[[bin]]
+name = "cassette_storage_recovery_incubator_rack"
+path = "src/bin/cassette_storage_recovery_incubator_rack.rs"
 
 [[bin]]
 name = "robotic_cassette_gripper_end_effector"
@@ -157,6 +173,46 @@ path = "src/bin/chip_cassette_position_randomization_tray.rs"
 [[bin]]
 name = "environmental_mapping_cassette_surrogate"
 path = "src/bin/environmental_mapping_cassette_surrogate.rs"
+
+[[bin]]
+name = "environmental_sensor_calibration_station"
+path = "src/bin/environmental_sensor_calibration_station.rs"
+
+[[bin]]
+name = "run_record_material_scan_station"
+path = "src/bin/run_record_material_scan_station.rs"
+
+[[bin]]
+name = "closed_cell_harvest_passaging_module"
+path = "src/bin/closed_cell_harvest_passaging_module.rs"
+
+[[bin]]
+name = "perfusion_bubble_management_module"
+path = "src/bin/perfusion_bubble_management_module.rs"
+
+[[bin]]
+name = "automated_cell_seeding_distribution_manifold"
+path = "src/bin/automated_cell_seeding_distribution_manifold.rs"
+
+[[bin]]
+name = "inline_media_conditioning_qc_module"
+path = "src/bin/inline_media_conditioning_qc_module.rs"
+
+[[bin]]
+name = "gas_humidity_service_panel"
+path = "src/bin/gas_humidity_service_panel.rs"
+
+[[bin]]
+name = "robot_tool_change_and_end_effector_rack"
+path = "src/bin/robot_tool_change_and_end_effector_rack.rs"
+
+[[bin]]
+name = "sterile_fluid_path_integrity_tester"
+path = "src/bin/sterile_fluid_path_integrity_tester.rs"
+
+[[bin]]
+name = "aseptic_tubing_weld_seal_station"
+path = "src/bin/aseptic_tubing_weld_seal_station.rs"
 
 [[bin]]
 name = "sterile_tubing_harness"
@@ -225,6 +281,10 @@ path = "src/bin/sterile_consumable_cartridge_hotel.rs"
 [[bin]]
 name = "waste_decon_service_pod"
 path = "src/bin/waste_decon_service_pod.rs"
+
+[[bin]]
+name = "closed_cleaning_sanitization_validation_cart"
+path = "src/bin/closed_cleaning_sanitization_validation_cart.rs"
 
 [[bin]]
 name = "aseptic_transfer_hatch"
