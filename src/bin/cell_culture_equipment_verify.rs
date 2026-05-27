@@ -5737,6 +5737,96 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_incubator_gas_sampling_line_condensate_trap_validation_station",
+        path: "output/closed_incubator_gas_sampling_line_condensate_trap_validation_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_gas_sampling_line_condensate_trap_validation_station",
+        path: "output/closed_incubator_gas_sampling_line_condensate_trap_validation_station_condensate_trap_cartridge_envelope.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_gas_sampling_line_condensate_trap_validation_station",
+        path: "output/closed_incubator_gas_sampling_line_condensate_trap_validation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_source_bag_agitation_shear_threshold_station",
+        path: "output/closed_cell_source_bag_agitation_shear_threshold_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_source_bag_agitation_shear_threshold_station",
+        path: "output/closed_cell_source_bag_agitation_shear_threshold_station_low_shear_rocking_envelope.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_source_bag_agitation_shear_threshold_station",
+        path: "output/closed_cell_source_bag_agitation_shear_threshold_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_serpentine_channel_uniformity_dye_front_station",
+        path: "output/closed_cassette_serpentine_channel_uniformity_dye_front_station_closed_leak_tray_base.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_serpentine_channel_uniformity_dye_front_station",
+        path: "output/closed_cassette_serpentine_channel_uniformity_dye_front_station_parallel_serpentine_channel_plate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_serpentine_channel_uniformity_dye_front_station",
+        path: "output/closed_cassette_serpentine_channel_uniformity_dye_front_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_additive_precipitation_filter_blockage_station",
+        path: "output/closed_media_additive_precipitation_filter_blockage_station_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_additive_precipitation_filter_blockage_station",
+        path: "output/closed_media_additive_precipitation_filter_blockage_station_inline_filter_witness.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_additive_precipitation_filter_blockage_station",
+        path: "output/closed_media_additive_precipitation_filter_blockage_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_slot_reassignment_after_excursion_balance_station",
+        path: "output/closed_incubator_slot_reassignment_after_excursion_balance_station_base_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_slot_reassignment_after_excursion_balance_station",
+        path: "output/closed_incubator_slot_reassignment_after_excursion_balance_station_balanced_reassignment_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_slot_reassignment_after_excursion_balance_station",
+        path: "output/closed_incubator_slot_reassignment_after_excursion_balance_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -6760,6 +6850,18 @@ mod tests {
             == "closed_media_conditioning_recirculation_dead_zone_tracer_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_waste_retain_sample_temperature_chain_custody_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_gas_sampling_line_condensate_trap_validation_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cell_source_bag_agitation_shear_threshold_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_serpentine_channel_uniformity_dye_front_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_additive_precipitation_filter_blockage_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_slot_reassignment_after_excursion_balance_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

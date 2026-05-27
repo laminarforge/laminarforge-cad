@@ -1465,3 +1465,23 @@ path = "src/bin/closed_media_conditioning_recirculation_dead_zone_tracer_station
 [[bin]]
 name = "closed_waste_retain_sample_temperature_chain_custody_station"
 path = "src/bin/closed_waste_retain_sample_temperature_chain_custody_station.rs"
+
+[[bin]]
+name = "closed_incubator_gas_sampling_line_condensate_trap_validation_station"
+path = "src/bin/closed_incubator_gas_sampling_line_condensate_trap_validation_station.rs"
+
+[[bin]]
+name = "closed_cell_source_bag_agitation_shear_threshold_station"
+path = "src/bin/closed_cell_source_bag_agitation_shear_threshold_station.rs"
+
+[[bin]]
+name = "closed_cassette_serpentine_channel_uniformity_dye_front_station"
+path = "src/bin/closed_cassette_serpentine_channel_uniformity_dye_front_station.rs"
+
+[[bin]]
+name = "closed_media_additive_precipitation_filter_blockage_station"
+path = "src/bin/closed_media_additive_precipitation_filter_blockage_station.rs"
+
+[[bin]]
+name = "closed_incubator_slot_reassignment_after_excursion_balance_station"
+path = "src/bin/closed_incubator_slot_reassignment_after_excursion_balance_station.rs"
