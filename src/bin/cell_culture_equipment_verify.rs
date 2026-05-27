@@ -4405,6 +4405,204 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_sensor_clock_drift_resync_challenge_station",
+        path: "output/closed_sensor_clock_drift_resync_challenge_station_base_challenge_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_clock_drift_resync_challenge_station",
+        path: "output/closed_sensor_clock_drift_resync_challenge_station_reference_clock_dock_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_clock_drift_resync_challenge_station",
+        path: "output/closed_sensor_clock_drift_resync_challenge_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_position_edge_center_environment_mapping_station",
+        path: "output/closed_chip_position_edge_center_environment_mapping_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_position_edge_center_environment_mapping_station",
+        path: "output/closed_chip_position_edge_center_environment_mapping_station_sixteen_chip_map_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chip_position_edge_center_environment_mapping_station",
+        path: "output/closed_chip_position_edge_center_environment_mapping_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_feed_harvest_line_reversal_prevention_station",
+        path: "output/closed_feed_harvest_line_reversal_prevention_station_base_leak_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_feed_harvest_line_reversal_prevention_station",
+        path: "output/closed_feed_harvest_line_reversal_prevention_station_feed_source_keyed_port_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_feed_harvest_line_reversal_prevention_station",
+        path: "output/closed_feed_harvest_line_reversal_prevention_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_alarm_response_false_positive_fault_injection_station",
+        path: "output/closed_alarm_response_false_positive_fault_injection_station_base_validation_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_alarm_response_false_positive_fault_injection_station",
+        path: "output/closed_alarm_response_false_positive_fault_injection_station_fault_injector_signal_cassette.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_alarm_response_false_positive_fault_injection_station",
+        path: "output/closed_alarm_response_false_positive_fault_injection_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_positive_pressure_gowning_exit_reentry_station",
+        path: "output/closed_positive_pressure_gowning_exit_reentry_station_base_cascade_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_positive_pressure_gowning_exit_reentry_station",
+        path: "output/closed_positive_pressure_gowning_exit_reentry_station_pressure_cascade_vestibule.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_positive_pressure_gowning_exit_reentry_station",
+        path: "output/closed_positive_pressure_gowning_exit_reentry_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_network_packet_loss_buffering_challenge_station",
+        path: "output/closed_sensor_network_packet_loss_buffering_challenge_station_base_network_challenge_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_network_packet_loss_buffering_challenge_station",
+        path: "output/closed_sensor_network_packet_loss_buffering_challenge_station_deterministic_packet_loss_injector_panel.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_network_packet_loss_buffering_challenge_station",
+        path: "output/closed_sensor_network_packet_loss_buffering_challenge_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_slot_to_slot_media_evaporation_balance_station",
+        path: "output/closed_incubator_slot_to_slot_media_evaporation_balance_station_base_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_slot_to_slot_media_evaporation_balance_station",
+        path: "output/closed_incubator_slot_to_slot_media_evaporation_balance_station_sixteen_slot_balance_rack.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_slot_to_slot_media_evaporation_balance_station",
+        path: "output/closed_incubator_slot_to_slot_media_evaporation_balance_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_clean_zone_personnel_material_flow_interlock_station",
+        path: "output/closed_clean_zone_personnel_material_flow_interlock_station_base_flow_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_clean_zone_personnel_material_flow_interlock_station",
+        path: "output/closed_clean_zone_personnel_material_flow_interlock_station_pressure_cascade_personnel_vestibule.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_clean_zone_personnel_material_flow_interlock_station",
+        path: "output/closed_clean_zone_personnel_material_flow_interlock_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_waste_backpressure_alarm_trip_station",
+        path: "output/closed_perfusion_waste_backpressure_alarm_trip_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_waste_backpressure_alarm_trip_station",
+        path: "output/closed_perfusion_waste_backpressure_alarm_trip_station_backpressure_challenge_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_waste_backpressure_alarm_trip_station",
+        path: "output/closed_perfusion_waste_backpressure_alarm_trip_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_alarm_escalation_run_hold_release_decision_station",
+        path: "output/closed_alarm_escalation_run_hold_release_decision_station_base_decision_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_alarm_escalation_run_hold_release_decision_station",
+        path: "output/closed_alarm_escalation_run_hold_release_decision_station_alarm_severity_input_matrix.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_alarm_escalation_run_hold_release_decision_station",
+        path: "output/closed_alarm_escalation_run_hold_release_decision_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_stream_replay_audit_trail_station",
+        path: "output/closed_sensor_stream_replay_audit_trail_station_base_replay_audit_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_stream_replay_audit_trail_station",
+        path: "output/closed_sensor_stream_replay_audit_trail_station_raw_stream_cartridge_vault.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_stream_replay_audit_trail_station",
+        path: "output/closed_sensor_stream_replay_audit_trail_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -5246,6 +5444,38 @@ mod tests {
             == "closed_perfusion_alarm_response_quarantine_diverter_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_media_feed_harvest_bag_lot_mixup_prevention_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_sensor_clock_drift_resync_challenge_station")
+        );
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_chip_position_edge_center_environment_mapping_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_feed_harvest_line_reversal_prevention_station"
+        ));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_alarm_response_false_positive_fault_injection_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_positive_pressure_gowning_exit_reentry_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_sensor_network_packet_loss_buffering_challenge_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_slot_to_slot_media_evaporation_balance_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_clean_zone_personnel_material_flow_interlock_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_perfusion_waste_backpressure_alarm_trip_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_alarm_escalation_run_hold_release_decision_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_sensor_stream_replay_audit_trail_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
