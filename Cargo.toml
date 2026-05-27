@@ -665,3 +665,27 @@ path = "src/bin/closed_optical_focus_drift_calibration_station.rs"
 [[bin]]
 name = "closed_reference_viscosity_media_rheology_station"
 path = "src/bin/closed_reference_viscosity_media_rheology_station.rs"
+
+[[bin]]
+name = "closed_environmental_particle_counter_probe_calibration_station"
+path = "src/bin/closed_environmental_particle_counter_probe_calibration_station.rs"
+
+[[bin]]
+name = "closed_humidity_dewpoint_reference_calibration_station"
+path = "src/bin/closed_humidity_dewpoint_reference_calibration_station.rs"
+
+[[bin]]
+name = "closed_module_latch_force_alignment_verification_station"
+path = "src/bin/closed_module_latch_force_alignment_verification_station.rs"
+
+[[bin]]
+name = "closed_waste_line_backflow_siphon_validation_station"
+path = "src/bin/closed_waste_line_backflow_siphon_validation_station.rs"
+
+[[bin]]
+name = "closed_gas_filter_integrity_leak_test_station"
+path = "src/bin/closed_gas_filter_integrity_leak_test_station.rs"
+
+[[bin]]
+name = "closed_cassette_gasket_compression_set_aging_station"
+path = "src/bin/closed_cassette_gasket_compression_set_aging_station.rs"

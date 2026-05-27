@@ -2137,6 +2137,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [300.0, 200.0, 50.0],
     },
     ExpectedOutput {
+        generator: "closed_environmental_particle_counter_probe_calibration_station",
+        path: "output/closed_environmental_particle_counter_probe_calibration_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [900.0, 500.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_particle_counter_probe_calibration_station",
+        path: "output/closed_environmental_particle_counter_probe_calibration_station_clean_probe_parking_cradle.stl",
+        min_triangles: 80,
+        min_size_mm: [200.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_environmental_particle_counter_probe_calibration_station",
+        path: "output/closed_environmental_particle_counter_probe_calibration_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [900.0, 500.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_dewpoint_reference_calibration_station",
+        path: "output/closed_humidity_dewpoint_reference_calibration_station_base_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [650.0, 400.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_dewpoint_reference_calibration_station",
+        path: "output/closed_humidity_dewpoint_reference_calibration_station_probe_nest_plate.stl",
+        min_triangles: 80,
+        min_size_mm: [250.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_humidity_dewpoint_reference_calibration_station",
+        path: "output/closed_humidity_dewpoint_reference_calibration_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [650.0, 400.0, 60.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_latch_force_alignment_verification_station",
+        path: "output/closed_module_latch_force_alignment_verification_station_base_deck.stl",
+        min_triangles: 80,
+        min_size_mm: [800.0, 600.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_latch_force_alignment_verification_station",
+        path: "output/closed_module_latch_force_alignment_verification_station_datum_nest.stl",
+        min_triangles: 80,
+        min_size_mm: [450.0, 300.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_latch_force_alignment_verification_station",
+        path: "output/closed_module_latch_force_alignment_verification_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [800.0, 600.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backflow_siphon_validation_station",
+        path: "output/closed_waste_line_backflow_siphon_validation_station_leak_tray_base.stl",
+        min_triangles: 80,
+        min_size_mm: [900.0, 500.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backflow_siphon_validation_station",
+        path: "output/closed_waste_line_backflow_siphon_validation_station_waste_bag_tube_nest.stl",
+        min_triangles: 80,
+        min_size_mm: [250.0, 180.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backflow_siphon_validation_station",
+        path: "output/closed_waste_line_backflow_siphon_validation_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [900.0, 500.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gas_filter_integrity_leak_test_station",
+        path: "output/closed_gas_filter_integrity_leak_test_station_base_containment_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [800.0, 450.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gas_filter_integrity_leak_test_station",
+        path: "output/closed_gas_filter_integrity_leak_test_station_filter_cartridge_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [100.0, 40.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_gas_filter_integrity_leak_test_station",
+        path: "output/closed_gas_filter_integrity_leak_test_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [800.0, 450.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_gasket_compression_set_aging_station",
+        path: "output/closed_cassette_gasket_compression_set_aging_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [900.0, 600.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_gasket_compression_set_aging_station",
+        path: "output/closed_cassette_gasket_compression_set_aging_station_gasket_sample_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_gasket_compression_set_aging_station",
+        path: "output/closed_cassette_gasket_compression_set_aging_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [900.0, 600.0, 80.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -2594,6 +2702,25 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_reference_viscosity_media_rheology_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_environmental_particle_counter_probe_calibration_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_humidity_dewpoint_reference_calibration_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_module_latch_force_alignment_verification_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_waste_line_backflow_siphon_validation_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_gas_filter_integrity_leak_test_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_cassette_gasket_compression_set_aging_station"
+        ));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
