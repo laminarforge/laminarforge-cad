@@ -1,6 +1,6 @@
 # Cell Culture Equipment Design Matrix
 
-This matrix expands the starter plan from a single CO2 incubator into the full minimum equipment set needed for responsible mammalian cell-culture workflow development. The design boundary is not a stop sign: it is broken down in `docs/cell_culture_equipment_boundary_breakdown.md` into CAD prototype, engineering prototype, biological pilot, internal production tool, and certified/compliant equipment gates. The monitoring architecture is documented in `docs/cell_culture_multimodal_monitoring_design.md`: visual inspection is useful, but culture automation should primarily combine fluidic, electrical, chemical, metabolic, and environmental signals.
+This matrix expands the starter plan from a single CO2 incubator into the full minimum equipment set needed for responsible mammalian cell-culture workflow development. The design boundary is not a stop sign: it is broken down in `docs/cell_culture_equipment_boundary_breakdown.md` into CAD prototype, engineering prototype, biological pilot, internal production tool, and certified/compliant equipment gates. The monitoring architecture is documented in `docs/cell_culture_multimodal_monitoring_design.md`: visual inspection is useful, but culture automation should primarily combine fluidic, electrical, chemical, metabolic, and environmental signals. The reproducibility controls are mapped in `docs/tissue_chip_reproducibility_controls.md`.
 
 ## Equipment Coverage
 
