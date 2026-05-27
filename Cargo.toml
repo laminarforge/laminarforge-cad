@@ -1301,3 +1301,27 @@ path = "src/bin/closed_cell_lot_hold_time_viability_decay_tracer_station.rs"
 [[bin]]
 name = "closed_perfusion_media_viscosity_shift_pressure_alarm_station"
 path = "src/bin/closed_perfusion_media_viscosity_shift_pressure_alarm_station.rs"
+
+[[bin]]
+name = "closed_robotic_seeding_nozzle_clog_uniformity_validation_station"
+path = "src/bin/closed_robotic_seeding_nozzle_clog_uniformity_validation_station.rs"
+
+[[bin]]
+name = "closed_microfluidic_lane_occlusion_recovery_pressure_signature_station"
+path = "src/bin/closed_microfluidic_lane_occlusion_recovery_pressure_signature_station.rs"
+
+[[bin]]
+name = "closed_ecm_coating_incubation_dwell_gelation_window_station"
+path = "src/bin/closed_ecm_coating_incubation_dwell_gelation_window_station.rs"
+
+[[bin]]
+name = "closed_single_use_fluid_path_lot_release_pressure_flow_station"
+path = "src/bin/closed_single_use_fluid_path_lot_release_pressure_flow_station.rs"
+
+[[bin]]
+name = "closed_cassette_cell_attachment_settle_uniformity_witness_station"
+path = "src/bin/closed_cassette_cell_attachment_settle_uniformity_witness_station.rs"
+
+[[bin]]
+name = "closed_media_exchange_shear_pulse_carryover_validation_station"
+path = "src/bin/closed_media_exchange_shear_pulse_carryover_validation_station.rs"

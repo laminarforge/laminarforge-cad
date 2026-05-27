@@ -4999,6 +4999,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_robotic_seeding_nozzle_clog_uniformity_validation_station",
+        path: "output/closed_robotic_seeding_nozzle_clog_uniformity_validation_station_isolator_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_seeding_nozzle_clog_uniformity_validation_station",
+        path: "output/closed_robotic_seeding_nozzle_clog_uniformity_validation_station_sixteen_position_witness_target_array.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_seeding_nozzle_clog_uniformity_validation_station",
+        path: "output/closed_robotic_seeding_nozzle_clog_uniformity_validation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_lane_occlusion_recovery_pressure_signature_station",
+        path: "output/closed_microfluidic_lane_occlusion_recovery_pressure_signature_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_lane_occlusion_recovery_pressure_signature_station",
+        path: "output/closed_microfluidic_lane_occlusion_recovery_pressure_signature_station_upstream_downstream_pressure_port_panel.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_lane_occlusion_recovery_pressure_signature_station",
+        path: "output/closed_microfluidic_lane_occlusion_recovery_pressure_signature_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_incubation_dwell_gelation_window_station",
+        path: "output/closed_ecm_coating_incubation_dwell_gelation_window_station_base_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_incubation_dwell_gelation_window_station",
+        path: "output/closed_ecm_coating_incubation_dwell_gelation_window_station_sixteen_position_witness_coupon_array.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_incubation_dwell_gelation_window_station",
+        path: "output/closed_ecm_coating_incubation_dwell_gelation_window_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_single_use_fluid_path_lot_release_pressure_flow_station",
+        path: "output/closed_single_use_fluid_path_lot_release_pressure_flow_station_leak_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_single_use_fluid_path_lot_release_pressure_flow_station",
+        path: "output/closed_single_use_fluid_path_lot_release_pressure_flow_station_pressure_step_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_single_use_fluid_path_lot_release_pressure_flow_station",
+        path: "output/closed_single_use_fluid_path_lot_release_pressure_flow_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_cell_attachment_settle_uniformity_witness_station",
+        path: "output/closed_cassette_cell_attachment_settle_uniformity_witness_station_isolator_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_cell_attachment_settle_uniformity_witness_station",
+        path: "output/closed_cassette_cell_attachment_settle_uniformity_witness_station_sixteen_slot_cassette_witness_nest.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_cell_attachment_settle_uniformity_witness_station",
+        path: "output/closed_cassette_cell_attachment_settle_uniformity_witness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_exchange_shear_pulse_carryover_validation_station",
+        path: "output/closed_media_exchange_shear_pulse_carryover_validation_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_exchange_shear_pulse_carryover_validation_station",
+        path: "output/closed_media_exchange_shear_pulse_carryover_validation_station_sixteen_slot_cassette_surrogate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_exchange_shear_pulse_carryover_validation_station",
+        path: "output/closed_media_exchange_shear_pulse_carryover_validation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -5921,6 +6029,18 @@ mod tests {
                 == "closed_cell_lot_hold_time_viability_decay_tracer_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_perfusion_media_viscosity_shift_pressure_alarm_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_robotic_seeding_nozzle_clog_uniformity_validation_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_microfluidic_lane_occlusion_recovery_pressure_signature_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_ecm_coating_incubation_dwell_gelation_window_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_single_use_fluid_path_lot_release_pressure_flow_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_cell_attachment_settle_uniformity_witness_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_exchange_shear_pulse_carryover_validation_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
