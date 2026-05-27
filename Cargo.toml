@@ -721,3 +721,43 @@ path = "src/bin/closed_supply_cylinder_lot_changeover_custody_station.rs"
 [[bin]]
 name = "closed_incubator_rack_vibration_tilt_mapping_station"
 path = "src/bin/closed_incubator_rack_vibration_tilt_mapping_station.rs"
+
+[[bin]]
+name = "closed_media_bag_load_cell_drift_reference_station"
+path = "src/bin/closed_media_bag_load_cell_drift_reference_station.rs"
+
+[[bin]]
+name = "closed_robot_tool_tip_runout_repeatability_station"
+path = "src/bin/closed_robot_tool_tip_runout_repeatability_station.rs"
+
+[[bin]]
+name = "closed_liquid_waste_aerosol_trap_integrity_station"
+path = "src/bin/closed_liquid_waste_aerosol_trap_integrity_station.rs"
+
+[[bin]]
+name = "closed_service_bulkhead_misconnection_gauge_station"
+path = "src/bin/closed_service_bulkhead_misconnection_gauge_station.rs"
+
+[[bin]]
+name = "closed_incubator_door_recovery_challenge_station"
+path = "src/bin/closed_incubator_door_recovery_challenge_station.rs"
+
+[[bin]]
+name = "closed_incubator_internal_surface_cleanability_coupon_station"
+path = "src/bin/closed_incubator_internal_surface_cleanability_coupon_station.rs"
+
+[[bin]]
+name = "closed_sterile_connector_actuation_force_life_station"
+path = "src/bin/closed_sterile_connector_actuation_force_life_station.rs"
+
+[[bin]]
+name = "closed_sensor_cable_feedthrough_leak_test_station"
+path = "src/bin/closed_sensor_cable_feedthrough_leak_test_station.rs"
+
+[[bin]]
+name = "closed_incubator_o2_co2_stratification_mapping_station"
+path = "src/bin/closed_incubator_o2_co2_stratification_mapping_station.rs"
+
+[[bin]]
+name = "closed_module_thermal_runaway_fault_injection_station"
+path = "src/bin/closed_module_thermal_runaway_fault_injection_station.rs"

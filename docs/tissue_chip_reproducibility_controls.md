@@ -277,6 +277,19 @@ The current LaminarForge hardware direction reduces manual variability:
 - `co2_sensor_service_module`: keeps CO2 measurement/control electronics outside the humid chamber.
 - `media_reservoir` and `peltier_reservoir_block`: structured reservoir and media-temperature handling.
 
+## Latest Validation CAD Controls
+
+- `closed_media_bag_load_cell_drift_reference_station`: reference-mass, thermal-shield, tubing-strain, bag-frame, drain/prime capture, and leak-tray geometry for separating gravimetric drift from true media consumption.
+- `closed_robot_tool_tip_runout_repeatability_station`: kinematic tool nest, dial-indicator/LVDT mount, fiducial bridge, probe target array, go/no-go gauges, datum pins, and calibration coupon storage for robot offset repeatability.
+- `closed_liquid_waste_aerosol_trap_integrity_station`: closed waste bottle nest, hydrophobic vent-filter holder, aerosol challenge ports, condensate sight path, backpressure bracket, misroute guards, and tubing witness routes for waste aerosol containment evidence.
+- `closed_service_bulkhead_misconnection_gauge_station`: keyed bulkhead mockup, service-family segregation, pressure/gas/fluid no-go gauges, master plugs, ID pocket, witness bridge, reference rack, and reject tray for wrong-service prevention.
+- `closed_incubator_door_recovery_challenge_station`: sealed cassette surrogate rack, door-event gauge, temp/CO2/RH logger pockets, baffle witness targets, condensate capture, run tokens, and evidence lanes for recovery mapping.
+- `closed_incubator_internal_surface_cleanability_coupon_station`: removable wall/floor/door coupons, wipe-path guide, condensate witness, coupon custody trays, evidence bridge, and clean/used segregation for humid chamber cleanability.
+- `closed_sterile_connector_actuation_force_life_station`: connector nest arrays, force gauge pocket, cycle-count lane, cap/plug parks, pressure-decay ports, retain pockets, status lanes, and robot datum blocks for connector release evidence.
+- `closed_sensor_cable_feedthrough_leak_test_station`: wall feedthrough coupon panel, strain-relief comb, pressure-decay manifold, dye ingress wells, bend-radius gauge, electrical isolation pads, and evidence bridge for sensor penetration qualification.
+- `closed_incubator_o2_co2_stratification_mapping_station`: rack-slot surrogate, vertical sampling masts, O2/CO2 probe docks, reference-gas puck lands, edge/center tokens, gas-mixing challenge inlet placeholders, and cable/tubing strain relief for gas-gradient evidence.
+- `closed_module_thermal_runaway_fault_injection_station`: dummy module nest, heater-fault coupon pockets, independent thermistor/logger pockets, fuse/switch lands, isolation shields, emergency disconnect bulkhead, and evidence bridge for thermal safety validation.
+
 ## What Still Requires Process Validation
 
 The hardware does not automatically solve:

@@ -2389,6 +2389,186 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [1000.0, 700.0, 120.0],
     },
     ExpectedOutput {
+        generator: "closed_media_bag_load_cell_drift_reference_station",
+        path: "output/closed_media_bag_load_cell_drift_reference_station_base_leak_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [200.0, 150.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_load_cell_drift_reference_station",
+        path: "output/closed_media_bag_load_cell_drift_reference_station_load_cell_bridge.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 30.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_load_cell_drift_reference_station",
+        path: "output/closed_media_bag_load_cell_drift_reference_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_tool_tip_runout_repeatability_station",
+        path: "output/closed_robot_tool_tip_runout_repeatability_station_base_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_tool_tip_runout_repeatability_station",
+        path: "output/closed_robot_tool_tip_runout_repeatability_station_kinematic_tool_nest.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 40.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robot_tool_tip_runout_repeatability_station",
+        path: "output/closed_robot_tool_tip_runout_repeatability_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 60.0],
+    },
+    ExpectedOutput {
+        generator: "closed_liquid_waste_aerosol_trap_integrity_station",
+        path: "output/closed_liquid_waste_aerosol_trap_integrity_station_leak_basin_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_liquid_waste_aerosol_trap_integrity_station",
+        path: "output/closed_liquid_waste_aerosol_trap_integrity_station_closed_waste_bottle_nest.stl",
+        min_triangles: 40,
+        min_size_mm: [60.0, 60.0, 30.0],
+    },
+    ExpectedOutput {
+        generator: "closed_liquid_waste_aerosol_trap_integrity_station",
+        path: "output/closed_liquid_waste_aerosol_trap_integrity_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_service_bulkhead_misconnection_gauge_station",
+        path: "output/closed_service_bulkhead_misconnection_gauge_station_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_service_bulkhead_misconnection_gauge_station",
+        path: "output/closed_service_bulkhead_misconnection_gauge_station_keyed_bulkhead_mockup.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 30.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_service_bulkhead_misconnection_gauge_station",
+        path: "output/closed_service_bulkhead_misconnection_gauge_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_door_recovery_challenge_station",
+        path: "output/closed_incubator_door_recovery_challenge_station_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_door_recovery_challenge_station",
+        path: "output/closed_incubator_door_recovery_challenge_station_sealed_cassette_surrogate_rack.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_door_recovery_challenge_station",
+        path: "output/closed_incubator_door_recovery_challenge_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_internal_surface_cleanability_coupon_station",
+        path: "output/closed_incubator_internal_surface_cleanability_coupon_station_base_leak_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_internal_surface_cleanability_coupon_station",
+        path: "output/closed_incubator_internal_surface_cleanability_coupon_station_removable_wall_coupon_panel.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 30.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_internal_surface_cleanability_coupon_station",
+        path: "output/closed_incubator_internal_surface_cleanability_coupon_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sterile_connector_actuation_force_life_station",
+        path: "output/closed_sterile_connector_actuation_force_life_station_base_leak_tray_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sterile_connector_actuation_force_life_station",
+        path: "output/closed_sterile_connector_actuation_force_life_station_connector_nest_arrays.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 30.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sterile_connector_actuation_force_life_station",
+        path: "output/closed_sterile_connector_actuation_force_life_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_cable_feedthrough_leak_test_station",
+        path: "output/closed_sensor_cable_feedthrough_leak_test_station_base_containment_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_cable_feedthrough_leak_test_station",
+        path: "output/closed_sensor_cable_feedthrough_leak_test_station_wall_feedthrough_coupon_panel.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 30.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_cable_feedthrough_leak_test_station",
+        path: "output/closed_sensor_cable_feedthrough_leak_test_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_o2_co2_stratification_mapping_station",
+        path: "output/closed_incubator_o2_co2_stratification_mapping_station_base_containment_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_o2_co2_stratification_mapping_station",
+        path: "output/closed_incubator_o2_co2_stratification_mapping_station_rack_slot_surrogate_fixture.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_o2_co2_stratification_mapping_station",
+        path: "output/closed_incubator_o2_co2_stratification_mapping_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_thermal_runaway_fault_injection_station",
+        path: "output/closed_module_thermal_runaway_fault_injection_station_base_containment_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_thermal_runaway_fault_injection_station",
+        path: "output/closed_module_thermal_runaway_fault_injection_station_sealed_module_dummy_nest.stl",
+        min_triangles: 40,
+        min_size_mm: [80.0, 60.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_thermal_runaway_fault_injection_station",
+        path: "output/closed_module_thermal_runaway_fault_injection_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 80.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -2892,6 +3072,47 @@ mod tests {
         assert!(OUTPUTS.iter().any(
             |output| output.generator == "closed_incubator_rack_vibration_tilt_mapping_station"
         ));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_media_bag_load_cell_drift_reference_station")
+        );
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_robot_tool_tip_runout_repeatability_station")
+        );
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_liquid_waste_aerosol_trap_integrity_station")
+        );
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_service_bulkhead_misconnection_gauge_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_incubator_door_recovery_challenge_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_internal_surface_cleanability_coupon_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_sterile_connector_actuation_force_life_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_sensor_cable_feedthrough_leak_test_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_incubator_o2_co2_stratification_mapping_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_module_thermal_runaway_fault_injection_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
