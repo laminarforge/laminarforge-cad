@@ -2,11 +2,11 @@
 
 This plan is for a small, self-contained starter setup that can support practice cell-culture workflows, early chip seeding dry runs, media-change workflow development, and incubator control experiments before the larger 100-chip automation stack is needed.
 
-The starter CO2 incubator is not ready for public website publication. Treat it as an internal engineering prototype until the research gates in `docs/co2_incubator_research_audit.md` are satisfied. The broader equipment coverage is tracked in `docs/cell_culture_equipment_design_matrix.md` and the machine-readable `cell_culture_equipment_manifest` output.
+The starter CO2 incubator is not ready for public website publication. Treat it as an internal engineering prototype until the research gates in `docs/co2_incubator_research_audit.md` are satisfied. The broader equipment coverage is tracked in `docs/cell_culture_equipment_design_matrix.md`, the boundary breakdown in `docs/cell_culture_equipment_boundary_breakdown.md`, and the machine-readable `cell_culture_equipment_manifest` output.
 
 ## Build Strategy
 
-Use three tiers:
+Use three tiers, then push each item through the readiness levels in `docs/cell_culture_equipment_boundary_breakdown.md`:
 
 1. Buy anything that directly affects sterility, biosafety, or measurement confidence.
 2. Build low-risk support equipment where failure is visible and recoverable.

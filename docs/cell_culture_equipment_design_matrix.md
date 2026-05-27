@@ -1,6 +1,6 @@
 # Cell Culture Equipment Design Matrix
 
-This matrix expands the starter plan from a single CO2 incubator into the full minimum equipment set needed for responsible mammalian cell-culture workflow development. The rule is conservative: DIY hardware can support training, fixtures, environmental testing, and microfluidic hardware validation, but real culture work needs certified or facility-approved sterile handling, storage, disposal, and measurement infrastructure.
+This matrix expands the starter plan from a single CO2 incubator into the full minimum equipment set needed for responsible mammalian cell-culture workflow development. The design boundary is not a stop sign: it is broken down in `docs/cell_culture_equipment_boundary_breakdown.md` into CAD prototype, engineering prototype, biological pilot, internal production tool, and certified/compliant equipment gates.
 
 ## Equipment Coverage
 
@@ -68,4 +68,4 @@ CFD and conjugate heat-transfer work is tracked separately in `docs/cell_culture
 
 ## Boundaries
 
-The LaminarForge CAD set can design fixtures, enclosures, support hardware, prototype environmental chambers, and validation tooling. It should not imply that DIY equipment is certified for biosafety, clinical, GMP, iPSC, primary human material, or viral workflows. Those uses require facility review, certified equipment, documented SOPs, and independent validation.
+The LaminarForge CAD set should design fixtures, enclosures, support hardware, prototype environmental chambers, and validation tooling wherever useful. What it should not do is imply that a CAD prototype is already certified for biosafety, clinical, GMP, iPSC, primary human material, or viral workflows. Those uses require higher evidence levels, documented in `docs/cell_culture_equipment_boundary_breakdown.md`.
