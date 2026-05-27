@@ -73,6 +73,13 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Incubation | `closed_incubator_condensate_cross_contamination_witness_station` | Sealed cassette surrogate grid, condensate drip challenge rails, tracer coupon witness wells, gutter/diverter comparison plate, logger pockets, and position barcode lands. |
 | Liquid handling | `closed_reservoir_cap_septum_puncture_leak_life_station` | Reservoir cap coupon nests, repeated puncture guide bridge, septum compression witness pockets, pressure-hold leak ports, dye ingress wells, and connector parking. |
 | Incubation | `closed_incubator_fan_flow_shadowing_mapping_station` | Rack-slot surrogate grid, fan-plenum shadow masks, airflow ribbon witness lands, multi-height sensor mast pockets, cassette load blockers, and condensate collection lanes. |
+| Media/material handling | `closed_media_additive_light_exposure_witness_station` | Amber/clear surrogate vial nests, light exposure witness coupons, shield/cover comparison lanes, timed token lands, temperature logger pocket, sealed transfer bulkhead, and release/hold/reject evidence. |
+| Sterile handling | `closed_cassette_shipping_vibration_logger_dock_station` | Cassette dock, shock/vibration data logger cradle, witness coupon rail, alignment stops, tamper-seal pockets, foam compression gauges, labels, and service keepouts for shipped cassette release. |
+| Media chemistry | `closed_media_osmolality_evaporation_correlation_station` | Sealed reservoir nests, mass/osmolality sample pockets, evaporation witness coupons, humidity/temperature probe mounts, condensate return channels, calibration vials, and correlation labels. |
+| Cryostorage | `closed_cell_source_vial_thaw_timing_stagger_station` | Timed vial nest ladder, stagger timing rail, temperature probe wells, barcode custody slots, thaw start/end witnesses, sterile transfer staging, condensate containment, and camera evidence. |
+| Liquid handling | `closed_module_luer_lock_misassembly_prevention_station` | Keyed connector nests, go/no-go gauges, leak witness tray, route verification pads, capped/uncapped segregation, torque witness scale, and harness reference frame. |
+| Monitoring/cleanability | `closed_sensor_probe_cleanability_residue_station` | Probe nests, rinse/soak wells, swab slots, residue witness coupons, drying rack, clean/used segregation, barcode residue labels, evidence bridge, and waste monitoring. |
+| Traceability/liquid handling | `closed_tubing_set_barcode_length_route_verification_station` | Barcode scan lands, length-gauge channels, bend-radius route combs, connector endpoint nests, misroute witness pockets, leak tray, route window bridge, and service keepouts. |
 
 ## Build Order
 

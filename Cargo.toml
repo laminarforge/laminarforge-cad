@@ -865,3 +865,31 @@ path = "src/bin/closed_reservoir_cap_septum_puncture_leak_life_station.rs"
 [[bin]]
 name = "closed_incubator_fan_flow_shadowing_mapping_station"
 path = "src/bin/closed_incubator_fan_flow_shadowing_mapping_station.rs"
+
+[[bin]]
+name = "closed_media_additive_light_exposure_witness_station"
+path = "src/bin/closed_media_additive_light_exposure_witness_station.rs"
+
+[[bin]]
+name = "closed_cassette_shipping_vibration_logger_dock_station"
+path = "src/bin/closed_cassette_shipping_vibration_logger_dock_station.rs"
+
+[[bin]]
+name = "closed_media_osmolality_evaporation_correlation_station"
+path = "src/bin/closed_media_osmolality_evaporation_correlation_station.rs"
+
+[[bin]]
+name = "closed_cell_source_vial_thaw_timing_stagger_station"
+path = "src/bin/closed_cell_source_vial_thaw_timing_stagger_station.rs"
+
+[[bin]]
+name = "closed_module_luer_lock_misassembly_prevention_station"
+path = "src/bin/closed_module_luer_lock_misassembly_prevention_station.rs"
+
+[[bin]]
+name = "closed_sensor_probe_cleanability_residue_station"
+path = "src/bin/closed_sensor_probe_cleanability_residue_station.rs"
+
+[[bin]]
+name = "closed_tubing_set_barcode_length_route_verification_station"
+path = "src/bin/closed_tubing_set_barcode_length_route_verification_station.rs"

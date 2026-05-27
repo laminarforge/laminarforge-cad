@@ -3037,6 +3037,132 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [250.0, 180.0, 70.0],
     },
     ExpectedOutput {
+        generator: "closed_media_additive_light_exposure_witness_station",
+        path: "output/closed_media_additive_light_exposure_witness_station_base_leak_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_additive_light_exposure_witness_station",
+        path: "output/closed_media_additive_light_exposure_witness_station_amber_clear_vial_surrogate_nests.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_additive_light_exposure_witness_station",
+        path: "output/closed_media_additive_light_exposure_witness_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_shipping_vibration_logger_dock_station",
+        path: "output/closed_cassette_shipping_vibration_logger_dock_station_base_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_shipping_vibration_logger_dock_station",
+        path: "output/closed_cassette_shipping_vibration_logger_dock_station_cassette_dock.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_shipping_vibration_logger_dock_station",
+        path: "output/closed_cassette_shipping_vibration_logger_dock_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_osmolality_evaporation_correlation_station",
+        path: "output/closed_media_osmolality_evaporation_correlation_station_secondary_containment_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_osmolality_evaporation_correlation_station",
+        path: "output/closed_media_osmolality_evaporation_correlation_station_sealed_reservoir_nests.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_osmolality_evaporation_correlation_station",
+        path: "output/closed_media_osmolality_evaporation_correlation_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_source_vial_thaw_timing_stagger_station",
+        path: "output/closed_cell_source_vial_thaw_timing_stagger_station_base_containment_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_source_vial_thaw_timing_stagger_station",
+        path: "output/closed_cell_source_vial_thaw_timing_stagger_station_timed_vial_nest_ladder.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_source_vial_thaw_timing_stagger_station",
+        path: "output/closed_cell_source_vial_thaw_timing_stagger_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_luer_lock_misassembly_prevention_station",
+        path: "output/closed_module_luer_lock_misassembly_prevention_station_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_luer_lock_misassembly_prevention_station",
+        path: "output/closed_module_luer_lock_misassembly_prevention_station_keyed_connector_nests.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_module_luer_lock_misassembly_prevention_station",
+        path: "output/closed_module_luer_lock_misassembly_prevention_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_probe_cleanability_residue_station",
+        path: "output/closed_sensor_probe_cleanability_residue_station_base_leak_safe_tray.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_probe_cleanability_residue_station",
+        path: "output/closed_sensor_probe_cleanability_residue_station_probe_nest_array.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 80.0, 20.0],
+    },
+    ExpectedOutput {
+        generator: "closed_sensor_probe_cleanability_residue_station",
+        path: "output/closed_sensor_probe_cleanability_residue_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "closed_tubing_set_barcode_length_route_verification_station",
+        path: "output/closed_tubing_set_barcode_length_route_verification_station_deck.stl",
+        min_triangles: 40,
+        min_size_mm: [250.0, 180.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_tubing_set_barcode_length_route_verification_station",
+        path: "output/closed_tubing_set_barcode_length_route_verification_station_length_gauge_channels.stl",
+        min_triangles: 40,
+        min_size_mm: [120.0, 60.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_tubing_set_barcode_length_route_verification_station",
+        path: "output/closed_tubing_set_barcode_length_route_verification_station_assembly.stl",
+        min_triangles: 120,
+        min_size_mm: [250.0, 180.0, 70.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -3652,6 +3778,29 @@ mod tests {
         assert!(OUTPUTS.iter().any(
             |output| output.generator == "closed_incubator_fan_flow_shadowing_mapping_station"
         ));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_media_additive_light_exposure_witness_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cassette_shipping_vibration_logger_dock_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_media_osmolality_evaporation_correlation_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_cell_source_vial_thaw_timing_stagger_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_module_luer_lock_misassembly_prevention_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_sensor_probe_cleanability_residue_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_tubing_set_barcode_length_route_verification_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
