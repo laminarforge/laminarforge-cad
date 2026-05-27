@@ -4801,6 +4801,96 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_cell_wash_concentrate_interface_volume_recovery_station",
+        path: "output/closed_cell_wash_concentrate_interface_volume_recovery_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_wash_concentrate_interface_volume_recovery_station",
+        path: "output/closed_cell_wash_concentrate_interface_volume_recovery_station_recovery_volume_witness_wells.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_wash_concentrate_interface_volume_recovery_station",
+        path: "output/closed_cell_wash_concentrate_interface_volume_recovery_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_bubble_trap_capacity_exhaustion_alarm_station",
+        path: "output/closed_perfusion_bubble_trap_capacity_exhaustion_alarm_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_bubble_trap_capacity_exhaustion_alarm_station",
+        path: "output/closed_perfusion_bubble_trap_capacity_exhaustion_alarm_station_graduated_capacity_witness_chambers.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_bubble_trap_capacity_exhaustion_alarm_station",
+        path: "output/closed_perfusion_bubble_trap_capacity_exhaustion_alarm_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_hold_loop_residence_time_distribution_tracer_station",
+        path: "output/closed_media_hold_loop_residence_time_distribution_tracer_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_hold_loop_residence_time_distribution_tracer_station",
+        path: "output/closed_media_hold_loop_residence_time_distribution_tracer_station_timed_fraction_collection_well_rack.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_hold_loop_residence_time_distribution_tracer_station",
+        path: "output/closed_media_hold_loop_residence_time_distribution_tracer_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_airflow_smoke_pattern_quantification_station",
+        path: "output/closed_cleanroom_airflow_smoke_pattern_quantification_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_airflow_smoke_pattern_quantification_station",
+        path: "output/closed_cleanroom_airflow_smoke_pattern_quantification_station_calibrated_vane_flag_grid.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cleanroom_airflow_smoke_pattern_quantification_station",
+        path: "output/closed_cleanroom_airflow_smoke_pattern_quantification_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_cap_torque_and_seal_integrity_station",
+        path: "output/closed_robotic_cap_torque_and_seal_integrity_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_cap_torque_and_seal_integrity_station",
+        path: "output/closed_robotic_cap_torque_and_seal_integrity_station_torque_tool_datum_bridge.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_robotic_cap_torque_and_seal_integrity_station",
+        path: "output/closed_robotic_cap_torque_and_seal_integrity_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -5698,6 +5788,17 @@ mod tests {
             == "closed_ecm_lot_viscosity_temperature_dispense_window_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_chip_cassette_thermal_contact_preload_uniformity_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cell_wash_concentrate_interface_volume_recovery_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_bubble_trap_capacity_exhaustion_alarm_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_hold_loop_residence_time_distribution_tracer_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cleanroom_airflow_smoke_pattern_quantification_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_robotic_cap_torque_and_seal_integrity_station"
+        ));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
