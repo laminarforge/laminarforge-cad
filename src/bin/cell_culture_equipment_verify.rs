@@ -1813,6 +1813,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [300.0, 200.0, 50.0],
     },
     ExpectedOutput {
+        generator: "closed_cassette_evaporation_mass_loss_mapping_station",
+        path: "output/closed_cassette_evaporation_mass_loss_mapping_station_base_pan.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_evaporation_mass_loss_mapping_station",
+        path: "output/closed_cassette_evaporation_mass_loss_mapping_station_weighed_surrogate_cassette_nests.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 80.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_evaporation_mass_loss_mapping_station",
+        path: "output/closed_cassette_evaporation_mass_loss_mapping_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_shear_stress_surrogate_chip_station",
+        path: "output/closed_perfusion_shear_stress_surrogate_chip_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_shear_stress_surrogate_chip_station",
+        path: "output/closed_perfusion_shear_stress_surrogate_chip_station_dummy_restriction_chip_carrier.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 80.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_shear_stress_surrogate_chip_station",
+        path: "output/closed_perfusion_shear_stress_surrogate_chip_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chain_of_custody_sample_tote_station",
+        path: "output/closed_chain_of_custody_sample_tote_station_leak_drip_tray_base.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chain_of_custody_sample_tote_station",
+        path: "output/closed_chain_of_custody_sample_tote_station_sealed_tote_receiver.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 80.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_chain_of_custody_sample_tote_station",
+        path: "output/closed_chain_of_custody_sample_tote_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_density_viability_sampling_station",
+        path: "output/closed_cell_density_viability_sampling_station_base_enclosure.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_density_viability_sampling_station",
+        path: "output/closed_cell_density_viability_sampling_station_closed_sample_loop_manifold.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 40.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_density_viability_sampling_station",
+        path: "output/closed_cell_density_viability_sampling_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_chip_preflush_debubble_station",
+        path: "output/closed_microfluidic_chip_preflush_debubble_station_base_leak_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_chip_preflush_debubble_station",
+        path: "output/closed_microfluidic_chip_preflush_debubble_station_vertical_bubble_trap_tower.stl",
+        min_triangles: 80,
+        min_size_mm: [40.0, 40.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_chip_preflush_debubble_station",
+        path: "output/closed_microfluidic_chip_preflush_debubble_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_osmolality_conductivity_qc_station",
+        path: "output/closed_media_osmolality_conductivity_qc_station_base_tray.stl",
+        min_triangles: 80,
+        min_size_mm: [300.0, 200.0, 5.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_osmolality_conductivity_qc_station",
+        path: "output/closed_media_osmolality_conductivity_qc_station_sterile_sample_loop_manifold.stl",
+        min_triangles: 80,
+        min_size_mm: [120.0, 40.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_osmolality_conductivity_qc_station",
+        path: "output/closed_media_osmolality_conductivity_qc_station_assembly.stl",
+        min_triangles: 350,
+        min_size_mm: [300.0, 200.0, 50.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -2202,6 +2310,28 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "closed_sample_label_print_apply_verify_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cassette_evaporation_mass_loss_mapping_station"));
+        assert!(OUTPUTS.iter().any(
+            |output| output.generator == "closed_perfusion_shear_stress_surrogate_chip_station"
+        ));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_chain_of_custody_sample_tote_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_cell_density_viability_sampling_station"));
+        assert!(
+            OUTPUTS
+                .iter()
+                .any(|output| output.generator
+                    == "closed_microfluidic_chip_preflush_debubble_station")
+        );
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "closed_media_osmolality_conductivity_qc_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));

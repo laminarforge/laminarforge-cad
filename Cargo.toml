@@ -593,3 +593,27 @@ path = "src/bin/closed_incubator_condensate_drain_validation_fixture.rs"
 [[bin]]
 name = "closed_sample_label_print_apply_verify_station"
 path = "src/bin/closed_sample_label_print_apply_verify_station.rs"
+
+[[bin]]
+name = "closed_cassette_evaporation_mass_loss_mapping_station"
+path = "src/bin/closed_cassette_evaporation_mass_loss_mapping_station.rs"
+
+[[bin]]
+name = "closed_perfusion_shear_stress_surrogate_chip_station"
+path = "src/bin/closed_perfusion_shear_stress_surrogate_chip_station.rs"
+
+[[bin]]
+name = "closed_chain_of_custody_sample_tote_station"
+path = "src/bin/closed_chain_of_custody_sample_tote_station.rs"
+
+[[bin]]
+name = "closed_cell_density_viability_sampling_station"
+path = "src/bin/closed_cell_density_viability_sampling_station.rs"
+
+[[bin]]
+name = "closed_microfluidic_chip_preflush_debubble_station"
+path = "src/bin/closed_microfluidic_chip_preflush_debubble_station.rs"
+
+[[bin]]
+name = "closed_media_osmolality_conductivity_qc_station"
+path = "src/bin/closed_media_osmolality_conductivity_qc_station.rs"
