@@ -75,10 +75,10 @@ Buildable subassemblies:
 | Shelf | `co2_incubator_shelf.stl` | Ventilated tray support. Print two. |
 | Humidity tray | `co2_incubator_water_tray.stl` | Use sterile water; clean often. |
 | Electronics bay | `co2_incubator_service_bay.stl` | Keeps controller, MOSFET/SSR, terminals, and wiring outside humid chamber. |
-| Gas/sensor manifold | `co2_incubator_service_manifold.stl` | Rear printed bulkhead for CO2 inlet, probe pass-through, cable gland, and heater leads. |
+| Gas/sensor manifold | `co2_incubator_service_manifold.stl` | Rear printed bulkhead for CO2 inlet, sample outlet, passive relief, probe pass-through, cable gland, and heater leads. |
 | Heater diffuser | `co2_incubator_heater_diffuser.stl` | Keeps cultures away from direct heater airflow and spreads warm air. |
 
-Current CAD limitation: the CO2 sensor recess is a placeholder. Do not cut final hardware around it until the exact incubator-range CO2 sensor is selected and measured.
+Current CAD limitation: the CO2 sensor mount is not modeled yet. The chamber now provides sampling and relief ports; the exact external sensor mount should be modeled after selecting and measuring the incubator-range CO2 sensor.
 
 ## Incubator Parts List
 
@@ -92,6 +92,7 @@ Current CAD limitation: the CO2 sensor recess is a placeholder. Do not cut final
 | Air mixing | 40 mm or 60 mm fan | 1 | Low speed, continuous circulation. |
 | CO2 dosing | Normally closed 12 V solenoid valve | 1 | Fail-closed. Put regulator upstream. |
 | CO2 supply | Small CO2 cylinder + low-pressure regulator, or validated dry-ice generator | 1 | Needs relief path, regulator/pressure limit, leak checks, and documented operating procedure. |
+| CO2 safety | Hydrophobic/sterile gas filters and passive relief path | As needed | Prevent chamber pressurization and reduce contamination risk in gas lines. |
 | Power | 12 V DC supply | 1 | Current rating sized for heater plus fan and valve. |
 | Switching | MOSFET module or SSR | 1-2 | Keep outside chamber in service bay. |
 | Safety cutoff | Thermal fuse or 55 C bimetal cutoff | 1 | Wire to remove heater power independent of firmware. |

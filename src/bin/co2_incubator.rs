@@ -3,12 +3,12 @@ use vcad::{centered_cube, centered_cylinder, Part};
 // ─── CO2 Incubator ───
 //
 // 3D-printed (PETG) starter CO2 incubator cabinet prototype.
-// Features a gas-tight inner chamber with shelf rails, sensor pocket,
-// rear service manifold, external electronics bay, heater diffuser, and
-// ports for heater, redundant temperature sensing, fan, CO2 inlet, and
-// cable glands. An outer shell provides a 25mm insulation gap. Includes
-// a gasketed door with acrylic window, ventilated shelves, and a humidity
-// water tray.
+// Features a gas-tight inner chamber with shelf rails, rear service
+// manifold, external electronics bay, heater diffuser, and ports for
+// heater, redundant temperature sensing, fan, CO2 inlet, sampling,
+// passive relief, and cable glands. An outer shell provides a 25mm
+// insulation gap. Includes a gasketed door with acrylic window,
+// ventilated shelves, and a humidity water tray.
 //
 // Research status: internal prototype only. Do not publish as a public
 // build until the 0-20% CO2 sensor, gas relief path, sealing approach,
@@ -79,15 +79,10 @@ fn main() {
         shelf_rails = shelf_rails + left_rail + right_rail;
     }
 
-    // ── Sensor pockets on rear wall ──
-    // CO2 pocket is a placeholder for an incubator-range 0-20% NDIR module.
-    // The prior MH-Z19B-class 0-5000 ppm assumption is not valid for 5% CO2.
-    // Final pocket dimensions must be revised after exact sensor selection.
-    let co2_sensor_pocket = centered_cube("co2_sensor_pocket", 35.0, 8.0, 25.0).translate(
-        -55.0,
-        inner_y / 2.0 - 8.0 / 2.0,
-        30.0,
-    );
+    // ── Temp/RH sensor pocket on rear wall ──
+    // CO2 is sampled through a rear bulkhead instead of mounting the CO2
+    // sensor inside the humid chamber. Final CO2 sensor geometry belongs in
+    // the external service bay after selecting a 0-20% incubator-range module.
     let temp_rh_pocket = centered_cube("temp_rh_pocket", 20.0, 8.0, 20.0).translate(
         55.0,
         inner_y / 2.0 - 8.0 / 2.0,
@@ -113,6 +108,14 @@ fn main() {
     let gas_inlet = centered_cylinder("gas_inlet", 6.0 / 2.0, wall + 2.0, 24)
         .rotate(90.0, 0.0, 0.0)
         .translate(-75.0, outer_y / 2.0, inner_z / 2.0 - 35.0);
+
+    // ── CO2 sample outlet and passive relief port (rear upper wall) ──
+    let sample_outlet = centered_cylinder("sample_outlet", 6.0 / 2.0, wall + 2.0, 24)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(0.0, outer_y / 2.0, inner_z / 2.0 - 35.0);
+    let relief_port = centered_cylinder("relief_port", 6.0 / 2.0, wall + 2.0, 24)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(75.0, outer_y / 2.0, inner_z / 2.0 - 35.0);
 
     // ── Power/sensor cable gland hole (16mm, bottom back) ──
     let grommet_hole = centered_cylinder("grommet_hole", 16.0 / 2.0, wall + 2.0, 32)
@@ -144,12 +147,13 @@ fn main() {
     // Assemble chamber
     let chamber = (chamber_outer - chamber_inner - front_opening)
         - shelf_rails
-        - co2_sensor_pocket
         - temp_rh_pocket
         - heater_port
         - thermistor_port
         - fan_port
         - gas_inlet
+        - sample_outlet
+        - relief_port
         - grommet_hole
         - latch_pockets;
 
@@ -397,6 +401,12 @@ fn main() {
     let co2_bulkhead = centered_cylinder("co2_bulkhead", 6.0 / 2.0, manifold_y + 2.0, 32)
         .rotate(90.0, 0.0, 0.0)
         .translate(-65.0, 0.0, 25.0);
+    let sample_bulkhead = centered_cylinder("sample_bulkhead", 6.0 / 2.0, manifold_y + 2.0, 32)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(0.0, 0.0, 25.0);
+    let relief_bulkhead = centered_cylinder("relief_bulkhead", 6.0 / 2.0, manifold_y + 2.0, 32)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(65.0, 0.0, 25.0);
     let probe_bulkhead = centered_cylinder("probe_bulkhead", 5.0 / 2.0, manifold_y + 2.0, 32)
         .rotate(90.0, 0.0, 0.0)
         .translate(65.0, 0.0, 0.0);
@@ -407,8 +417,13 @@ fn main() {
         .rotate(90.0, 0.0, 0.0)
         .translate(-65.0, 0.0, -25.0);
 
-    let service_manifold =
-        manifold_plate - co2_bulkhead - probe_bulkhead - heater_bulkhead - gland_bulkhead;
+    let service_manifold = manifold_plate
+        - co2_bulkhead
+        - sample_bulkhead
+        - relief_bulkhead
+        - probe_bulkhead
+        - heater_bulkhead
+        - gland_bulkhead;
     service_manifold
         .write_stl("output/co2_incubator_service_manifold.stl")
         .unwrap();
@@ -442,12 +457,13 @@ fn main() {
     println!("  Inner chamber:   {inner_x:.0}mm x {inner_y:.0}mm x {inner_z:.0}mm");
     println!("  Chamber walls:   {wall:.0}mm PETG");
     println!("  Shelf rails:     3 pairs at 70/135/200mm height, {rail_width:.0}mm wide x {rail_depth:.0}mm deep");
-    println!("  CO2 pocket:      35x25x8mm rear recess");
     println!("  Temp/RH pocket:  20x20x8mm rear recess");
     println!("  Heater port:     8mm dia (bottom back)");
     println!("  Probe port:      5mm dia (mid-height back)");
     println!("  Fan port:        60mm dia (side wall)");
     println!("  CO2 inlet:       6mm dia (upper rear)");
+    println!("  Sample outlet:   6mm dia (upper rear)");
+    println!("  Relief port:     6mm dia (upper rear)");
     println!("  Cable gland:     16mm dia (bottom back)");
     println!("  Insulation gap:  {insulation_gap:.0}mm");
     println!(

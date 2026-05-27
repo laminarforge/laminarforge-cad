@@ -91,6 +91,10 @@ name = "co2_incubator"
 path = "src/bin/co2_incubator.rs"
 
 [[bin]]
+name = "co2_incubator_verify"
+path = "src/bin/co2_incubator_verify.rs"
+
+[[bin]]
 name = "water_bath"
 path = "src/bin/water_bath.rs"
 

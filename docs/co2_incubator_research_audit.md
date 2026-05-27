@@ -26,6 +26,12 @@ The 2024 HardwareX modular incubator work supports separating the control unit f
 
 Source: Duru et al., "A modular and flexible open source cell incubator system for mobile and stationary use," HardwareX, 2024. https://pmc.ncbi.nlm.nih.gov/articles/PMC11639333/
 
+### Gas sensing and electronics should be serviceable and protected
+
+Candidate incubator-range sensors include the GSS/CO2Meter SprintIR and ExplorIR families. The SprintIR 20% sensor class is documented at 0-20% CO2 with UART output and 0-95% RH non-condensing operation, and the ExplorIR-W family lists 0-5%, 0-20%, and 0-100% ranges with optional temperature/RH sensing and incubator use cases. These devices are physically larger and more expensive than room-air sensors, so the current CAD should not include a final internal sensor recess.
+
+Sources: CO2Meter SprintIR 20% sensor pages and GSS ExplorIR-W datasheet.
+
 ### Cell culture environment control is not just nominal setpoints
 
 The best-practices literature emphasizes that nominal incubator settings are not enough. Medium pH, dissolved CO2/O2, culture geometry, door openings, and handling history affect reproducibility. A public build needs telemetry and reporting expectations, not just a CAD model.
@@ -38,6 +44,12 @@ The MH-Z19B datasheet describes a 0-2000 ppm or 0-5000 ppm sensor. A 5% CO2 incu
 
 Source: Winsen MH-Z19B datasheet. https://www.winsen-sensor.com/d/files/infrared-gas-sensor/mh-z19b-co2-ver1_0.pdf
 
+### Humidity trays are maintenance items
+
+CO2 incubator humidity trays should not be treated as passive set-and-forget parts. Eppendorf guidance recommends weekly complete drying, alcohol wiping, and refilling with sterile distilled water; simply topping up water increases contamination risk. This means the starter cabinet needs a removable tray and enough access to clean it without long open-door events.
+
+Sources: Eppendorf humidity tray FAQ and CO2 incubator maintenance guide.
+
 ### Culture requirements depend on medium and cell type
 
 Thermo Fisher's cell culture environment guidance gives the normal mammalian range as 36-37 C, notes 4-10% CO2 is common, and explains that bicarbonate-buffered media require the correct CO2 tension to maintain pH. The incubator target should therefore be tied to the medium/cell line, not hardcoded as a universal biological truth.
@@ -49,8 +61,9 @@ Source: Thermo Fisher, "Cell Culture Environment." https://www.thermofisher.com/
 | Prior assumption | Correction |
 | --- | --- |
 | MH-Z19B-class CO2 sensor is acceptable | Use an incubator-range NDIR sensor, likely 0-20% CO2. |
+| CO2 sensor should mount inside the chamber | Prefer external/service-bay mounting or sample-path mounting until humidity tolerance and service procedure are proven. |
 | Printed chamber can be the primary sealing strategy | Treat sealing as a design risk; validate printed PETG, coatings, gasket, and door leakage. |
-| Passive humidity tray is enough | Keep it as v0, but add condensation management and humidity logging. |
+| Passive humidity tray is enough | Keep it as v0, but make it removable, cleanable, logged, and part of maintenance. |
 | 40-80 W heater pad is automatically suitable | Size heater from thermal test; include independent cutoff and overtemp validation. |
 | Model can go public after STL generation | Public release waits for sensor selection, safety review, and commissioning data. |
 
@@ -77,3 +90,7 @@ Keep the starter cabinet as an internal prototype for:
 - chip hardware shakeout without valuable cultures
 
 For serious cell culture, prioritize access to a certified lab incubator or a used commercial CO2 incubator while this design matures.
+
+## CAD Verification Link
+
+The current CAD verification pass is recorded in `docs/co2_incubator_cad_verification.md`. It confirms generated STL presence and bounding-box dimensions, but it does not validate biological use, sealing, thermal stability, humidity, or contamination control.
