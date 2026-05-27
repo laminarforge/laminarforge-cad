@@ -1277,3 +1277,27 @@ path = "src/bin/closed_cleanroom_airflow_smoke_pattern_quantification_station.rs
 [[bin]]
 name = "closed_robotic_cap_torque_and_seal_integrity_station"
 path = "src/bin/closed_robotic_cap_torque_and_seal_integrity_station.rs"
+
+[[bin]]
+name = "closed_incubator_co2_sensor_zero_span_drift_quarantine_station"
+path = "src/bin/closed_incubator_co2_sensor_zero_span_drift_quarantine_station.rs"
+
+[[bin]]
+name = "closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station"
+path = "src/bin/closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station.rs"
+
+[[bin]]
+name = "closed_media_bag_temp_ramp_thaw_equilibration_fault_station"
+path = "src/bin/closed_media_bag_temp_ramp_thaw_equilibration_fault_station.rs"
+
+[[bin]]
+name = "closed_incubator_humidity_condensate_drain_clog_overflow_fault_station"
+path = "src/bin/closed_incubator_humidity_condensate_drain_clog_overflow_fault_station.rs"
+
+[[bin]]
+name = "closed_cell_lot_hold_time_viability_decay_tracer_station"
+path = "src/bin/closed_cell_lot_hold_time_viability_decay_tracer_station.rs"
+
+[[bin]]
+name = "closed_perfusion_media_viscosity_shift_pressure_alarm_station"
+path = "src/bin/closed_perfusion_media_viscosity_shift_pressure_alarm_station.rs"

@@ -4891,6 +4891,114 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_incubator_co2_sensor_zero_span_drift_quarantine_station",
+        path: "output/closed_incubator_co2_sensor_zero_span_drift_quarantine_station_base_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_co2_sensor_zero_span_drift_quarantine_station",
+        path: "output/closed_incubator_co2_sensor_zero_span_drift_quarantine_station_zero_span_gas_reference_ports.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_co2_sensor_zero_span_drift_quarantine_station",
+        path: "output/closed_incubator_co2_sensor_zero_span_drift_quarantine_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station",
+        path: "output/closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station_base_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station",
+        path: "output/closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station_pressure_transducer_dock_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station",
+        path: "output/closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_temp_ramp_thaw_equilibration_fault_station",
+        path: "output/closed_media_bag_temp_ramp_thaw_equilibration_fault_station_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_temp_ramp_thaw_equilibration_fault_station",
+        path: "output/closed_media_bag_temp_ramp_thaw_equilibration_fault_station_inline_temperature_probe_pockets.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_media_bag_temp_ramp_thaw_equilibration_fault_station",
+        path: "output/closed_media_bag_temp_ramp_thaw_equilibration_fault_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_condensate_drain_clog_overflow_fault_station",
+        path: "output/closed_incubator_humidity_condensate_drain_clog_overflow_fault_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_condensate_drain_clog_overflow_fault_station",
+        path: "output/closed_incubator_humidity_condensate_drain_clog_overflow_fault_station_drain_trap_clog_challenge_cartridge.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_incubator_humidity_condensate_drain_clog_overflow_fault_station",
+        path: "output/closed_incubator_humidity_condensate_drain_clog_overflow_fault_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_lot_hold_time_viability_decay_tracer_station",
+        path: "output/closed_cell_lot_hold_time_viability_decay_tracer_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_lot_hold_time_viability_decay_tracer_station",
+        path: "output/closed_cell_lot_hold_time_viability_decay_tracer_station_timed_hold_token_rail.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_lot_hold_time_viability_decay_tracer_station",
+        path: "output/closed_cell_lot_hold_time_viability_decay_tracer_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_media_viscosity_shift_pressure_alarm_station",
+        path: "output/closed_perfusion_media_viscosity_shift_pressure_alarm_station_base_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_media_viscosity_shift_pressure_alarm_station",
+        path: "output/closed_perfusion_media_viscosity_shift_pressure_alarm_station_twenty_lane_pressure_tap_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_media_viscosity_shift_pressure_alarm_station",
+        path: "output/closed_perfusion_media_viscosity_shift_pressure_alarm_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -5799,6 +5907,20 @@ mod tests {
         assert!(OUTPUTS.iter().any(
             |output| output.generator == "closed_robotic_cap_torque_and_seal_integrity_station"
         ));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_co2_sensor_zero_span_drift_quarantine_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_media_bag_temp_ramp_thaw_equilibration_fault_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_incubator_humidity_condensate_drain_clog_overflow_fault_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_cell_lot_hold_time_viability_decay_tracer_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_media_viscosity_shift_pressure_alarm_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
