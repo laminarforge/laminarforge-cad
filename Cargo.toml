@@ -119,6 +119,10 @@ name = "aspirator_waste_trap_holder"
 path = "src/bin/aspirator_waste_trap_holder.rs"
 
 [[bin]]
+name = "chip_priming_tubing_fixture"
+path = "src/bin/chip_priming_tubing_fixture.rs"
+
+[[bin]]
 name = "water_bath"
 path = "src/bin/water_bath.rs"
 

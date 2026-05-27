@@ -182,6 +182,7 @@ fn manifest() -> Vec<Equipment> {
                 "syringe_pump_standalone",
                 "chip_adapter_plate",
                 "chip_stack_rack",
+                "chip_priming_tubing_fixture",
                 "media_reservoir",
                 "pbmc_flow_cell_mount",
             ],

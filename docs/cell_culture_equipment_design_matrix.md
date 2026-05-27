@@ -18,7 +18,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | Cold storage | 4 C refrigerator and -20 C freezer | Buy/access | `sample_cold_block`, `peltier_reservoir_block` bench support only | Temperature logging and lab-only storage segregation |
 | Cryostorage | LN2 or approved cryostorage access | Access | None | Inventory, PPE, controlled-rate freezing, facility approval |
 | Mixing | Orbital shaker, rack rocker, magnetic stirrer | Build or buy | `orbital_shaker`, `rack_rocker`, `rack_rocker_2axis`, `magnetic_stirrer` | RPM/tilt verification, spill containment, sterility plan |
-| Microfluidics | Syringe pump, chip fixtures, reservoirs, tubing management | Build | `syringe_pump_standalone`, `chip_adapter_plate`, `chip_stack_rack`, `media_reservoir`, `pbmc_flow_cell_mount` | Flow calibration, leak/bubble/dead-volume test, disposable sterile fluid path |
+| Microfluidics | Syringe pump, chip fixtures, reservoirs, tubing management | Build | `syringe_pump_standalone`, `chip_adapter_plate`, `chip_stack_rack`, `chip_priming_tubing_fixture`, `media_reservoir`, `pbmc_flow_cell_mount` | Flow calibration, leak/bubble/dead-volume test, disposable sterile fluid path |
 | Environmental logging | Independent temp/CO2/RH/power logging | Buy/build support | `controller_enclosure`, `cell_culture_logger_enclosure`, `co2_sensor_service_module` | Logger agreement with controller over warmup, steady state, recovery, overnight hold |
 | Safety and waste | PPE, disinfectant, spill kit, sharps, biohazard bags | Buy/access | None | Facility SOP and disposal chain before live work |
 | Automation scale-up | High-density chip incubator and chip farm | Defer | `chip_incubator_v3`, `chip_farm_assembly`, `chip_farm_assembly_v2`, `lh_interface` | Starter incubator and manual chip culture workflow pass first |
@@ -40,7 +40,7 @@ This matrix expands the starter plan from a single CO2 incubator into the full m
 | P0 | External CO2 service module | Initial CAD exists in `co2_sensor_service_module`; final dimensions depend on selected 0-20% NDIR sensor, pump, filters, and fittings. |
 | P0 | Aspirator trap/waste bottle holder | Initial CAD exists in `aspirator_waste_trap_holder`; final use still depends on facility-approved disinfectant, filter, trap, and disposal SOP. |
 | P1 | Pipette/tip/conical organization module | Reduces workflow errors and improves clean bench ergonomics. |
-| P1 | Chip priming fixture with tubing clips and bubble observation | Needed before real microfluidic culture trials. |
+| P1 | Chip priming fixture with tubing clips and bubble observation | Initial CAD exists in `chip_priming_tubing_fixture`; needed before real microfluidic culture trials. |
 | P1 | Water bath safety revision with probe clamp and bottle rack | Media warming needs repeatable placement and safe cable routing. |
 | P2 | Still-air practice pass-through tray | Good for training and nonhazardous dry runs, not for real culture. |
 | P2 | Microscope chip-stage adapter | Lets LaminarForge chips be inspected repeatably on an inverted microscope. |

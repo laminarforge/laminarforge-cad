@@ -84,6 +84,18 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [150.0, 150.0, 200.0],
     },
     ExpectedOutput {
+        generator: "chip_priming_tubing_fixture",
+        path: "output/chip_priming_fixture_base.stl",
+        min_triangles: 80,
+        min_size_mm: [160.0, 130.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "chip_priming_tubing_fixture",
+        path: "output/chip_priming_fixture_tubing_comb.stl",
+        min_triangles: 40,
+        min_size_mm: [110.0, 100.0, 10.0],
+    },
+    ExpectedOutput {
         generator: "aspirator_waste_trap_holder",
         path: "output/aspirator_waste_trap_base_tray.stl",
         min_triangles: 20,
@@ -286,5 +298,8 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "aspirator_waste_trap_holder"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "chip_priming_tubing_fixture"));
     }
 }
