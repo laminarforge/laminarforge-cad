@@ -24,7 +24,7 @@ No single signal should make a biological claim by itself. The system should fla
 | Electrical cell state | TEER, impedance spectroscopy, ECIS-like readings | Barrier integrity, attachment, spreading, detachment, confluence-like trends | Sensor backplane with pogo/spring contacts to electrode pads |
 | Chemical microenvironment | pH, dissolved oxygen, conductivity | Acidification, hypoxia, CO2/bicarbonate mismatch, media drift | Optical sensor spots or inline electrochemical service module |
 | Metabolic state | Glucose, lactate, optional sampled analytes | Nutrient consumption, waste production, culture rate shifts | Automated sampling loop or small external analyzer integration |
-| Visual confirmation | Brightfield/phase-like images, focus/exposure metrics | Morphology, bubbles, debris, gross contamination-like changes | Cassette imaging station or gantry tied to fiducials |
+| Visual confirmation | Brightfield/phase-like images, focus/exposure metrics, optional fluorescence validation images | Morphology, bubbles, debris, gross contamination-like changes, confluence/colony triage | `automated_culture_imaging_module` tied to cassette fiducials and sensor timestamps |
 
 ## Priority Build Order
 
@@ -34,7 +34,31 @@ No single signal should make a biological claim by itself. The system should fla
 4. Move toward a sensorized chip revision with electrode pads for TEER/impedance.
 5. Add pH/O2 sensing through optical spots or an inline service module.
 6. Add glucose/lactate by sampled media loop before attempting fully inline metabolite sensors.
-7. Add imaging station/gantry as confirmation and training-data capture.
+7. Add `automated_culture_imaging_module` as confirmation, calibration, and training-data capture.
+
+## Image Analysis Direction
+
+Near-term image analysis should use proven local tools before training custom models:
+
+- Confluence and basic morphology: CellProfiler, ilastik-style pixel classification, Fiji/ImageJ Trainable Weka, or simple OpenCV/scikit-image segmentation.
+- Cell/nucleus masks where higher-magnification images justify it: Cellpose, StarDist, DeepCell/Mesmer.
+- Colony quality: CellProfiler features, ColonyQuant-style measurements, or cell-line-specific CNNs after LaminarForge has labeled examples.
+- Drift detection: image QC features plus robust z/MAD charts, PCA/UMAP review, and later one-class models after enough baseline runs exist.
+
+Imaging can flag confluence, colony shape, gross debris, focus loss, condensation, bubbles, visible fungal/bacterial overgrowth, and channel-wall artifacts. It should not clear cultures as contamination-free, especially for mycoplasma, and it should not be used alone for viability, barrier integrity, oxygenation, metabolic state, or perfusion delivery.
+
+Initial imaging gates:
+
+| Gate | Target |
+| --- | --- |
+| Exposure | Saturated pixels below 0.5% of each region of interest. |
+| Flat field | Corrected background variation <=10%, with <=5% as the design target. |
+| Registration | ROI repeatability <=10-25 um or <=1% of field of view. |
+| Confluence model | Mean absolute error <=5 percentage points against reviewed labels before automation relies on it. |
+| Segmentation | Threshold/class precision and recall >=0.90 or mask Dice/IoU >=0.80 for the specific cell/chip geometry. |
+| Morphology/counting | Cell-count error <=10% where count is used as a control input. |
+| Colony triage | Colony classification F1 >=0.85 and false-acceptable colony rate <=5% for the defined cell line and coating. |
+| Contamination screen | Positive imaging findings trigger quarantine/review; negative imaging never releases a culture by itself. |
 
 ## Interpretation Model
 
@@ -68,7 +92,7 @@ The mechanical stack should reserve space and interfaces for sensors now, even b
 - The cassette should expose repeatable dry contact locations for future electrode interfaces.
 - The chip format should leave room for TEER/impedance electrode pads and optional optical pH/O2 sensor windows.
 - Cable routing must stay separated from wet tubing and must not interfere with robotic access.
-- The imaging station should align to cassette fiducials and sensor data timestamps.
+- The imaging module should align to cassette fiducials, include flat-field/dark calibration targets, log focus/exposure metadata, retain raw images, and align imageable ROIs with TEER, pH/O2, pressure/flow, and metabolite sampling locations.
 
 ## Candidate Modules
 
@@ -76,7 +100,7 @@ The mechanical stack should reserve space and interfaces for sensors now, even b
 | --- | --- | --- |
 | `cassette_sensor_backplane` | Dry reusable pogo/spring contact interface for TEER/impedance pads | Should not touch sterile media. Needs shielding and calibration fixture. |
 | `inline_sensor_service_module` | Pressure, flow, pH/O2, conductivity service block | Prefer replaceable wetted path or externally clamped sensors. |
-| `cassette_imaging_station` | Fixed optical inspection tied to nest/cassette fiducials | Use for confirmation, model training, and anomaly review. |
+| `automated_culture_imaging_module` | Enclosed optical inspection tied to nest/cassette fiducials | Use for confluence, morphology, bubble/debris review, model training, and anomaly triage. |
 | `sensorized_chip_revision` | Chip variant with electrode pads and sensor windows | Requires chip design update and validation gate. |
 | `flow_validation_fixture` | No-cell calibration fixture for per-row/per-chip flow and pressure maps | Required before trusting live culture runs. |
 

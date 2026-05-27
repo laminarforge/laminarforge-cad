@@ -127,6 +127,10 @@ name = "automated_media_exchange_cassette"
 path = "src/bin/automated_media_exchange_cassette.rs"
 
 [[bin]]
+name = "automated_seeding_coating_station"
+path = "src/bin/automated_seeding_coating_station.rs"
+
+[[bin]]
 name = "sterile_tubing_harness"
 path = "src/bin/sterile_tubing_harness.rs"
 
@@ -159,8 +163,20 @@ name = "cassette_sensor_backplane"
 path = "src/bin/cassette_sensor_backplane.rs"
 
 [[bin]]
+name = "automated_culture_imaging_module"
+path = "src/bin/automated_culture_imaging_module.rs"
+
+[[bin]]
 name = "environmental_utility_skid"
 path = "src/bin/environmental_utility_skid.rs"
+
+[[bin]]
+name = "media_conditioning_perfusion_rack"
+path = "src/bin/media_conditioning_perfusion_rack.rs"
+
+[[bin]]
+name = "pressure_driven_perfusion_panel"
+path = "src/bin/pressure_driven_perfusion_panel.rs"
 
 [[bin]]
 name = "aseptic_transfer_hatch"
@@ -169,6 +185,10 @@ path = "src/bin/aseptic_transfer_hatch.rs"
 [[bin]]
 name = "clean_support_pod_shell"
 path = "src/bin/clean_support_pod_shell.rs"
+
+[[bin]]
+name = "sterility_validation_challenge_rack"
+path = "src/bin/sterility_validation_challenge_rack.rs"
 
 [[bin]]
 name = "pipette_tip_organizer"

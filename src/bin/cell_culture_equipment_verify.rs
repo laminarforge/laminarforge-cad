@@ -120,6 +120,30 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [610.0, 470.0, 30.0],
     },
     ExpectedOutput {
+        generator: "automated_seeding_coating_station",
+        path: "output/automated_seeding_coating_station_baseplate.stl",
+        min_triangles: 300,
+        min_size_mm: [1200.0, 850.0, 15.0],
+    },
+    ExpectedOutput {
+        generator: "automated_seeding_coating_station",
+        path: "output/automated_seeding_coating_station_cassette_nest.stl",
+        min_triangles: 400,
+        min_size_mm: [700.0, 600.0, 10.0],
+    },
+    ExpectedOutput {
+        generator: "automated_seeding_coating_station",
+        path: "output/automated_seeding_coating_station_valve_manifold.stl",
+        min_triangles: 600,
+        min_size_mm: [400.0, 140.0, 40.0],
+    },
+    ExpectedOutput {
+        generator: "automated_seeding_coating_station",
+        path: "output/automated_seeding_coating_station_assembly.stl",
+        min_triangles: 1500,
+        min_size_mm: [1200.0, 850.0, 150.0],
+    },
+    ExpectedOutput {
         generator: "sterile_tubing_harness",
         path: "output/sterile_tubing_harness_manifold_insert.stl",
         min_triangles: 160,
@@ -198,6 +222,54 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [1100.0, 900.0, 140.0],
     },
     ExpectedOutput {
+        generator: "media_conditioning_perfusion_rack",
+        path: "output/media_conditioning_perfusion_rack_frame.stl",
+        min_triangles: 300,
+        min_size_mm: [800.0, 450.0, 700.0],
+    },
+    ExpectedOutput {
+        generator: "media_conditioning_perfusion_rack",
+        path: "output/media_conditioning_perfusion_rack_conditioning_block.stl",
+        min_triangles: 300,
+        min_size_mm: [500.0, 90.0, 45.0],
+    },
+    ExpectedOutput {
+        generator: "media_conditioning_perfusion_rack",
+        path: "output/media_conditioning_perfusion_rack_valve_filter_manifold.stl",
+        min_triangles: 1000,
+        min_size_mm: [680.0, 100.0, 200.0],
+    },
+    ExpectedOutput {
+        generator: "media_conditioning_perfusion_rack",
+        path: "output/media_conditioning_perfusion_rack_assembly.stl",
+        min_triangles: 2500,
+        min_size_mm: [800.0, 450.0, 700.0],
+    },
+    ExpectedOutput {
+        generator: "pressure_driven_perfusion_panel",
+        path: "output/pressure_driven_perfusion_panel_baseplate.stl",
+        min_triangles: 400,
+        min_size_mm: [840.0, 360.0, 35.0],
+    },
+    ExpectedOutput {
+        generator: "pressure_driven_perfusion_panel",
+        path: "output/pressure_driven_perfusion_panel_instrument_panel.stl",
+        min_triangles: 700,
+        min_size_mm: [780.0, 25.0, 420.0],
+    },
+    ExpectedOutput {
+        generator: "pressure_driven_perfusion_panel",
+        path: "output/pressure_driven_perfusion_panel_reservoir_bulkhead_manifold.stl",
+        min_triangles: 800,
+        min_size_mm: [680.0, 50.0, 70.0],
+    },
+    ExpectedOutput {
+        generator: "pressure_driven_perfusion_panel",
+        path: "output/pressure_driven_perfusion_panel_assembly.stl",
+        min_triangles: 2200,
+        min_size_mm: [840.0, 360.0, 430.0],
+    },
+    ExpectedOutput {
         generator: "closed_isolator_workcell",
         path: "output/closed_isolator_workcell_shell.stl",
         min_triangles: 200,
@@ -252,6 +324,30 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [620.0, 600.0, 35.0],
     },
     ExpectedOutput {
+        generator: "automated_culture_imaging_module",
+        path: "output/automated_culture_imaging_module_enclosure.stl",
+        min_triangles: 300,
+        min_size_mm: [1100.0, 800.0, 500.0],
+    },
+    ExpectedOutput {
+        generator: "automated_culture_imaging_module",
+        path: "output/automated_culture_imaging_module_datum_nest.stl",
+        min_triangles: 500,
+        min_size_mm: [700.0, 630.0, 45.0],
+    },
+    ExpectedOutput {
+        generator: "automated_culture_imaging_module",
+        path: "output/automated_culture_imaging_module_motion_gantry.stl",
+        min_triangles: 400,
+        min_size_mm: [850.0, 680.0, 80.0],
+    },
+    ExpectedOutput {
+        generator: "automated_culture_imaging_module",
+        path: "output/automated_culture_imaging_module_assembly.stl",
+        min_triangles: 1500,
+        min_size_mm: [1100.0, 800.0, 530.0],
+    },
+    ExpectedOutput {
         generator: "environmental_utility_skid",
         path: "output/environmental_utility_skid_frame.stl",
         min_triangles: 120,
@@ -304,6 +400,30 @@ const OUTPUTS: &[ExpectedOutput] = &[
         path: "output/clean_support_pod_shell_assembly.stl",
         min_triangles: 500,
         min_size_mm: [3500.0, 2100.0, 1900.0],
+    },
+    ExpectedOutput {
+        generator: "sterility_validation_challenge_rack",
+        path: "output/sterility_validation_challenge_rack_base.stl",
+        min_triangles: 160,
+        min_size_mm: [700.0, 500.0, 45.0],
+    },
+    ExpectedOutput {
+        generator: "sterility_validation_challenge_rack",
+        path: "output/sterility_validation_challenge_rack_coupon_carrier.stl",
+        min_triangles: 180,
+        min_size_mm: [280.0, 60.0, 200.0],
+    },
+    ExpectedOutput {
+        generator: "sterility_validation_challenge_rack",
+        path: "output/sterility_validation_challenge_rack_media_fill_tray.stl",
+        min_triangles: 250,
+        min_size_mm: [480.0, 190.0, 45.0],
+    },
+    ExpectedOutput {
+        generator: "sterility_validation_challenge_rack",
+        path: "output/sterility_validation_challenge_rack_assembly.stl",
+        min_triangles: 700,
+        min_size_mm: [700.0, 530.0, 220.0],
     },
     ExpectedOutput {
         generator: "pipette_tip_organizer",
@@ -534,6 +654,9 @@ mod tests {
             .any(|output| output.generator == "automated_media_exchange_cassette"));
         assert!(OUTPUTS
             .iter()
+            .any(|output| output.generator == "automated_seeding_coating_station"));
+        assert!(OUTPUTS
+            .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
         assert!(OUTPUTS
             .iter()
@@ -549,6 +672,12 @@ mod tests {
             .any(|output| output.generator == "culture_module_service_skid"));
         assert!(OUTPUTS
             .iter()
+            .any(|output| output.generator == "media_conditioning_perfusion_rack"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "pressure_driven_perfusion_panel"));
+        assert!(OUTPUTS
+            .iter()
             .any(|output| output.generator == "closed_isolator_workcell"));
         assert!(OUTPUTS
             .iter()
@@ -558,6 +687,9 @@ mod tests {
             .any(|output| output.generator == "cassette_sensor_backplane"));
         assert!(OUTPUTS
             .iter()
+            .any(|output| output.generator == "automated_culture_imaging_module"));
+        assert!(OUTPUTS
+            .iter()
             .any(|output| output.generator == "environmental_utility_skid"));
         assert!(OUTPUTS
             .iter()
@@ -565,5 +697,8 @@ mod tests {
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "clean_support_pod_shell"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator == "sterility_validation_challenge_rack"));
     }
 }
