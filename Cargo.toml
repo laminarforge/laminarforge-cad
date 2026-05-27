@@ -841,3 +841,27 @@ path = "src/bin/closed_reagent_bag_pressure_hold_creep_station.rs"
 [[bin]]
 name = "closed_chip_cassette_static_charge_particle_attraction_station"
 path = "src/bin/closed_chip_cassette_static_charge_particle_attraction_station.rs"
+
+[[bin]]
+name = "closed_perfusion_line_air_ingress_microleak_challenge_station"
+path = "src/bin/closed_perfusion_line_air_ingress_microleak_challenge_station.rs"
+
+[[bin]]
+name = "closed_sampling_valve_carryover_deadleg_station"
+path = "src/bin/closed_sampling_valve_carryover_deadleg_station.rs"
+
+[[bin]]
+name = "closed_robot_gripper_pad_wear_particle_shedding_station"
+path = "src/bin/closed_robot_gripper_pad_wear_particle_shedding_station.rs"
+
+[[bin]]
+name = "closed_incubator_condensate_cross_contamination_witness_station"
+path = "src/bin/closed_incubator_condensate_cross_contamination_witness_station.rs"
+
+[[bin]]
+name = "closed_reservoir_cap_septum_puncture_leak_life_station"
+path = "src/bin/closed_reservoir_cap_septum_puncture_leak_life_station.rs"
+
+[[bin]]
+name = "closed_incubator_fan_flow_shadowing_mapping_station"
+path = "src/bin/closed_incubator_fan_flow_shadowing_mapping_station.rs"

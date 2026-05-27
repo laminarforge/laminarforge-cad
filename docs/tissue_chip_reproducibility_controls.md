@@ -309,6 +309,12 @@ The current LaminarForge hardware direction reduces manual variability:
 - `closed_pass_through_tote_pressure_equalization_flow_balance_station`: tote receiver, dual pressure-port panel, HEPA purge duct surrogate, flow witness vanes, seal coupons, pressure-decay tokens, and evidence bridge for pass-through pressure-balance checks.
 - `closed_reagent_bag_pressure_hold_creep_station`: guarded bag tray, pressure I/O bulkheads, reference gauge bracket, displacement scale, clamp rails, leak witness containment, surrogate coupons, and strain relief for bag pressure-hold drift evidence.
 - `closed_chip_cassette_static_charge_particle_attraction_station`: cassette nest, ionizer/placebo zone, particle witness coupon lands, charge probe pocket, grounded/ungrounded comparison lanes, evidence window, and custody labels for static-charge particle controls.
+- `closed_perfusion_line_air_ingress_microleak_challenge_station`: tubing combs, microleak coupon placeholders, optical bubble witness windows, pressure-decay ports, degas-trap pocket, sterile connector bulkhead, and custody lands for air-ingress checks.
+- `closed_sampling_valve_carryover_deadleg_station`: valve coupon nests, high/low standard lanes, deadleg witness pockets, flush/waste manifold placeholder, sample-loop volume wells, pressure/flow ports, and evidence bridge for sampling carryover.
+- `closed_robot_gripper_pad_wear_particle_shedding_station`: gripper pad coupon nests, repeated-contact witness rails, particle collection troughs, cassette contact block, force/load witness pockets, clean/used segregation, and evidence bridge for pad wear controls.
+- `closed_incubator_condensate_cross_contamination_witness_station`: cassette surrogate grid, condensate drip challenge rails, tracer coupon wells, gutter/diverter comparison plate, RH/temp logger pockets, and position barcode lands for cross-position condensate evidence.
+- `closed_reservoir_cap_septum_puncture_leak_life_station`: reservoir cap coupon nests, puncture guide bridge, septum compression pockets, pressure-hold leak ports, dye ingress wells, connector parking, and evidence bridge for cap/septum wear.
+- `closed_incubator_fan_flow_shadowing_mapping_station`: rack-slot surrogate grid, fan-plenum shadow masks, airflow ribbon witness lands, multi-height sensor mast pockets, cassette load blockers, condensate lanes, and evidence bridge for airflow shadowing.
 
 ## What Still Requires Process Validation
 

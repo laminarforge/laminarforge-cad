@@ -67,6 +67,12 @@ The latest integrated batch adds fixtures that close specific reproducibility an
 | Sterile handling | `closed_pass_through_tote_pressure_equalization_flow_balance_station` | Pass-through tote receiver, dual pressure-port panel, HEPA purge duct surrogate, flow witness vanes, seal coupons, and pressure-decay tokens. |
 | Liquid handling | `closed_reagent_bag_pressure_hold_creep_station` | Guarded reagent/media bag tray, pressure I/O bulkheads, reference gauge bracket, creep witness scale, clamp rails, leak containment, and strain relief. |
 | Sterile validation | `closed_chip_cassette_static_charge_particle_attraction_station` | Cassette nest, ionizer/placebo zone, particle witness coupons, charge probe pocket, grounded/ungrounded lanes, and evidence window frame. |
+| Liquid handling | `closed_perfusion_line_air_ingress_microleak_challenge_station` | Closed tubing lane combs, microleak coupon placeholders, optical bubble witness windows, pressure-decay reference ports, degas-trap pocket, and sterile connector bulkhead. |
+| Liquid handling | `closed_sampling_valve_carryover_deadleg_station` | Valve coupon nests, high/low challenge lanes, deadleg witness pockets, flush/waste manifold placeholder, sample-loop volume wells, and pressure/flow witness ports. |
+| Automation | `closed_robot_gripper_pad_wear_particle_shedding_station` | Gripper pad coupon nests, repeated-contact witness rails, particle collection troughs, cassette contact block, force/load witness pockets, and clean/used segregation. |
+| Incubation | `closed_incubator_condensate_cross_contamination_witness_station` | Sealed cassette surrogate grid, condensate drip challenge rails, tracer coupon witness wells, gutter/diverter comparison plate, logger pockets, and position barcode lands. |
+| Liquid handling | `closed_reservoir_cap_septum_puncture_leak_life_station` | Reservoir cap coupon nests, repeated puncture guide bridge, septum compression witness pockets, pressure-hold leak ports, dye ingress wells, and connector parking. |
+| Incubation | `closed_incubator_fan_flow_shadowing_mapping_station` | Rack-slot surrogate grid, fan-plenum shadow masks, airflow ribbon witness lands, multi-height sensor mast pockets, cassette load blockers, and condensate collection lanes. |
 
 ## Build Order
 
