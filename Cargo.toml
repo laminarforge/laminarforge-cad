@@ -1505,3 +1505,7 @@ path = "src/bin/closed_perfusion_dissolved_oxygen_response_lag_mapping_station.r
 [[bin]]
 name = "closed_robotic_end_effector_autoclave_cycle_count_custody_station"
 path = "src/bin/closed_robotic_end_effector_autoclave_cycle_count_custody_station.rs"
+
+[[bin]]
+name = "sealed_microfluidic_cartridge_coupons"
+path = "src/bin/sealed_microfluidic_cartridge_coupons.rs"
