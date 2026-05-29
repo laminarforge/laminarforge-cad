@@ -1151,10 +1151,6 @@ name = "closed_cassette_gasket_install_torque_compression_station"
 path = "src/bin/closed_cassette_gasket_install_torque_compression_station.rs"
 
 [[bin]]
-name = "sixteen_slot_cassette_incubator_first_article"
-path = "src/bin/sixteen_slot_cassette_incubator_first_article.rs"
-
-[[bin]]
 name = "closed_sensor_data_timestamp_alignment_station"
 path = "src/bin/closed_sensor_data_timestamp_alignment_station.rs"
 
@@ -1511,5 +1507,41 @@ name = "closed_robotic_end_effector_autoclave_cycle_count_custody_station"
 path = "src/bin/closed_robotic_end_effector_autoclave_cycle_count_custody_station.rs"
 
 [[bin]]
-name = "sealed_microfluidic_cartridge_coupons"
-path = "src/bin/sealed_microfluidic_cartridge_coupons.rs"
+name = "closed_perfusion_media_temperature_step_response_station"
+path = "src/bin/closed_perfusion_media_temperature_step_response_station.rs"
+
+[[bin]]
+name = "closed_cell_suspension_optical_density_counter_crosscheck_station"
+path = "src/bin/closed_cell_suspension_optical_density_counter_crosscheck_station.rs"
+
+[[bin]]
+name = "closed_cassette_evaporation_edge_guard_media_overlay_station"
+path = "src/bin/closed_cassette_evaporation_edge_guard_media_overlay_station.rs"
+
+[[bin]]
+name = "closed_barcode_rfid_plate_fogging_condensation_readability_station"
+path = "src/bin/closed_barcode_rfid_plate_fogging_condensation_readability_station.rs"
+
+[[bin]]
+name = "closed_teer_electrode_fouling_cleaning_recovery_station"
+path = "src/bin/closed_teer_electrode_fouling_cleaning_recovery_station.rs"
+
+[[bin]]
+name = "closed_ecm_coating_thickness_uniformity_witness_station"
+path = "src/bin/closed_ecm_coating_thickness_uniformity_witness_station.rs"
+
+[[bin]]
+name = "closed_microfluidic_chip_lot_dimensional_metrology_fit_station"
+path = "src/bin/closed_microfluidic_chip_lot_dimensional_metrology_fit_station.rs"
+
+[[bin]]
+name = "closed_waste_line_backpressure_contamination_sentinel_station"
+path = "src/bin/closed_waste_line_backpressure_contamination_sentinel_station.rs"
+
+[[bin]]
+name = "closed_perfusion_sample_fraction_evaporation_carryover_archive_station"
+path = "src/bin/closed_perfusion_sample_fraction_evaporation_carryover_archive_station.rs"
+
+[[bin]]
+name = "closed_seed_density_inline_mix_uniformity_validation_station"
+path = "src/bin/closed_seed_density_inline_mix_uniformity_validation_station.rs"

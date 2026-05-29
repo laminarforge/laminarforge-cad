@@ -5917,6 +5917,186 @@ const OUTPUTS: &[ExpectedOutput] = &[
         min_size_mm: [10.0, 10.0, 1.0],
     },
     ExpectedOutput {
+        generator: "closed_perfusion_media_temperature_step_response_station",
+        path: "output/closed_perfusion_media_temperature_step_response_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_media_temperature_step_response_station",
+        path: "output/closed_perfusion_media_temperature_step_response_station_inline_temperature_sensor_ladder.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_media_temperature_step_response_station",
+        path: "output/closed_perfusion_media_temperature_step_response_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_suspension_optical_density_counter_crosscheck_station",
+        path: "output/closed_cell_suspension_optical_density_counter_crosscheck_station_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_suspension_optical_density_counter_crosscheck_station",
+        path: "output/closed_cell_suspension_optical_density_counter_crosscheck_station_optical_density_turbidity_window_lane.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cell_suspension_optical_density_counter_crosscheck_station",
+        path: "output/closed_cell_suspension_optical_density_counter_crosscheck_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_evaporation_edge_guard_media_overlay_station",
+        path: "output/closed_cassette_evaporation_edge_guard_media_overlay_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_evaporation_edge_guard_media_overlay_station",
+        path: "output/closed_cassette_evaporation_edge_guard_media_overlay_station_overlay_dam_coupon_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_cassette_evaporation_edge_guard_media_overlay_station",
+        path: "output/closed_cassette_evaporation_edge_guard_media_overlay_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_barcode_rfid_plate_fogging_condensation_readability_station",
+        path: "output/closed_barcode_rfid_plate_fogging_condensation_readability_station_containment_transfer_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_barcode_rfid_plate_fogging_condensation_readability_station",
+        path: "output/closed_barcode_rfid_plate_fogging_condensation_readability_station_fogging_coupon_plate.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_barcode_rfid_plate_fogging_condensation_readability_station",
+        path: "output/closed_barcode_rfid_plate_fogging_condensation_readability_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_teer_electrode_fouling_cleaning_recovery_station",
+        path: "output/closed_teer_electrode_fouling_cleaning_recovery_station_base_validation_tray.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_teer_electrode_fouling_cleaning_recovery_station",
+        path: "output/closed_teer_electrode_fouling_cleaning_recovery_station_fouling_coupon_ladder.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_teer_electrode_fouling_cleaning_recovery_station",
+        path: "output/closed_teer_electrode_fouling_cleaning_recovery_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_thickness_uniformity_witness_station",
+        path: "output/closed_ecm_coating_thickness_uniformity_witness_station_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_thickness_uniformity_witness_station",
+        path: "output/closed_ecm_coating_thickness_uniformity_witness_station_film_thickness_witness_coupon_matrix.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_ecm_coating_thickness_uniformity_witness_station",
+        path: "output/closed_ecm_coating_thickness_uniformity_witness_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_chip_lot_dimensional_metrology_fit_station",
+        path: "output/closed_microfluidic_chip_lot_dimensional_metrology_fit_station_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_chip_lot_dimensional_metrology_fit_station",
+        path: "output/closed_microfluidic_chip_lot_dimensional_metrology_fit_station_port_pitch_alignment_combs.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_microfluidic_chip_lot_dimensional_metrology_fit_station",
+        path: "output/closed_microfluidic_chip_lot_dimensional_metrology_fit_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backpressure_contamination_sentinel_station",
+        path: "output/closed_waste_line_backpressure_contamination_sentinel_station_secondary_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backpressure_contamination_sentinel_station",
+        path: "output/closed_waste_line_backpressure_contamination_sentinel_station_pressure_tap_ladder_manifold.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_waste_line_backpressure_contamination_sentinel_station",
+        path: "output/closed_waste_line_backpressure_contamination_sentinel_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_sample_fraction_evaporation_carryover_archive_station",
+        path: "output/closed_perfusion_sample_fraction_evaporation_carryover_archive_station_base_containment_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_sample_fraction_evaporation_carryover_archive_station",
+        path: "output/closed_perfusion_sample_fraction_evaporation_carryover_archive_station_evaporation_mass_witness_pads.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_perfusion_sample_fraction_evaporation_carryover_archive_station",
+        path: "output/closed_perfusion_sample_fraction_evaporation_carryover_archive_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_seed_density_inline_mix_uniformity_validation_station",
+        path: "output/closed_seed_density_inline_mix_uniformity_validation_station_leak_tray_deck.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_seed_density_inline_mix_uniformity_validation_station",
+        path: "output/closed_seed_density_inline_mix_uniformity_validation_station_inline_optical_density_window_bank.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
+        generator: "closed_seed_density_inline_mix_uniformity_validation_station",
+        path: "output/closed_seed_density_inline_mix_uniformity_validation_station_assembly.stl",
+        min_triangles: 20,
+        min_size_mm: [10.0, 10.0, 1.0],
+    },
+    ExpectedOutput {
         generator: "pipette_tip_organizer",
         path: "output/pipette_tip_organizer_pipette_stand.stl",
         min_triangles: 80,
@@ -6962,6 +7142,32 @@ mod tests {
             == "closed_perfusion_dissolved_oxygen_response_lag_mapping_station"));
         assert!(OUTPUTS.iter().any(|output| output.generator
             == "closed_robotic_end_effector_autoclave_cycle_count_custody_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_perfusion_media_temperature_step_response_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cell_suspension_optical_density_counter_crosscheck_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_cassette_evaporation_edge_guard_media_overlay_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_barcode_rfid_plate_fogging_condensation_readability_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_teer_electrode_fouling_cleaning_recovery_station"));
+        assert!(OUTPUTS
+            .iter()
+            .any(|output| output.generator
+                == "closed_ecm_coating_thickness_uniformity_witness_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_microfluidic_chip_lot_dimensional_metrology_fit_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_waste_line_backpressure_contamination_sentinel_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_perfusion_sample_fraction_evaporation_carryover_archive_station"));
+        assert!(OUTPUTS.iter().any(|output| output.generator
+            == "closed_seed_density_inline_mix_uniformity_validation_station"));
         assert!(OUTPUTS
             .iter()
             .any(|output| output.generator == "sterile_tubing_harness"));
