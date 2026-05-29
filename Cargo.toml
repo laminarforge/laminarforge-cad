@@ -1151,6 +1151,10 @@ name = "closed_cassette_gasket_install_torque_compression_station"
 path = "src/bin/closed_cassette_gasket_install_torque_compression_station.rs"
 
 [[bin]]
+name = "sixteen_slot_cassette_incubator_first_article"
+path = "src/bin/sixteen_slot_cassette_incubator_first_article.rs"
+
+[[bin]]
 name = "closed_sensor_data_timestamp_alignment_station"
 path = "src/bin/closed_sensor_data_timestamp_alignment_station.rs"
 
