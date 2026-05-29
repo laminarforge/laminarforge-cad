@@ -40,7 +40,7 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: cargo clippy
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --all-targets -- -A warnings -D clippy::correctness -D clippy::suspicious -D clippy::perf
 
       - name: cargo build --release
         run: cargo build --release

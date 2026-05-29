@@ -1205,7 +1205,7 @@ fn horizontal_frame(name: &str, outer_x: f64, outer_y: f64, rail: f64, z_t: f64,
 }
 
 fn slug(name: &str) -> String {
-    name.replace(' ', "_").replace('/', "_")
+    name.replace([' ', '/'], "_")
 }
 
 #[cfg(test)]

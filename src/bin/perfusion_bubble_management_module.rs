@@ -692,7 +692,7 @@ fn datum_loop_post(index: usize, x: f64, y: f64) -> Part {
     .translate(x, y, COMB_Z / 2.0 + 9.0);
     let pilot = centered_cylinder(
         format!("perfusion_bubble_module_datum_loop_post_pilot_{index}"),
-        2.0 / 2.0,
+        1.0,
         20.0,
         18,
     )
