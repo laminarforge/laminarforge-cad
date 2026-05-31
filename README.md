@@ -3,7 +3,7 @@
 
 # laminarforge-cad
 
-Parametric CAD models for the LaminarForge open-source diagnostics platform, written in Rust using the [`vcad`](https://crates.io/crates/vcad) crate. 45+ binaries in `src/bin/`, shared constants in `src/lib.rs`, PCB routing module in `src/pcb/`.
+Parametric CAD models for the LaminarForge open-source diagnostics platform, written in Rust using the [`vcad`](https://crates.io/crates/vcad) crate. Core LAMP/CRISPR device CAD is now built around a sealed disposable diagnostic cartridge rather than loose PCR tubes. Shared constants live in `src/lib.rs`, device and validation generators live in `src/bin/`, and PCB routing lives in `src/pcb/`.
 
 ## Setup
 
@@ -15,8 +15,11 @@ cd laminarforge-cad
 # Build all models
 cargo build --release
 
-# Generate a single model (outputs STL to ./output/)
-cargo run --release --bin tube_holder
+# Generate the sealed disposable cartridge prototype
+cargo run --release --bin diagnostic_cartridge
+
+# Generate the reusable device assembly visualization
+cargo run --release --bin assembly
 
 # Run tests
 cargo test --release

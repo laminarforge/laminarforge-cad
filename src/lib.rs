@@ -1,67 +1,89 @@
 pub mod lamp_rev_a_electrical;
 pub mod pcb;
 
-// ─── Shared Dimensions for LAMP Device v1 ───
+// Shared Dimensions for LAMP Device v1
 //
-// All CAD models import from here to stay in sync.
-// Change a dimension once, all models update.
+// All CAD models import from here to stay in sync. The core device now uses a
+// sealed disposable diagnostic cartridge instead of loose PCR tubes.
 
-/// Number of tube slots
+/// Number of optical/reaction lanes on the cartridge and Rev A PCB.
 pub const NUM_SLOTS: usize = 8;
 
-/// Center-to-center spacing between tube slots (mm)
-/// Changed from 10.0mm to 12.0mm to accommodate OPT101P DIP-8 package
-/// (9.81mm body length along pin direction requires >10mm spacing)
+/// Center-to-center spacing between cartridge reaction windows (mm).
 pub const SLOT_SPACING: f64 = 12.0;
 
-/// Tube specs (Novas Bio 0.2mL PCR tube, datasheet: 0.2400" = 6.096mm OD)
-pub const TUBE_OD: f64 = 6.096;
-pub const TUBE_PASSTHROUGH_DIAMETER: f64 = 7.0; // mount hole, easy insertion
+/// Disposable diagnostic cartridge envelope.
+pub const CARTRIDGE_LENGTH: f64 = 110.0;
+pub const CARTRIDGE_WIDTH: f64 = 42.0;
+pub const CARTRIDGE_BODY_HEIGHT: f64 = 7.0;
+pub const CARTRIDGE_TOP_FILM_THICKNESS: f64 = 0.35;
+pub const CARTRIDGE_BOTTOM_FILM_THICKNESS: f64 = 0.35;
+pub const CARTRIDGE_CORNER_RADIUS: f64 = 3.0;
+
+/// Cartridge bay clearances in the reusable instrument.
+pub const CARTRIDGE_CLEARANCE_X: f64 = 0.8;
+pub const CARTRIDGE_CLEARANCE_Y: f64 = 0.6;
+pub const CARTRIDGE_CLEARANCE_Z: f64 = 0.4;
+pub const CARTRIDGE_BAY_LENGTH: f64 = CARTRIDGE_LENGTH + 8.0;
+pub const CARTRIDGE_BAY_WIDTH: f64 = CARTRIDGE_WIDTH + 8.0;
+pub const CARTRIDGE_INSERTION_STOP_HEIGHT: f64 = 5.0;
+pub const CARTRIDGE_RAIL_WIDTH: f64 = 5.0;
+pub const CARTRIDGE_RAIL_HEIGHT: f64 = 4.0;
+pub const CARTRIDGE_ALIGNMENT_PIN_DIAMETER: f64 = 2.0;
+pub const CARTRIDGE_ALIGNMENT_HOLE_DIAMETER: f64 = 2.3;
+
+/// Swab docking geometry inside the disposable cartridge.
+pub const CARTRIDGE_SWAB_PORT_DIAMETER: f64 = 12.8;
+pub const CARTRIDGE_SWAB_CHAMBER_LENGTH: f64 = 28.0;
+pub const CARTRIDGE_SWAB_CHAMBER_WIDTH: f64 = 14.0;
+pub const CARTRIDGE_SWAB_CHAMBER_DEPTH: f64 = 5.0;
+pub const CARTRIDGE_SWAB_CENTER_Y: f64 = -11.5;
+
+/// Reaction chamber and fluorescence read-window geometry.
+pub const REACTION_CHAMBER_LENGTH: f64 = 8.0;
+pub const REACTION_CHAMBER_WIDTH: f64 = 7.0;
+pub const REACTION_CHAMBER_DEPTH: f64 = 1.4;
+pub const REACTION_WINDOW_LENGTH: f64 = 10.0;
+pub const REACTION_WINDOW_WIDTH: f64 = 9.0;
+pub const REACTION_CHAMBER_CENTER_Y: f64 = 8.0;
+pub const CARTRIDGE_CHANNEL_WIDTH: f64 = 1.2;
+pub const CARTRIDGE_CHANNEL_DEPTH: f64 = 0.7;
+pub const CARTRIDGE_WASTE_CHAMBER_LENGTH: f64 = 34.0;
+pub const CARTRIDGE_WASTE_CHAMBER_WIDTH: f64 = 7.0;
+pub const CARTRIDGE_WASTE_CENTER_Y: f64 = 18.0;
 
 /// PCB heater dimensions (mm)
 pub const PCB_THICKNESS: f64 = 1.6; // standard 2-layer FR-4
-pub const PCB_LENGTH: f64 = 100.0; // full board length, spans enclosure
-pub const PCB_WIDTH: f64 = 80.0; // full board width
+pub const PCB_LENGTH: f64 = 118.0; // full board length, spans enclosure
+pub const PCB_WIDTH: f64 = 88.0; // full board width
 
-/// Heater zone (serpentine copper trace on PCB bottom layer)
-pub const HEATER_ZONE_LENGTH: f64 = (NUM_SLOTS as f64 - 1.0) * SLOT_SPACING + 14.0; // 98mm at 12mm spacing (was 84mm at 10mm)
-pub const HEATER_ZONE_WIDTH: f64 = 22.0; // slightly wider than tubes for heat margin
+/// Heater zone (serpentine copper trace on PCB bottom layer).
+pub const HEATER_ZONE_LENGTH: f64 = (NUM_SLOTS as f64 - 1.0) * SLOT_SPACING + 14.0;
+pub const HEATER_ZONE_WIDTH: f64 = 34.0;
 
-/// Copper spreader plate (LEGACY — replaced by aluminum heating block in v1)
-pub const SPREADER_THICKNESS: f64 = 1.0;
-pub const SPREADER_LENGTH: f64 = HEATER_ZONE_LENGTH;
-pub const SPREADER_WIDTH: f64 = HEATER_ZONE_WIDTH;
-
-/// Tube holder (3D-printed PETG grip block — LEGACY, replaced by aluminum heating block)
-pub const HOLDER_HEIGHT: f64 = 18.0;
-pub const HOLDER_WIDTH: f64 = 22.0;
-pub const HOLDER_LENGTH: f64 = HEATER_ZONE_LENGTH;
-pub const HOLDER_TUBE_DIAMETER: f64 = 6.45; // comfortable fit after FDM shrinkage
-pub const HOLDER_SCREW_SPACING_X: f64 = 70.0;
-pub const HOLDER_SCREW_DIAMETER: f64 = 3.2;
-
-/// Aluminum heating block (replaces copper spreader + PETG tube holder)
-/// CNC-machined 6061-T6 aluminum. Holds tubes directly with integrated cartridge heater.
-/// Sits on PCB, connects via J4 (heater) and J3 (thermistor).
-pub const BLOCK_LENGTH: f64 = HEATER_ZONE_LENGTH; // 84mm
-pub const BLOCK_WIDTH: f64 = HEATER_ZONE_WIDTH; // 22mm
-pub const BLOCK_HEIGHT: f64 = 25.0; // 15mm wells + 10mm floor (heater bore + thermal mass)
-pub const BLOCK_TUBE_DIAMETER: f64 = 6.2; // tighter fit for CNC aluminum (0.1mm clearance vs 0.35mm for FDM)
-pub const BLOCK_WELL_DEPTH: f64 = 15.0; // immerses full conical bottom of PCR tube
+/// Aluminum cartridge heat platen.
+/// CNC-machined 6061-T6 aluminum. The disposable cartridge sits on the flat
+/// upper datum; the reusable device provides heat, clamping, and optics only.
+pub const BLOCK_LENGTH: f64 = CARTRIDGE_BAY_LENGTH;
+pub const BLOCK_WIDTH: f64 = CARTRIDGE_BAY_WIDTH;
+pub const BLOCK_HEIGHT: f64 = 16.0;
+pub const BLOCK_CARTRIDGE_POCKET_DEPTH: f64 = 1.2;
+pub const BLOCK_THERMAL_PAD_RECESS_DEPTH: f64 = 0.4;
 pub const HEATER_BORE_DIAMETER: f64 = 6.1; // 0.1mm clearance for 6mm cartridge heater
-pub const HEATER_BORE_DEPTH: f64 = 78.0; // from left end, nearly full block length
+pub const HEATER_BORE_DEPTH: f64 = 96.0; // from left end, under reaction chamber row
 pub const HEATER_BORE_Z_OFFSET: f64 = 5.0; // center height from block bottom
 pub const THERMISTOR_BORE_DIAMETER: f64 = 3.0; // 10K NTC glass bead thermistor
-pub const THERMISTOR_BORE_DEPTH: f64 = 7.0; // from front face, reads temp at heater level
+pub const THERMISTOR_BORE_DEPTH: f64 = 10.0; // from front face, reads temp at heater level
 pub const BLOCK_MOUNT_HOLE_DIAMETER: f64 = 3.2; // M3 clearance
-pub const BLOCK_MOUNT_HOLE_X: f64 = 39.0; // from center, near block ends
-pub const BLOCK_MOUNT_HOLE_Y: f64 = 8.0; // from center, outside wells and heater bore
+pub const BLOCK_MOUNT_HOLE_X: f64 = 49.0; // from center, near block ends
+pub const BLOCK_MOUNT_HOLE_Y: f64 = 20.0; // from center, outside cartridge pocket
 
 /// Optical mount dimensions (mm)
-/// 3D-printed PETG bar holding LEDs (front) and OPT101P detectors (back)
-/// PCR tubes pass through vertical channels between LED and detector sides
-pub const OPTICAL_MOUNT_WIDTH: f64 = 26.0; // LED wall + tube gap + detector wall
-pub const OPTICAL_MOUNT_HEIGHT: f64 = 16.0; // tall enough for OPT101 recess + walls
+/// 3D-printed opaque bridge holding excitation LEDs and detectors above the
+/// cartridge reaction windows.
+pub const OPTICAL_MOUNT_LENGTH: f64 = CARTRIDGE_BAY_LENGTH;
+pub const OPTICAL_MOUNT_WIDTH: f64 = 32.0;
+pub const OPTICAL_MOUNT_HEIGHT: f64 = 18.0;
 
 /// LED hole dimensions (470nm blue LED, 5mm T-1¾ package)
 pub const OPTICAL_LED_HOLE_DIAMETER: f64 = 5.2; // press-fit for 5mm LED
@@ -76,10 +98,10 @@ pub const OPTICAL_OPT101_RECESS_DEPTH: f64 = 5.0; // depth into back face (Y)
 
 /// Optical mount internal dimensions
 pub const OPTICAL_LED_WALL: f64 = 10.0; // front wall: LED depth (8mm) + back wall (2mm)
-pub const OPTICAL_TUBE_GAP: f64 = 8.0; // gap for PCR tubes (7mm + clearance)
 pub const OPTICAL_DETECTOR_WALL: f64 = 8.0; // back wall: OPT101 depth (5mm) + front wall (3mm)
 pub const OPTICAL_APERTURE_DIAMETER: f64 = 3.0; // light path aperture between LED and OPT101
-pub const OPTICAL_TUBE_CHANNEL_WIDTH: f64 = 7.0; // vertical tube pass-through (tube OD + clearance)
+pub const OPTICAL_WINDOW_APERTURE_LENGTH: f64 = 8.5;
+pub const OPTICAL_WINDOW_APERTURE_WIDTH: f64 = 6.0;
 pub const OPTICAL_WIRE_CHANNEL_WIDTH: f64 = 3.0; // wire routing groove width
 pub const OPTICAL_WIRE_CHANNEL_DEPTH: f64 = 2.5; // wire routing groove depth from back face
 
@@ -87,26 +109,34 @@ pub const OPTICAL_WIRE_CHANNEL_DEPTH: f64 = 2.5; // wire routing groove depth fr
 pub const ENCLOSURE_WALL: f64 = 3.0;
 pub const ENCLOSURE_FLOOR: f64 = 3.0;
 pub const POCKET_CLEARANCE: f64 = 0.5;
-pub const SHELF_DEPTH: f64 = BLOCK_WIDTH + 6.0; // 28mm
-pub const ELECTRONICS_DEPTH: f64 = 42.0;
+pub const SHELF_DEPTH: f64 = CARTRIDGE_BAY_WIDTH + 10.0;
+pub const ELECTRONICS_DEPTH: f64 = 48.0;
 
 /// Derived enclosure dimensions
-pub const INNER_X: f64 = HEATER_ZONE_LENGTH + 10.0; // 108mm (was 94mm at 10mm spacing)
-pub const INNER_Y: f64 = SHELF_DEPTH + ELECTRONICS_DEPTH; // 70mm
-pub const WALL_HEIGHT: f64 = PCB_THICKNESS + BLOCK_HEIGHT + 5.0; // 31.6mm
-pub const OUTER_X: f64 = INNER_X + ENCLOSURE_WALL * 2.0; // 114mm (was 100mm)
-pub const OUTER_Y: f64 = INNER_Y + ENCLOSURE_WALL * 2.0; // 76mm
-pub const OUTER_Z: f64 = WALL_HEIGHT + ENCLOSURE_FLOOR; // ~31.6mm
+pub const INNER_X: f64 = CARTRIDGE_BAY_LENGTH + 10.0;
+pub const INNER_Y: f64 = SHELF_DEPTH + ELECTRONICS_DEPTH;
+pub const WALL_HEIGHT: f64 =
+    PCB_THICKNESS + BLOCK_HEIGHT + CARTRIDGE_BODY_HEIGHT + OPTICAL_MOUNT_HEIGHT + 8.0;
+pub const OUTER_X: f64 = INNER_X + ENCLOSURE_WALL * 2.0;
+pub const OUTER_Y: f64 = INNER_Y + ENCLOSURE_WALL * 2.0;
+pub const OUTER_Z: f64 = WALL_HEIGHT + ENCLOSURE_FLOOR;
 
 /// Lid dimensions
 pub const LID_THICKNESS: f64 = 3.0;
 pub const LID_LIP_DEPTH: f64 = 5.0;
 pub const LID_LIP_CLEARANCE: f64 = 0.3;
-pub const LID_TUBE_HOLE_DIAMETER: f64 = 8.0;
+pub const LID_CARTRIDGE_WINDOW_LENGTH: f64 = CARTRIDGE_LENGTH + 4.0;
+pub const LID_CARTRIDGE_WINDOW_WIDTH: f64 = CARTRIDGE_WIDTH + 4.0;
+pub const LID_OPTICAL_BRIDGE_CLEARANCE: f64 = OPTICAL_MOUNT_WIDTH + 4.0;
 
-/// Compute the X position of the first tube hole (leftmost slot)
+/// Compute the X position of the first reaction window (leftmost lane).
 pub fn first_slot_x() -> f64 {
     -((NUM_SLOTS as f64 - 1.0) * SLOT_SPACING) / 2.0
+}
+
+/// Compute the X position of a cartridge reaction lane.
+pub fn reaction_lane_x(index: usize) -> f64 {
+    first_slot_x() + (index as f64) * SLOT_SPACING
 }
 
 /// Compute the shelf center Y in enclosure coordinates

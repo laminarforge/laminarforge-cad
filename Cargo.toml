@@ -30,8 +30,8 @@ name = "laminarforge_cad"
 path = "src/lib.rs"
 
 [[bin]]
-name = "tube_holder"
-path = "src/bin/tube_holder.rs"
+name = "diagnostic_cartridge"
+path = "src/bin/diagnostic_cartridge.rs"
 
 
 [[bin]]
@@ -379,8 +379,8 @@ name = "microfluidic_chip"
 path = "src/bin/microfluidic_chip.rs"
 
 [[bin]]
-name = "tube_fit_test"
-path = "src/bin/tube_fit_test.rs"
+name = "diagnostic_cartridge_fit_test"
+path = "src/bin/diagnostic_cartridge_fit_test.rs"
 
 [[bin]]
 name = "pcb_layout"

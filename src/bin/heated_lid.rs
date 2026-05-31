@@ -1,226 +1,171 @@
 use laminarforge_cad::*;
-use vcad::{centered_cube, centered_cylinder};
+use vcad::{centered_cube, centered_cylinder, Part};
 
-// ─── Heated Lid ───
+// Heated cartridge clamp lid.
 //
-// Heated lid assembly for v1 LAMP device. Replaces mineral oil overlay
-// for evaporation prevention. Aluminum heated plate at ~105°C contacts
-// 0.2mL PCR tube caps via a compressible silicone foam pad, preventing
-// condensation on tube walls during 65°C LAMP incubation.
-//
-// Same principle as PCR thermal cycler heated lids: keeping the lid
-// hotter than the reaction temperature forces condensation back into
-// the liquid rather than collecting on the cap.
-//
-// Architecture:
-//   - CNC aluminum plate with Kapton heater on top + thermistor pocket
-//   - 2mm silicone foam pad on bottom face for compliant tube-cap contact
-//   - Hinged to enclosure back wall via M3 pin
-//   - Magnetic closure on front edge (2× 6×3mm neodymium disc magnets)
-//   - Insulating PEEK or PTFE spacer ring prevents heat loss to enclosure
-//
-// Exports:
-//   output/heated_lid_plate.stl — aluminum heated plate
-//   output/heated_lid_frame.stl — 3D-printed hinge frame (PETG)
-//
-// Ticket: T-2BE16750
+// This is a reusable dry clamp for a sealed diagnostic cartridge. It replaces
+// the PCR tube-cap heated lid with a flat compression frame, a small heated
+// anti-condensation plate, and open optical windows for fluorescence reading.
 
 fn main() {
-    build_heated_plate();
+    build_heated_clamp_plate();
     build_hinge_frame();
 }
 
-/// Aluminum heated plate — the thermal core of the lid.
-///
-/// Kapton heater (25×50mm, 12V 15W) adheres to the top face recess.
-/// Thermistor inserts from the front edge at plate mid-height.
-/// Bottom face is flat — silicone foam pad (not modeled) adheres here
-/// and provides compliant contact with PCR tube caps.
-fn build_heated_plate() {
-    // ── Plate dimensions ──
-    // Sized to span the 8-tube array with margin for heat uniformity.
-    // Matches heating block length/width for alignment.
+fn build_heated_clamp_plate() {
+    let plate_length = CARTRIDGE_BAY_LENGTH;
+    let plate_width = CARTRIDGE_BAY_WIDTH + 6.0;
+    let plate_height = 6.0;
 
-    let plate_length = BLOCK_LENGTH; // 84mm (spans all 8 tube positions)
-    let plate_width = BLOCK_WIDTH + 4.0; // 26mm (wider for edge heat uniformity)
-    let plate_height = 6.0; // mm (enough thermal mass for stable 105°C)
+    let body = centered_cube(
+        "heated_cartridge_clamp_plate_body",
+        plate_length,
+        plate_width,
+        plate_height,
+    );
 
-    // ── Kapton heater recess (top face) ──
-    // Shallow pocket on top face for adhesive Kapton heater pad.
-    // 25×50mm heater, 0.3mm thick, centered on plate.
-    let heater_pad_x = 50.0; // mm
-    let heater_pad_y = 25.0; // mm
-    let heater_recess_depth = 0.5; // mm (heater sits flush, held by adhesive)
+    let mut cutouts = Part::empty("heated_cartridge_clamp_plate_cutouts");
 
-    // ── Thermistor pocket (from front face) ──
-    // 3mm NTC bead thermistor, measures plate temperature for PID control.
-    // Drilled from front face (-Y), 10mm deep, at plate mid-height.
-    let therm_d = 3.0; // mm
-    let therm_depth = 10.0; // mm (from front face)
-    let therm_z = 0.0; // plate mid-height
-
-    // ── Magnet recesses (front edge, bottom face) ──
-    // 2× 6mm dia × 3mm deep pockets for neodymium disc magnets.
-    // Matching magnets in the enclosure front wall provide closure force.
-    let magnet_d = 6.2; // mm (0.2mm clearance for 6mm magnet)
-    let magnet_depth = 3.0; // mm
-    let magnet_inset_x = 25.0; // mm from center (symmetric)
-    let magnet_y = -(plate_width / 2.0) + magnet_d / 2.0 + 1.0; // near front edge
-
-    // ── M3 mounting holes for hinge bracket ──
-    // 2× through-holes on back edge (+Y) for attaching to hinge frame
-    let hinge_hole_d = 3.2; // M3 clearance
-    let hinge_hole_inset_x = 30.0; // mm from center (symmetric)
-    let hinge_hole_y = plate_width / 2.0 - 4.0; // near back edge
-
-    // ── Build body ──
-
-    let body = centered_cube("plate_body", plate_length, plate_width, plate_height);
-
-    // ── Kapton heater recess (from top face) ──
-
-    let heater_recess_z = plate_height / 2.0 - heater_recess_depth / 2.0 + 0.1;
-    let heater_recess = centered_cube(
-        "heater_recess",
-        heater_pad_x,
-        heater_pad_y,
-        heater_recess_depth + 0.2,
+    let optical_window = centered_cube(
+        "fluorescence_window_clearance",
+        HEATER_ZONE_LENGTH + 6.0,
+        REACTION_WINDOW_WIDTH + 8.0,
+        plate_height + 2.0,
     )
-    .translate(0.0, 0.0, heater_recess_z);
+    .translate(0.0, REACTION_CHAMBER_CENTER_Y, 0.0);
+    cutouts = cutouts + optical_window;
 
-    // ── Thermistor pocket (from front face -Y) ──
+    let heater_recess = centered_cube("kapton_heater_recess", 70.0, 16.0, 0.5).translate(
+        0.0,
+        -CARTRIDGE_WIDTH / 2.0 + 9.0,
+        plate_height / 2.0 - 0.2,
+    );
+    cutouts = cutouts + heater_recess;
 
-    let therm_center_y = -(plate_width / 2.0) + therm_depth / 2.0;
-    let therm_pocket = centered_cylinder("therm_pocket", therm_d / 2.0, therm_depth + 1.0, 24)
+    let thermistor_pocket = centered_cylinder("clamp_lid_thermistor_pocket", 1.5, 12.0, 24)
         .rotate(90.0, 0.0, 0.0)
-        .translate(0.0, therm_center_y, therm_z);
+        .translate(0.0, -plate_width / 2.0 + 6.0, 0.0);
+    cutouts = cutouts + thermistor_pocket;
 
-    // ── Magnet recesses (bottom face) ──
+    for &mx in &[-42.0, 42.0] {
+        let hinge_hole = centered_cylinder(
+            format!(
+                "clamp_lid_hinge_hole_{}",
+                if mx < 0.0 { "left" } else { "right" }
+            ),
+            3.2 / 2.0,
+            plate_height + 2.0,
+            24,
+        )
+        .translate(mx, plate_width / 2.0 - 5.0, 0.0);
+        cutouts = cutouts + hinge_hole;
+    }
 
-    let magnet_z = -(plate_height / 2.0) + magnet_depth / 2.0 - 0.1;
-    let magnet_1 = centered_cylinder("magnet_1", magnet_d / 2.0, magnet_depth + 0.2, 32).translate(
-        -magnet_inset_x,
-        magnet_y,
-        magnet_z,
-    );
-    let magnet_2 = centered_cylinder("magnet_2", magnet_d / 2.0, magnet_depth + 0.2, 32).translate(
-        magnet_inset_x,
-        magnet_y,
-        magnet_z,
-    );
+    for &mx in &[-34.0, 34.0] {
+        let magnet = centered_cylinder(
+            format!(
+                "clamp_lid_magnet_recess_{}",
+                if mx < 0.0 { "left" } else { "right" }
+            ),
+            6.2 / 2.0,
+            3.2,
+            32,
+        )
+        .translate(mx, -plate_width / 2.0 + 5.0, -plate_height / 2.0 + 1.5);
+        cutouts = cutouts + magnet;
+    }
 
-    // ── Hinge mounting holes (back edge, through-holes) ──
+    let clamp = body - cutouts + compression_ribs(plate_length, plate_width, plate_height);
 
-    let hinge_1 = centered_cylinder("hinge_hole_1", hinge_hole_d / 2.0, plate_height + 2.0, 24)
-        .translate(-hinge_hole_inset_x, hinge_hole_y, 0.0);
-    let hinge_2 = centered_cylinder("hinge_hole_2", hinge_hole_d / 2.0, plate_height + 2.0, 24)
-        .translate(hinge_hole_inset_x, hinge_hole_y, 0.0);
-
-    // ── Assemble ──
-
-    let plate = body - heater_recess - therm_pocket - magnet_1 - magnet_2 - hinge_1 - hinge_2;
-
-    // ── Export ──
-
-    plate.write_stl("output/heated_lid_plate.stl").unwrap();
+    clamp.write_stl("output/heated_lid_plate.stl").unwrap();
 
     println!("Exported: output/heated_lid_plate.stl");
     println!();
-    println!("── Heated Lid Plate Specs ──");
-    println!("  Body:            {plate_length:.0}mm × {plate_width:.0}mm × {plate_height:.0}mm");
-    println!("  Material:        6061-T6 Aluminum");
-    println!("  Heater recess:   {heater_pad_x:.0}mm × {heater_pad_y:.0}mm × {heater_recess_depth:.1}mm (top face, Kapton 12V 15W)");
+    println!("-- Heated Cartridge Clamp Plate --");
+    println!("  Body:             {plate_length:.0}mm x {plate_width:.0}mm x {plate_height:.0}mm");
+    println!("  Material:         6061-T6 aluminum");
     println!(
-        "  Thermistor:      {therm_d:.0}mm dia × {therm_depth:.0}mm deep (front face, NTC 10K)"
+        "  Optical opening:  {:.0}mm x {:.0}mm over cartridge reaction windows",
+        HEATER_ZONE_LENGTH + 6.0,
+        REACTION_WINDOW_WIDTH + 8.0
     );
-    println!("  Magnets:         2× {magnet_d:.1}mm dia × {magnet_depth:.0}mm deep (bottom face, front edge)");
-    println!("  Hinge holes:     2× M3 ({hinge_hole_d:.1}mm) on back edge");
-    println!("  Target temp:     105°C (prevents condensation at 65°C LAMP)");
-    println!();
-    println!("── Assembly Notes ──");
-    println!("  1. Adhere Kapton heater (25×50mm, 12V 15W) into top recess");
-    println!("  2. Insert NTC thermistor into front pocket, seal with kapton tape");
-    println!("  3. Press-fit 6×3mm neodymium magnets into bottom-face pockets");
-    println!("  4. Adhere 2mm silicone foam pad to bottom face (tube contact)");
-    println!("     Foam compresses ~1mm under magnetic closure force");
-    println!("  5. Bolt to hinge frame via M3 screws on back edge");
+    println!("  Clamp target:     sealed cartridge film stack, not tube caps");
+    println!("  Wet path:         disposable cartridge only");
 }
 
-/// 3D-printed hinge frame — mounts to enclosure back wall, provides
-/// pivot point for the heated plate to swing open for tube access.
-///
-/// Simple U-bracket with M3 hinge pin holes that align with the
-/// plate's back-edge mounting holes. Bolts to enclosure with 2× M3.
+fn compression_ribs(plate_length: f64, plate_width: f64, plate_height: f64) -> Part {
+    let rib_z = -plate_height / 2.0 - 0.8;
+    let rear = centered_cube("rear_film_compression_rib", plate_length - 10.0, 2.0, 1.6).translate(
+        0.0,
+        CARTRIDGE_WIDTH / 2.0 - 3.0,
+        rib_z,
+    );
+    let front = centered_cube("front_film_compression_rib", plate_length - 10.0, 2.0, 1.6)
+        .translate(0.0, -CARTRIDGE_WIDTH / 2.0 + 3.0, rib_z);
+    let swab_end = centered_cube("swab_port_compression_pad", 30.0, 8.0, 1.6).translate(
+        -plate_length / 2.0 + 18.0,
+        -plate_width / 2.0 + 14.0,
+        rib_z,
+    );
+    rear + front + swab_end
+}
+
 fn build_hinge_frame() {
-    // ── Frame dimensions ──
-    let frame_width = 20.0; // mm (Y, depth along enclosure wall)
-    let frame_height = 15.0; // mm (Z, tall enough for hinge clearance)
-    let frame_length = 70.0; // mm (X, spans between hinge hole positions)
-    let wall_t = 3.0; // mm wall thickness
+    let frame_length = 94.0;
+    let frame_width = 20.0;
+    let frame_height = 16.0;
+    let wall_t = 3.0;
 
-    // ── Hinge pin holes ──
-    // M3 holes at the top of each arm, aligned with plate back-edge holes
-    let hinge_pin_d = 3.2; // M3 clearance
-    let arm_spacing = 60.0; // center-to-center of the two arms
-    let pin_z = frame_height / 2.0 - 4.0; // near top of frame
-
-    // ── Enclosure mounting holes ──
-    // 2× M3 through-holes at the base for bolting to enclosure back wall
-    let mount_d = 3.2;
-    let mount_spacing = 50.0;
-    let mount_z = -(frame_height / 2.0) + 5.0; // near bottom
-
-    // ── Build frame body (U-bracket) ──
-
-    let outer = centered_cube("frame_outer", frame_length, frame_width, frame_height);
+    let outer = centered_cube(
+        "cartridge_clamp_hinge_outer",
+        frame_length,
+        frame_width,
+        frame_height,
+    );
     let inner = centered_cube(
-        "frame_inner",
+        "cartridge_clamp_hinge_inner",
         frame_length - wall_t * 2.0,
-        frame_width + 2.0, // open front/back
+        frame_width + 2.0,
         frame_height - wall_t,
     )
-    .translate(0.0, 0.0, -(wall_t / 2.0));
+    .translate(0.0, 0.0, -wall_t / 2.0);
 
-    // ── Hinge pin holes (through arms, along Y) ──
-
-    let pin_1 = centered_cylinder("hinge_pin_1", hinge_pin_d / 2.0, frame_width + 2.0, 24)
+    let mut holes = Part::empty("cartridge_clamp_hinge_holes");
+    for &mx in &[-42.0, 42.0] {
+        let pin = centered_cylinder(
+            format!(
+                "cartridge_clamp_hinge_pin_{}",
+                if mx < 0.0 { "left" } else { "right" }
+            ),
+            3.2 / 2.0,
+            frame_width + 2.0,
+            24,
+        )
         .rotate(90.0, 0.0, 0.0)
-        .translate(-arm_spacing / 2.0, 0.0, pin_z);
-    let pin_2 = centered_cylinder("hinge_pin_2", hinge_pin_d / 2.0, frame_width + 2.0, 24)
+        .translate(mx, 0.0, frame_height / 2.0 - 4.0);
+        holes = holes + pin;
+    }
+
+    for &mx in &[-35.0, 35.0] {
+        let mount = centered_cylinder(
+            format!(
+                "cartridge_clamp_hinge_mount_{}",
+                if mx < 0.0 { "left" } else { "right" }
+            ),
+            3.2 / 2.0,
+            frame_width + 2.0,
+            24,
+        )
         .rotate(90.0, 0.0, 0.0)
-        .translate(arm_spacing / 2.0, 0.0, pin_z);
+        .translate(mx, 0.0, -frame_height / 2.0 + 5.0);
+        holes = holes + mount;
+    }
 
-    // ── Enclosure mounting holes (through base, along Y) ──
-
-    let mount_1 = centered_cylinder("mount_1", mount_d / 2.0, frame_width + 2.0, 24)
-        .rotate(90.0, 0.0, 0.0)
-        .translate(-mount_spacing / 2.0, 0.0, mount_z);
-    let mount_2 = centered_cylinder("mount_2", mount_d / 2.0, frame_width + 2.0, 24)
-        .rotate(90.0, 0.0, 0.0)
-        .translate(mount_spacing / 2.0, 0.0, mount_z);
-
-    // ── Assemble ──
-
-    let frame = (outer - inner) - pin_1 - pin_2 - mount_1 - mount_2;
-
-    // ── Export ──
-
+    let frame = outer - inner - holes;
     frame.write_stl("output/heated_lid_frame.stl").unwrap();
 
-    println!();
     println!("Exported: output/heated_lid_frame.stl");
-    println!();
-    println!("── Hinge Frame Specs ──");
-    println!("  Body:            {frame_length:.0}mm × {frame_width:.0}mm × {frame_height:.0}mm");
-    println!("  Material:        PETG (3D printed)");
-    println!("  Hinge pins:      2× M3 ({hinge_pin_d:.1}mm) at {arm_spacing:.0}mm spacing");
-    println!("  Enclosure mount: 2× M3 ({mount_d:.1}mm) at {mount_spacing:.0}mm spacing");
-    println!("  Wall thickness:  {wall_t:.0}mm");
-    println!();
-    println!("── Full Assembly ──");
-    println!("  1. Bolt hinge frame to enclosure back wall (2× M3)");
-    println!("  2. Thread M3×20mm screws through frame hinge holes + plate back holes");
-    println!("  3. Plate pivots open for tube insertion, magnets snap it closed");
-    println!("  4. Foam pad compresses onto tube caps under magnetic force");
-    println!("  5. PID heats plate to 105°C in ~30s (15W into 84g aluminum)");
+    println!(
+        "  Hinge frame:      {frame_length:.0}mm x {frame_width:.0}mm x {frame_height:.0}mm PETG"
+    );
 }

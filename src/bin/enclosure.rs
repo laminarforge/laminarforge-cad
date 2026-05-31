@@ -1,191 +1,240 @@
 use laminarforge_cad::*;
-use vcad::{centered_cube, centered_cylinder};
+use vcad::{centered_cube, centered_cylinder, Part};
 
-// ─── PETG Enclosure Box ───
+// PETG enclosure for the sealed-cartridge LAMP/CRISPR fluorescence device.
 //
-// 3D-printed (PETG) enclosure that houses the PCB trace heater +
-// copper spreader + tube holder + optical mount assembly in the front
-// shelf area, with an electronics bay in the rear for the ESP32-S3,
-// driver board, and wiring.
-//
-// The PCB sits on the enclosure floor. The serpentine copper trace on
-// the PCB bottom layer provides heating. A thin copper spreader plate
-// sits on the PCB over the heater zone, and the tube holder sits on
-// top of that.
-//
-// Features:
-// - Hollow box with ENCLOSURE_WALL walls and ENCLOSURE_FLOOR floor
-// - Front shelf/pocket sized for spreader + tube holder + optical mount
-//   with POCKET_CLEARANCE on each side
-// - Rear electronics bay (42mm deep) for ESP32-S3 and control board
-// - 4x M3 mounting holes in floor for PCB attachment
-// - USB port cutout in rear wall (12mm x 8mm)
-// - Barrel jack cutout in rear wall (12mm dia)
-// - 2x LED indicator holes in front wall (3mm dia)
-// - Ventilation slot pattern on both side walls
-//
-// Material: PETG
+// The reusable enclosure holds the PCB, aluminum heat platen, optical bridge,
+// and lid clamp. The sample and reagents stay sealed inside the disposable
+// cartridge inserted through the front bay.
 
 fn main() {
-    // ── Outer shell ──
-
-    let outer = centered_cube("outer", OUTER_X, OUTER_Y, OUTER_Z);
-
-    // Inner cavity (open top)
-    let inner = centered_cube("inner", INNER_X, INNER_Y, WALL_HEIGHT).translate(
-        0.0,
-        0.0,
-        ENCLOSURE_FLOOR / 2.0,
+    let outer = centered_cube(
+        "sealed_cartridge_enclosure_outer",
+        OUTER_X,
+        OUTER_Y,
+        OUTER_Z,
     );
+    let inner = centered_cube(
+        "sealed_cartridge_enclosure_inner",
+        INNER_X,
+        INNER_Y,
+        WALL_HEIGHT,
+    )
+    .translate(0.0, 0.0, ENCLOSURE_FLOOR / 2.0);
 
     let shell = outer - inner;
 
-    // ── Component pocket (recessed shelf in front portion) ──
-    // The shelf sits in the front half of the enclosure.
-    // Pocket is sized for spreader + tube holder + mount with clearance.
-    // The PCB sits on the enclosure floor (not in the pocket).
+    let mut cutouts = Part::empty("sealed_cartridge_enclosure_cutouts");
+    cutouts = cutouts + cartridge_bay_floor_pocket();
+    cutouts = cutouts + front_cartridge_slot();
+    cutouts = cutouts + pcb_mount_holes();
+    cutouts = cutouts + rear_io_cutouts();
+    cutouts = cutouts + front_indicator_holes();
+    cutouts = cutouts + side_vent_slots();
+    cutouts = cutouts + clamp_boss_holes();
 
-    let pocket_x = HOLDER_LENGTH + POCKET_CLEARANCE * 2.0;
-    let pocket_y = HOLDER_WIDTH + POCKET_CLEARANCE * 2.0;
-    let pocket_z = SPREADER_THICKNESS + HOLDER_HEIGHT + 1.0; // spreader + holder + clearance
-
-    let shelf_y = shelf_center_y();
-    let pocket_floor_z = floor_z();
-
-    let pocket = centered_cube("pocket", pocket_x, pocket_y, pocket_z).translate(
-        0.0,
-        shelf_y,
-        pocket_floor_z + pocket_z / 2.0,
-    );
-
-    // ── M3 PCB mounting holes in floor (4x, rectangular pattern) ──
-
-    let mount_hole_d = 3.2; // M3 clearance
-    let mount_spacing_x = PCB_LENGTH - 10.0; // near PCB edges
-    let mount_spacing_y = PCB_WIDTH - 10.0; // near PCB edges
-    let mount_depth = ENCLOSURE_FLOOR + 2.0; // through floor
-
-    let mut mount_holes = centered_cube("mh_init", 0.01, 0.01, 0.01);
-
-    for &dx in &[-mount_spacing_x / 2.0, mount_spacing_x / 2.0] {
-        for &dy in &[-mount_spacing_y / 2.0, mount_spacing_y / 2.0] {
-            let hole = centered_cylinder(
-                format!(
-                    "mount_{}_{}",
-                    if dx < 0.0 { "l" } else { "r" },
-                    if dy < 0.0 { "f" } else { "b" }
-                ),
-                mount_hole_d / 2.0,
-                mount_depth,
-                24,
-            )
-            .translate(dx, dy, -(OUTER_Z / 2.0) + mount_depth / 2.0 - 1.0);
-            mount_holes = mount_holes + hole;
-        }
-    }
-
-    // ── USB port cutout in rear wall (+Y face) ──
-
-    let usb_width = 12.0;
-    let usb_height = 8.0;
-    let usb_z = floor_z() + 10.0; // above floor level
-
-    let usb_cutout = centered_cube("usb_cutout", usb_width, ENCLOSURE_WALL + 2.0, usb_height)
-        .translate(0.0, OUTER_Y / 2.0, usb_z);
-
-    // ── Barrel jack cutout in rear wall (+Y face) ──
-
-    let barrel_d = 12.0;
-    let barrel_z = floor_z() + 10.0;
-
-    let barrel_cutout = centered_cylinder("barrel_jack", barrel_d / 2.0, ENCLOSURE_WALL + 2.0, 32)
-        .rotate(90.0, 0.0, 0.0)
-        .translate(-(OUTER_X / 4.0), OUTER_Y / 2.0, barrel_z);
-
-    // ── LED indicator holes in front wall (-Y face) ──
-
-    let led_d = 3.0;
-    let led_spacing = 15.0;
-    let led_z = floor_z() + 20.0;
-
-    let led_hole_1 = centered_cylinder("led_1", led_d / 2.0, ENCLOSURE_WALL + 2.0, 24)
-        .rotate(90.0, 0.0, 0.0)
-        .translate(-(led_spacing / 2.0), -(OUTER_Y / 2.0), led_z);
-
-    let led_hole_2 = centered_cylinder("led_2", led_d / 2.0, ENCLOSURE_WALL + 2.0, 24)
-        .rotate(90.0, 0.0, 0.0)
-        .translate(led_spacing / 2.0, -(OUTER_Y / 2.0), led_z);
-
-    // ── Side wall ventilation slots ──
-    // Slot pattern: 5 horizontal slots on each side wall for airflow
-
-    let vent_width = 20.0;
-    let vent_height = 2.0;
-    let vent_spacing = 4.0;
-    let num_vents = 5;
-
-    let vent_start_z = floor_z() + 8.0;
-
-    let mut vents = centered_cube("v_init", 0.01, 0.01, 0.01);
-
-    for side in &[-1.0_f64, 1.0] {
-        let vx = side * (OUTER_X / 2.0);
-        for j in 0..num_vents {
-            let vz = vent_start_z + (j as f64) * vent_spacing;
-            let slot = centered_cube(
-                format!("vent_{}_{j}", if *side < 0.0 { "l" } else { "r" }),
-                ENCLOSURE_WALL + 2.0,
-                vent_width,
-                vent_height,
-            )
-            .translate(vx, INNER_Y / 4.0, vz); // centered on electronics bay area
-            vents = vents + slot;
-        }
-    }
-
-    // ── Print brim (thin flange around base for bed adhesion) ──
-
-    let brim_width = 5.0; // extends 5mm beyond outer walls
-    let brim_thickness = 0.4; // ~2 layers at 0.2mm
-    let brim = centered_cube(
-        "brim",
-        OUTER_X + brim_width * 2.0,
-        OUTER_Y + brim_width * 2.0,
-        brim_thickness,
-    )
-    .translate(0.0, 0.0, -(OUTER_Z / 2.0) + brim_thickness / 2.0);
-
-    // ── Assemble ──
-
-    let enclosure = shell + brim
-        - pocket
-        - mount_holes
-        - usb_cutout
-        - barrel_cutout
-        - led_hole_1
-        - led_hole_2
-        - vents;
-
-    // ── Export ──
+    let enclosure =
+        shell + print_brim() + cartridge_rails() + heat_platen_bosses() + sensor_lands() - cutouts;
 
     enclosure.write_stl("output/enclosure.stl").unwrap();
 
     println!("Exported: output/enclosure.stl");
     println!();
-    println!("── Enclosure Specs ──");
-    println!("  Outer:          {OUTER_X:.1}mm x {OUTER_Y:.1}mm x {OUTER_Z:.1}mm");
-    println!("  Wall:           {ENCLOSURE_WALL:.1}mm (floor: {ENCLOSURE_FLOOR:.1}mm)");
-    println!("  Inner cavity:   {INNER_X:.1}mm x {INNER_Y:.1}mm x {WALL_HEIGHT:.1}mm");
-    println!("  Component pocket: {pocket_x:.1}mm x {pocket_y:.1}mm x {pocket_z:.1}mm");
-    println!("  Pocket clear:   {POCKET_CLEARANCE:.1}mm per side");
-    println!("  Shelf depth:    {SHELF_DEPTH:.1}mm (front)");
-    println!("  Electronics:    {ELECTRONICS_DEPTH:.1}mm (rear)");
-    println!("  PCB mount holes: 4x M3 ({mount_spacing_x:.0}mm x {mount_spacing_y:.0}mm pattern)");
-    println!("  USB cutout:     {usb_width:.0}mm x {usb_height:.0}mm (rear wall)");
-    println!("  Barrel jack:    {barrel_d:.0}mm dia (rear wall)");
-    println!("  LED holes:      2x {led_d:.0}mm dia (front wall, {led_spacing:.0}mm apart)");
+    println!("-- Sealed Cartridge Enclosure --");
+    println!("  Outer:              {OUTER_X:.1}mm x {OUTER_Y:.1}mm x {OUTER_Z:.1}mm");
+    println!("  Inner cavity:       {INNER_X:.1}mm x {INNER_Y:.1}mm x {WALL_HEIGHT:.1}mm");
+    println!("  Cartridge bay:      {CARTRIDGE_BAY_LENGTH:.1}mm x {CARTRIDGE_BAY_WIDTH:.1}mm");
     println!(
-        "  Vents:          {num_vents}x per side ({vent_width:.0}mm x {vent_height:.0}mm slots)"
+        "  Cartridge slot:     {:.1}mm x {:.1}mm front opening",
+        CARTRIDGE_WIDTH + 4.0,
+        CARTRIDGE_BODY_HEIGHT + CARTRIDGE_CLEARANCE_Z + 2.0
     );
-    println!("  Material:       PETG");
+    println!("  Shelf depth:        {SHELF_DEPTH:.1}mm");
+    println!("  Electronics depth:  {ELECTRONICS_DEPTH:.1}mm");
+    println!("  Material:           PETG");
+}
+
+fn cartridge_bay_floor_pocket() -> Part {
+    centered_cube(
+        "cartridge_bay_platen_pocket",
+        CARTRIDGE_BAY_LENGTH + 2.0,
+        CARTRIDGE_BAY_WIDTH + 2.0,
+        BLOCK_HEIGHT + PCB_THICKNESS + 2.0,
+    )
+    .translate(
+        0.0,
+        shelf_center_y(),
+        floor_z() + PCB_THICKNESS + (BLOCK_HEIGHT + 2.0) / 2.0,
+    )
+}
+
+fn front_cartridge_slot() -> Part {
+    centered_cube(
+        "front_cartridge_insert_slot",
+        CARTRIDGE_WIDTH + 4.0,
+        ENCLOSURE_WALL + 2.0,
+        CARTRIDGE_BODY_HEIGHT + CARTRIDGE_CLEARANCE_Z + 2.0,
+    )
+    .translate(
+        0.0,
+        -OUTER_Y / 2.0,
+        floor_z() + PCB_THICKNESS + BLOCK_HEIGHT + CARTRIDGE_BODY_HEIGHT / 2.0 + 1.0,
+    )
+}
+
+fn pcb_mount_holes() -> Part {
+    let mount_spacing_x = PCB_LENGTH - 10.0;
+    let mount_spacing_y = PCB_WIDTH - 10.0;
+    let mount_depth = ENCLOSURE_FLOOR + 2.0;
+    let mut holes = Part::empty("pcb_mount_holes");
+
+    for &dx in &[-mount_spacing_x / 2.0, mount_spacing_x / 2.0] {
+        for &dy in &[-mount_spacing_y / 2.0, mount_spacing_y / 2.0] {
+            let hole = centered_cylinder(
+                format!(
+                    "pcb_mount_{}_{}",
+                    if dx < 0.0 { "left" } else { "right" },
+                    if dy < 0.0 { "front" } else { "rear" }
+                ),
+                3.2 / 2.0,
+                mount_depth,
+                24,
+            )
+            .translate(dx, dy, -(OUTER_Z / 2.0) + mount_depth / 2.0 - 1.0);
+            holes = holes + hole;
+        }
+    }
+
+    holes
+}
+
+fn rear_io_cutouts() -> Part {
+    let usb = centered_cube("usb_c_cutout", 12.0, ENCLOSURE_WALL + 2.0, 8.0).translate(
+        12.0,
+        OUTER_Y / 2.0,
+        floor_z() + 11.0,
+    );
+    let barrel = centered_cylinder("barrel_jack_cutout", 6.0, ENCLOSURE_WALL + 2.0, 32)
+        .rotate(90.0, 0.0, 0.0)
+        .translate(-OUTER_X / 4.0, OUTER_Y / 2.0, floor_z() + 11.0);
+    let service = centered_cube("debug_header_rear_slot", 18.0, ENCLOSURE_WALL + 2.0, 6.0)
+        .translate(OUTER_X / 4.0, OUTER_Y / 2.0, floor_z() + 10.0);
+
+    usb + barrel + service
+}
+
+fn front_indicator_holes() -> Part {
+    let mut holes = Part::empty("front_indicator_holes");
+    for (i, x) in [-18.0, 0.0, 18.0].iter().enumerate() {
+        let hole = centered_cylinder(
+            format!("front_indicator_{i}"),
+            1.5,
+            ENCLOSURE_WALL + 2.0,
+            24,
+        )
+        .rotate(90.0, 0.0, 0.0)
+        .translate(*x, -OUTER_Y / 2.0, floor_z() + 23.0);
+        holes = holes + hole;
+    }
+    holes
+}
+
+fn side_vent_slots() -> Part {
+    let mut vents = Part::empty("side_vent_slots");
+    for side in &[-1.0_f64, 1.0] {
+        let vx = side * OUTER_X / 2.0;
+        for i in 0..6 {
+            let slot = centered_cube(
+                format!(
+                    "side_vent_{}_{}",
+                    if *side < 0.0 { "left" } else { "right" },
+                    i
+                ),
+                ENCLOSURE_WALL + 2.0,
+                22.0,
+                2.0,
+            )
+            .translate(vx, INNER_Y / 4.0, floor_z() + 10.0 + i as f64 * 4.0);
+            vents = vents + slot;
+        }
+    }
+    vents
+}
+
+fn clamp_boss_holes() -> Part {
+    let mut holes = Part::empty("clamp_boss_holes");
+    for &x in &[-42.0, 42.0] {
+        for &y in &[
+            shelf_center_y() - CARTRIDGE_BAY_WIDTH / 2.0 - 5.0,
+            shelf_center_y() + CARTRIDGE_BAY_WIDTH / 2.0 + 5.0,
+        ] {
+            let hole = centered_cylinder(
+                format!("clamp_boss_hole_{x:.0}_{y:.0}"),
+                3.2 / 2.0,
+                12.0,
+                24,
+            )
+            .translate(x, y, floor_z() + 16.0);
+            holes = holes + hole;
+        }
+    }
+    holes
+}
+
+fn print_brim() -> Part {
+    centered_cube("print_brim", OUTER_X + 10.0, OUTER_Y + 10.0, 0.4).translate(
+        0.0,
+        0.0,
+        -OUTER_Z / 2.0 + 0.2,
+    )
+}
+
+fn cartridge_rails() -> Part {
+    let rail_z = floor_z() + PCB_THICKNESS + BLOCK_HEIGHT + CARTRIDGE_RAIL_HEIGHT / 2.0;
+    let rail_y_offset = CARTRIDGE_WIDTH / 2.0 + CARTRIDGE_RAIL_WIDTH / 2.0 + 1.5;
+    let left = centered_cube(
+        "enclosure_left_cartridge_rail",
+        CARTRIDGE_LENGTH + 8.0,
+        CARTRIDGE_RAIL_WIDTH,
+        CARTRIDGE_RAIL_HEIGHT,
+    )
+    .translate(0.0, shelf_center_y() - rail_y_offset, rail_z);
+    let right = centered_cube(
+        "enclosure_right_cartridge_rail",
+        CARTRIDGE_LENGTH + 8.0,
+        CARTRIDGE_RAIL_WIDTH,
+        CARTRIDGE_RAIL_HEIGHT,
+    )
+    .translate(0.0, shelf_center_y() + rail_y_offset, rail_z);
+    left + right
+}
+
+fn heat_platen_bosses() -> Part {
+    let mut bosses = Part::empty("heat_platen_mount_bosses");
+    for &x in &[-BLOCK_MOUNT_HOLE_X, BLOCK_MOUNT_HOLE_X] {
+        for &y in &[
+            shelf_center_y() - BLOCK_MOUNT_HOLE_Y,
+            shelf_center_y() + BLOCK_MOUNT_HOLE_Y,
+        ] {
+            let boss = centered_cylinder(format!("platen_boss_{x:.0}_{y:.0}"), 4.2, 8.0, 32)
+                .translate(x, y, floor_z() + 4.0);
+            bosses = bosses + boss;
+        }
+    }
+    bosses
+}
+
+fn sensor_lands() -> Part {
+    let cartridge_present = centered_cube("cartridge_present_switch_land", 16.0, 8.0, 4.0)
+        .translate(
+            CARTRIDGE_LENGTH / 2.0 - 12.0,
+            shelf_center_y() - CARTRIDGE_WIDTH / 2.0 - 7.0,
+            floor_z() + PCB_THICKNESS + BLOCK_HEIGHT + 2.0,
+        );
+    let lid_switch = centered_cube("lid_closed_switch_land", 14.0, 8.0, 4.0).translate(
+        -CARTRIDGE_LENGTH / 2.0 + 12.0,
+        shelf_center_y() + CARTRIDGE_WIDTH / 2.0 + 7.0,
+        floor_z() + PCB_THICKNESS + BLOCK_HEIGHT + 2.0,
+    );
+    cartridge_present + lid_switch
 }

@@ -2742,7 +2742,7 @@ fn manifest() -> Vec<Equipment> {
             disposition: Disposition::Buy,
             readiness: Readiness::Defer,
             culture_use: CultureUse::HardwareValidation,
-            cad_bins: &["tube_holder", "column_rack", "pipette_tip_organizer"],
+            cad_bins: &["column_rack", "pipette_tip_organizer"],
             validation_gate: "If used, calibrated pipettes and sterile filtered tips are limited to bench metrology, setup, rescue, or non-production validation steps.",
             notes: "Not part of the intended cell-culture process. Keep the design pressure on automated closed handling.",
         },
