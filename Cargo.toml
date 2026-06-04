@@ -407,6 +407,10 @@ name = "sixteen_slot_cassette_print_coupons"
 path = "src/bin/sixteen_slot_cassette_print_coupons.rs"
 
 [[bin]]
+name = "single_aav_condition_module_mockup"
+path = "src/bin/single_aav_condition_module_mockup.rs"
+
+[[bin]]
 name = "microfluidic_chip_cnc_revc"
 path = "src/bin/microfluidic_chip_cnc_revc.rs"
 
