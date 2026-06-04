@@ -48,13 +48,13 @@ Required implementation direction:
 - Do not use the existing `stl_to_step` helper as the RFQ release path because it converts triangulated STL faces and currently skips/fails softly when `stltostp` is missing.
 - If STL-to-STEP conversion is used at all, label it `non-release mesh-derived STEP` and require vendor approval before quoting.
 
-Recommended future command:
+Implemented command:
 
 ```text
-cargo run --features step --bin sixteen_slot_cassette_first_article_step
+CMAKE_POLICY_VERSION_MINIMUM=3.5 cargo run --features step --bin sixteen_slot_cassette_first_article_step
 ```
 
-The future bin should export the six custom part STEP files and one stackup/reference STEP file, then assert all files exist. Missing files should fail the run.
+The `CMAKE_POLICY_VERSION_MINIMUM=3.5` environment variable is required with the current local CMake/`occt-sys` combination; without it, OpenCascade configuration fails before Rust type-checking. The exporter creates the six custom part STEP files and one stackup/reference STEP file, then asserts all files exist. Missing files fail the run.
 
 ## Drawing Set
 
@@ -291,12 +291,12 @@ A9 is satisfied when the plan exists. A future A9 implementation ticket is satis
 
 Recommended next implementation tasks:
 
-1. Add `src/bin/sixteen_slot_cassette_first_article_step.rs` using the `step` feature and OpenCascade B-rep primitives.
-2. Export the six custom part STEP files and stackup/reference STEP file with hard-fail assertions.
-3. Decide whether generated `rfq/` output remains ignored or whether a zipped RFQ release artifact should be committed under a controlled release directory.
+1. Done: add `src/bin/sixteen_slot_cassette_first_article_step.rs` using the `step` feature and OpenCascade B-rep primitives.
+2. Done: export the six custom part STEP files and stackup/reference STEP file with hard-fail assertions.
+3. Decide whether generated `output/rfq/` output remains ignored or whether a zipped RFQ release artifact should be committed under a controlled release directory.
 4. Create drawing-source templates or markdown-to-PDF drawing notes for D0-D9.
 5. Add a manifest generator that records file names, commit hash, export command, dimensions, and no-biological-claim notes.
-6. Update A8 once the actual STEP/drawing package exists.
+6. Update A8 from "RFQ not ready" only after the actual D0-D9 drawing package exists.
 
 ## Explicit Blockers
 
@@ -306,4 +306,3 @@ Recommended next implementation tasks:
 - Do not release a drawing set without D7 stackup review of gasket compression.
 - Do not claim sterility, live-cell readiness, AAV containment, or biological compatibility from STEP/drawing output.
 - Do not change slot count, slot centers, one-condition semantics, or disposable wetted-path policy without revising A0.
-

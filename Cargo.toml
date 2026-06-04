@@ -399,6 +399,10 @@ name = "microfluidic_chip_cnc_step"
 path = "src/bin/microfluidic_chip_cnc_step.rs"
 
 [[bin]]
+name = "sixteen_slot_cassette_first_article_step"
+path = "src/bin/sixteen_slot_cassette_first_article_step.rs"
+
+[[bin]]
 name = "microfluidic_chip_cnc_revc"
 path = "src/bin/microfluidic_chip_cnc_revc.rs"
 
