@@ -247,6 +247,8 @@ A6 handoff: `docs/sixteen_slot_cassette_a6_disposable_fluid_path_spec.md` resolv
 
 A7 handoff: `docs/sixteen_slot_cassette_a7_no_cell_validation_fixture_spec.md` defines the no-cell bench gate for the 16-slot first article: fit/datum, compression witness, harness topology, prime/debubble, leak/pressure decay, flow balance, restriction/occlusion detection, dye recovery, waste/backflow, and repeat assembly tests. Older 4 x 5 / 20-position validation fixtures are reference concepts only until ported to this slot map and A6 port plan.
 
+A8 handoff: `docs/sixteen_slot_cassette_a8_first_article_build_package.md` consolidates A0-A7 into the first-article build package. It records the verified seven-STL internal fit-check export, states that vendor RFQ still requires STEP files and 2D drawings, defines custom and bought-component package assumptions, sets assembly/QA order, and lists blockers before media-only, live-cell, or AAV work.
+
 ## Reserved Sensor And Module Interfaces
 
 Current first-article service/dock reserves:
@@ -275,6 +277,7 @@ Open issue for sensor/module agents: final connector family, cable routing, stra
 | A4 DFM | Material/process/tolerance recommendations, radii, surface finishes, drawing notes | Disposable wetted-path policy and 16-slot first-build baseline |
 | A6 Fluid Path | Port assignment, tubing route, connector recommendation, prime/waste/bubble plan | One AAV condition per cassette and bought disposable wetted path for first article |
 | A7 No-Cell Validation | Leak/flow/bubble/dead-volume fixture details and acceptance evidence plan | Shared slot map, datums, and condition ID linkage |
+| A8 Build Package | Output manifest, BOM assumptions, assembly/QA checklist, RFQ readiness blockers | No biological claims, no STL-only vendor release, no mixed-AAV routing |
 
 ## A0 Open Decisions
 
