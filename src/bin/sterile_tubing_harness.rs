@@ -7,6 +7,8 @@ use vcad::{centered_cube, centered_cylinder, Part};
 // - Keep culture media in a replaceable sterile fluid path.
 // - Present keyed, robot-loadable inserts instead of routine manual pipetting.
 // - Align five row trunks and twenty chip branches to the 4x5 cassette layout.
+// - Distribute one cassette-level AAV condition consistently; do not use the row
+//   trunks to mix different AAV candidates without a later isolation validation.
 // - Provide visible bubble traps, strain relief, and pump-side service routing.
 //
 // This is a CAD interface model for automation planning. Material, sterilization,
@@ -72,7 +74,7 @@ fn main() {
     println!("Exported: output/sterile_tubing_harness_assembly.stl");
 
     println!(
-        "Sterile tubing harness: disposable row manifold insert, 20 chip branch strain-relief comb, keyed pump couplers, and 4x5 cassette alignment."
+        "Sterile tubing harness: disposable row manifold insert for one cassette-level AAV condition, 20 chip branch strain-relief comb, keyed pump couplers, and 4x5 cassette alignment."
     );
 }
 

@@ -5,6 +5,8 @@ use vcad::{centered_cube, centered_cylinder, Part};
 //
 // Intent:
 // - Hold one cassette bench nest / 20-chip cassette as a sealed process module.
+// - Treat that enclosed cassette as one AAV condition; compare candidates with
+//   parallel sealed modules or cassettes under matched environmental controls.
 // - Keep routine culture closed: only service ports, sensors, and dock interfaces cross the boundary.
 // - Reserve geometry for gas, media, waste, thermal coupling, imaging, and TEER/sensor cabling.
 // - Make the module dockable inside the larger clean automation pod.
@@ -65,7 +67,7 @@ fn main() {
     println!("Exported: output/sealed_culture_module_assembly.stl");
 
     println!(
-        "Sealed culture module: {:.0}mm x {:.0}mm footprint, one automated cassette/nest, gasketed lid frame, service bulkhead, and thermal plate interface.",
+        "Sealed culture module: {:.0}mm x {:.0}mm footprint, one cassette-level AAV condition, gasketed lid frame, service bulkhead, and thermal plate interface.",
         MODULE_X, MODULE_Y
     );
 }

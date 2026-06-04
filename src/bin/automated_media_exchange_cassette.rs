@@ -5,9 +5,11 @@ use vcad::{centered_cube, centered_cylinder, Part};
 //
 // Intent:
 // - Hold one 20-chip shelf module: 4 columns x 5 rows of Rev C culture chips.
+// - Treat the cassette as one AAV capsid/promoter/payload/dose condition for screening.
 // - Keep media exchange on a constrained pump/reservoir/tubing path.
 // - Give a robot arm or deck actuator obvious gripper/fiducial features.
 // - Keep bubble inspection and leak containment visible during validation.
+// - Scale AAV candidate count by adding matched cassettes, not by mixing candidates here.
 //
 // This is hardware architecture, not a biological readiness claim.
 
@@ -65,7 +67,7 @@ fn main() {
     println!("Exported: output/automated_media_exchange_cassette_assembly.stl");
 
     println!(
-        "Automated media cassette: {COLS}x{ROWS} Rev C chips, row media rails, robot fiducials/gripper ears, bubble-view gutters, and leak tray."
+        "Automated media cassette: {COLS}x{ROWS} Rev C chips for one cassette-level AAV condition, row media rails, robot fiducials/gripper ears, bubble-view gutters, and leak tray."
     );
 }
 

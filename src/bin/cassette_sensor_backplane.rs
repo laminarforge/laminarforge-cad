@@ -10,6 +10,8 @@ use vcad::{centered_cube, centered_cylinder, Part};
 // - Hold compliant spring pins in an insulated carrier above those pads.
 // - Reserve a rear TEER/impedance multiplex connector zone and cable exit.
 // - Provide keyed alignment, dry gasket lands, insulation standoffs, and fiducials.
+// - Record per-chip/cell-type signals within one cassette-level AAV condition;
+//   candidate comparisons happen across matched cassettes or sealed modules.
 //
 // This is mechanical/electrical interface architecture only. It is not a sealed
 // culture boundary, validated electrode layout, or final PCB design.
@@ -94,7 +96,7 @@ fn main() {
     write_part(&assembly, "output/cassette_sensor_backplane_assembly.stl");
 
     println!(
-        "Cassette sensor backplane: {COLS}x{ROWS} chip grid, {CONTACTS_PER_CHIP} dry contacts/chip, {:.0}mm x {:.0}mm substrate, {:.0}mm rear TEER/impedance connector zone.",
+        "Cassette sensor backplane: {COLS}x{ROWS} chip grid for one cassette-level AAV condition, {CONTACTS_PER_CHIP} dry contacts/chip, {:.0}mm x {:.0}mm substrate, {:.0}mm rear TEER/impedance connector zone.",
         BACKPLANE_X, BACKPLANE_Y, CONNECTOR_ZONE_X
     );
 }
