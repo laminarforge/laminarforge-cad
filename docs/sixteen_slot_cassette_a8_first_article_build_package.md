@@ -218,7 +218,7 @@ These are not negotiable in the first article:
 
 Recommended next work after A8:
 
-1. A9 STEP/drawing export plan for the six custom RFQ parts plus stackup drawing.
+1. A9 STEP/drawing export plan for the six custom RFQ parts plus stackup drawing: see `docs/sixteen_slot_cassette_a9_step_drawing_export_plan.md`.
 2. A10 16-slot A7 validation fixture CAD or sourced bench fixture package.
 3. A11 bought-component downselect for tubing, connectors, pump/pressure-control, sensors, labels, and collection hardware.
 4. A12 RFQ packet draft with vendor questions, drawing notes, inspection table, and quote options.

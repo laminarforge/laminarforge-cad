@@ -249,6 +249,8 @@ A7 handoff: `docs/sixteen_slot_cassette_a7_no_cell_validation_fixture_spec.md` d
 
 A8 handoff: `docs/sixteen_slot_cassette_a8_first_article_build_package.md` consolidates A0-A7 into the first-article build package. It records the verified seven-STL internal fit-check export, states that vendor RFQ still requires STEP files and 2D drawings, defines custom and bought-component package assumptions, sets assembly/QA order, and lists blockers before media-only, live-cell, or AAV work.
 
+A9 handoff: `docs/sixteen_slot_cassette_a9_step_drawing_export_plan.md` defines the STEP and drawing release plan required before vendor RFQ. It selects true STEP/B-rep export as the intended path, rejects STL-only or silently skipped conversion for release, defines D0-D9 drawing sheets, and lists critical inspection tables and stackup review requirements.
+
 ## Reserved Sensor And Module Interfaces
 
 Current first-article service/dock reserves:
@@ -278,6 +280,7 @@ Open issue for sensor/module agents: final connector family, cable routing, stra
 | A6 Fluid Path | Port assignment, tubing route, connector recommendation, prime/waste/bubble plan | One AAV condition per cassette and bought disposable wetted path for first article |
 | A7 No-Cell Validation | Leak/flow/bubble/dead-volume fixture details and acceptance evidence plan | Shared slot map, datums, and condition ID linkage |
 | A8 Build Package | Output manifest, BOM assumptions, assembly/QA checklist, RFQ readiness blockers | No biological claims, no STL-only vendor release, no mixed-AAV routing |
+| A9 STEP/Drawings | STEP export plan, drawing sheet list, inspection tables, stackup review plan | No mesh-derived release geometry, no silent export fallback, no RFQ without drawings |
 
 ## A0 Open Decisions
 
