@@ -245,6 +245,8 @@ Open issue for fluid-path agent: connector family, tube OD/ID, bend radius, port
 
 A6 handoff: `docs/sixteen_slot_cassette_a6_disposable_fluid_path_spec.md` resolves the first-article fluid path as a disposable, one-condition, pressure-limited single-pass harness with bought sterile connector/tube-welding assumptions. It assigns logical G0-G3, M0-M6, and W0-W4 port roles while keeping final connector SKUs, tubing OD/ID, pump type, and vendor connector cutouts open for RFQ/validation.
 
+A7 handoff: `docs/sixteen_slot_cassette_a7_no_cell_validation_fixture_spec.md` defines the no-cell bench gate for the 16-slot first article: fit/datum, compression witness, harness topology, prime/debubble, leak/pressure decay, flow balance, restriction/occlusion detection, dye recovery, waste/backflow, and repeat assembly tests. Older 4 x 5 / 20-position validation fixtures are reference concepts only until ported to this slot map and A6 port plan.
+
 ## Reserved Sensor And Module Interfaces
 
 Current first-article service/dock reserves:
