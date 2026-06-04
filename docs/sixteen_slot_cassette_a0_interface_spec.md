@@ -243,6 +243,8 @@ Fluid-path agent constraints:
 
 Open issue for fluid-path agent: connector family, tube OD/ID, bend radius, port assignment, valve/pump interface, and sterile connection method are not frozen.
 
+A6 handoff: `docs/sixteen_slot_cassette_a6_disposable_fluid_path_spec.md` resolves the first-article fluid path as a disposable, one-condition, pressure-limited single-pass harness with bought sterile connector/tube-welding assumptions. It assigns logical G0-G3, M0-M6, and W0-W4 port roles while keeping final connector SKUs, tubing OD/ID, pump type, and vendor connector cutouts open for RFQ/validation.
+
 ## Reserved Sensor And Module Interfaces
 
 Current first-article service/dock reserves:
