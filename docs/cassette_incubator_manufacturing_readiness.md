@@ -8,6 +8,8 @@ Use a 16-slot, 4 x 4 cassette/module as the first hardware anchor. This is now t
 
 The immediate work is the cassette first article: reusable lower carrier, reusable lid/clamp, gasket/witness system, disposable sterile tubing harness assumptions, barcode/condition ID, no-cell validation fixture, and dock/module interfaces reserved for later controlled incubation. Do not spend the next build cycle on CO2 incubator control; design the cassette so it can dock into a cassette-level controlled module later.
 
+The shared mechanical/interface baseline for downstream agents is `docs/sixteen_slot_cassette_a0_interface_spec.md`.
+
 The repo contains two competing cassette directions:
 
 | Direction | Status | Decision |
