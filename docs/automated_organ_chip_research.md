@@ -19,9 +19,15 @@ That makes the LaminarForge direction plausible and research-aligned, but not tr
 
 For HSV-2 AAV selectivity work, one cassette/box is one AAV test condition. A condition means a specific capsid plus the cassette-level expression configuration being evaluated, including promoter, payload cassette, dose/MOI, timing, and media recipe.
 
-The 20 chips inside a cassette are technical and cell-type replicates under the same exposure, not twenty different AAV candidates. This is intentional: the cassette is the environmental control unit. Keeping one AAV condition per cassette reduces carryover risk, route ambiguity, priming errors, and false differences caused by row/position effects.
+The slots inside a cassette are technical and cell-type replicates under the same exposure, not separate AAV candidates. This is intentional: the cassette is the environmental control unit. Keeping one AAV condition per cassette reduces carryover risk, route ambiguity, priming errors, and false differences caused by row/position effects.
 
 Scale comes from adding matched cassettes or sealed modules in parallel, then comparing cassette-level runs against shared no-cell, negative, positive, and vehicle controls. Do not mix multiple AAV candidates inside one cassette unless a later cassette revision has validated isolation, residual/carryover clearance, connector topology verification, and per-lane dose recovery.
+
+## First Build Format
+
+The first physical AAV cassette build is the 16-slot, 4 x 4 cassette. It is the active baseline for manufacturable carrier, lid/clamp, gasket, disposable tubing harness, no-cell validation, and later cassette-level incubation-module docking work.
+
+The older 20-chip / 4 x 5 cassette geometry remains useful as a higher-density scale concept and as existing CAD reference, but it is deferred until the 16-slot cassette proves repeatable assembly, gasket compression, leak integrity, priming, bubble clearing, dead volume, and flow balance.
 
 ## Existing Reference Systems
 
@@ -37,27 +43,27 @@ Scale comes from adding matched cassettes or sealed modules in parallel, then co
 
 ## Design Implications
 
-1. Do not design around one chip as the main unit. Use a multi-chip cassette or shelf as the minimum automation module.
-2. Treat one cassette/box as one AAV condition for selectivity screening; scale candidate count by running more cassettes under matched environmental controls.
-3. Keep Rev C chip compatibility, but treat the cassette as a fluidic/mechanical carrier, not just a holder.
-4. Borrow from FCB architecture: row/column manifolds, standardized connector locations, routing blocks, and modular pump/reservoir/sensor interfaces.
-5. Keep robot interface features: gripper ears, fiducials, latching, and repeatable deck datum.
-6. Use closed or semi-closed disposable wetted paths where possible. Printed parts should provide structure, not become unvalidated sterile fluid contact surfaces.
-7. Add explicit validation gates: flow-rate mapping, cross-channel uniformity, leak test, bubble clearance, dead-volume measurement, priming time, media recovery/sampling accuracy, and contamination hold tests.
+1. Do not design around one chip as the main unit. Use a multi-slot cassette as the minimum automation module.
+2. Use the 16-slot, 4 x 4 cassette as the first build baseline.
+3. Treat one cassette/box as one AAV condition for selectivity screening; scale candidate count by running more cassettes under matched environmental controls.
+4. Keep Rev C chip compatibility, but treat the cassette as a fluidic/mechanical carrier, not just a holder.
+5. Borrow from FCB architecture: row/column manifolds, standardized connector locations, routing blocks, and modular pump/reservoir/sensor interfaces.
+6. Keep robot interface features: gripper ears, fiducials, latching, and repeatable deck datum.
+7. Use closed or semi-closed disposable wetted paths where possible. Printed parts should provide structure, not become unvalidated sterile fluid contact surfaces.
+8. Add explicit validation gates: flow-rate mapping, cross-channel uniformity, leak test, bubble clearance, dead-volume measurement, priming time, media recovery/sampling accuracy, and contamination hold tests.
 
 ## Current CAD Response
 
-The initial `automated_media_exchange_cassette` is being shaped as a 20-chip cassette/shelf:
+The active first-build direction is the 16-slot cassette package documented in `docs/cassette_incubator_manufacturing_readiness.md` and represented by `sixteen_slot_cassette_incubator_first_article` plus the 16-slot validation fixtures.
 
-- 4 columns x 5 rows of Rev C chips.
-- Row media rails for inlet/outlet routing.
-- Robot gripper ears and fiducial targets.
-- Bubble-view gutters.
-- Leak/drain features.
-- Compatibility with the existing `media_reservoir`, `chip_priming_tubing_fixture`, and higher-density chip-farm direction.
-- Experimental semantics: one cassette carries one AAV capsid/promoter/payload/dose condition across all chips. Parallel cassettes carry parallel candidate conditions.
+- 4 columns x 4 rows / 16 cassette positions.
+- Reusable structural carrier and lid/clamp.
+- Replaceable gasket or gasketed insert.
+- Disposable sterile fluid path and bought connector assumptions.
+- Imaging/window access, barcode/condition ID, datum features, leak capture, and sensor/readout interfaces reserved.
+- Experimental semantics: one cassette carries one AAV capsid/promoter/payload/dose condition across all slots. Parallel cassettes carry parallel candidate conditions.
 
-The next iteration should add a more explicit manifold/FCB layer: either a reusable dry mechanical cassette with disposable sterile tubing snapped in, or a dedicated sterilizable fluidic plate with gasketed chip interfaces.
+The existing `automated_media_exchange_cassette`, `cassette_bench_nest`, `sterile_tubing_harness`, `sealed_culture_module`, and `cassette_sensor_backplane` models still document the older 20-chip scale direction. Treat them as reference geometry to harvest ideas from, not as the first build package.
 
 ## Sources
 
