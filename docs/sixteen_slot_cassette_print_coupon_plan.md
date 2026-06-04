@@ -47,6 +47,10 @@ output/print_coupons/
 
 Use the Bambu for the larger dry-fit coupons first. PLA or PETG is enough for geometry checks. Use resin only for small-feature checks where surface detail matters, especially gasket groove inspection.
 
+Local Bambu Studio inspection on the Mac found one configured Bambu device access-code entry but no saved user machine preset naming the exact connected model. The installed Bambu machine profiles show the common Bambu 0.4 mm nozzle family, with the shared `fdm_bbl_3dp_001_common` profile defining a 256 mm x 256 mm printable area and the A1 0.4 nozzle profile defining `printable_height = 256`. Treat 256 mm x 256 mm x 256 mm as the conservative Bambu target until Alex confirms a larger H2D/H2S-class machine.
+
+All current coupons fit that conservative Bambu target. They do not fit an A1 mini target without scaling or splitting; do not scale the chip pocket coupon because it must remain 1:1 for fit evidence.
+
 Suggested first print order:
 
 1. `sixteen_slot_chip_pocket_fit_coupon.stl`
@@ -61,6 +65,7 @@ Record these before changing the cassette baseline:
 | Check | Measurement |
 | --- | --- |
 | Pocket fit | Actual chip length/width, printed pocket length/width, subjective insertion force, rocking, visible binding, burr/contact points. |
+| Raised pocket features | Confirm the gasket land, label land, and four hard stops are fused to the base, not separate slicer islands. |
 | Pocket depth | Printed pocket depth at four corners and center. |
 | Optical window | Whether the center opening leaves enough support and does not warp. |
 | Gasket groove | Printed groove width/depth, corner cleanup, whether gasket seats without twisting. |

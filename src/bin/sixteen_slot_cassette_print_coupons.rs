@@ -43,6 +43,7 @@ const DOCK_RAIL_Z: f64 = 18.0;
 const DOCK_Z: f64 = 22.0;
 
 const PRINT_BED_TARGET_XY: f64 = 256.0;
+const FEATURE_ANCHOR_OVERLAP: f64 = 0.40;
 
 fn main() {
     assert_coupon_envelopes();
@@ -129,13 +130,17 @@ fn chip_pocket_fit_coupon() -> Part {
         3.0,
         8.0,
     )
-    .translate(0.0, 0.0, CARRIER_Z / 2.0 + 1.5);
+    .translate(
+        0.0,
+        0.0,
+        CARRIER_Z / 2.0 + 1.5 - FEATURE_ANCHOR_OVERLAP / 2.0,
+    );
 
     let label_land = centered_cube("chip_pocket_coupon_slot_label_land", 28.0, 10.0, 2.0)
         .translate(
             -REVC_CHIP_LENGTH / 2.0 + 22.0,
             REVC_CHIP_WIDTH / 2.0 - 14.0,
-            CARRIER_Z / 2.0 + 1.0,
+            CARRIER_Z / 2.0 + 1.0 - FEATURE_ANCHOR_OVERLAP / 2.0,
         );
 
     let stop_z = 3.0 + GASKET_COMPRESSED_HEIGHT;
@@ -153,7 +158,11 @@ fn chip_pocket_fit_coupon() -> Part {
     {
         stops = stops
             + centered_cylinder(format!("chip_pocket_coupon_hard_stop_{i}"), 2.5, stop_z, 24)
-                .translate(x, y, CARRIER_Z / 2.0 + stop_z / 2.0);
+                .translate(
+                    x,
+                    y,
+                    CARRIER_Z / 2.0 + stop_z / 2.0 - FEATURE_ANCHOR_OVERLAP / 2.0,
+                );
     }
 
     body - pocket - optical_window + gasket_land + label_land + stops
@@ -463,6 +472,7 @@ mod tests {
         assert!((GASKET_GROOVE_W - 3.20).abs() < TOL);
         assert_eq!(DOCK_RAIL_W, 16.0);
         assert_eq!(DOCK_RAIL_Z, 18.0);
+        assert_eq!(FEATURE_ANCHOR_OVERLAP, 0.40);
     }
 
     #[test]
