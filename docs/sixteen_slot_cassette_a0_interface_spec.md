@@ -1,5 +1,11 @@
 # 16-Slot Cassette A0 Interface Control Spec
 
+Architecture status: superseded as the first physical architecture by
+`docs/standard_footprint_aav_condition_module_a0.md`. This 16-slot spec remains
+a legacy high-density reference for slot semantics, validation questions, and
+future automation-rack planning. Do not treat the 648 x 467 mm class carrier or
+large dock as the required path for downstream lab adoption.
+
 This is the shared interface contract for the first physical LaminarForge AAV cassette build. Downstream carrier, lid/clamp, gasket, DFM, fluid-path, validation-fixture, and build-package agents must design against this spec unless the cassette integrator updates it.
 
 This is not a production drawing, biological protocol, sterile-barrier claim, or live-cell release criterion. It is the geometry and interface baseline for the first article.

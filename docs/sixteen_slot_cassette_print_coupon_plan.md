@@ -2,6 +2,12 @@
 
 Ticket: T-5C29EBD8
 
+Architecture status: these coupons are now mechanical learning references for
+the legacy 16-slot cassette, not proof that the giant cassette is the first
+scalable architecture. The active architecture direction is the small
+standard-footprint AAV condition module in
+`docs/standard_footprint_aav_condition_module_a0.md`.
+
 This document defines the first dry, desktop-printable validation coupons for the LaminarForge 16-slot cassette. These prints are for mechanical learning only. They are not sterile parts, live-cell parts, AAV-contact parts, or vendor-release geometry.
 
 ## Why Coupons First
