@@ -9,6 +9,10 @@ use vcad::{centered_cube, centered_cylinder, Part};
 // parts needed for a 16-slot cassette/incubator dock package. It keeps sterile
 // wetted paths disposable and treats connector, gasket, sensor, and material
 // choices as purchasable interfaces to be finalized by the RFQ/BOM ticket.
+//
+// A5 integration note: this model now carries the A1-A4 mechanical stack
+// decisions as named first-article geometry. It remains an STL fit-check and
+// interface package, not a vendor-ready drawing or biological validation claim.
 
 const OUTPUTS: [&str; 7] = [
     "output/sixteen_slot_cassette_lower_carrier.stl",
@@ -37,10 +41,27 @@ const CARRIER_X: f64 = SLOT_ARRAY_X + CARRIER_MARGIN_X * 2.0;
 const CARRIER_Y: f64 = SLOT_ARRAY_Y + CARRIER_MARGIN_Y * 2.0;
 const CARRIER_Z: f64 = 24.0;
 const CHIP_CLEARANCE: f64 = 1.2;
+const DRAWING_TARGET_CHIP_CLEARANCE: f64 = 0.8;
 const CHIP_POCKET_DEPTH: f64 = 7.0;
 const OPTICAL_WINDOW_MARGIN: f64 = 24.0;
 const GASKET_LAND_W: f64 = 8.0;
 const PERIMETER_GASKET_W: f64 = 12.0;
+const PER_SLOT_GASKET_LAND_Z: f64 = 3.0;
+const PERIMETER_GASKET_LAND_Z: f64 = 4.0;
+const GASKET_FREE_HEIGHT: f64 = 2.40;
+const GASKET_TARGET_SQUEEZE: f64 = 0.25;
+const GASKET_COMPRESSED_HEIGHT: f64 = GASKET_FREE_HEIGHT * (1.0 - GASKET_TARGET_SQUEEZE);
+const GASKET_GUARD_MIN_SQUEEZE: f64 = 0.20;
+const GASKET_GUARD_MAX_SQUEEZE: f64 = 0.30;
+const GASKET_GUARD_MAX_COMPRESSED_HEIGHT: f64 =
+    GASKET_FREE_HEIGHT * (1.0 - GASKET_GUARD_MIN_SQUEEZE);
+const GASKET_GUARD_MIN_COMPRESSED_HEIGHT: f64 =
+    GASKET_FREE_HEIGHT * (1.0 - GASKET_GUARD_MAX_SQUEEZE);
+const GASKET_GROOVE_DEPTH: f64 = 1.82;
+const GASKET_GROOVE_W: f64 = 3.20;
+const GASKET_ENTRY_BREAK_RADIUS_NOTE: f64 = 0.20;
+const SEAL_BAND_RA_MAX_UM: f64 = 1.6;
+const CHIP_POCKET_INTERNAL_RADIUS_NOTE: f64 = 1.0;
 
 const LID_X: f64 = CARRIER_X + 18.0;
 const LID_Y: f64 = CARRIER_Y + 18.0;
@@ -110,6 +131,19 @@ fn main() {
     println!(
         "  Service bulkhead block:  {BULKHEAD_X:.1}mm x {BULKHEAD_Y:.1}mm x {BULKHEAD_Z:.1}mm"
     );
+    println!(
+        "  Pocket clearance:        {CHIP_CLEARANCE:.2}mm/side CAD fit-check; {DRAWING_TARGET_CHIP_CLEARANCE:.2}mm/side drawing target after chip lot measurement"
+    );
+    println!(
+        "  Gasket compression:      {GASKET_FREE_HEIGHT:.2}mm free height -> {GASKET_COMPRESSED_HEIGHT:.2}mm target ({:.0}% squeeze)",
+        GASKET_TARGET_SQUEEZE * 100.0
+    );
+    println!(
+        "  Gasket groove note:      {GASKET_GROOVE_DEPTH:.2}mm depth x {GASKET_GROOVE_W:.2}mm width; seal bands Ra <= {SEAL_BAND_RA_MAX_UM:.1}um"
+    );
+    println!(
+        "  DFM notes:               6061-T651/T6 dry structure, R{CHIP_POCKET_INTERNAL_RADIUS_NOTE:.1}mm+ pocket corners, R{GASKET_ENTRY_BREAK_RADIUS_NOTE:.1}mm+ gasket entry break"
+    );
     println!("  Wetted path policy:      disposable tubing/connectors; structural parts are dry fixtures");
 }
 
@@ -149,8 +183,13 @@ fn lower_carrier() -> Part {
         )
         + chip_gasket_lands()
         + perimeter_gasket_land()
+        + per_slot_compression_stops()
+        + perimeter_compression_stops()
         + datum_pin_bosses()
         + slot_label_lands()
+        + carrier_condition_id_land()
+        + carrier_orientation_marker()
+        + carrier_handling_keepout_lands()
         + side_service_reliefs()
 }
 
@@ -163,9 +202,15 @@ fn lid_clamp() -> Part {
         LID_Z + 2.0,
     );
 
-    frame_outer - center_relief - slot_view_openings(LID_Z + 2.0) - lid_fastener_holes()
-        + lid_crossbars()
-        + lid_alignment_ears()
+    let gross =
+        frame_outer - center_relief - slot_view_openings(LID_Z + 2.0) - lid_fastener_holes()
+            + lid_crossbars()
+            + lid_alignment_ears()
+            + captive_fastener_retainers()
+            + lid_window_retention_lip()
+            + lid_torque_sequence_tabs();
+
+    gross - lid_gasket_groove_cuts()
 }
 
 fn window_placeholder() -> Part {
@@ -175,7 +220,10 @@ fn window_placeholder() -> Part {
         SLOT_ARRAY_Y + 76.0,
         WINDOW_Z,
     );
-    panel + window_slot_witness_frames() + calibration_fiducials(WINDOW_Z / 2.0 + 1.2)
+    panel
+        + window_slot_witness_frames()
+        + calibration_fiducials(WINDOW_Z / 2.0 + 1.2)
+        + window_retention_tabs()
 }
 
 fn gasket_witness_coupon() -> Part {
@@ -193,7 +241,10 @@ fn gasket_witness_coupon() -> Part {
     )
     .translate(0.0, -34.0, 0.0);
 
-    base - retain_slot + gasket_squeeze_steps() + coupon_label_lands()
+    base - retain_slot - coupon_gasket_groove_cuts()
+        + gasket_squeeze_steps()
+        + coupon_label_lands()
+        + coupon_compression_stop_lands()
 }
 
 fn incubator_dock_plate() -> Part {
@@ -300,10 +351,10 @@ fn chip_gasket_lands() -> Part {
                     &format!("sixteen_slot_slot_{slot:02}_raised_gasket_land"),
                     REVC_CHIP_LENGTH + 14.0,
                     REVC_CHIP_WIDTH + 14.0,
-                    3.0,
+                    PER_SLOT_GASKET_LAND_Z,
                     GASKET_LAND_W,
                 )
-                .translate(x, y, CARRIER_Z / 2.0 + 1.5);
+                .translate(x, y, CARRIER_Z / 2.0 + PER_SLOT_GASKET_LAND_Z / 2.0);
         }
     }
     lands
@@ -314,10 +365,83 @@ fn perimeter_gasket_land() -> Part {
         "sixteen_slot_lower_carrier_perimeter_gasket_land",
         SLOT_ARRAY_X + 72.0,
         SLOT_ARRAY_Y + 66.0,
-        4.0,
+        PERIMETER_GASKET_LAND_Z,
         PERIMETER_GASKET_W,
     )
-    .translate(0.0, 0.0, CARRIER_Z / 2.0 + 2.0)
+    .translate(0.0, 0.0, CARRIER_Z / 2.0 + PERIMETER_GASKET_LAND_Z / 2.0)
+}
+
+fn per_slot_compression_stops() -> Part {
+    let mut stops = Part::empty("sixteen_slot_per_slot_25pct_compression_stops");
+    let stop_z = PER_SLOT_GASKET_LAND_Z + GASKET_COMPRESSED_HEIGHT;
+    let offset_x = REVC_CHIP_LENGTH / 2.0 + 3.0;
+    let offset_y = REVC_CHIP_WIDTH / 2.0 + 3.0;
+    for row in 0..ROWS {
+        for col in 0..COLS {
+            let slot = slot_number(row, col);
+            let (x, y) = slot_center(row, col);
+            for (corner, sx, sy) in [
+                ("front_left", -offset_x, -offset_y),
+                ("front_right", offset_x, -offset_y),
+                ("rear_left", -offset_x, offset_y),
+                ("rear_right", offset_x, offset_y),
+            ] {
+                stops = stops
+                    + centered_cylinder(
+                        format!("sixteen_slot_slot_{slot:02}_{corner}_hard_stop_25pct"),
+                        2.5,
+                        stop_z,
+                        24,
+                    )
+                    .translate(x + sx, y + sy, CARRIER_Z / 2.0 + stop_z / 2.0);
+            }
+        }
+    }
+    stops
+}
+
+fn perimeter_compression_stops() -> Part {
+    let mut stops = Part::empty("sixteen_slot_perimeter_25pct_compression_stops");
+    let stop_z = PERIMETER_GASKET_LAND_Z + GASKET_COMPRESSED_HEIGHT;
+    let x_edge = (SLOT_ARRAY_X + 72.0) / 2.0 + 10.0;
+    let y_edge = (SLOT_ARRAY_Y + 66.0) / 2.0 + 10.0;
+    for (i, x) in [-220.0, -110.0, 0.0, 110.0, 220.0].iter().enumerate() {
+        stops = stops
+            + centered_cube(
+                format!("sixteen_slot_perimeter_front_stop_{i}_25pct"),
+                18.0,
+                7.0,
+                stop_z,
+            )
+            .translate(*x, -y_edge, CARRIER_Z / 2.0 + stop_z / 2.0);
+        stops = stops
+            + centered_cube(
+                format!("sixteen_slot_perimeter_rear_stop_{i}_25pct"),
+                18.0,
+                7.0,
+                stop_z,
+            )
+            .translate(*x, y_edge, CARRIER_Z / 2.0 + stop_z / 2.0);
+    }
+    for (i, y) in [-150.0, -75.0, 0.0, 75.0, 150.0].iter().enumerate() {
+        stops = stops
+            + centered_cube(
+                format!("sixteen_slot_perimeter_left_stop_{i}_25pct"),
+                7.0,
+                18.0,
+                stop_z,
+            )
+            .translate(-x_edge, *y, CARRIER_Z / 2.0 + stop_z / 2.0);
+        stops = stops
+            + centered_cube(
+                format!("sixteen_slot_perimeter_right_stop_{i}_25pct"),
+                7.0,
+                18.0,
+                stop_z,
+            )
+            .translate(x_edge, *y, CARRIER_Z / 2.0 + stop_z / 2.0);
+    }
+    stops
 }
 
 fn datum_pin_bosses() -> Part {
@@ -355,6 +479,90 @@ fn slot_label_lands() -> Part {
     lands
 }
 
+fn carrier_condition_id_land() -> Part {
+    let barcode = centered_cube(
+        "sixteen_slot_carrier_global_condition_id_barcode_land",
+        96.0,
+        24.0,
+        2.0,
+    )
+    .translate(
+        -CARRIER_X / 2.0 + 78.0,
+        -CARRIER_Y / 2.0 + 28.0,
+        CARRIER_Z / 2.0 + 1.0,
+    );
+    let human = centered_cube(
+        "sixteen_slot_carrier_global_condition_id_text_land",
+        118.0,
+        14.0,
+        1.5,
+    )
+    .translate(
+        -CARRIER_X / 2.0 + 185.0,
+        -CARRIER_Y / 2.0 + 27.0,
+        CARRIER_Z / 2.0 + 0.75,
+    );
+    barcode + human
+}
+
+fn carrier_orientation_marker() -> Part {
+    let x_leg = centered_cube(
+        "sixteen_slot_carrier_slot_01_orientation_x_leg",
+        34.0,
+        5.0,
+        3.0,
+    )
+    .translate(
+        -CARRIER_X / 2.0 + 37.0,
+        -CARRIER_Y / 2.0 + 54.0,
+        CARRIER_Z / 2.0 + 1.5,
+    );
+    let y_leg = centered_cube(
+        "sixteen_slot_carrier_slot_01_orientation_y_leg",
+        5.0,
+        34.0,
+        3.0,
+    )
+    .translate(
+        -CARRIER_X / 2.0 + 22.5,
+        -CARRIER_Y / 2.0 + 69.0,
+        CARRIER_Z / 2.0 + 1.5,
+    );
+    x_leg + y_leg
+}
+
+fn carrier_handling_keepout_lands() -> Part {
+    let front_left = centered_cube(
+        "sixteen_slot_carrier_front_left_robot_pickup_keepout_land",
+        58.0,
+        16.0,
+        1.5,
+    )
+    .translate(-112.0, -CARRIER_Y / 2.0 + 58.0, CARRIER_Z / 2.0 + 0.75);
+    let front_right = centered_cube(
+        "sixteen_slot_carrier_front_right_robot_pickup_keepout_land",
+        58.0,
+        16.0,
+        1.5,
+    )
+    .translate(112.0, -CARRIER_Y / 2.0 + 58.0, CARRIER_Z / 2.0 + 0.75);
+    let rear_left = centered_cube(
+        "sixteen_slot_carrier_rear_left_robot_pickup_keepout_land",
+        58.0,
+        16.0,
+        1.5,
+    )
+    .translate(-112.0, CARRIER_Y / 2.0 - 58.0, CARRIER_Z / 2.0 + 0.75);
+    let rear_right = centered_cube(
+        "sixteen_slot_carrier_rear_right_robot_pickup_keepout_land",
+        58.0,
+        16.0,
+        1.5,
+    )
+    .translate(112.0, CARRIER_Y / 2.0 - 58.0, CARRIER_Z / 2.0 + 0.75);
+    front_left + front_right + rear_left + rear_right
+}
+
 fn side_service_reliefs() -> Part {
     let left = centered_cube(
         "sixteen_slot_left_tubing_service_relief_land",
@@ -386,6 +594,79 @@ fn lid_fastener_holes() -> Part {
             .translate(*x, *y, 0.0);
     }
     holes
+}
+
+fn captive_fastener_retainers() -> Part {
+    let mut retainers = Part::empty("sixteen_slot_lid_captive_m4_retainers");
+    for (i, (x, y)) in fastener_points().iter().enumerate() {
+        let retainer = centered_cylinder(
+            format!("sixteen_slot_lid_captive_m4_retainer_witness_{i}"),
+            5.4,
+            1.6,
+            32,
+        ) - centered_cylinder(
+            format!("sixteen_slot_lid_captive_m4_retainer_clearance_{i}"),
+            2.6,
+            2.0,
+            28,
+        );
+        retainers = retainers + retainer.translate(*x, *y, LID_Z / 2.0 + 0.8);
+    }
+    retainers
+}
+
+fn lid_gasket_groove_cuts() -> Part {
+    let mut grooves = Part::empty("sixteen_slot_lid_axial_face_gasket_groove_cuts");
+    for row in 0..ROWS {
+        for col in 0..COLS {
+            let slot = slot_number(row, col);
+            let (x, y) = slot_center(row, col);
+            grooves = grooves
+                + rectangular_frame(
+                    &format!("sixteen_slot_lid_slot_{slot:02}_gasket_groove_2p4mm"),
+                    REVC_CHIP_LENGTH + 14.0 - (GASKET_LAND_W - GASKET_GROOVE_W),
+                    REVC_CHIP_WIDTH + 14.0 - (GASKET_LAND_W - GASKET_GROOVE_W),
+                    GASKET_GROOVE_DEPTH,
+                    GASKET_GROOVE_W,
+                )
+                .translate(x, y, -LID_Z / 2.0 + GASKET_GROOVE_DEPTH / 2.0 - 0.05);
+        }
+    }
+    grooves
+        + rectangular_frame(
+            "sixteen_slot_lid_perimeter_gasket_groove_2p4mm",
+            SLOT_ARRAY_X + 72.0 - (PERIMETER_GASKET_W - GASKET_GROOVE_W),
+            SLOT_ARRAY_Y + 66.0 - (PERIMETER_GASKET_W - GASKET_GROOVE_W),
+            GASKET_GROOVE_DEPTH,
+            GASKET_GROOVE_W,
+        )
+        .translate(0.0, 0.0, -LID_Z / 2.0 + GASKET_GROOVE_DEPTH / 2.0 - 0.05)
+}
+
+fn lid_window_retention_lip() -> Part {
+    rectangular_frame(
+        "sixteen_slot_lid_full_panel_window_retention_lip",
+        SLOT_ARRAY_X + 96.0,
+        SLOT_ARRAY_Y + 88.0,
+        1.6,
+        6.0,
+    )
+    .translate(0.0, 0.0, LID_Z / 2.0 + 0.8)
+}
+
+fn lid_torque_sequence_tabs() -> Part {
+    let mut tabs = Part::empty("sixteen_slot_lid_torque_sequence_tab_lands");
+    for (i, (x, y)) in fastener_points().iter().enumerate() {
+        tabs = tabs
+            + centered_cube(
+                format!("sixteen_slot_lid_torque_sequence_land_{:02}", i + 1),
+                16.0,
+                6.0,
+                1.0,
+            )
+            .translate(*x, *y + 11.0, LID_Z / 2.0 + 0.5);
+    }
+    tabs
 }
 
 fn lid_crossbars() -> Part {
@@ -450,6 +731,49 @@ fn window_slot_witness_frames() -> Part {
     frames
 }
 
+fn window_retention_tabs() -> Part {
+    let panel_x = SLOT_ARRAY_X + 84.0;
+    let panel_y = SLOT_ARRAY_Y + 76.0;
+    let mut tabs = Part::empty("sixteen_slot_window_mechanical_retention_tabs");
+    for (i, x) in [-210.0, -70.0, 70.0, 210.0].iter().enumerate() {
+        tabs = tabs
+            + centered_cube(
+                format!("sixteen_slot_window_front_retention_tab_{i}"),
+                34.0,
+                9.0,
+                1.4,
+            )
+            .translate(*x, -panel_y / 2.0 + 8.0, WINDOW_Z / 2.0 + 0.7);
+        tabs = tabs
+            + centered_cube(
+                format!("sixteen_slot_window_rear_retention_tab_{i}"),
+                34.0,
+                9.0,
+                1.4,
+            )
+            .translate(*x, panel_y / 2.0 - 8.0, WINDOW_Z / 2.0 + 0.7);
+    }
+    for (i, y) in [-150.0, -50.0, 50.0, 150.0].iter().enumerate() {
+        tabs = tabs
+            + centered_cube(
+                format!("sixteen_slot_window_left_retention_tab_{i}"),
+                9.0,
+                34.0,
+                1.4,
+            )
+            .translate(-panel_x / 2.0 + 8.0, *y, WINDOW_Z / 2.0 + 0.7);
+        tabs = tabs
+            + centered_cube(
+                format!("sixteen_slot_window_right_retention_tab_{i}"),
+                9.0,
+                34.0,
+                1.4,
+            )
+            .translate(panel_x / 2.0 - 8.0, *y, WINDOW_Z / 2.0 + 0.7);
+    }
+    tabs
+}
+
 fn calibration_fiducials(z: f64) -> Part {
     let mut targets = Part::empty("sixteen_slot_window_calibration_fiducials");
     for (i, (x, y)) in [
@@ -481,9 +805,13 @@ fn calibration_fiducials(z: f64) -> Part {
 
 fn gasket_squeeze_steps() -> Part {
     let mut steps = Part::empty("sixteen_slot_gasket_coupon_squeeze_steps");
-    for (i, (label, h)) in [("20pct", 2.0), ("25pct", 2.6), ("30pct", 3.2)]
-        .iter()
-        .enumerate()
+    for (i, (label, h)) in [
+        ("20pct", GASKET_GUARD_MAX_COMPRESSED_HEIGHT),
+        ("25pct", GASKET_COMPRESSED_HEIGHT),
+        ("30pct", GASKET_GUARD_MIN_COMPRESSED_HEIGHT),
+    ]
+    .iter()
+    .enumerate()
     {
         steps = steps
             + centered_cube(
@@ -495,6 +823,48 @@ fn gasket_squeeze_steps() -> Part {
             .translate(centered_index(i, 3, 72.0), 28.0, COUPON_Z / 2.0 + h / 2.0);
     }
     steps
+}
+
+fn coupon_gasket_groove_cuts() -> Part {
+    let long_loop = rectangular_frame(
+        "sixteen_slot_gasket_coupon_leak_loop_groove_2p4mm",
+        COUPON_X - 42.0,
+        46.0,
+        GASKET_GROOVE_DEPTH,
+        GASKET_GROOVE_W,
+    )
+    .translate(0.0, 20.0, COUPON_Z / 2.0 - GASKET_GROOVE_DEPTH / 2.0 + 0.1);
+    let short_loop = rectangular_frame(
+        "sixteen_slot_gasket_coupon_reconnection_loop_groove_2p4mm",
+        86.0,
+        34.0,
+        GASKET_GROOVE_DEPTH,
+        GASKET_GROOVE_W,
+    )
+    .translate(
+        74.0,
+        -30.0,
+        COUPON_Z / 2.0 - GASKET_GROOVE_DEPTH / 2.0 + 0.1,
+    );
+    long_loop + short_loop
+}
+
+fn coupon_compression_stop_lands() -> Part {
+    let mut stops = Part::empty("sixteen_slot_gasket_coupon_25pct_hard_stop_lands");
+    for (i, (x, y)) in [(-96.0, 44.0), (96.0, 44.0), (-96.0, -4.0), (96.0, -4.0)]
+        .iter()
+        .enumerate()
+    {
+        stops = stops
+            + centered_cylinder(
+                format!("sixteen_slot_gasket_coupon_stop_{i}_25pct"),
+                5.0,
+                GASKET_COMPRESSED_HEIGHT,
+                24,
+            )
+            .translate(*x, *y, COUPON_Z / 2.0 + GASKET_COMPRESSED_HEIGHT / 2.0);
+    }
+    stops
 }
 
 fn coupon_label_lands() -> Part {
@@ -890,5 +1260,18 @@ mod tests {
         assert!(DOCK_X - CARRIER_X >= 150.0);
         assert!(DOCK_Y - CARRIER_Y >= 140.0);
         assert!(BULKHEAD_OFFSET_Y > DOCK_Y / 2.0);
+    }
+
+    #[test]
+    fn a5_interface_targets_are_explicit() {
+        const TOL: f64 = 1e-9;
+        assert!((CHIP_CLEARANCE - 1.2).abs() < TOL);
+        assert!((DRAWING_TARGET_CHIP_CLEARANCE - 0.8).abs() < TOL);
+        assert!((GASKET_FREE_HEIGHT - 2.4).abs() < TOL);
+        assert!((GASKET_COMPRESSED_HEIGHT - 1.8).abs() < TOL);
+        assert!((GASKET_GROOVE_DEPTH - 1.82).abs() < TOL);
+        assert!((GASKET_GROOVE_W - 3.20).abs() < TOL);
+        assert_eq!(fastener_points().len(), 16);
+        assert_eq!(datum_points().len(), 4);
     }
 }
