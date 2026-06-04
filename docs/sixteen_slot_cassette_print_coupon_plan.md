@@ -37,7 +37,7 @@ output/print_coupons/
 
 | Output | Approx envelope | Checks |
 | --- | ---: | --- |
-| `sixteen_slot_chip_pocket_fit_coupon.stl` | 168 x 126 x 29 mm | Rev C chip seating, 1.20 mm/side CAD pocket clearance, pocket depth, optical through-window, gasket land, hard stops, label land. |
+| `sixteen_slot_chip_pocket_fit_coupon.stl` | 168 x 126 x 29 mm | Rev C chip seating, 1.20 mm/side CAD pocket clearance, pocket depth, optical through-window, gasket land, hard stops. Slot-label land is intentionally omitted because it confused the slicer preview and is not needed for pocket fit evidence. |
 | `sixteen_slot_gasket_compression_coupon.stl` | 190 x 88 x 14 mm | 3.20 mm groove width, 1.82 mm groove depth, 20/25/30% compression guard heights, printability of small gasket features. |
 | `sixteen_slot_dock_datum_rail_coupon.stl` | 198 x 178 x 40 mm | Rear primary datum rail, left secondary datum rail, front low retention lip, visible leak gutter, mounting holes. |
 | `sixteen_slot_carrier_corner_surrogate.stl` | 156 x 132 x 39 mm | Mating corner piece for the dock datum rail coupon; checks registration and handling/orientation features. |
@@ -65,7 +65,7 @@ Record these before changing the cassette baseline:
 | Check | Measurement |
 | --- | --- |
 | Pocket fit | Actual chip length/width, printed pocket length/width, subjective insertion force, rocking, visible binding, burr/contact points. |
-| Raised pocket features | Confirm the gasket land, label land, and four hard stops are fused to the base, not separate slicer islands. |
+| Raised pocket features | Confirm the gasket land and four hard stops are fused to the base, not separate slicer islands. |
 | Pocket depth | Printed pocket depth at four corners and center. |
 | Optical window | Whether the center opening leaves enough support and does not warp. |
 | Gasket groove | Printed groove width/depth, corner cleanup, whether gasket seats without twisting. |

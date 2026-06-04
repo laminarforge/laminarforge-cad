@@ -136,13 +136,6 @@ fn chip_pocket_fit_coupon() -> Part {
         CARRIER_Z / 2.0 + 1.5 - FEATURE_ANCHOR_OVERLAP / 2.0,
     );
 
-    let label_land = centered_cube("chip_pocket_coupon_slot_label_land", 28.0, 10.0, 2.0)
-        .translate(
-            -REVC_CHIP_LENGTH / 2.0 + 22.0,
-            REVC_CHIP_WIDTH / 2.0 - 14.0,
-            CARRIER_Z / 2.0 + 1.0 - FEATURE_ANCHOR_OVERLAP / 2.0,
-        );
-
     let stop_z = 3.0 + GASKET_COMPRESSED_HEIGHT;
     let stop_offset_x = REVC_CHIP_LENGTH / 2.0 + 3.0;
     let stop_offset_y = REVC_CHIP_WIDTH / 2.0 + 3.0;
@@ -165,7 +158,7 @@ fn chip_pocket_fit_coupon() -> Part {
                 );
     }
 
-    body - pocket - optical_window + gasket_land + label_land + stops
+    body - pocket - optical_window + gasket_land + stops
 }
 
 fn gasket_compression_coupon() -> Part {
