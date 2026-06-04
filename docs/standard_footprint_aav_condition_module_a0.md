@@ -53,10 +53,11 @@ The old and new architectures preserve the same core experimental intent.
 | --- | --- |
 | Condition identity | One module equals one AAV capsid/promoter/payload/dose/timing/media condition. |
 | Condition isolation | No shared AAV routing between different condition modules. |
-| Slot/readout role | Chips or lanes inside a module are readouts or technical replicates under the same condition, not separate AAV candidates. |
+| Slot/readout role | Chips or lanes inside a module are same-condition cell/readout zones, not separate AAV candidates. The useful target is 16 same-condition zones per AAV condition after one-zone validation is proven. |
 | Wetted path | Disposable or separately validated chip/fluid components only. Reusable structural parts stay dry unless explicitly validated. |
 | Validation order | No-cell mechanical, leak, flow, bubble, and ID validation comes before media-only, live-cell, or AAV planning. |
-| Scale strategy | Run more modules or cheap trays of modules; do not enlarge one precision sealing plate as the default. |
+| Environment boundary | Incubator or chamber hardware controls bulk temperature, CO2, humidity, and gas recovery. The module proves local equivalence, fluid behavior, sealing, imaging, and traceability inside that bulk environment. |
+| Scale strategy | Validate one zone/module first, then scale the same local precision pattern toward 16 same-condition zones and repeated modules/trays. Do not enlarge one precision sealing plate as the default. |
 
 ## First Geometry Direction
 
@@ -66,7 +67,8 @@ SBS/SLAS microplate footprint:
 ```text
 one AAV condition
   -> one 127.76 x 85.48 mm SLAS-footprint module
-  -> 1-4 local tissue-chip/readout zones
+  -> one local readout zone for first no-cell validation
+  -> scalable target of 16 same-condition tissue-chip/readout zones
   -> local gasket/seal/connector precision
   -> optical bottom/window plus fiducials
   -> condition ID on the physical module
@@ -86,7 +88,8 @@ still local to the chip/seal/connector/readout zone.
 
 Start with a one-condition SLAS-footprint module:
 
-- one to four local tissue-chip or Rev C-class readout zones,
+- one local tissue-chip or Rev C-class readout zone for first mechanical/no-cell validation,
+- a preserved path to 16 same-condition tissue-chip or Rev C-class readout zones for the useful screening module,
 - one local lid/clamp,
 - one local gasket/seal stack,
 - one local connector face,
@@ -99,6 +102,11 @@ automation rack when scale is needed.
 
 This keeps the hard features small while preserving a route toward lab-compatible handling.
 
+The project should not optimize for a dead-end one-chip-only device. One-zone
+testing is the learning sequence; 16 same-condition zones per AAV condition is
+the scale target unless later evidence proves a different readout count is
+better.
+
 Microscope-slide geometry remains valuable for quick coupons, one-chip imaging
 prototypes, and small seal tests. It is not the controlling first architecture
 unless the SLAS-footprint module proves too material-heavy or optically awkward.
@@ -110,7 +118,8 @@ unless the SLAS-footprint module proves too material-heavy or optically awkward.
 | Single SLAS-footprint condition module | One condition module in the 127.76 x 85.48 mm envelope | Lab-friendly handling, direct condition identity, avoids oversized custom carrier | Can become too material-heavy if precision spreads across the whole body | Preferred first geometry direction |
 | Slide-class cartridge | Imaging coupon and one-chip prototype | Cheap, small, stage-friendly, easier local precision | Needs external tray for high-throughput handling | Prototype/coupon path |
 | SBS/SLAS tray adapter | Holds repeated modules in a lab-friendly envelope | Compatible with common plate handling and labeling expectations | Must not become a precision sealing plate | Preferred support format |
-| 4-chip mini-module | Higher readout density under one condition | Better within-condition replication | More seal and flow complexity than a one-chip coupon | Second step after one-chip local stack |
+| 4-zone intermediate module | Intermediate same-condition readout density | Better within-condition replication while keeping validation manageable | More seal and flow complexity than a one-zone coupon | Second step after one-zone local stack |
+| 16-zone same-condition module | Useful target for broad cell/readout coverage under one AAV condition | Captures the desired cell/readout panel without mixing AAV candidates | Must avoid becoming a large precision monolith | Target architecture after local zones validate |
 | 16-chip monolithic cassette | Legacy high-density condition unit | Captures old readout count in one object | Large precision plate, high cost, poor downstream adoption | Reference only for now |
 
 ## Local Precision Boundary
@@ -153,8 +162,9 @@ Prototype sequence:
 6. Validate gasket compression on a local coupon before expanding chip count.
 7. Build a one-condition one-chip module with a disposable non-biological fluid path.
 8. Run no-cell validation for leaks, priming, dead volume, bubbles, connector handling, optical access, barcode scan, and repeatability.
-9. Expand to a two-chip or four-chip module only after the one-chip stack passes no-cell gates.
-10. Add a cheap SLAS tray, hotel, or microscope adapter after the module-level interfaces are stable.
+9. Expand to a four-zone intermediate module only after the one-zone stack passes no-cell gates.
+10. Expand toward the 16-zone same-condition module only after local flow/seal/imaging equivalence is proven.
+11. Add a cheap SLAS tray, hotel, or microscope adapter after the module-level interfaces are stable.
 
 Cost-control rules:
 
@@ -219,6 +229,17 @@ Rack position is metadata only. If flow, sealing, imaging, or leak behavior
 changes because of rack slot position, the module or rack interface has failed
 the architecture rule.
 
+Bulk environment is an incubator responsibility during this phase. The module
+does not need to be its own incubator for the first validation path. It must,
+however, make local equivalence measurable under incubator conditions:
+
+- all zones fill and clear predictably,
+- edge and center zones have comparable fluid exposure,
+- bubbles are visible or cleared before a run proceeds,
+- dead volume is bounded per zone,
+- imaging position and focus references are repeatable,
+- condition/module/zone identity is preserved.
+
 Minimum run record fields:
 
 - run ID,
@@ -256,7 +277,8 @@ Existing 16-slot docs and CAD remain useful, but their role changes.
 
 These questions should be resolved before new CAD replaces the 16-slot first article:
 
-- Should the first module hold one chip only, or one chip plus space for a second/fourth replicate slot?
+- What is the smallest one-zone coupon that honestly validates the local precision island?
+- What geometry lets the first useful module scale to 16 same-condition zones without making the whole module a precision plate?
 - What Rev C chip dimensions and tolerances should control the first module pocket?
 - Which connector family is the lowest-cost credible starting assumption for a disposable path?
 - Does the optical workflow prefer slide-first geometry strongly enough to make SLAS compatibility secondary?
@@ -268,11 +290,12 @@ These questions should be resolved before new CAD replaces the 16-slot first art
 
 The replacement A0 CAD package should be small:
 
-- one-chip local module body coupon,
+- one-zone local module body coupon,
 - local lid/clamp coupon,
 - local gasket compression coupon,
 - connector-face mockup,
 - microscope-stage adapter,
-- cheap multi-module SLAS tray/rack outline.
+- cheap multi-module SLAS tray/rack outline,
+- 16-zone same-condition layout study that proves scale-up without committing to a giant precision carrier.
 
 The first release should prove geometry and assembly logic only. It should not claim sterile use, live-cell readiness, AAV readiness, or biological validity.
