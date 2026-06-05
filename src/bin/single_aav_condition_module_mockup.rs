@@ -6,14 +6,15 @@ use vcad::{centered_cube, centered_cylinder, Part};
 // First physical visualization for the post-16-slot LaminarForge AAV condition
 // module architecture.
 //
-// This is a dry, Bambu-printable mockup. It is not a wetted path, sterile part,
-// live-cell fixture, AAV-contact part, or vendor drawing.
+// This is a dry mechanical mockup. It is not a wetted path, sterile part,
+// live-cell fixture, AAV-contact part, pressure-rated part, or vendor drawing.
 
 const OUTPUT_DIR: &str = "output/single_condition_module";
-const OUTPUTS: [&str; 4] = [
+const OUTPUTS: [&str; 5] = [
     "output/single_condition_module/single_aav_condition_module_mockup.stl",
     "output/single_condition_module/single_aav_condition_tray_reference.stl",
     "output/single_condition_module/single_aav_connector_face_coupon.stl",
+    "output/single_condition_module/single_aav_connector_gasket_insert_rev_a.stl",
     "output/single_condition_module/single_aav_16_zone_scale_ghost.stl",
 ];
 
@@ -36,11 +37,28 @@ const GASKET_FRAME_W: f64 = 4.0;
 const GASKET_FRAME_Z: f64 = 2.2;
 const HARD_STOP_Z: f64 = 4.0;
 
-const CONNECTOR_BLOCK_X: f64 = 52.0;
-const CONNECTOR_BLOCK_Y: f64 = 11.0;
-const CONNECTOR_BLOCK_Z: f64 = 11.0;
-const CONNECTOR_PORT_R: f64 = 3.0;
 const CONNECTOR_PORT_SPACING: f64 = 14.0;
+const CONNECTOR_INSERT_CENTER_X: f64 = 24.0;
+const CONNECTOR_INSERT_CENTER_Y: f64 = SLAS_Y / 2.0 - 17.0;
+const CONNECTOR_INSERT_X: f64 = 48.0;
+const CONNECTOR_INSERT_Y: f64 = 24.0;
+const CONNECTOR_INSERT_Z: f64 = 4.8;
+const CONNECTOR_INSERT_CORNER_R: f64 = 1.6;
+const CONNECTOR_INSERT_POCKET_CLEARANCE: f64 = 0.4;
+const CONNECTOR_INSERT_POCKET_Z: f64 = 1.6;
+const CONNECTOR_INSERT_PORT_R: f64 = 1.15;
+const CONNECTOR_INSERT_PORT_COLLAR_R: f64 = 3.2;
+const CONNECTOR_INSERT_GASKET_X: f64 = 38.0;
+const CONNECTOR_INSERT_GASKET_Y: f64 = 12.0;
+const CONNECTOR_INSERT_GASKET_W: f64 = 1.25;
+const CONNECTOR_INSERT_GASKET_Z: f64 = 0.8;
+const CONNECTOR_INSERT_DATUM_R: f64 = 1.3;
+const CONNECTOR_INSERT_DATUM_POST_R: f64 = 1.05;
+const CONNECTOR_INSERT_DATUM_POST_Z: f64 = 1.0;
+const CONNECTOR_INSERT_DATUM_X: f64 = 18.0;
+const CONNECTOR_INSERT_DATUM_Y: f64 = -8.0;
+const CONNECTOR_INSERT_KEY_X: f64 = 5.0;
+const CONNECTOR_INSERT_KEY_Y: f64 = 3.0;
 const CONNECTOR_COUPON_X: f64 = 160.0;
 const CONNECTOR_COUPON_MOUSE_EAR_R: f64 = 8.0;
 const CONNECTOR_COUPON_EFFECTIVE_BED_TARGET: f64 = 180.0;
@@ -62,7 +80,8 @@ fn main() {
     export(OUTPUTS[0], &condition_module_mockup());
     export(OUTPUTS[1], &tray_reference());
     export(OUTPUTS[2], &connector_face_coupon());
-    export(OUTPUTS[3], &sixteen_zone_scale_ghost());
+    export(OUTPUTS[3], &connector_gasket_insert_rev_a());
+    export(OUTPUTS[4], &sixteen_zone_scale_ghost());
 
     for path in OUTPUTS {
         assert!(
@@ -77,8 +96,13 @@ fn main() {
     println!("  Module footprint:       {SLAS_X:.2} x {SLAS_Y:.2} mm");
     println!("  Module service height:  {MODULE_SERVICE_Z:.1} mm visualization envelope");
     println!("  Local readout zone:     {LOCAL_ZONE_X:.1} x {LOCAL_ZONE_Y:.1} mm placeholder");
+    println!(
+        "  Rev A insert:           {CONNECTOR_INSERT_X:.1} x {CONNECTOR_INSERT_Y:.1} x {CONNECTOR_INSERT_Z:.1} mm, {CONNECTOR_PORT_SPACING:.1} mm port pitch"
+    );
     println!("  Scale target:           one zone first; 16 same-condition zones later");
-    println!("  Print status:           dry visualization only; not sterile or wetted path");
+    println!(
+        "  Print status:           dry visualization only; not sterile, wetted, or pressure-rated"
+    );
 }
 
 fn export(path: &str, part: &Part) {
@@ -122,7 +146,16 @@ fn condition_module_mockup() -> Part {
     .translate(-13.0, -5.0, MODULE_BASE_Z / 2.0 + GASKET_FRAME_Z / 2.0);
 
     let hard_stops = hard_stop_set(-13.0, -5.0);
-    let connector = connector_face_block().translate(24.0, SLAS_Y / 2.0 - 6.0, MODULE_BASE_Z / 2.0);
+    let connector_pocket = connector_insert_pocket_cut().translate(
+        CONNECTOR_INSERT_CENTER_X,
+        CONNECTOR_INSERT_CENTER_Y,
+        MODULE_BASE_Z / 2.0 - CONNECTOR_INSERT_POCKET_Z / 2.0 + 0.2,
+    );
+    let connector_seat = connector_insert_module_seat_witness().translate(
+        CONNECTOR_INSERT_CENTER_X,
+        CONNECTOR_INSERT_CENTER_Y,
+        MODULE_BASE_Z / 2.0 - CONNECTOR_INSERT_POCKET_Z + CONNECTOR_INSERT_DATUM_POST_Z / 2.0,
+    );
     let id_land = id_land().translate(-38.0, -SLAS_Y / 2.0 + 13.0, MODULE_BASE_Z / 2.0);
     let fiducials = fiducial_set(MODULE_BASE_Z / 2.0);
     let orientation_key = orientation_key().translate(
@@ -132,10 +165,10 @@ fn condition_module_mockup() -> Part {
     );
     let tray_contact_witness = tray_contact_witness().translate(0.0, 0.0, MODULE_BASE_Z / 2.0);
 
-    base + flange - readout_pocket - optical_window
+    base + flange - readout_pocket - optical_window - connector_pocket
         + gasket_frame
         + hard_stops
-        + connector
+        + connector_seat
         + id_land
         + fiducials
         + orientation_key
@@ -194,7 +227,12 @@ fn tray_reference() -> Part {
 }
 
 fn connector_face_coupon() -> Part {
-    let body = centered_cube("single_aav_connector_coupon_body", CONNECTOR_COUPON_X, 66.0, 10.0);
+    let body = centered_cube(
+        "single_aav_connector_coupon_body",
+        CONNECTOR_COUPON_X,
+        66.0,
+        10.0,
+    );
     let adhesion_ears = connector_coupon_adhesion_ears();
 
     let nanotight = connector_test_block("nanotight_10_32_placeholder", -50.0, -8.0, 10.0);
@@ -210,6 +248,94 @@ fn connector_face_coupon() -> Part {
 
     (body + adhesion_ears + nanotight + magnetic + luer + separator_a + separator_b + tubing_comb)
         .translate(0.0, 0.0, 5.0)
+}
+
+fn connector_gasket_insert_rev_a() -> Part {
+    let body = rounded_plate(
+        "single_aav_connector_gasket_insert_rev_a_body",
+        CONNECTOR_INSERT_X,
+        CONNECTOR_INSERT_Y,
+        CONNECTOR_INSERT_Z,
+        CONNECTOR_INSERT_CORNER_R,
+    )
+    .translate(0.0, 0.0, CONNECTOR_INSERT_Z / 2.0);
+
+    let gasket_witness = rectangular_frame(
+        "single_aav_connector_gasket_insert_rev_a_gasket_witness",
+        CONNECTOR_INSERT_GASKET_X,
+        CONNECTOR_INSERT_GASKET_Y,
+        CONNECTOR_INSERT_GASKET_Z,
+        CONNECTOR_INSERT_GASKET_W,
+    )
+    .translate(
+        0.0,
+        0.0,
+        CONNECTOR_INSERT_Z + CONNECTOR_INSERT_GASKET_Z / 2.0,
+    );
+
+    let mut collars = Part::empty("single_aav_connector_gasket_insert_rev_a_port_collars");
+    let mut port_bores = Part::empty("single_aav_connector_gasket_insert_rev_a_port_bores");
+    for (i, x) in [-CONNECTOR_PORT_SPACING, 0.0, CONNECTOR_PORT_SPACING]
+        .into_iter()
+        .enumerate()
+    {
+        collars = collars
+            + centered_cylinder(
+                format!("single_aav_connector_gasket_insert_rev_a_port_collar_{i}"),
+                CONNECTOR_INSERT_PORT_COLLAR_R,
+                0.7,
+                40,
+            )
+            .translate(x, 0.0, CONNECTOR_INSERT_Z + 0.35);
+        port_bores = port_bores
+            + centered_cylinder(
+                format!("single_aav_connector_gasket_insert_rev_a_port_bore_{i}"),
+                CONNECTOR_INSERT_PORT_R,
+                CONNECTOR_INSERT_Z + CONNECTOR_INSERT_GASKET_Z + 1.2,
+                32,
+            )
+            .translate(x, 0.0, CONNECTOR_INSERT_Z / 2.0 + 0.2);
+    }
+
+    let mut datum_sockets = Part::empty("single_aav_connector_gasket_insert_rev_a_datum_sockets");
+    for (i, x) in [-CONNECTOR_INSERT_DATUM_X, CONNECTOR_INSERT_DATUM_X]
+        .into_iter()
+        .enumerate()
+    {
+        datum_sockets = datum_sockets
+            + centered_cylinder(
+                format!("single_aav_connector_gasket_insert_rev_a_datum_socket_{i}"),
+                CONNECTOR_INSERT_DATUM_R,
+                CONNECTOR_INSERT_Z + 1.0,
+                28,
+            )
+            .translate(x, CONNECTOR_INSERT_DATUM_Y, CONNECTOR_INSERT_Z / 2.0);
+    }
+
+    let key_cut = centered_cube(
+        "single_aav_connector_gasket_insert_rev_a_asymmetric_key_cut",
+        CONNECTOR_INSERT_KEY_X,
+        CONNECTOR_INSERT_KEY_Y,
+        CONNECTOR_INSERT_Z + 1.0,
+    )
+    .translate(
+        -CONNECTOR_INSERT_X / 2.0 + CONNECTOR_INSERT_KEY_X / 2.0,
+        -CONNECTOR_INSERT_Y / 2.0 + CONNECTOR_INSERT_KEY_Y / 2.0,
+        CONNECTOR_INSERT_Z / 2.0,
+    );
+
+    let clamp_witnesses = connector_insert_clamp_witnesses();
+    let tubing_comb = tubing_comb(
+        "single_aav_connector_gasket_insert_rev_a_tube_exit_comb",
+        0.0,
+        CONNECTOR_INSERT_Y / 2.0 + 2.0,
+        CONNECTOR_INSERT_Z,
+    );
+
+    body + gasket_witness + collars + clamp_witnesses + tubing_comb
+        - port_bores
+        - datum_sockets
+        - key_cut
 }
 
 fn connector_coupon_adhesion_ears() -> Part {
@@ -272,37 +398,75 @@ fn sixteen_zone_scale_ghost() -> Part {
     body + zones + inlet_bus + outlet_bus + id_land
 }
 
-fn connector_face_block() -> Part {
-    let block = centered_cube(
-        "single_aav_condition_connector_face_block",
-        CONNECTOR_BLOCK_X,
-        CONNECTOR_BLOCK_Y,
-        CONNECTOR_BLOCK_Z,
-    );
+fn connector_insert_pocket_cut() -> Part {
+    centered_cube(
+        "single_aav_condition_connector_insert_receiving_pocket_cut",
+        CONNECTOR_INSERT_X + 2.0 * CONNECTOR_INSERT_POCKET_CLEARANCE,
+        CONNECTOR_INSERT_Y + 2.0 * CONNECTOR_INSERT_POCKET_CLEARANCE,
+        CONNECTOR_INSERT_POCKET_Z + 0.4,
+    )
+}
 
-    let mut ports = Part::empty("single_aav_condition_connector_face_port_placeholders");
-    for (i, x) in [-CONNECTOR_PORT_SPACING, 0.0, CONNECTOR_PORT_SPACING]
+fn connector_insert_module_seat_witness() -> Part {
+    let mut datum_posts = Part::empty("single_aav_condition_connector_insert_datum_posts");
+    for (i, x) in [-CONNECTOR_INSERT_DATUM_X, CONNECTOR_INSERT_DATUM_X]
         .into_iter()
         .enumerate()
     {
-        ports = ports
+        datum_posts = datum_posts
             + centered_cylinder(
-                format!("single_aav_condition_connector_port_boss_{i}"),
-                CONNECTOR_PORT_R,
-                3.0,
-                32,
+                format!("single_aav_condition_connector_insert_datum_post_{i}"),
+                CONNECTOR_INSERT_DATUM_POST_R,
+                CONNECTOR_INSERT_DATUM_POST_Z,
+                28,
             )
-            .translate(x, -CONNECTOR_BLOCK_Y / 2.0 - 1.0, 0.0);
+            .translate(x, CONNECTOR_INSERT_DATUM_Y, 0.0);
     }
 
-    let strain_relief = tubing_comb(
-        "single_aav_condition_connector_face_strain_relief_comb",
-        0.0,
-        CONNECTOR_BLOCK_Y / 2.0 + 3.0,
-        0.0,
+    let pocket_floor_gasket = rectangular_frame(
+        "single_aav_condition_connector_insert_pocket_floor_gasket_trace",
+        CONNECTOR_INSERT_GASKET_X,
+        CONNECTOR_INSERT_GASKET_Y,
+        0.5,
+        CONNECTOR_INSERT_GASKET_W,
+    )
+    .translate(0.0, 0.0, -CONNECTOR_INSERT_DATUM_POST_Z / 2.0 + 0.25);
+
+    let key_witness = centered_cube(
+        "single_aav_condition_connector_insert_asymmetric_key_witness",
+        CONNECTOR_INSERT_KEY_X,
+        CONNECTOR_INSERT_KEY_Y,
+        0.8,
+    )
+    .translate(
+        -CONNECTOR_INSERT_X / 2.0 + CONNECTOR_INSERT_KEY_X / 2.0,
+        -CONNECTOR_INSERT_Y / 2.0 + CONNECTOR_INSERT_KEY_Y / 2.0,
+        -CONNECTOR_INSERT_DATUM_POST_Z / 2.0 + 0.4,
     );
 
-    block + ports + strain_relief
+    datum_posts + pocket_floor_gasket + key_witness
+}
+
+fn connector_insert_clamp_witnesses() -> Part {
+    let mut witnesses = Part::empty("single_aav_connector_gasket_insert_rev_a_clamp_witnesses");
+    for (i, x) in [-21.0, 21.0].into_iter().enumerate() {
+        let pad = centered_cylinder(
+            format!("single_aav_connector_gasket_insert_rev_a_clamp_pad_{i}"),
+            2.6,
+            0.6,
+            28,
+        )
+        .translate(x, 8.0, CONNECTOR_INSERT_Z + 0.3);
+        let center_mark = centered_cylinder(
+            format!("single_aav_connector_gasket_insert_rev_a_clamp_center_mark_{i}"),
+            0.8,
+            0.8,
+            20,
+        )
+        .translate(x, 8.0, CONNECTOR_INSERT_Z + 0.4);
+        witnesses = witnesses + pad - center_mark;
+    }
+    witnesses
 }
 
 fn connector_test_block(name: &str, x: f64, y: f64, boss_d: f64) -> Part {
@@ -499,9 +663,42 @@ mod tests {
     }
 
     #[test]
-    fn connector_face_keeps_three_visual_options() {
+    fn connector_coupon_keeps_three_visual_options() {
         assert_eq!(CONNECTOR_PORT_SPACING, 14.0);
-        assert!(CONNECTOR_BLOCK_X > 3.0 * CONNECTOR_PORT_SPACING);
+        assert!(CONNECTOR_COUPON_X > 9.0 * CONNECTOR_PORT_SPACING);
+    }
+
+    #[test]
+    fn rev_a_insert_fits_inside_standard_module_edge() {
+        let max_x = CONNECTOR_INSERT_CENTER_X + CONNECTOR_INSERT_X / 2.0;
+        let min_x = CONNECTOR_INSERT_CENTER_X - CONNECTOR_INSERT_X / 2.0;
+        let max_y = CONNECTOR_INSERT_CENTER_Y + CONNECTOR_INSERT_Y / 2.0;
+        let min_y = CONNECTOR_INSERT_CENTER_Y - CONNECTOR_INSERT_Y / 2.0;
+
+        assert!(max_x < SLAS_X / 2.0 - 8.0);
+        assert!(min_x > -SLAS_X / 2.0 + 8.0);
+        assert!(max_y < SLAS_Y / 2.0 - 4.0);
+        assert!(min_y > -SLAS_Y / 2.0 + 8.0);
+    }
+
+    #[test]
+    fn rev_a_insert_uses_same_port_pitch_as_module_connector_witness() {
+        assert_eq!(CONNECTOR_PORT_SPACING, 14.0);
+        assert!(CONNECTOR_INSERT_X > 3.0 * CONNECTOR_PORT_SPACING);
+        assert!(CONNECTOR_INSERT_GASKET_X > 2.0 * CONNECTOR_PORT_SPACING + 6.0);
+    }
+
+    #[test]
+    fn rev_a_insert_has_dry_fit_clearance_and_datum_margin() {
+        assert!(CONNECTOR_INSERT_POCKET_CLEARANCE >= 0.25);
+        assert!(CONNECTOR_INSERT_DATUM_R > CONNECTOR_INSERT_DATUM_POST_R);
+        assert!(
+            CONNECTOR_INSERT_DATUM_X + CONNECTOR_INSERT_DATUM_R < CONNECTOR_INSERT_X / 2.0 - 3.0
+        );
+        assert!(
+            CONNECTOR_INSERT_DATUM_Y.abs() + CONNECTOR_INSERT_DATUM_R
+                < CONNECTOR_INSERT_Y / 2.0 - 2.0
+        );
     }
 
     #[test]
