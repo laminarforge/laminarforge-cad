@@ -41,6 +41,9 @@ const CONNECTOR_BLOCK_Y: f64 = 11.0;
 const CONNECTOR_BLOCK_Z: f64 = 11.0;
 const CONNECTOR_PORT_R: f64 = 3.0;
 const CONNECTOR_PORT_SPACING: f64 = 14.0;
+const CONNECTOR_COUPON_X: f64 = 160.0;
+const CONNECTOR_COUPON_MOUSE_EAR_R: f64 = 8.0;
+const CONNECTOR_COUPON_EFFECTIVE_BED_TARGET: f64 = 180.0;
 
 const ID_LAND_X: f64 = 38.0;
 const ID_LAND_Y: f64 = 14.0;
@@ -191,20 +194,40 @@ fn tray_reference() -> Part {
 }
 
 fn connector_face_coupon() -> Part {
-    let body = centered_cube("single_aav_connector_coupon_body", 190.0, 66.0, 10.0);
+    let body = centered_cube("single_aav_connector_coupon_body", CONNECTOR_COUPON_X, 66.0, 10.0);
+    let adhesion_ears = connector_coupon_adhesion_ears();
 
-    let nanotight = connector_test_block("nanotight_10_32_placeholder", -62.0, -8.0, 10.0);
+    let nanotight = connector_test_block("nanotight_10_32_placeholder", -50.0, -8.0, 10.0);
     let magnetic = connector_test_block("magnetic_gasket_placeholder", 0.0, -8.0, 13.0);
-    let luer = connector_test_block("luer_bench_adapter_placeholder", 62.0, -8.0, 17.0);
+    let luer = connector_test_block("luer_bench_adapter_placeholder", 50.0, -8.0, 17.0);
 
     let separator_a = centered_cube("single_aav_connector_coupon_separator_a", 2.0, 52.0, 5.0)
-        .translate(-31.0, 0.0, 7.5);
+        .translate(-25.0, 0.0, 7.5);
     let separator_b = centered_cube("single_aav_connector_coupon_separator_b", 2.0, 52.0, 5.0)
-        .translate(31.0, 0.0, 7.5);
+        .translate(25.0, 0.0, 7.5);
 
     let tubing_comb = tubing_comb("single_aav_connector_coupon_tubing_comb", 0.0, 22.0, 10.0);
 
-    body + nanotight + magnetic + luer + separator_a + separator_b + tubing_comb
+    (body + adhesion_ears + nanotight + magnetic + luer + separator_a + separator_b + tubing_comb)
+        .translate(0.0, 0.0, 5.0)
+}
+
+fn connector_coupon_adhesion_ears() -> Part {
+    let mut ears = Part::empty("single_aav_connector_coupon_sacrificial_mouse_ears");
+    for (i, (x, y)) in [(-80.0, -33.0), (80.0, -33.0), (-80.0, 33.0), (80.0, 33.0)]
+        .into_iter()
+        .enumerate()
+    {
+        ears = ears
+            + centered_cylinder(
+                format!("single_aav_connector_coupon_mouse_ear_{i}"),
+                CONNECTOR_COUPON_MOUSE_EAR_R,
+                0.6,
+                40,
+            )
+            .translate(x, y, -4.7);
+    }
+    ears
 }
 
 fn sixteen_zone_scale_ghost() -> Part {
@@ -479,5 +502,13 @@ mod tests {
     fn connector_face_keeps_three_visual_options() {
         assert_eq!(CONNECTOR_PORT_SPACING, 14.0);
         assert!(CONNECTOR_BLOCK_X > 3.0 * CONNECTOR_PORT_SPACING);
+    }
+
+    #[test]
+    fn connector_coupon_stays_inside_small_effective_bed() {
+        assert!(
+            CONNECTOR_COUPON_X + 2.0 * CONNECTOR_COUPON_MOUSE_EAR_R
+                <= CONNECTOR_COUPON_EFFECTIVE_BED_TARGET
+        );
     }
 }
