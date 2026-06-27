@@ -13,7 +13,7 @@ This is not a final vendor drawing set, sterile-barrier validation, biological p
 | Internal CAD fit-check package | Ready as v0 | The active Rust CAD bin builds and exports seven STL fit-check files. |
 | Mechanical RFQ package | Not ready | Vendor manufacturing requires STEP files and 2D drawings, not STL as the manufacturing definition. |
 | Disposable fluid-path package | Architecture ready, SKUs open | A6 defines topology and port roles, but final tubing, connectors, pump interface, and harness vendor are not selected. |
-| No-cell validation package | Spec ready, CAD fixture open | A7 defines gates and fixture modules; actual 16-slot validation fixture CAD/bench hardware remains a follow-up. |
+| No-cell validation package | First-pass CAD fixture available | A7 defines gates and fixture modules; `sixteen_slot_cassette_no_cell_validation_fixture` now exports a dry bench fixture package, while STEP/drawings and sourced hardware remain follow-up. |
 | Media-only planning | Blocked until A7 gates pass | No-cell fit, leak, flow, bubble, dye recovery, and waste tests must pass first. |
 | Live-cell/AAV work | Blocked | Requires A7 no-cell pass, media-only/aseptic evidence, safety/IBC workflow, and material compatibility data. |
 
@@ -219,6 +219,6 @@ These are not negotiable in the first article:
 Recommended next work after A8:
 
 1. A9 STEP/drawing export plan for the six custom RFQ parts plus stackup drawing: see `docs/sixteen_slot_cassette_a9_step_drawing_export_plan.md`.
-2. A10 16-slot A7 validation fixture CAD or sourced bench fixture package.
+2. A10 16-slot A7 validation fixture iteration into STEP/drawings or sourced bench fixture package.
 3. A11 bought-component downselect for tubing, connectors, pump/pressure-control, sensors, labels, and collection hardware.
 4. A12 RFQ packet draft with vendor questions, drawing notes, inspection table, and quote options.

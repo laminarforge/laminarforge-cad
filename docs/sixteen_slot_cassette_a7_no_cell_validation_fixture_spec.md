@@ -19,6 +19,8 @@ This is not a biological protocol, live-cell release criterion, sterile-barrier 
 | Mixed-AAV routing | Blocked. The fixture must not normalize using one cassette as a multi-AAV test article. |
 | Incubation control | Out of scope except for dry fit, condensation/drain observation, and module keepout preservation. |
 
+The active first-pass CAD source for this fixture is `src/bin/sixteen_slot_cassette_no_cell_validation_fixture.rs`. It exports the 4 x 4 cassette nest, surrogate/restriction coupon set, pressure sensor bar, flow collection deck, bubble challenge station, leak witness tray, waste/backflow station, run-record plate, and review assembly under `output/no_cell_fixture/`.
+
 The older `flow_pressure_validation_fixture`, `closed_chip_inlet_outlet_dead_volume_dye_recovery_station`, and related 20-position CAD generators are reference concepts only. They do not validate the 16-slot first article until explicitly ported to the 4 x 4 geometry, A5 datums, and A6 port map.
 
 ## Validation Questions
@@ -313,7 +315,7 @@ Internal source anchors:
 
 A7 hands these decisions to the first-article build package:
 
-- Convert the fixture modules into CAD/STEP/STL outputs or sourced bench fixtures.
+- Iterate the new `sixteen_slot_cassette_no_cell_validation_fixture` CAD outputs into either STEP/drawing release files or sourced bench fixture selections.
 - Select actual pressure sensors, flow sensors if used, scales, gauges, fittings, tubing, connector SKUs, collection vials, dye, and leak-witness materials.
 - Define the final operating pressure and test pressure once pump, tubing, connector, surrogate-chip, and gasket coupon data are known.
 - Add drawing notes that the older 20-position fixture CAD is not the active first-build validation fixture.
