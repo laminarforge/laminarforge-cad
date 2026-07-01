@@ -1,0 +1,55 @@
+[package]
+name = "lamp_rev_b_controller_fab_preview"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_stage = "preview_not_order_release"
+release_state = "blocked_until_routed_and_erc_drc_clean"
+
+[toolchain]
+min_kicad_major = 10
+
+[inputs]
+board = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pcb"
+schematic = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_sch"
+contract = "pcb/lamp_rev_b_controller/contract.toml"
+parts = "pcb/lamp_rev_b_controller/parts.toml"
+placement = "pcb/lamp_rev_b_controller/placement.toml"
+pin_nets = "pcb/lamp_rev_b_controller/pin_nets.toml"
+firmware_handoff = "pcb/lamp_rev_b_controller/firmware_handoff.toml"
+electrical_validation = "pcb/lamp_rev_b_controller/electrical_validation.toml"
+routing_seed = "pcb/lamp_rev_b_controller/routing_seed.toml"
+
+[outputs]
+preview_dir = "pcb/lamp_rev_b_controller/fab"
+reports_dir = "pcb/lamp_rev_b_controller/reports"
+bom_file = "bom.csv"
+cpl_file = "cpl.csv"
+route_report = "drc.json"
+
+[assembly]
+machine_side = "top"
+manual_part_ids = [
+  "dc_input_terminal",
+  "buck_module_header",
+  "thermistor_headers",
+  "heater_mosfets",
+  "heater_output_terminals",
+  "led_driver_header",
+  "led_output_terminal",
+  "led_sense_header",
+  "opt_sync_header",
+  "camera_spi_header",
+  "interlock_header",
+  "fan_header",
+  "uart_prog_header",
+  "i2c_exp_header",
+  "analog_opt_header",
+]
+
+[release_blockers]
+items = [
+  "KiCad schematic is an architecture shell, not full ERC-clean schematic capture.",
+  "Materialized PCB is placement/test-pad source seed; routing_seed is intentionally empty.",
+  "Integrated buck regulator and constant-current LED driver are module/header placeholders.",
+  "Camera connector family remains optional/debug until camera module is selected.",
+]

@@ -1,0 +1,35 @@
+[package]
+name = "lamp_rev_b_controller_electrical_validation"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_stage = "bringup_requirements"
+
+[[gate]]
+name = "usb_only_logic_bringup"
+status = "required before heater population"
+checks = ["VBUS current below 500 mA", "+3V3 present", "ESP32 enumerates or UART boot log visible", "VIN_HEATER and VDRV remain off"]
+
+[[gate]]
+name = "external_power_rails"
+status = "required before load connection"
+checks = ["VIN_12_24 polarity", "VIN_PROTECTED after PTC/TVS", "+5V and +3V3 rail current", "+3V3_ANA noise check"]
+
+[[gate]]
+name = "heater_dummy_load"
+status = "required before heater pad connection"
+checks = ["HEATER_ARM default low", "HEATER0_PWM/HEATER1_PWM default low", "gate pulldowns active", "dummy-load current within connector/fuse limits", "thermal cutoff loop opens heater enable"]
+
+[[gate]]
+name = "thermistor_adc"
+status = "required before thermal closed-loop"
+checks = ["ADS1115 I2C at 0x48", "mux select lines settle", "10K resistor reads near expected voltage", "open and short thermistor faults detected"]
+
+[[gate]]
+name = "optics_driver_dummy_load"
+status = "required before optical head connection"
+checks = ["LED_EXC_EN default low", "constant-current driver/module current measured", "LED_SYNC_OUT timestamps match enable window", "lid/cartridge open disables excitation"]
+
+[[gate]]
+name = "camera_sync"
+status = "prototype debug"
+checks = ["FRAME_TRIG_OUT toggles", "EXPOSURE_ACTIVE_IN is logged", "external host correlates frames to LED/heater/interlock state"]

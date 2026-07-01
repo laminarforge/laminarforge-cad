@@ -1,0 +1,48 @@
+(kicad_sch
+  (version 20230121)
+  (generator "laminarforge_lamp_rev_b_controller")
+  (uuid "b0000000-0000-4000-8000-000000000001")
+  (paper "A4")
+  (title_block
+    (title "LaminarForge LAMP Rev B Controller Carrier")
+    (date "2026-07-01")
+    (rev "B-proto")
+    (company "LaminarForge")
+    (comment 1 "Prototype controller carrier; not a final assay/product board.")
+    (comment 2 "Contracts validated by lamp_rev_b_controller_check.")
+    (comment 3 "Heater pad, optics, camera module, cartridge wet path, and enclosure are connectorized.")
+  )
+  (text "MCU / USB: ESP32-S3-WROOM-1-N16, native USB device, CC pull-downs, ESD, EN, GPIO0, UART header, I2C/SPI."
+    (at 20.32 25.4 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "b0000000-0000-4000-8000-000000000101")
+  )
+  (text "Power: external current-limited 12 V default, 24 V option only with rated population, USB never powers heater."
+    (at 20.32 35.56 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "b0000000-0000-4000-8000-000000000102")
+  )
+  (text "Heater: two external low-side channels, TC4427-class drive, MOSFETs, current-sense option, hardware arm/cutoff loop."
+    (at 20.32 45.72 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "b0000000-0000-4000-8000-000000000103")
+  )
+  (text "Thermal: ADS1115 plus CD74HC4051 with eight 10K NTC divider channels and labeled mux/ADC test pads."
+    (at 20.32 55.88 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "b0000000-0000-4000-8000-000000000104")
+  )
+  (text "Optics: controlled 470-490 nm LED driver control/output, LED current/thermal sense, external camera sync, optional SPI/FIFO camera header."
+    (at 20.32 66.04 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "b0000000-0000-4000-8000-000000000105")
+  )
+  (text "Safety / Bring-up: lid, cartridge, latch, cutoff/kill, fan, USB-only logic mode, heater/LED disabled by default."
+    (at 20.32 76.2 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "b0000000-0000-4000-8000-000000000106")
+  )
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)

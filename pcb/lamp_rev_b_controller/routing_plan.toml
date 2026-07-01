@@ -1,0 +1,31 @@
+[package]
+name = "lamp_rev_b_controller_routing_plan"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_stage = "routing_plan"
+
+[policy]
+stackup = "F.Cu signal/components, In1.Cu ground plane, In2.Cu power/control, B.Cu signal/test"
+autorouter = "Manual/KiCad-reviewed routing first. Freerouting is diagnostic only after zero physical pre-route DRC."
+iteration_gate = "Run lamp_rev_b_controller_route_report through laminarforge_build after every materialized routing change."
+release_gate = "No fabrication release until physical DRC is zero and real unconnected items are zero."
+
+[[phase]]
+name = "1_usb_and_boot"
+scope = "USB D+/D-, CC pull-downs, ESD, ESP_EN, ESP_GPIO0_BOOT, UART header."
+
+[[phase]]
+name = "2_power_tree"
+scope = "VIN input, PTC/TVS, +5V buck/injection, +3V3 regulator, +3V3_ANA filtering, rail test pads."
+
+[[phase]]
+name = "3_heater_power"
+scope = "VIN_HEATER, TC4427, MOSFET gates, heater terminals, current sense, thermal cutoff status."
+
+[[phase]]
+name = "4_thermistor_analog"
+scope = "ADS1115, CD74HC4051, eight thermistor channels, quiet analog return, I2C."
+
+[[phase]]
+name = "5_optics_camera_interlocks"
+scope = "LED driver control, LED output, camera sync/SPI header, lid/cartridge/cutoff, fan and analog optical diagnostic."

@@ -1,0 +1,63 @@
+[package]
+name = "lamp_rev_b_controller_firmware_handoff"
+ticket = "T-4C206871"
+revision = "rev_b_proto"
+source_artifact = "A-5F5799DF"
+module_variant = "ESP32-S3-WROOM-1-N16"
+board_revision = "rev_b_proto"
+
+[boot_defaults]
+heater_arm = "low"
+heater0_pwm = "low"
+heater1_pwm = "low"
+led_exc_en = "low"
+therm_mux_en_n = "high"
+fan_pwm = "low"
+notes = "Configure boot-safe GPIO defaults before enabling peripherals. GPIO0, GPIO3, GPIO45, and GPIO46 are not application loads."
+
+[[peripheral]]
+name = "HeaterChannel::Block"
+control = "HEATER0_PWM"
+arm = "HEATER_ARM"
+thermistors = ["THERM_BLOCK_A", "THERM_BLOCK_B"]
+faults = ["over_temperature", "missing_thermistor", "open_short_thermistor", "supply_fault", "lid_open", "cartridge_missing", "watchdog_timeout"]
+
+[[peripheral]]
+name = "HeaterChannel::LidAux"
+control = "HEATER1_PWM"
+arm = "HEATER_ARM"
+thermistors = ["THERM_LID_AUX"]
+faults = ["same_policy_as_block"]
+
+[[peripheral]]
+name = "ThermistorMux"
+select_nets = ["THERM_MUX_S0", "THERM_MUX_S1", "THERM_MUX_S2"]
+enable = "THERM_MUX_EN_N"
+adc = "ADS1115"
+channels = ["THERM_BLOCK_A", "THERM_BLOCK_B", "THERM_LID_AUX", "THERM_AMBIENT", "THERM_CARTRIDGE_EDGE", "THERM_HEATSINK", "THERM_SPARE_0", "THERM_SPARE_1"]
+
+[[peripheral]]
+name = "LedChannel::Excitation"
+pwm = "LED_EXC_PWM"
+enable = "LED_EXC_EN"
+current_sense = "LED_CURRENT_SENSE"
+sync = "LED_SYNC_OUT"
+fault_policy = "forced off on boot, fault, lid open, cartridge missing, and camera error"
+
+[[peripheral]]
+name = "SpiCameraFrameSource"
+spi = ["SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N"]
+control = ["CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "I2C_SDA", "I2C_SCL"]
+external_sync = ["FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "LED_SYNC_OUT"]
+notes = "External USB/CSI host remains the mandatory first optical data path."
+
+[[peripheral]]
+name = "SafetyInterlockSnapshot"
+inputs = ["LID_CLOSED_N", "CART_PRESENT_N", "LATCH_LOCKED_N", "AUX_IO0_THERMAL_CUTOFF_OK", "HEATER_SUPPLY_SENSE"]
+unsafe_action = "disarm heaters, disable excitation LED, leave fan policy safe, and log transition"
+
+[[peripheral]]
+name = "RunLogStorage"
+minimum = "ESP32 NVS/flash ring log"
+preferred_option = "SPI microSD/module on shared SPI with SD_CS_N after tri-state behavior is verified"
+records = ["firmware_version", "board_revision", "interlock_transitions", "heater_setpoint_duty_temperature", "led_settings", "camera_exposure", "invalid_state_reasons", "result_state"]

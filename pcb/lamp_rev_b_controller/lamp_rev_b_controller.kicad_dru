@@ -1,0 +1,20 @@
+(version 1)
+
+(rule "heater-output-width"
+  (constraint track_width (min 1.50mm))
+  (condition "A.NetClass == 'Heater'"))
+
+(rule "power-rail-width"
+  (constraint track_width (min 0.50mm))
+  (condition "A.NetClass == 'Power'"))
+
+(rule "analog-clearance"
+  (constraint clearance (min 0.25mm))
+  (condition "A.NetClass == 'Analog' || B.NetClass == 'Analog'"))
+
+(rule "usb-clearance"
+  (constraint clearance (min 0.18mm))
+  (condition "A.NetClass == 'USB' || B.NetClass == 'USB'"))
+
+(rule "edge-clearance"
+  (constraint edge_clearance (min 0.35mm)))

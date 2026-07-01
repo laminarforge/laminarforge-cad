@@ -1,0 +1,517 @@
+[package]
+name = "lamp_rev_b_controller_parts"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_stage = "materialized_board"
+
+[schematic]
+root_file = "lamp_rev_b_controller.kicad_sch"
+symbol_library = "../lib/lcsc.kicad_sym"
+footprint_library = "../lib/lcsc.pretty"
+
+[[blocks]]
+name = "mcu_usb_debug"
+title = "MCU / USB / Programming"
+modules = ["esp32_s3", "usb_programming_power", "firmware_debug_logging"]
+required_nets = ["+3V3", "GND", "USB_DP", "USB_DN", "USB_CC1", "USB_CC2", "VBUS", "USB_VBUS_SENSE", "ESP_EN", "ESP_GPIO0_BOOT", "UART0_TXD", "UART0_RXD", "I2C_SDA", "I2C_SCL"]
+
+[[blocks]]
+name = "power_entry"
+title = "External Power / Rails"
+modules = ["power_entry"]
+required_nets = ["VIN_12_24", "VIN_PROTECTED", "VIN_HEATER", "VDRV", "+5V", "+3V3", "+3V3_ANA", "GND"]
+
+[[blocks]]
+name = "heater_drive"
+title = "Heater Drive"
+modules = ["heater_drive", "interlocks"]
+required_nets = ["VIN_HEATER", "VDRV", "HEATER_ARM", "HEATER0_PWM", "HEATER1_PWM", "HEATER0_GATE", "HEATER1_GATE", "HEATER0_LOW", "HEATER1_LOW", "HEATER_SUPPLY_SENSE", "AUX_IO0_THERMAL_CUTOFF_OK", "GND"]
+
+[[blocks]]
+name = "temperature_sense"
+title = "Thermistor / ADC / Mux"
+modules = ["temperature_sense"]
+required_nets = ["+3V3_ANA", "+3V3", "I2C_SDA", "I2C_SCL", "THERM_MUX_S0", "THERM_MUX_S1", "THERM_MUX_S2", "THERM_MUX_EN_N", "THERM_MUX_OUT", "ADS_AIN0", "ADS_AIN1", "ADS_AIN2", "ADS_AIN3", "THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7", "GND"]
+
+[[blocks]]
+name = "optics_camera"
+title = "Optics / Camera / Sync"
+modules = ["optics_control"]
+required_nets = ["LED_EXC_PWM", "LED_EXC_EN", "LED_FAULT_N", "LED_CURRENT_SENSE", "LED_SUPPLY", "LED_PLUS", "LED_MINUS", "LED_SYNC_OUT", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N", "CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "I2C_SDA", "I2C_SCL", "+3V3", "GND"]
+
+[[blocks]]
+name = "interlocks_and_expansion"
+title = "Interlocks / Fan / Expansion"
+modules = ["interlocks", "manufacturing_test"]
+required_nets = ["LID_CLOSED_N", "CART_PRESENT_N", "LATCH_LOCKED_N", "AUX_IO0_THERMAL_CUTOFF_OK", "FAN_PWM", "FAN_TACH", "STATUS_RUN_LED", "STATUS_FAULT_LED", "SPARE_GPIO42", "AUX_ANALOG_IN", "GND", "+3V3"]
+
+[[selected_parts]]
+id = "mcu_module"
+module = "esp32_s3"
+quantity = 1
+reference_prefix = "U"
+value = "ESP32-S3-WROOM-1-N16"
+symbol = "ESP32-S3-WROOM-1-N8"
+footprint = "lcsc:WIFIM-SMD_ESP32-S3-WROOM-1-N8"
+lcsc_part = "DigiKey 1965-ESP32-S3-WROOM-1-N16-ND"
+nets = ["+3V3", "GND", "GND_EP", "USB_DP", "USB_DN", "ESP_EN", "ESP_GPIO0_BOOT", "UART0_TXD", "UART0_RXD", "I2C_SDA", "I2C_SCL", "SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N", "CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "SD_CS_N", "HEATER_ARM", "HEATER0_PWM", "HEATER1_PWM", "THERM_MUX_S0", "THERM_MUX_S1", "THERM_MUX_S2", "THERM_MUX_EN_N", "LED_EXC_PWM", "LED_EXC_EN", "LED_SYNC_OUT", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "LID_CLOSED_N", "CART_PRESENT_N", "AUX_IO0_THERMAL_CUTOFF_OK", "STATUS_RUN_LED", "STATUS_FAULT_LED", "SPARE_GPIO42"]
+verification = "Reuse the existing N8 land pattern only after padout is verified against ESP32-S3-WROOM-1-N16; value/MPN fields intentionally name N16."
+
+[[selected_parts]]
+id = "usb_c_connector"
+module = "usb_programming_power"
+quantity = 1
+reference_prefix = "J"
+value = "TYPE-C 3.1 MT 16P"
+symbol = "TYPE-C3.1MT16P_C168688"
+footprint = "lcsc:USB-C-SMD_TYPE-C-USB-4"
+lcsc_part = "C168688"
+nets = ["VBUS", "GND", "USB_DP", "USB_DN", "USB_CC1", "USB_CC2"]
+verification = "UFP/device only with CC1/CC2 Rd pull-downs and ESD near connector."
+
+[[selected_parts]]
+id = "usb_c_cc_resistors"
+module = "usb_programming_power"
+quantity = 2
+reference_prefix = "R"
+value = "5.1k"
+symbol = "0805W8F5101T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C27834"
+nets = ["USB_CC1", "USB_CC2", "GND"]
+verification = "USB-C sink pull-downs."
+
+[[selected_parts]]
+id = "usb_esd_protection"
+module = "usb_programming_power"
+quantity = 1
+reference_prefix = "U"
+value = "USBLC6-2SC6"
+symbol = "USBLC6-2SC6"
+footprint = "lcsc:SOT-23-6"
+lcsc_part = "C7519"
+nets = ["USB_DP", "USB_DN", "VBUS", "GND"]
+verification = "Place before USB pair reaches ESP32 module."
+
+[[selected_parts]]
+id = "vbus_sense_divider"
+module = "usb_programming_power"
+quantity = 2
+reference_prefix = "R"
+value = "100k/100k VBUS sense"
+symbol = "0805W8F1004T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17514"
+nets = ["VBUS", "USB_VBUS_SENSE", "GND"]
+verification = "Scales VBUS into ESP32 GPIO/ADC-capable sense path; firmware uses only for mode detection."
+
+[[selected_parts]]
+id = "dc_input_terminal"
+module = "power_entry"
+quantity = 1
+reference_prefix = "J"
+value = "DB128H-5.08-2P-BK-S"
+symbol = "DB128H-5.08-2P-BK-S"
+footprint = "lcsc:TERM-BLOCK-5.08-2P"
+lcsc_part = "C430605"
+nets = ["VIN_12_24", "GND"]
+verification = "First-article high-current input terminal; mating harness remains prototype-selected."
+
+[[selected_parts]]
+id = "input_ptc"
+module = "power_entry"
+quantity = 1
+reference_prefix = "F"
+value = "RUEF500K/PTC"
+symbol = "SMD2920-300C-36V"
+footprint = "lcsc:FUSE2920"
+lcsc_part = "DigiKey RUEF500KHF-ND"
+nets = ["VIN_12_24", "VIN_PROTECTED"]
+verification = "Prototype branch protection only within PTC hold/trip and connector limits."
+
+[[selected_parts]]
+id = "input_tvs"
+module = "power_entry"
+quantity = 1
+reference_prefix = "D"
+value = "SMBJ18A footprint option"
+symbol = "SMBJ18A"
+footprint = "lcsc:SMB_L4.6-W3.6-LS5.3-RD"
+lcsc_part = "C149886"
+nets = ["VIN_PROTECTED", "GND"]
+verification = "Select actual TVS voltage for 12 V or 24 V build before fab release."
+
+[[selected_parts]]
+id = "buck_module_header"
+module = "power_entry"
+quantity = 1
+reference_prefix = "J"
+value = "5V buck module / injection header"
+symbol = "HEADER_1X04"
+footprint = "lcsc:PINHEADER_1X04_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["VIN_PROTECTED", "+5V", "GND"]
+verification = "Module-friendly first article; exact integrated buck is a fab-release gap."
+
+[[selected_parts]]
+id = "three_v_three_regulator"
+module = "power_entry"
+quantity = 1
+reference_prefix = "U"
+value = "AMS1117-3.3"
+symbol = "AMS1117-3.3"
+footprint = "lcsc:SOT-223"
+lcsc_part = "C6186"
+nets = ["+5V", "+3V3", "GND"]
+verification = "Prototype regulator path; thermal review before Wi-Fi-heavy operation."
+
+[[selected_parts]]
+id = "regulator_bulk_caps"
+module = "power_entry"
+quantity = 6
+reference_prefix = "C"
+value = "22uF"
+symbol = "CL31A226KAHNNNE"
+footprint = "lcsc:C1206"
+lcsc_part = "C5672"
+nets = ["VIN_12_24", "VIN_PROTECTED", "+5V", "+3V3", "+3V3_ANA", "GND"]
+verification = "Rail entry and regulator bulk capacitance."
+
+[[selected_parts]]
+id = "adc"
+module = "temperature_sense"
+quantity = 1
+reference_prefix = "U"
+value = "ADS1115IDGSR"
+symbol = "ADS1115IDGSR"
+footprint = "lcsc:MSOP-10_L3.0-W3.0-P0.50-LS5.0-BL"
+lcsc_part = "C37593"
+nets = ["+3V3", "+3V3_ANA", "GND", "I2C_SDA", "I2C_SCL", "ADS_AIN0", "ADS_AIN1", "ADS_AIN2", "ADS_AIN3", "THERM_MUX_OUT", "HEATER_SUPPLY_SENSE", "LED_CURRENT_SENSE", "AUX_ANALOG_IN"]
+verification = "Thermistor/slow analog baseline; default address 0x48 with pads for future address option."
+
+[[selected_parts]]
+id = "thermistor_mux"
+module = "temperature_sense"
+quantity = 1
+reference_prefix = "U"
+value = "CD74HC4051M"
+symbol = "CD74HC4051M"
+footprint = "lcsc:SOIC-16_L9.9-W3.9-P1.27-LS6.0-BL"
+lcsc_part = "C139301"
+nets = ["+3V3_ANA", "GND", "THERM_MUX_OUT", "THERM_MUX_S0", "THERM_MUX_S1", "THERM_MUX_S2", "THERM_MUX_EN_N", "THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7"]
+verification = "Slow thermistor mux only; firmware must settle after channel changes."
+
+[[selected_parts]]
+id = "thermistor_ref_resistors"
+module = "temperature_sense"
+quantity = 8
+reference_prefix = "R"
+value = "10k 0.1%"
+symbol = "0805W8F1002T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "DigiKey A105700-ND"
+nets = ["+3V3_ANA", "THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7"]
+verification = "Reference resistors for stocked 10K NTC dividers."
+
+[[selected_parts]]
+id = "thermistor_filter_caps"
+module = "temperature_sense"
+quantity = 8
+reference_prefix = "C"
+value = "100nF"
+symbol = "CC0603KRX7R9BB104"
+footprint = "lcsc:C0603"
+lcsc_part = "C14663"
+nets = ["THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7", "GND"]
+verification = "Stuff or adjust after ADS1115/mux settling review."
+
+[[selected_parts]]
+id = "thermistor_headers"
+module = "temperature_sense"
+quantity = 8
+reference_prefix = "J"
+value = "2-pin NTC header"
+symbol = "HEADER_1X02"
+footprint = "lcsc:PINHEADER_1X02_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7", "GND"]
+verification = "Individual prototype NTC connectors; key/lock family to be selected before release."
+
+[[selected_parts]]
+id = "heater_gate_driver"
+module = "heater_drive"
+quantity = 1
+reference_prefix = "U"
+value = "TC4427ACOA/TC4427EPA"
+symbol = "TC4427ACOA"
+footprint = "lcsc:SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL"
+lcsc_part = "DigiKey TC4427EPA-ND or C636886 SMD alternate"
+nets = ["VDRV", "GND", "HEATER_ARM", "HEATER0_PWM", "HEATER1_PWM", "HEATER0_GATE", "HEATER1_GATE"]
+verification = "Dual gate-driver topology; Rev B first article may use SMD alternate or hand adapter for stocked DIP driver."
+
+[[selected_parts]]
+id = "heater_mosfets"
+module = "heater_drive"
+quantity = 2
+reference_prefix = "Q"
+value = "IRLB3813PBF TO-220 12V prototype"
+symbol = "IRLB3813PBF"
+footprint = "lcsc:TO-220-3_VERTICAL"
+lcsc_part = "DigiKey IRLB3813PBF-ND"
+nets = ["HEATER0_GATE", "HEATER1_GATE", "HEATER0_LOW", "HEATER1_LOW", "GND"]
+verification = "12 V bench heater only. Populate >=60 V MOSFET option before claiming 24 V robustness."
+
+[[selected_parts]]
+id = "heater_output_terminals"
+module = "heater_drive"
+quantity = 2
+reference_prefix = "J"
+value = "DB128H-5.08-2P-BK-S"
+symbol = "DB128H-5.08-2P-BK-S"
+footprint = "lcsc:TERM-BLOCK-5.08-2P"
+lcsc_part = "C430605"
+nets = ["VIN_HEATER", "HEATER0_LOW", "HEATER1_LOW", "GND"]
+verification = "External heater pads only; no PCB serpentine heater."
+
+[[selected_parts]]
+id = "heater_gate_resistors"
+module = "heater_drive"
+quantity = 2
+reference_prefix = "R"
+value = "33R"
+symbol = "0805W8F1000T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17408"
+nets = ["HEATER0_GATE", "HEATER1_GATE"]
+verification = "Series resistors close to MOSFET gates."
+
+[[selected_parts]]
+id = "heater_pulldowns"
+module = "heater_drive"
+quantity = 3
+reference_prefix = "R"
+value = "10k"
+symbol = "0805W8F1002T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17414"
+nets = ["HEATER_ARM", "HEATER0_GATE", "HEATER1_GATE", "GND"]
+verification = "Hardware-off defaults for arm and gate nodes."
+
+[[selected_parts]]
+id = "heater_current_shunts"
+module = "heater_drive"
+quantity = 2
+reference_prefix = "R"
+value = "50mR DNP option"
+symbol = "0805W8F1001T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "DNP"
+nets = ["HEATER0_LOW", "HEATER1_LOW", "GND", "HEATER_SUPPLY_SENSE"]
+verification = "Optional Kelvin sense placeholder; not populated unless current range is confirmed."
+
+[[selected_parts]]
+id = "led_driver_header"
+module = "optics_control"
+quantity = 1
+reference_prefix = "J"
+value = "LED driver module/control header"
+symbol = "HEADER_1X06"
+footprint = "lcsc:PINHEADER_1X06_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["LED_SUPPLY", "LED_EXC_PWM", "LED_EXC_EN", "LED_FAULT_N", "LED_CURRENT_SENSE", "GND"]
+verification = "Module-friendly constant-current path until exact driver IC is selected."
+
+[[selected_parts]]
+id = "led_output_terminal"
+module = "optics_control"
+quantity = 1
+reference_prefix = "J"
+value = "DB128H-5.08-2P-BK-S"
+symbol = "DB128H-5.08-2P-BK-S"
+footprint = "lcsc:TERM-BLOCK-5.08-2P"
+lcsc_part = "C430605"
+nets = ["LED_PLUS", "LED_MINUS"]
+verification = "Off-board LED module/starboard output; optical heat stays off controller."
+
+[[selected_parts]]
+id = "led_sense_header"
+module = "optics_control"
+quantity = 1
+reference_prefix = "J"
+value = "LED NTC/ID header"
+symbol = "HEADER_1X04"
+footprint = "lcsc:PINHEADER_1X04_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["THERM_CH_5", "AUX_ANALOG_IN", "+3V3_ANA", "GND"]
+verification = "LED heatsink thermistor and optional module ID resistor."
+
+[[selected_parts]]
+id = "opt_sync_header"
+module = "optics_control"
+quantity = 1
+reference_prefix = "J"
+value = "External camera sync header"
+symbol = "HEADER_1X06"
+footprint = "lcsc:PINHEADER_1X06_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["GND", "+3V3", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "LED_SYNC_OUT", "SPARE_GPIO42"]
+verification = "Camera-host sync/logging interface for the mandatory external USB/CSI camera path."
+
+[[selected_parts]]
+id = "camera_spi_header"
+module = "optics_control"
+quantity = 1
+reference_prefix = "J"
+value = "SPI/FIFO camera module header"
+symbol = "HEADER_2X06"
+footprint = "lcsc:PINHEADER_2X06_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N", "CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "I2C_SDA", "I2C_SCL", "+3V3", "GND"]
+verification = "Optional embedded camera path; no direct DVP on stocked non-PSRAM N16 module."
+
+[[selected_parts]]
+id = "interlock_header"
+module = "interlocks"
+quantity = 1
+reference_prefix = "J"
+value = "Lid/cartridge/cutoff interlock header"
+symbol = "HEADER_1X06"
+footprint = "lcsc:PINHEADER_1X06_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["LID_CLOSED_N", "CART_PRESENT_N", "LATCH_LOCKED_N", "AUX_IO0_THERMAL_CUTOFF_OK", "+3V3", "GND"]
+verification = "Switch harness remains connectorized."
+
+[[selected_parts]]
+id = "fan_header"
+module = "interlocks"
+quantity = 1
+reference_prefix = "J"
+value = "Fan PWM/tach header"
+symbol = "HEADER_1X04"
+footprint = "lcsc:PINHEADER_1X04_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["FAN_PWM", "FAN_TACH", "+5V", "GND"]
+verification = "Optional fan interface for LED/dark-reader airflow."
+
+[[selected_parts]]
+id = "uart_prog_header"
+module = "firmware_debug_logging"
+quantity = 1
+reference_prefix = "J"
+value = "2x3 UART/programming header"
+symbol = "HEADER_2X03"
+footprint = "lcsc:PINHEADER_2X03_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["GND", "+3V3", "UART0_TXD", "UART0_RXD", "ESP_EN", "ESP_GPIO0_BOOT"]
+verification = "+3V3 is sense only unless explicitly jumpered."
+
+[[selected_parts]]
+id = "i2c_exp_header"
+module = "firmware_debug_logging"
+quantity = 1
+reference_prefix = "J"
+value = "I2C expansion header"
+symbol = "HEADER_1X04"
+footprint = "lcsc:PINHEADER_1X04_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["I2C_SDA", "I2C_SCL", "+3V3", "GND"]
+verification = "RTC/FRAM/debug expansion; check I2C address conflicts."
+
+[[selected_parts]]
+id = "analog_opt_header"
+module = "optics_control"
+quantity = 1
+reference_prefix = "J"
+value = "Analog optical diagnostic header"
+symbol = "HEADER_1X06"
+footprint = "lcsc:PINHEADER_1X06_2.54MM"
+lcsc_part = "MANUAL"
+nets = ["+3V3_ANA", "GND", "ADS_AIN3", "AUX_ANALOG_IN", "I2C_SDA", "I2C_SCL"]
+verification = "External OPT101/TIA/light-leak diagnostic only."
+
+[[selected_parts]]
+id = "status_leds"
+module = "manufacturing_test"
+quantity = 2
+reference_prefix = "D"
+value = "LED0603 status"
+symbol = "KT-0603R"
+footprint = "lcsc:LED0603-RD"
+lcsc_part = "C2286"
+nets = ["STATUS_RUN_LED", "STATUS_FAULT_LED", "+3V3", "GND"]
+verification = "Keep outside optical cavity or firmware-disable during acquisition."
+
+[[selected_parts]]
+id = "status_led_resistors"
+module = "manufacturing_test"
+quantity = 2
+reference_prefix = "R"
+value = "1k"
+symbol = "0805W8F1001T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17513"
+nets = ["STATUS_RUN_LED", "STATUS_FAULT_LED", "+3V3"]
+verification = "Low-current status LED limiting."
+
+[[selected_parts]]
+id = "logic_pullups"
+module = "manufacturing_test"
+quantity = 8
+reference_prefix = "R"
+value = "4.7k"
+symbol = "0805W8F4701T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17673"
+nets = ["I2C_SDA", "I2C_SCL", "CAM_CS_N", "SD_CS_N", "LID_CLOSED_N", "CART_PRESENT_N", "LATCH_LOCKED_N", "AUX_IO0_THERMAL_CUTOFF_OK", "+3V3"]
+verification = "Weak pull-ups for buses and active-low switch inputs; tune per harness length."
+
+[[selected_parts]]
+id = "boot_reset_pullups"
+module = "usb_programming_power"
+quantity = 2
+reference_prefix = "R"
+value = "10k"
+symbol = "0805W8F1002T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17414"
+nets = ["ESP_EN", "ESP_GPIO0_BOOT", "+3V3"]
+verification = "EN and GPIO0 boot defaults; no external application load on GPIO0."
+
+[[external_safety_parts]]
+id = "thermal_cutoff"
+module = "heater_drive"
+quantity = 1
+value = "normally-closed thermal cutoff bonded to heater/spreader"
+lcsc_part = "external"
+role = "hardware heater safety loop"
+installation = "Off-board in heater stack, wired through J_INTERLOCK/cutoff loop."
+
+[[external_safety_parts]]
+id = "heater_pad"
+module = "heater_drive"
+quantity = 1
+value = "12 V default external silicone/polyimide heater pad"
+lcsc_part = "external"
+role = "thermal coupon heater"
+installation = "Off-board only; connectorized through heater output terminal."
+
+[[selection_gaps]]
+id = "integrated_buck_regulator"
+module = "power_entry"
+blocks_fabrication = true
+reason = "First source package uses a buck-module/header footprint so bring-up can proceed without hardcoding a regulator layout before VIN and load are verified."
+resolve_with = "Select exact >=36 V input buck regulator/module population, layout requirements, BOM source, and thermal margin before fab release."
+
+[[selection_gaps]]
+id = "constant_current_led_driver_ic"
+module = "optics_control"
+blocks_fabrication = true
+reason = "Rev B optics lane requires controlled constant current, but LED module/current/heatsink are not frozen."
+resolve_with = "Choose exact 470-490 nm LED driver or driver module, current set range, dimming method, and connector before order release."
+
+[[selection_gaps]]
+id = "camera_module_connector_family"
+module = "optics_control"
+blocks_fabrication = false
+reason = "Mandatory first optical path is an external USB/CSI camera host; embedded SPI/FIFO camera connector is optional/debug."
+resolve_with = "Select camera module and connector/cable family after optical carrier breadboard data."

@@ -527,6 +527,22 @@ name = "lamp_pcba_check"
 path = "src/bin/lamp_pcba_check.rs"
 
 [[bin]]
+name = "lamp_rev_b_controller_check"
+path = "src/bin/lamp_rev_b_controller_check.rs"
+
+[[bin]]
+name = "lamp_rev_b_controller_materialize_board"
+path = "src/bin/lamp_rev_b_controller_materialize_board.rs"
+
+[[bin]]
+name = "lamp_rev_b_controller_route_report"
+path = "src/bin/lamp_rev_b_controller_route_report.rs"
+
+[[bin]]
+name = "lamp_rev_b_controller_fab_preview"
+path = "src/bin/lamp_rev_b_controller_fab_preview.rs"
+
+[[bin]]
 name = "sterile_gas_changeover_regulator_qualification_panel"
 path = "src/bin/sterile_gas_changeover_regulator_qualification_panel.rs"
 

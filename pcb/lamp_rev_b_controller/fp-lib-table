@@ -1,0 +1,9 @@
+(fp_lib_table
+  (lib
+    (name "lcsc")
+    (type "KiCad")
+    (uri "${KIPRJMOD}/../lib/lcsc.pretty")
+    (options "")
+    (descr "LaminarForge locked LCSC footprints")
+  )
+)

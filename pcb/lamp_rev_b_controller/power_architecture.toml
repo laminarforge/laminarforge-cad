@@ -1,0 +1,93 @@
+[package]
+name = "lamp_rev_b_controller_power"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_artifact = "A-8633FB3D"
+
+[topology]
+input_mode = "external current-limited 12 V default, 24 V option only with rated population"
+usb_role = "USB-C UFP/device only; never powers heater"
+heater_power_source = "VIN_HEATER through protection, cutoff loop, and low-side MOSFET channels"
+logic_power_source = "+5V buck/module or bench injection, then +3V3 regulator"
+analog_power_source = "filtered +3V3_ANA branch for ADS1115/mux/dividers"
+gate_driver_rail = "VDRV from 12 V build or derated auxiliary regulator in 24 V build"
+usb_logic_bringup = "USB may power logic only through explicit debug jumper/power-mux option"
+
+[[protection]]
+name = "input_fuse_ptc"
+requirement = "Replaceable fuse/eFuse or rated PTC in heater input path; RUEF500K is suitable only within its hold/trip and connector limits."
+
+[[protection]]
+name = "reverse_polarity"
+requirement = "Use polarized connector plus fuse for first bench build or source an ideal-diode/eFuse for full heater current; stocked 1N5822 is not the full-current reverse element."
+
+[[protection]]
+name = "tvs_bulk"
+requirement = "VIN TVS footprint and at least 100 uF bulk plus local ceramic decoupling near heater switching."
+
+[[heater_channel]]
+name = "HEATER0"
+role = "main plate/coupon heater"
+topology = "external heater pad to VIN_HEATER, low-side N-MOSFET, optional current shunt, TC4427 channel A"
+default_state = "off during reset, firmware crash, USB-only power, missing lid/cartridge, cutoff open, invalid thermistor, or over-temp"
+
+[[heater_channel]]
+name = "HEATER1"
+role = "lid/guard/spare heater"
+topology = "external heater pad to VIN_HEATER, low-side N-MOSFET, optional current shunt, TC4427 channel B"
+default_state = "DNI allowed on first assembly; off under same fault policy as HEATER0"
+
+[thermistor_adc]
+adc = "ADS1115 at 0x48 on I2C"
+mux = "CD74HC4051 with THERM_MUX_S0/S1/S2 and THERM_MUX_EN_N"
+divider = "10K 0.1% upper resistor to +3V3_ANA, 10K NTC to analog ground, ADC midpoint"
+filter = "100-1K series plus 10-100 nF local filter per channel, compatible with mux settling"
+
+[[thermistor_channel]]
+index = 0
+net = "THERM_CH_0"
+logical_name = "THERM_BLOCK_A"
+
+[[thermistor_channel]]
+index = 1
+net = "THERM_CH_1"
+logical_name = "THERM_BLOCK_B"
+
+[[thermistor_channel]]
+index = 2
+net = "THERM_CH_2"
+logical_name = "THERM_LID_AUX"
+
+[[thermistor_channel]]
+index = 3
+net = "THERM_CH_3"
+logical_name = "THERM_AMBIENT"
+
+[[thermistor_channel]]
+index = 4
+net = "THERM_CH_4"
+logical_name = "THERM_CARTRIDGE_EDGE"
+
+[[thermistor_channel]]
+index = 5
+net = "THERM_CH_5"
+logical_name = "THERM_HEATSINK"
+
+[[thermistor_channel]]
+index = 6
+net = "THERM_CH_6"
+logical_name = "THERM_SPARE_0"
+
+[[thermistor_channel]]
+index = 7
+net = "THERM_CH_7"
+logical_name = "THERM_SPARE_1"
+
+[safety]
+hardware_defaults = [
+  "HEATER_ARM pulled inactive",
+  "HEATER0_PWM and HEATER1_PWM pulled inactive before firmware init",
+  "LED_EXC_EN pulled inactive",
+  "USB-only power cannot energize VIN_HEATER or VDRV",
+  "thermal cutoff loop exposed separately from firmware commands",
+]

@@ -1,0 +1,9 @@
+[package]
+name = "lamp_rev_b_controller_routing_seed"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_stage = "unrouted_seed"
+
+# Intentionally empty. This pass materializes placement, net assignments,
+# copper zones, and test pads but does not claim a routed/fab-release board.
+segments = []

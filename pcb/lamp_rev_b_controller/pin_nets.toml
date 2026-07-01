@@ -1,0 +1,578 @@
+[package]
+name = "lamp_rev_b_controller_pin_nets"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_stage = "pin_net_assignment"
+
+# Pin names are footprint pad numbers/names, not schematic symbol pin names.
+# Assign only locked interfaces. Leave unverified details unassigned until
+# schematic capture confirms exact component pinouts and DNP populations.
+
+[[assignments]]
+reference = "U1"
+notes = "ESP32-S3-WROOM-1-N16 using verified-compatible N8 land pattern; boot/strap-sensitive pads kept to boot/debug only."
+[assignments.pins]
+"1" = "GND"
+"2" = "+3V3"
+"3" = "ESP_EN"
+"4" = "THERM_MUX_S0"
+"5" = "THERM_MUX_S1"
+"6" = "THERM_MUX_S2"
+"7" = "LED_EXC_PWM"
+"8" = "CAM_RESET_N"
+"9" = "HEATER_ARM"
+"10" = "HEATER0_PWM"
+"11" = "HEATER1_PWM"
+"12" = "THERM_MUX_EN_N"
+"13" = "USB_DN"
+"14" = "USB_DP"
+"17" = "SPI_SCLK"
+"18" = "SPI_MOSI"
+"19" = "SPI_MISO"
+"20" = "CAM_CS_N"
+"21" = "CAM_FRAME_INT"
+"22" = "CAM_PWDN_N"
+"23" = "SD_CS_N"
+"24" = "LED_EXC_EN"
+"25" = "FRAME_TRIG_OUT"
+"27" = "ESP_GPIO0_BOOT"
+"28" = "LED_SYNC_OUT"
+"29" = "EXPOSURE_ACTIVE_IN"
+"30" = "LID_CLOSED_N"
+"31" = "CART_PRESENT_N"
+"32" = "AUX_IO0_THERMAL_CUTOFF_OK"
+"33" = "STATUS_RUN_LED"
+"34" = "STATUS_FAULT_LED"
+"35" = "SPARE_GPIO42"
+"36" = "UART0_RXD"
+"37" = "UART0_TXD"
+"38" = "I2C_SCL"
+"39" = "I2C_SDA"
+"40" = "GND"
+"41" = "GND_EP"
+
+[[assignments]]
+reference = "J1"
+notes = "USB-C UFP/device port."
+[assignments.pins]
+"A5" = "USB_CC1"
+"B5" = "USB_CC2"
+"A6" = "USB_DP"
+"B6" = "USB_DP"
+"A7" = "USB_DN"
+"B7" = "USB_DN"
+"A9B4" = "VBUS"
+"B9A4" = "VBUS"
+"A12B1" = "GND"
+"B12A1" = "GND"
+"13" = "GND"
+"14" = "GND"
+"15" = "GND"
+"16" = "GND"
+
+[[assignments]]
+reference = "R1"
+notes = "USB-C CC1 5.1k sink pull-down."
+[assignments.pins]
+"1" = "USB_CC1"
+"2" = "GND"
+
+[[assignments]]
+reference = "R2"
+notes = "USB-C CC2 5.1k sink pull-down."
+[assignments.pins]
+"1" = "USB_CC2"
+"2" = "GND"
+
+[[assignments]]
+reference = "U2"
+notes = "USB data ESD protection."
+[assignments.pins]
+"1" = "USB_DP"
+"2" = "GND"
+"3" = "USB_DN"
+"4" = "USB_DN"
+"5" = "VBUS"
+"6" = "USB_DP"
+
+[[assignments]]
+reference = "R3"
+notes = "Upper VBUS sense divider."
+[assignments.pins]
+"1" = "VBUS"
+"2" = "USB_VBUS_SENSE"
+
+[[assignments]]
+reference = "R4"
+notes = "Lower VBUS sense divider."
+[assignments.pins]
+"1" = "USB_VBUS_SENSE"
+"2" = "GND"
+
+[[assignments]]
+reference = "J21"
+notes = "2x3 UART/programming header; +3V3 is sense only unless explicitly jumpered."
+[assignments.pins]
+"1" = "GND"
+"2" = "+3V3"
+"3" = "UART0_TXD"
+"4" = "UART0_RXD"
+"5" = "ESP_EN"
+"6" = "ESP_GPIO0_BOOT"
+
+[[assignments]]
+reference = "D2"
+notes = "Run LED."
+[assignments.pins]
+"1" = "STATUS_RUN_LED"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "D3"
+notes = "Fault LED."
+[assignments.pins]
+"1" = "STATUS_FAULT_LED"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R30"
+notes = "Run LED current limit."
+[assignments.pins]
+"1" = "STATUS_RUN_LED"
+"2" = "GND"
+
+[[assignments]]
+reference = "R31"
+notes = "Fault LED current limit."
+[assignments.pins]
+"1" = "STATUS_FAULT_LED"
+"2" = "GND"
+
+[[assignments]]
+reference = "J22"
+notes = "I2C expansion."
+[assignments.pins]
+"1" = "I2C_SDA"
+"2" = "I2C_SCL"
+"3" = "+3V3"
+"4" = "GND"
+
+[[assignments]]
+reference = "J2"
+notes = "External 12/24 V input terminal."
+[assignments.pins]
+"1" = "VIN_12_24"
+"2" = "GND"
+
+[[assignments]]
+reference = "F1"
+notes = "Input PTC/fuse footprint."
+[assignments.pins]
+"1" = "VIN_12_24"
+"2" = "VIN_PROTECTED"
+
+[[assignments]]
+reference = "D1"
+notes = "VIN TVS clamp footprint."
+[assignments.pins]
+"1" = "VIN_PROTECTED"
+"2" = "GND"
+
+[[assignments]]
+reference = "J3"
+notes = "5 V buck module or bench injection header."
+[assignments.pins]
+"1" = "VIN_PROTECTED"
+"2" = "GND"
+"3" = "+5V"
+"4" = "GND"
+
+[[assignments]]
+reference = "U3"
+notes = "AMS1117-3.3 logic regulator."
+[assignments.pins]
+"1" = "GND"
+"2" = "+3V3"
+"3" = "+5V"
+"4" = "+3V3"
+
+[[assignments]]
+reference = "C1"
+notes = "VBUS bulk."
+[assignments.pins]
+"1" = "VBUS"
+"2" = "GND"
+
+[[assignments]]
+reference = "C2"
+notes = "+5V bulk."
+[assignments.pins]
+"1" = "+5V"
+"2" = "GND"
+
+[[assignments]]
+reference = "C3"
+notes = "+3V3 bulk."
+[assignments.pins]
+"1" = "+3V3"
+"2" = "GND"
+
+[[assignments]]
+reference = "C4"
+notes = "Protected VIN bulk."
+[assignments.pins]
+"1" = "VIN_PROTECTED"
+"2" = "GND"
+
+[[assignments]]
+reference = "C5"
+notes = "Filtered analog rail bulk."
+[assignments.pins]
+"1" = "+3V3_ANA"
+"2" = "GND"
+
+[[assignments]]
+reference = "C6"
+notes = "Heater rail bulk."
+[assignments.pins]
+"1" = "VIN_HEATER"
+"2" = "GND"
+
+[[assignments]]
+reference = "U4"
+notes = "ADS1115 thermal/slow analog ADC."
+[assignments.pins]
+"1" = "GND"
+"3" = "GND"
+"4" = "ADS_AIN0"
+"5" = "ADS_AIN1"
+"6" = "ADS_AIN2"
+"7" = "ADS_AIN3"
+"8" = "+3V3"
+"9" = "I2C_SDA"
+"10" = "I2C_SCL"
+
+[[assignments]]
+reference = "U5"
+notes = "CD74HC4051 thermistor mux."
+[assignments.pins]
+"1" = "THERM_CH_4"
+"2" = "THERM_CH_6"
+"3" = "THERM_MUX_OUT"
+"4" = "THERM_CH_7"
+"5" = "THERM_CH_5"
+"6" = "THERM_MUX_EN_N"
+"7" = "GND"
+"8" = "GND"
+"9" = "THERM_MUX_S2"
+"10" = "THERM_MUX_S1"
+"11" = "THERM_MUX_S0"
+"12" = "THERM_CH_3"
+"13" = "THERM_CH_0"
+"14" = "THERM_CH_1"
+"15" = "THERM_CH_2"
+"16" = "+3V3_ANA"
+
+[[assignments]]
+reference = "U6"
+notes = "TC4427 dual heater gate-driver interface."
+[assignments.pins]
+"1" = "HEATER_ARM"
+"2" = "HEATER0_PWM"
+"3" = "GND"
+"4" = "GND"
+"5" = "HEATER1_GATE"
+"6" = "VDRV"
+"7" = "HEATER0_GATE"
+"8" = "HEATER1_PWM"
+
+[[assignments]]
+reference = "Q1"
+notes = "HEATER0 low-side MOSFET, TO-220 pinout gate/drain/source."
+[assignments.pins]
+"1" = "HEATER0_GATE"
+"2" = "HEATER0_LOW"
+"3" = "GND"
+
+[[assignments]]
+reference = "Q2"
+notes = "HEATER1 low-side MOSFET, TO-220 pinout gate/drain/source."
+[assignments.pins]
+"1" = "HEATER1_GATE"
+"2" = "HEATER1_LOW"
+"3" = "GND"
+
+[[assignments]]
+reference = "J12"
+notes = "Primary heater output terminal."
+[assignments.pins]
+"1" = "VIN_HEATER"
+"2" = "HEATER0_LOW"
+
+[[assignments]]
+reference = "J13"
+notes = "Secondary heater output terminal."
+[assignments.pins]
+"1" = "VIN_HEATER"
+"2" = "HEATER1_LOW"
+
+[[assignments]]
+reference = "R20"
+notes = "HEATER0 gate series resistor."
+[assignments.pins]
+"1" = "HEATER0_PWM"
+"2" = "HEATER0_GATE"
+
+[[assignments]]
+reference = "R21"
+notes = "HEATER1 gate series resistor."
+[assignments.pins]
+"1" = "HEATER1_PWM"
+"2" = "HEATER1_GATE"
+
+[[assignments]]
+reference = "R22"
+notes = "HEATER_ARM pulldown."
+[assignments.pins]
+"1" = "HEATER_ARM"
+"2" = "GND"
+
+[[assignments]]
+reference = "R23"
+notes = "HEATER0 gate pulldown."
+[assignments.pins]
+"1" = "HEATER0_GATE"
+"2" = "GND"
+
+[[assignments]]
+reference = "R24"
+notes = "HEATER1 gate pulldown."
+[assignments.pins]
+"1" = "HEATER1_GATE"
+"2" = "GND"
+
+[[assignments]]
+reference = "R25"
+notes = "HEATER0 optional current shunt."
+[assignments.pins]
+"1" = "HEATER0_LOW"
+"2" = "GND"
+
+[[assignments]]
+reference = "R26"
+notes = "HEATER1 optional current shunt."
+[assignments.pins]
+"1" = "HEATER1_LOW"
+"2" = "GND"
+
+[[assignments]]
+reference = "J14"
+notes = "LED driver module/control header."
+[assignments.pins]
+"1" = "LED_SUPPLY"
+"2" = "LED_EXC_PWM"
+"3" = "LED_EXC_EN"
+"4" = "LED_FAULT_N"
+"5" = "LED_CURRENT_SENSE"
+"6" = "GND"
+
+[[assignments]]
+reference = "J15"
+notes = "High-current off-board LED output."
+[assignments.pins]
+"1" = "LED_PLUS"
+"2" = "LED_MINUS"
+
+[[assignments]]
+reference = "J16"
+notes = "LED heatsink NTC / ID header."
+[assignments.pins]
+"1" = "THERM_CH_5"
+"2" = "AUX_ANALOG_IN"
+"3" = "+3V3_ANA"
+"4" = "GND"
+
+[[assignments]]
+reference = "J17"
+notes = "External camera host sync header."
+[assignments.pins]
+"1" = "GND"
+"2" = "+3V3"
+"3" = "FRAME_TRIG_OUT"
+"4" = "EXPOSURE_ACTIVE_IN"
+"5" = "LED_SYNC_OUT"
+"6" = "SPARE_GPIO42"
+
+[[assignments]]
+reference = "J18"
+notes = "Optional SPI/FIFO camera module header."
+[assignments.pins]
+"1" = "+3V3"
+"2" = "GND"
+"3" = "SPI_SCLK"
+"4" = "SPI_MOSI"
+"5" = "SPI_MISO"
+"6" = "CAM_CS_N"
+"7" = "CAM_FRAME_INT"
+"8" = "CAM_RESET_N"
+"9" = "CAM_PWDN_N"
+"10" = "I2C_SDA"
+"11" = "I2C_SCL"
+"12" = "GND"
+
+[[assignments]]
+reference = "J19"
+notes = "Lid/cartridge/cutoff interlock header."
+[assignments.pins]
+"1" = "LID_CLOSED_N"
+"2" = "CART_PRESENT_N"
+"3" = "LATCH_LOCKED_N"
+"4" = "AUX_IO0_THERMAL_CUTOFF_OK"
+"5" = "+3V3"
+"6" = "GND"
+
+[[assignments]]
+reference = "J20"
+notes = "Optional fan PWM/tach header."
+[assignments.pins]
+"1" = "FAN_PWM"
+"2" = "FAN_TACH"
+"3" = "+5V"
+"4" = "GND"
+
+[[assignments]]
+reference = "J23"
+notes = "Analog optical diagnostic header."
+[assignments.pins]
+"1" = "+3V3_ANA"
+"2" = "GND"
+"3" = "ADS_AIN3"
+"4" = "AUX_ANALOG_IN"
+"5" = "I2C_SDA"
+"6" = "I2C_SCL"
+
+[[assignments]]
+reference = "R40"
+notes = "I2C SDA pull-up."
+[assignments.pins]
+"1" = "I2C_SDA"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R41"
+notes = "I2C SCL pull-up."
+[assignments.pins]
+"1" = "I2C_SCL"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R42"
+notes = "CAM_CS_N pull-up."
+[assignments.pins]
+"1" = "CAM_CS_N"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R43"
+notes = "SD_CS_N pull-up."
+[assignments.pins]
+"1" = "SD_CS_N"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R44"
+notes = "Lid switch pull-up."
+[assignments.pins]
+"1" = "LID_CLOSED_N"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R45"
+notes = "Cartridge switch pull-up."
+[assignments.pins]
+"1" = "CART_PRESENT_N"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R46"
+notes = "Latch switch pull-up."
+[assignments.pins]
+"1" = "LATCH_LOCKED_N"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R47"
+notes = "Thermal cutoff status pull-up."
+[assignments.pins]
+"1" = "AUX_IO0_THERMAL_CUTOFF_OK"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R48"
+notes = "ESP_EN pull-up."
+[assignments.pins]
+"1" = "ESP_EN"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "R49"
+notes = "GPIO0 boot pull-up."
+[assignments.pins]
+"1" = "ESP_GPIO0_BOOT"
+"2" = "+3V3"
+
+[[assignments]]
+reference = "J4"
+notes = "THERM_CH_0 NTC header."
+[assignments.pins]
+"1" = "THERM_CH_0"
+"2" = "GND"
+
+[[assignments]]
+reference = "J5"
+notes = "THERM_CH_1 NTC header."
+[assignments.pins]
+"1" = "THERM_CH_1"
+"2" = "GND"
+
+[[assignments]]
+reference = "J6"
+notes = "THERM_CH_2 NTC header."
+[assignments.pins]
+"1" = "THERM_CH_2"
+"2" = "GND"
+
+[[assignments]]
+reference = "J7"
+notes = "THERM_CH_3 NTC header."
+[assignments.pins]
+"1" = "THERM_CH_3"
+"2" = "GND"
+
+[[assignments]]
+reference = "J8"
+notes = "THERM_CH_4 NTC header."
+[assignments.pins]
+"1" = "THERM_CH_4"
+"2" = "GND"
+
+[[assignments]]
+reference = "J9"
+notes = "THERM_CH_5 NTC header."
+[assignments.pins]
+"1" = "THERM_CH_5"
+"2" = "GND"
+
+[[assignments]]
+reference = "J10"
+notes = "THERM_CH_6 NTC header."
+[assignments.pins]
+"1" = "THERM_CH_6"
+"2" = "GND"
+
+[[assignments]]
+reference = "J11"
+notes = "THERM_CH_7 NTC header."
+[assignments.pins]
+"1" = "THERM_CH_7"
+"2" = "GND"

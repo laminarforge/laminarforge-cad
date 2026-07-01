@@ -1,0 +1,1120 @@
+[package]
+name = "lamp_rev_b_controller"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+purpose = "Prototype controller carrier PCBA for the sealed-cartridge dry fluorescence reader."
+source_stage = "materialized_board"
+source_artifacts = [
+  "A-45684C9D",
+  "A-1BDCE3AC",
+  "A-A17708F1",
+  "A-CEDCB22B",
+  "A-8633FB3D",
+  "A-5F5799DF",
+  "A-6804F5CC",
+  "A-528A0BE2",
+]
+
+[board]
+physical_board_count = 1
+width_mm = 118.0
+height_mm = 88.0
+thickness_mm = 1.6
+layer_count = 4
+spatial_lane_count = 8
+primary_mcu = "ESP32-S3-WROOM-1-N16"
+manufacturer_class = "4-layer FR-4 prototype, ENIG preferred, top-side SMT first article"
+prototype_scope = "controller_carrier_only"
+
+[stackup]
+copper_layers = ["F.Cu", "In1.Cu", "In2.Cu", "B.Cu"]
+ground_plane_layer = "In1.Cu"
+power_plane_layer = "In2.Cu"
+outer_copper_oz = 1.0
+inner_copper_oz = 0.5
+min_clearance_mm = 0.15
+min_signal_track_mm = 0.20
+min_via_drill_mm = 0.30
+
+[[zones]]
+name = "usb_debug"
+purpose = "USB-C device/programming, boot/reset, UART, status LEDs, and host logging headers."
+x_min_mm = 0.0
+x_max_mm = 42.0
+y_min_mm = 0.0
+y_max_mm = 28.0
+
+[[zones]]
+name = "mcu_antenna"
+purpose = "ESP32-S3-WROOM body with antenna at a clean board edge and no-copper keepout forward of antenna."
+x_min_mm = 43.0
+x_max_mm = 80.0
+y_min_mm = 0.0
+y_max_mm = 36.0
+
+[[zones]]
+name = "low_voltage_power"
+purpose = "VIN protection handoff, 5 V buck/module option, 3.3 V logic, analog filtering, rail jumpers."
+x_min_mm = 80.0
+x_max_mm = 118.0
+y_min_mm = 0.0
+y_max_mm = 32.0
+
+[[zones]]
+name = "heater_power"
+purpose = "External 12/24 V entry, protected heater rail, TC4427 gate driver, MOSFETs, heater terminals, current sense."
+x_min_mm = 82.0
+x_max_mm = 118.0
+y_min_mm = 32.0
+y_max_mm = 88.0
+
+[[zones]]
+name = "thermistor_analog"
+purpose = "ADS1115, CD74HC4051, 10K divider network, analog expansion, and quiet thermistor harnesses."
+x_min_mm = 0.0
+x_max_mm = 48.0
+y_min_mm = 30.0
+y_max_mm = 88.0
+
+[[zones]]
+name = "optical_interface"
+purpose = "470-490 nm LED driver/control, external camera sync, SPI/FIFO camera module option, lid/cartridge interlocks."
+x_min_mm = 48.0
+x_max_mm = 82.0
+y_min_mm = 36.0
+y_max_mm = 88.0
+
+[[modules]]
+name = "esp32_s3"
+status = "required"
+owner = "schematic"
+deliverable = "ESP32-S3-WROOM-1-N16 module footprint, EN, GPIO0 boot, native USB, UART, I2C, SPI, safe GPIO defaults, antenna keepout."
+
+[[modules]]
+name = "usb_programming_power"
+status = "required"
+owner = "schematic"
+deliverable = "USB-C UFP/device path with CC pull-downs, ESD, D+/D-, VBUS sense, and USB-only logic bring-up."
+
+[[modules]]
+name = "power_entry"
+status = "required"
+owner = "schematic"
+deliverable = "External 12/24 V input connector, PTC/fuse footprint, TVS footprint, protected VIN, 5 V buck/module option, 3.3 V regulator, injection jumpers."
+
+[[modules]]
+name = "heater_drive"
+status = "required"
+owner = "schematic"
+deliverable = "Two low-side heater channels using TC4427-class drive, MOSFET footprints, heater terminals, current-sense footprints, hardware heater arm, cutoff loop."
+
+[[modules]]
+name = "temperature_sense"
+status = "required"
+owner = "schematic"
+deliverable = "ADS1115 + CD74HC4051 thermal front end with eight 10K NTC channels, RC filter footprints, and analog test pads."
+
+[[modules]]
+name = "optics_control"
+status = "required"
+owner = "schematic"
+deliverable = "Constant-current LED driver control/header, LED output connector, LED current/thermal sense, external camera sync, optional SPI/FIFO camera connector."
+
+[[modules]]
+name = "interlocks"
+status = "required"
+owner = "schematic"
+deliverable = "Lid, cartridge, latch, thermal cutoff/kill status, fan, and hardware-off safety defaults."
+
+[[modules]]
+name = "firmware_debug_logging"
+status = "required"
+owner = "firmware"
+deliverable = "Stable firmware handoff for pins, logical peripherals, NVS/minimum logging, optional SPI storage, and host sync/logging."
+
+[[modules]]
+name = "manufacturing_test"
+status = "required"
+owner = "layout"
+deliverable = "Accessible labeled pads for rails, USB, ESP32 boot/debug, heater, thermistor, LED, camera/sync, interlocks, and spare GPIO."
+
+[[rails]]
+name = "VBUS"
+nominal_voltage_v = 5.0
+max_current_ma = 500
+source = "usb_c_device_port"
+must_have_testpoint = true
+
+[[rails]]
+name = "VIN_12_24"
+nominal_voltage_v = 12.0
+max_current_ma = 5000
+source = "external_current_limited_dc_supply"
+must_have_testpoint = true
+
+[[rails]]
+name = "VIN_PROTECTED"
+nominal_voltage_v = 12.0
+max_current_ma = 5000
+source = "post_fuse_tvs_polarized_input"
+must_have_testpoint = true
+
+[[rails]]
+name = "VIN_HEATER"
+nominal_voltage_v = 12.0
+max_current_ma = 5000
+source = "protected_heater_domain_after_kill_loop"
+must_have_testpoint = true
+
+[[rails]]
+name = "VDRV"
+nominal_voltage_v = 12.0
+max_current_ma = 100
+source = "VIN_12_24 in 12 V build or regulated driver rail in 24 V build"
+must_have_testpoint = true
+
+[[rails]]
+name = "+5V"
+nominal_voltage_v = 5.0
+max_current_ma = 2000
+source = "buck_or_debug_injection_from_protected_vin"
+must_have_testpoint = true
+
+[[rails]]
+name = "+3V3"
+nominal_voltage_v = 3.3
+max_current_ma = 800
+source = "logic_regulator_from_5v"
+must_have_testpoint = true
+
+[[rails]]
+name = "+3V3_ANA"
+nominal_voltage_v = 3.3
+max_current_ma = 100
+source = "filtered_branch_from_3v3"
+must_have_testpoint = true
+
+[[nets]]
+name = "GND"
+class = "Ground"
+min_track_width_mm = 0.30
+must_have_testpoint = true
+
+[[nets]]
+name = "GND_EP"
+class = "Ground"
+min_track_width_mm = 0.30
+must_have_testpoint = false
+
+[[nets]]
+name = "VBUS"
+class = "Power"
+min_track_width_mm = 0.50
+must_have_testpoint = true
+
+[[nets]]
+name = "VIN_12_24"
+class = "Heater"
+min_track_width_mm = 1.50
+must_have_testpoint = true
+
+[[nets]]
+name = "VIN_PROTECTED"
+class = "Heater"
+min_track_width_mm = 1.50
+must_have_testpoint = true
+
+[[nets]]
+name = "VIN_HEATER"
+class = "Heater"
+min_track_width_mm = 1.50
+must_have_testpoint = true
+
+[[nets]]
+name = "VDRV"
+class = "Power"
+min_track_width_mm = 0.40
+must_have_testpoint = true
+
+[[nets]]
+name = "+5V"
+class = "Power"
+min_track_width_mm = 0.50
+must_have_testpoint = true
+
+[[nets]]
+name = "+3V3"
+class = "Power"
+min_track_width_mm = 0.30
+must_have_testpoint = true
+
+[[nets]]
+name = "+3V3_ANA"
+class = "Analog"
+min_track_width_mm = 0.30
+must_have_testpoint = true
+
+[[nets]]
+name = "USB_DP"
+class = "USB"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "USB_DN"
+class = "USB"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "USB_CC1"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "USB_CC2"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "USB_VBUS_SENSE"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "ESP_EN"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "ESP_GPIO0_BOOT"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "UART0_TXD"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "UART0_RXD"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "I2C_SDA"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "I2C_SCL"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "SPI_SCLK"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "SPI_MOSI"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "SPI_MISO"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "CAM_CS_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "CAM_FRAME_INT"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "CAM_RESET_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "CAM_PWDN_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "SD_CS_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER_ARM"
+class = "Digital"
+min_track_width_mm = 0.25
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER0_PWM"
+class = "Digital"
+min_track_width_mm = 0.25
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER1_PWM"
+class = "Digital"
+min_track_width_mm = 0.25
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER0_GATE"
+class = "Digital"
+min_track_width_mm = 0.30
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER1_GATE"
+class = "Digital"
+min_track_width_mm = 0.30
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER0_LOW"
+class = "Heater"
+min_track_width_mm = 1.20
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER1_LOW"
+class = "Heater"
+min_track_width_mm = 1.20
+must_have_testpoint = true
+
+[[nets]]
+name = "HEATER_SUPPLY_SENSE"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "THERM_MUX_S0"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "THERM_MUX_S1"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "THERM_MUX_S2"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "THERM_MUX_EN_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "THERM_MUX_OUT"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "ADS_AIN0"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "ADS_AIN1"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "ADS_AIN2"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "ADS_AIN3"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "LED_EXC_PWM"
+class = "Digital"
+min_track_width_mm = 0.25
+must_have_testpoint = true
+
+[[nets]]
+name = "LED_EXC_EN"
+class = "Digital"
+min_track_width_mm = 0.25
+must_have_testpoint = true
+
+[[nets]]
+name = "LED_FAULT_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "LED_CURRENT_SENSE"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "LED_SUPPLY"
+class = "Power"
+min_track_width_mm = 1.00
+must_have_testpoint = true
+
+[[nets]]
+name = "LED_PLUS"
+class = "Heater"
+min_track_width_mm = 1.00
+must_have_testpoint = false
+
+[[nets]]
+name = "LED_MINUS"
+class = "Heater"
+min_track_width_mm = 1.00
+must_have_testpoint = false
+
+[[nets]]
+name = "LED_SYNC_OUT"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "FRAME_TRIG_OUT"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "EXPOSURE_ACTIVE_IN"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "LID_CLOSED_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "CART_PRESENT_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "LATCH_LOCKED_N"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "AUX_IO0_THERMAL_CUTOFF_OK"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "FAN_PWM"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "FAN_TACH"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "STATUS_RUN_LED"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "STATUS_FAULT_LED"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "SPARE_GPIO42"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[nets]]
+name = "AUX_ANALOG_IN"
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = true
+
+[[net_groups]]
+prefix = "THERM_CH_"
+count = 8
+class = "Analog"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[gpio_map]]
+esp32_module_pin = 4
+net = "THERM_MUX_S0"
+function = "GPIO4 mux select bit 0"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 5
+net = "THERM_MUX_S1"
+function = "GPIO5 mux select bit 1"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 6
+net = "THERM_MUX_S2"
+function = "GPIO6 mux select bit 2"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 7
+net = "LED_EXC_PWM"
+function = "GPIO7 excitation LED PWM into constant-current driver"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 8
+net = "CAM_RESET_N"
+function = "GPIO15 camera/module reset"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 9
+net = "HEATER_ARM"
+function = "GPIO16 heater-driver hardware arm enable"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 10
+net = "HEATER0_PWM"
+function = "GPIO17 primary heater PWM"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 11
+net = "HEATER1_PWM"
+function = "GPIO18 lid/guard/spare heater PWM"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 12
+net = "THERM_MUX_EN_N"
+function = "GPIO8 thermistor mux enable, active low"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 13
+net = "USB_DN"
+function = "GPIO19 native USB D-"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 14
+net = "USB_DP"
+function = "GPIO20 native USB D+"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 17
+net = "SPI_SCLK"
+function = "GPIO9 shared SPI clock for camera/storage option"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 18
+net = "SPI_MOSI"
+function = "GPIO10 shared SPI MOSI for camera/storage option"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 19
+net = "SPI_MISO"
+function = "GPIO11 shared SPI MISO for camera/storage option"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 20
+net = "CAM_CS_N"
+function = "GPIO12 SPI/FIFO camera chip select"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 21
+net = "CAM_FRAME_INT"
+function = "GPIO13 camera frame-ready interrupt"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 22
+net = "CAM_PWDN_N"
+function = "GPIO14 camera/module powerdown"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 23
+net = "SD_CS_N"
+function = "GPIO21 optional microSD chip select"
+locked = false
+
+[[gpio_map]]
+esp32_module_pin = 24
+net = "LED_EXC_EN"
+function = "GPIO47 LED driver enable, weak default off"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 25
+net = "FRAME_TRIG_OUT"
+function = "GPIO48 external camera trigger output"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 28
+net = "LED_SYNC_OUT"
+function = "GPIO35 excitation activity sync output"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 29
+net = "EXPOSURE_ACTIVE_IN"
+function = "GPIO36 external camera exposure/frame valid input"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 30
+net = "LID_CLOSED_N"
+function = "GPIO37 lid closed interlock input, active low"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 31
+net = "CART_PRESENT_N"
+function = "GPIO38 cartridge present input, active low"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 32
+net = "AUX_IO0_THERMAL_CUTOFF_OK"
+function = "GPIO39 cutoff/aux safety status"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 33
+net = "STATUS_RUN_LED"
+function = "GPIO40 low-current run indicator"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 34
+net = "STATUS_FAULT_LED"
+function = "GPIO41 low-current fault indicator"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 35
+net = "SPARE_GPIO42"
+function = "GPIO42 spare/debug pad"
+locked = false
+
+[[gpio_map]]
+esp32_module_pin = 36
+net = "UART0_RXD"
+function = "GPIO44 UART0 RXD"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 37
+net = "UART0_TXD"
+function = "GPIO43 UART0 TXD"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 38
+net = "I2C_SCL"
+function = "GPIO2 I2C SCL"
+locked = true
+
+[[gpio_map]]
+esp32_module_pin = 39
+net = "I2C_SDA"
+function = "GPIO1 I2C SDA"
+locked = true
+
+[[test_points]]
+name = "TP_GND"
+net = "GND"
+purpose = "Bench ground reference near external connectors."
+
+[[test_points]]
+name = "TP_VBUS"
+net = "VBUS"
+purpose = "USB-only logic bring-up and VBUS presence."
+
+[[test_points]]
+name = "TP_VIN"
+net = "VIN_12_24"
+purpose = "External supply input before protection."
+
+[[test_points]]
+name = "TP_VIN_PROT"
+net = "VIN_PROTECTED"
+purpose = "Protected VIN after fuse/TVS area."
+
+[[test_points]]
+name = "TP_VIN_HEATER"
+net = "VIN_HEATER"
+purpose = "Heater rail after safety loop."
+
+[[test_points]]
+name = "TP_VDRV"
+net = "VDRV"
+purpose = "Gate-driver supply rail."
+
+[[test_points]]
+name = "TP_5V"
+net = "+5V"
+purpose = "5 V regulator/module output."
+
+[[test_points]]
+name = "TP_3V3"
+net = "+3V3"
+purpose = "3.3 V logic rail."
+
+[[test_points]]
+name = "TP_3V3A"
+net = "+3V3_ANA"
+purpose = "Filtered analog rail."
+
+[[test_points]]
+name = "TP_USB_DP"
+net = "USB_DP"
+purpose = "Short USB D+ diagnostic pad."
+
+[[test_points]]
+name = "TP_USB_DN"
+net = "USB_DN"
+purpose = "Short USB D- diagnostic pad."
+
+[[test_points]]
+name = "TP_USB_CC1"
+net = "USB_CC1"
+purpose = "USB-C CC1 sink pull-down diagnostic pad."
+
+[[test_points]]
+name = "TP_USB_CC2"
+net = "USB_CC2"
+purpose = "USB-C CC2 sink pull-down diagnostic pad."
+
+[[test_points]]
+name = "TP_EN"
+net = "ESP_EN"
+purpose = "Reset/enable pad."
+
+[[test_points]]
+name = "TP_BOOT"
+net = "ESP_GPIO0_BOOT"
+purpose = "Boot strap pad; no application load."
+
+[[test_points]]
+name = "TP_UART_TX"
+net = "UART0_TXD"
+purpose = "UART boot log."
+
+[[test_points]]
+name = "TP_UART_RX"
+net = "UART0_RXD"
+purpose = "UART programming input."
+
+[[test_points]]
+name = "TP_I2C_SDA"
+net = "I2C_SDA"
+purpose = "I2C debug and bus recovery."
+
+[[test_points]]
+name = "TP_I2C_SCL"
+net = "I2C_SCL"
+purpose = "I2C debug and bus recovery."
+
+[[test_points]]
+name = "TP_SPI_SCLK"
+net = "SPI_SCLK"
+purpose = "Camera/storage SPI clock."
+
+[[test_points]]
+name = "TP_SPI_MOSI"
+net = "SPI_MOSI"
+purpose = "Camera/storage SPI MOSI."
+
+[[test_points]]
+name = "TP_SPI_MISO"
+net = "SPI_MISO"
+purpose = "Camera/storage SPI MISO."
+
+[[test_points]]
+name = "TP_CAM_CS"
+net = "CAM_CS_N"
+purpose = "Optional SPI/FIFO camera chip-select pad."
+
+[[test_points]]
+name = "TP_CAM_FRAME"
+net = "CAM_FRAME_INT"
+purpose = "Optional SPI/FIFO camera frame interrupt pad."
+
+[[test_points]]
+name = "TP_CAM_RESET"
+net = "CAM_RESET_N"
+purpose = "Optional SPI/FIFO camera reset pad."
+
+[[test_points]]
+name = "TP_CAM_PWDN"
+net = "CAM_PWDN_N"
+purpose = "Optional SPI/FIFO camera power-down pad."
+
+[[test_points]]
+name = "TP_SD_CS"
+net = "SD_CS_N"
+purpose = "Optional storage chip-select pad."
+
+[[test_points]]
+name = "TP_HEATER_ARM"
+net = "HEATER_ARM"
+purpose = "Hardware arm output before heater driver."
+
+[[test_points]]
+name = "TP_HEATER0_PWM"
+net = "HEATER0_PWM"
+purpose = "Primary heater PWM."
+
+[[test_points]]
+name = "TP_HEATER1_PWM"
+net = "HEATER1_PWM"
+purpose = "Second heater PWM."
+
+[[test_points]]
+name = "TP_HEATER0_GATE"
+net = "HEATER0_GATE"
+purpose = "Primary MOSFET gate."
+
+[[test_points]]
+name = "TP_HEATER1_GATE"
+net = "HEATER1_GATE"
+purpose = "Second MOSFET gate."
+
+[[test_points]]
+name = "TP_HEATER0_LOW"
+net = "HEATER0_LOW"
+purpose = "Primary heater switched low side."
+
+[[test_points]]
+name = "TP_HEATER1_LOW"
+net = "HEATER1_LOW"
+purpose = "Second heater switched low side."
+
+[[test_points]]
+name = "TP_HEATER_SENSE"
+net = "HEATER_SUPPLY_SENSE"
+purpose = "Heater rail/current sense ADC input."
+
+[[test_points]]
+name = "TP_THERM_S0"
+net = "THERM_MUX_S0"
+purpose = "Thermistor mux select bit 0."
+
+[[test_points]]
+name = "TP_THERM_S1"
+net = "THERM_MUX_S1"
+purpose = "Thermistor mux select bit 1."
+
+[[test_points]]
+name = "TP_THERM_S2"
+net = "THERM_MUX_S2"
+purpose = "Thermistor mux select bit 2."
+
+[[test_points]]
+name = "TP_THERM_EN"
+net = "THERM_MUX_EN_N"
+purpose = "Thermistor mux active-low enable."
+
+[[test_points]]
+name = "TP_THERM_OUT"
+net = "THERM_MUX_OUT"
+purpose = "Mux common into ADS1115."
+
+[[test_points]]
+name = "TP_ADS_AIN0"
+net = "ADS_AIN0"
+purpose = "Primary ADS1115 thermistor mux input."
+
+[[test_points]]
+name = "TP_ADS_AIN1"
+net = "ADS_AIN1"
+purpose = "Heater supply/current sense ADC input."
+
+[[test_points]]
+name = "TP_ADS_AIN2"
+net = "ADS_AIN2"
+purpose = "LED current sense ADC input."
+
+[[test_points]]
+name = "TP_ADS_AIN3"
+net = "ADS_AIN3"
+purpose = "Auxiliary analog input."
+
+[[test_points]]
+name = "TP_LED_PWM"
+net = "LED_EXC_PWM"
+purpose = "Excitation LED PWM control."
+
+[[test_points]]
+name = "TP_LED_EN"
+net = "LED_EXC_EN"
+purpose = "Excitation LED enable, default off."
+
+[[test_points]]
+name = "TP_LED_SENSE"
+net = "LED_CURRENT_SENSE"
+purpose = "Excitation LED current monitor."
+
+[[test_points]]
+name = "TP_LED_SUPPLY"
+net = "LED_SUPPLY"
+purpose = "Excitation driver supply handoff."
+
+[[test_points]]
+name = "TP_FRAME_TRIG"
+net = "FRAME_TRIG_OUT"
+purpose = "External camera trigger output."
+
+[[test_points]]
+name = "TP_EXPOSURE"
+net = "EXPOSURE_ACTIVE_IN"
+purpose = "External camera exposure-active input."
+
+[[test_points]]
+name = "TP_LED_SYNC"
+net = "LED_SYNC_OUT"
+purpose = "External camera LED-active sync."
+
+[[test_points]]
+name = "TP_LID"
+net = "LID_CLOSED_N"
+purpose = "Lid interlock status."
+
+[[test_points]]
+name = "TP_CART"
+net = "CART_PRESENT_N"
+purpose = "Cartridge present status."
+
+[[test_points]]
+name = "TP_LATCH"
+net = "LATCH_LOCKED_N"
+purpose = "Latch locked status."
+
+[[test_points]]
+name = "TP_CUTOFF"
+net = "AUX_IO0_THERMAL_CUTOFF_OK"
+purpose = "Thermal cutoff/kill status."
+
+[[test_points]]
+name = "TP_FAN_PWM"
+net = "FAN_PWM"
+purpose = "Optional fan PWM output."
+
+[[test_points]]
+name = "TP_FAN_TACH"
+net = "FAN_TACH"
+purpose = "Optional fan tach input."
+
+[[test_points]]
+name = "TP_RUN"
+net = "STATUS_RUN_LED"
+purpose = "Run LED drive node."
+
+[[test_points]]
+name = "TP_FAULT"
+net = "STATUS_FAULT_LED"
+purpose = "Fault LED drive node."
+
+[[test_points]]
+name = "TP_SPARE42"
+net = "SPARE_GPIO42"
+purpose = "Spare locked-out GPIO42 pad for debug only."
+
+[[test_points]]
+name = "TP_AUX_ANALOG"
+net = "AUX_ANALOG_IN"
+purpose = "Auxiliary analog diagnostic input."
+
+[verification]
+required_gates = [
+  "lamp_rev_b_controller_check",
+  "lamp_rev_b_controller_materialize_board",
+  "lamp_rev_b_controller_route_report",
+  "lamp_rev_b_controller_fab_preview",
+  "kicad-cli sch erc when schematic capture is promoted beyond architecture shell",
+  "kicad-cli pcb drc before any fab release claim",
+]
+autorouter_policy = "Use manual or KiCad-reviewed routing first. Freerouting is diagnostic only after zero physical pre-route DRC."
+simulation_policy = "Prototype source package only; heater and optical validation stay in bring-up documentation, not external validation plan."
+
+[manufacturing]
+target_vendor = "JLCPCB/PCBWay/Seeed/MacroFab prototype quote"
+assembly_side = "top"
+first_article_quantity = 5
+bare_board_overbuild_quantity = "5-10 if cheap"
+requires_bom_lcsc = true
+requires_cpl = true
+requires_gerbers = true
+requires_drills = true
+requires_drc_clean = true
+license_marking = "CERN-OHL-S v2"
+no_substitution_policy = "No substitutions for ESP32 module, regulator, ADC, mux, LED driver path, MOSFET/gate driver, USB-C connector, camera connector, heater connectors, or safety parts without approval."

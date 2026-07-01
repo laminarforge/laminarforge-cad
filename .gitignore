@@ -99,6 +99,9 @@ Cargo.lock
 pcb/lamp_rev_a/fab/
 pcb/lamp_rev_a/fab_release/
 pcb/lamp_rev_a/reports/
+pcb/lamp_rev_b_controller/fab/
+pcb/lamp_rev_b_controller/fab_release/
+pcb/lamp_rev_b_controller/reports/
 
 # Test artifacts
 /test_clone_check

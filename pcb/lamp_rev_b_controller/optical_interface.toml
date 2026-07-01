@@ -1,0 +1,45 @@
+[package]
+name = "lamp_rev_b_controller_optical_interface"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_artifact = "A-CEDCB22B"
+
+[position]
+architecture = "camera/debug first with controlled 470-490 nm excitation"
+retired_rev_a_path = "No fixed 650 nm turbidity array and no eight-lane photodiode array on this controller."
+camera_strategy = "External USB/CSI camera host is mandatory for first optical data; SPI/FIFO camera connector is optional embedded path."
+optical_mechanics = "LED module, filter, lens, camera module, baffles, heatsink, and final standoff live on the replaceable optical carrier."
+
+[excitation_led]
+wavelength_nm = "470-490"
+driver = "constant-current driver or driver-module header, controller owns enable/PWM/sense and LED output connector"
+current_range_ma = "20-700 first target, resistor/config option toward 1 A only after LED/driver/heatsink selection"
+control_nets = ["LED_EXC_PWM", "LED_EXC_EN", "LED_FAULT_N"]
+sense_nets = ["LED_CURRENT_SENSE", "THERM_CH_5"]
+sync_nets = ["LED_SYNC_OUT", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN"]
+default_state = "forced off on boot, fault, lid open, cartridge missing, camera error, or fixture not armed"
+
+[external_camera_sync]
+connector = "J_OPT_SYNC"
+logic_level = "3.3 V"
+pins = ["GND", "+3V3", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "LED_SYNC_OUT", "SPARE_GPIO42"]
+notes = "Host capture script correlates frames to LED/heater/interlock logs even if the camera lacks hardware trigger."
+
+[embedded_camera_option]
+connector = "J_CAM_SPI"
+interface = "SPI/FIFO camera or camera-module adapter, not direct 8-bit DVP on the stocked non-PSRAM N16 module"
+signals = ["SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N", "CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "I2C_SDA", "I2C_SCL", "+3V3", "GND"]
+population = "DNP or debug-populated until a camera module and firmware capture path are proven"
+
+[analog_optical_diagnostic]
+connector = "J_ANALOG_OPT"
+signals = ["+3V3_ANA", "GND", "ADS_AIN3", "AUX_ANALOG_IN", "I2C_SDA", "I2C_SCL"]
+notes = "Supports external OPT101/photodiode/TIA or light-leak diagnostics without committing Rev B to photodiode readout."
+
+[emc_layout]
+rules = [
+  "Keep heater and LED switching returns out of camera and thermistor analog returns.",
+  "Route high-current LED output as closely coupled LED_PLUS/LED_MINUS to the optical carrier connector.",
+  "Support quiet acquisition mode by pausing or phase-controlling heater PWM during camera exposure.",
+  "Keep status LEDs outside the optical cavity or firmware-disableable during acquisition.",
+]

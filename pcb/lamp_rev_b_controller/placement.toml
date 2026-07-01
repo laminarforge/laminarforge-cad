@@ -1,0 +1,1235 @@
+[package]
+name = "lamp_rev_b_controller_placement"
+ticket = "T-4C206871"
+revision = "Rev B prototype"
+source_stage = "materialized_board"
+
+# Board coordinates are KiCad millimeters from the upper-left board origin.
+# Placements are a DRC-aware source-package seed, not a routed board freeze.
+
+[[placements]]
+reference = "J1"
+part_id = "usb_c_connector"
+zone = "usb_debug"
+x_mm = 8.0
+y_mm = 8.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R1"
+part_id = "usb_c_cc_resistors"
+zone = "usb_debug"
+x_mm = 18.0
+y_mm = 5.5
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R2"
+part_id = "usb_c_cc_resistors"
+zone = "usb_debug"
+x_mm = 18.0
+y_mm = 10.5
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U2"
+part_id = "usb_esd_protection"
+zone = "usb_debug"
+x_mm = 24.0
+y_mm = 8.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R3"
+part_id = "vbus_sense_divider"
+zone = "usb_debug"
+x_mm = 28.0
+y_mm = 5.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R4"
+part_id = "vbus_sense_divider"
+zone = "usb_debug"
+x_mm = 28.0
+y_mm = 10.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J21"
+part_id = "uart_prog_header"
+zone = "usb_debug"
+x_mm = 14.0
+y_mm = 21.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D2"
+part_id = "status_leds"
+zone = "usb_debug"
+x_mm = 31.0
+y_mm = 18.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D3"
+part_id = "status_leds"
+zone = "usb_debug"
+x_mm = 35.0
+y_mm = 18.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R30"
+part_id = "status_led_resistors"
+zone = "usb_debug"
+x_mm = 31.0
+y_mm = 23.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R31"
+part_id = "status_led_resistors"
+zone = "usb_debug"
+x_mm = 35.0
+y_mm = 23.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U1"
+part_id = "mcu_module"
+zone = "mcu_antenna"
+x_mm = 61.0
+y_mm = 18.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J22"
+part_id = "i2c_exp_header"
+zone = "mcu_antenna"
+x_mm = 76.0
+y_mm = 31.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J2"
+part_id = "dc_input_terminal"
+zone = "low_voltage_power"
+x_mm = 106.0
+y_mm = 8.0
+rotation_deg = 180.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "F1"
+part_id = "input_ptc"
+zone = "low_voltage_power"
+x_mm = 92.0
+y_mm = 7.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "D1"
+part_id = "input_tvs"
+zone = "low_voltage_power"
+x_mm = 92.0
+y_mm = 15.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J3"
+part_id = "buck_module_header"
+zone = "low_voltage_power"
+x_mm = 105.0
+y_mm = 23.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U3"
+part_id = "three_v_three_regulator"
+zone = "low_voltage_power"
+x_mm = 88.0
+y_mm = 25.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C1"
+part_id = "regulator_bulk_caps"
+zone = "usb_debug"
+x_mm = 23.0
+y_mm = 15.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C2"
+part_id = "regulator_bulk_caps"
+zone = "low_voltage_power"
+x_mm = 96.0
+y_mm = 23.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C3"
+part_id = "regulator_bulk_caps"
+zone = "low_voltage_power"
+x_mm = 84.0
+y_mm = 18.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C4"
+part_id = "regulator_bulk_caps"
+zone = "low_voltage_power"
+x_mm = 100.0
+y_mm = 15.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C5"
+part_id = "regulator_bulk_caps"
+zone = "thermistor_analog"
+x_mm = 41.0
+y_mm = 37.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C6"
+part_id = "regulator_bulk_caps"
+zone = "heater_power"
+x_mm = 91.0
+y_mm = 37.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U4"
+part_id = "adc"
+zone = "thermistor_analog"
+x_mm = 30.0
+y_mm = 42.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U5"
+part_id = "thermistor_mux"
+zone = "thermistor_analog"
+x_mm = 29.0
+y_mm = 58.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R10"
+part_id = "thermistor_ref_resistors"
+zone = "thermistor_analog"
+x_mm = 7.0
+y_mm = 38.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R11"
+part_id = "thermistor_ref_resistors"
+zone = "thermistor_analog"
+x_mm = 13.0
+y_mm = 38.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R12"
+part_id = "thermistor_ref_resistors"
+zone = "thermistor_analog"
+x_mm = 19.0
+y_mm = 38.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R13"
+part_id = "thermistor_ref_resistors"
+zone = "thermistor_analog"
+x_mm = 25.0
+y_mm = 38.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R14"
+part_id = "thermistor_ref_resistors"
+zone = "thermistor_analog"
+x_mm = 7.0
+y_mm = 50.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R15"
+part_id = "thermistor_ref_resistors"
+zone = "thermistor_analog"
+x_mm = 13.0
+y_mm = 50.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R16"
+part_id = "thermistor_ref_resistors"
+zone = "thermistor_analog"
+x_mm = 19.0
+y_mm = 50.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R17"
+part_id = "thermistor_ref_resistors"
+zone = "thermistor_analog"
+x_mm = 25.0
+y_mm = 50.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C10"
+part_id = "thermistor_filter_caps"
+zone = "thermistor_analog"
+x_mm = 7.0
+y_mm = 43.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C11"
+part_id = "thermistor_filter_caps"
+zone = "thermistor_analog"
+x_mm = 13.0
+y_mm = 43.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C12"
+part_id = "thermistor_filter_caps"
+zone = "thermistor_analog"
+x_mm = 19.0
+y_mm = 43.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C13"
+part_id = "thermistor_filter_caps"
+zone = "thermistor_analog"
+x_mm = 25.0
+y_mm = 43.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C14"
+part_id = "thermistor_filter_caps"
+zone = "thermistor_analog"
+x_mm = 7.0
+y_mm = 55.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C15"
+part_id = "thermistor_filter_caps"
+zone = "thermistor_analog"
+x_mm = 13.0
+y_mm = 55.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C16"
+part_id = "thermistor_filter_caps"
+zone = "thermistor_analog"
+x_mm = 19.0
+y_mm = 55.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C17"
+part_id = "thermistor_filter_caps"
+zone = "thermistor_analog"
+x_mm = 33.0
+y_mm = 65.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J4"
+part_id = "thermistor_headers"
+zone = "thermistor_analog"
+x_mm = 6.0
+y_mm = 70.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J5"
+part_id = "thermistor_headers"
+zone = "thermistor_analog"
+x_mm = 11.0
+y_mm = 70.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J6"
+part_id = "thermistor_headers"
+zone = "thermistor_analog"
+x_mm = 16.0
+y_mm = 70.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J7"
+part_id = "thermistor_headers"
+zone = "thermistor_analog"
+x_mm = 21.0
+y_mm = 70.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J8"
+part_id = "thermistor_headers"
+zone = "thermistor_analog"
+x_mm = 26.0
+y_mm = 70.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J9"
+part_id = "thermistor_headers"
+zone = "thermistor_analog"
+x_mm = 31.0
+y_mm = 70.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J10"
+part_id = "thermistor_headers"
+zone = "thermistor_analog"
+x_mm = 36.0
+y_mm = 70.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J11"
+part_id = "thermistor_headers"
+zone = "thermistor_analog"
+x_mm = 41.0
+y_mm = 70.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U6"
+part_id = "heater_gate_driver"
+zone = "heater_power"
+x_mm = 92.0
+y_mm = 48.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q1"
+part_id = "heater_mosfets"
+zone = "heater_power"
+x_mm = 103.0
+y_mm = 49.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "Q2"
+part_id = "heater_mosfets"
+zone = "heater_power"
+x_mm = 111.0
+y_mm = 49.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J12"
+part_id = "heater_output_terminals"
+zone = "heater_power"
+x_mm = 107.0
+y_mm = 66.0
+rotation_deg = 180.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J13"
+part_id = "heater_output_terminals"
+zone = "heater_power"
+x_mm = 107.0
+y_mm = 80.0
+rotation_deg = 180.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R20"
+part_id = "heater_gate_resistors"
+zone = "heater_power"
+x_mm = 95.0
+y_mm = 56.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R21"
+part_id = "heater_gate_resistors"
+zone = "heater_power"
+x_mm = 95.0
+y_mm = 61.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R22"
+part_id = "heater_pulldowns"
+zone = "heater_power"
+x_mm = 88.0
+y_mm = 56.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R23"
+part_id = "heater_pulldowns"
+zone = "heater_power"
+x_mm = 88.0
+y_mm = 61.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R24"
+part_id = "heater_pulldowns"
+zone = "heater_power"
+x_mm = 88.0
+y_mm = 66.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R25"
+part_id = "heater_current_shunts"
+zone = "heater_power"
+x_mm = 101.0
+y_mm = 58.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R26"
+part_id = "heater_current_shunts"
+zone = "heater_power"
+x_mm = 111.0
+y_mm = 58.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J14"
+part_id = "led_driver_header"
+zone = "optical_interface"
+x_mm = 49.0
+y_mm = 43.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J15"
+part_id = "led_output_terminal"
+zone = "optical_interface"
+x_mm = 76.0
+y_mm = 43.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J16"
+part_id = "led_sense_header"
+zone = "optical_interface"
+x_mm = 65.0
+y_mm = 43.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J17"
+part_id = "opt_sync_header"
+zone = "optical_interface"
+x_mm = 49.0
+y_mm = 63.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J18"
+part_id = "camera_spi_header"
+zone = "optical_interface"
+x_mm = 64.0
+y_mm = 72.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J19"
+part_id = "interlock_header"
+zone = "optical_interface"
+x_mm = 49.0
+y_mm = 82.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J20"
+part_id = "fan_header"
+zone = "optical_interface"
+x_mm = 67.0
+y_mm = 82.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J23"
+part_id = "analog_opt_header"
+zone = "optical_interface"
+x_mm = 49.0
+y_mm = 54.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R40"
+part_id = "logic_pullups"
+zone = "mcu_antenna"
+x_mm = 73.0
+y_mm = 23.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R41"
+part_id = "logic_pullups"
+zone = "mcu_antenna"
+x_mm = 73.0
+y_mm = 26.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R42"
+part_id = "logic_pullups"
+zone = "mcu_antenna"
+x_mm = 84.0
+y_mm = 37.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R43"
+part_id = "logic_pullups"
+zone = "mcu_antenna"
+x_mm = 84.0
+y_mm = 40.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R44"
+part_id = "logic_pullups"
+zone = "optical_interface"
+x_mm = 74.0
+y_mm = 54.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R45"
+part_id = "logic_pullups"
+zone = "optical_interface"
+x_mm = 74.0
+y_mm = 58.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R46"
+part_id = "logic_pullups"
+zone = "optical_interface"
+x_mm = 74.0
+y_mm = 62.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R47"
+part_id = "logic_pullups"
+zone = "optical_interface"
+x_mm = 74.0
+y_mm = 66.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R48"
+part_id = "boot_reset_pullups"
+zone = "mcu_antenna"
+x_mm = 49.0
+y_mm = 32.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R49"
+part_id = "boot_reset_pullups"
+zone = "mcu_antenna"
+x_mm = 55.0
+y_mm = 32.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[test_points]]
+name = "TP_GND"
+net = "GND"
+x_mm = 4.0
+y_mm = 84.0
+side = "top"
+
+[[test_points]]
+name = "TP_VBUS"
+net = "VBUS"
+x_mm = 8.0
+y_mm = 32.0
+side = "top"
+
+[[test_points]]
+name = "TP_VIN"
+net = "VIN_12_24"
+x_mm = 114.0
+y_mm = 16.0
+side = "top"
+
+[[test_points]]
+name = "TP_VIN_PROT"
+net = "VIN_PROTECTED"
+x_mm = 114.0
+y_mm = 28.0
+side = "top"
+
+[[test_points]]
+name = "TP_VIN_HEATER"
+net = "VIN_HEATER"
+x_mm = 112.0
+y_mm = 38.0
+side = "top"
+
+[[test_points]]
+name = "TP_VDRV"
+net = "VDRV"
+x_mm = 88.0
+y_mm = 49.0
+side = "top"
+
+[[test_points]]
+name = "TP_5V"
+net = "+5V"
+x_mm = 100.0
+y_mm = 30.0
+side = "top"
+
+[[test_points]]
+name = "TP_3V3"
+net = "+3V3"
+x_mm = 82.0
+y_mm = 30.0
+side = "top"
+
+[[test_points]]
+name = "TP_3V3A"
+net = "+3V3_ANA"
+x_mm = 44.0
+y_mm = 42.0
+side = "top"
+
+[[test_points]]
+name = "TP_USB_DP"
+net = "USB_DP"
+x_mm = 18.0
+y_mm = 15.0
+side = "top"
+
+[[test_points]]
+name = "TP_USB_DN"
+net = "USB_DN"
+x_mm = 20.0
+y_mm = 17.0
+side = "top"
+
+[[test_points]]
+name = "TP_USB_CC1"
+net = "USB_CC1"
+x_mm = 13.0
+y_mm = 28.0
+side = "top"
+
+[[test_points]]
+name = "TP_USB_CC2"
+net = "USB_CC2"
+x_mm = 17.0
+y_mm = 28.0
+side = "top"
+
+[[test_points]]
+name = "TP_EN"
+net = "ESP_EN"
+x_mm = 49.0
+y_mm = 26.0
+side = "top"
+
+[[test_points]]
+name = "TP_BOOT"
+net = "ESP_GPIO0_BOOT"
+x_mm = 53.0
+y_mm = 32.0
+side = "top"
+
+[[test_points]]
+name = "TP_UART_TX"
+net = "UART0_TXD"
+x_mm = 22.0
+y_mm = 29.0
+side = "top"
+
+[[test_points]]
+name = "TP_UART_RX"
+net = "UART0_RXD"
+x_mm = 26.0
+y_mm = 29.0
+side = "top"
+
+[[test_points]]
+name = "TP_I2C_SDA"
+net = "I2C_SDA"
+x_mm = 76.0
+y_mm = 26.0
+side = "top"
+
+[[test_points]]
+name = "TP_I2C_SCL"
+net = "I2C_SCL"
+x_mm = 79.0
+y_mm = 26.0
+side = "top"
+
+[[test_points]]
+name = "TP_SPI_SCLK"
+net = "SPI_SCLK"
+x_mm = 82.0
+y_mm = 72.0
+side = "top"
+
+[[test_points]]
+name = "TP_SPI_MOSI"
+net = "SPI_MOSI"
+x_mm = 82.0
+y_mm = 75.0
+side = "top"
+
+[[test_points]]
+name = "TP_SPI_MISO"
+net = "SPI_MISO"
+x_mm = 82.0
+y_mm = 78.0
+side = "top"
+
+[[test_points]]
+name = "TP_CAM_CS"
+net = "CAM_CS_N"
+x_mm = 82.0
+y_mm = 60.0
+side = "top"
+
+[[test_points]]
+name = "TP_CAM_FRAME"
+net = "CAM_FRAME_INT"
+x_mm = 82.0
+y_mm = 63.0
+side = "top"
+
+[[test_points]]
+name = "TP_CAM_RESET"
+net = "CAM_RESET_N"
+x_mm = 82.0
+y_mm = 66.0
+side = "top"
+
+[[test_points]]
+name = "TP_CAM_PWDN"
+net = "CAM_PWDN_N"
+x_mm = 82.0
+y_mm = 69.0
+side = "top"
+
+[[test_points]]
+name = "TP_SD_CS"
+net = "SD_CS_N"
+x_mm = 73.0
+y_mm = 29.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER_ARM"
+net = "HEATER_ARM"
+x_mm = 91.0
+y_mm = 53.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER0_PWM"
+net = "HEATER0_PWM"
+x_mm = 84.0
+y_mm = 53.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER1_PWM"
+net = "HEATER1_PWM"
+x_mm = 84.0
+y_mm = 57.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER0_GATE"
+net = "HEATER0_GATE"
+x_mm = 99.0
+y_mm = 52.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER1_GATE"
+net = "HEATER1_GATE"
+x_mm = 109.0
+y_mm = 52.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER0_LOW"
+net = "HEATER0_LOW"
+x_mm = 103.0
+y_mm = 62.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER1_LOW"
+net = "HEATER1_LOW"
+x_mm = 113.0
+y_mm = 62.0
+side = "top"
+
+[[test_points]]
+name = "TP_HEATER_SENSE"
+net = "HEATER_SUPPLY_SENSE"
+x_mm = 91.0
+y_mm = 70.0
+side = "top"
+
+[[test_points]]
+name = "TP_THERM_S0"
+net = "THERM_MUX_S0"
+x_mm = 4.0
+y_mm = 63.0
+side = "top"
+
+[[test_points]]
+name = "TP_THERM_S1"
+net = "THERM_MUX_S1"
+x_mm = 8.0
+y_mm = 63.0
+side = "top"
+
+[[test_points]]
+name = "TP_THERM_S2"
+net = "THERM_MUX_S2"
+x_mm = 12.0
+y_mm = 63.0
+side = "top"
+
+[[test_points]]
+name = "TP_THERM_EN"
+net = "THERM_MUX_EN_N"
+x_mm = 16.0
+y_mm = 63.0
+side = "top"
+
+[[test_points]]
+name = "TP_THERM_OUT"
+net = "THERM_MUX_OUT"
+x_mm = 20.0
+y_mm = 63.0
+side = "top"
+
+[[test_points]]
+name = "TP_ADS_AIN0"
+net = "ADS_AIN0"
+x_mm = 38.0
+y_mm = 38.0
+side = "top"
+
+[[test_points]]
+name = "TP_ADS_AIN1"
+net = "ADS_AIN1"
+x_mm = 38.0
+y_mm = 42.0
+side = "top"
+
+[[test_points]]
+name = "TP_ADS_AIN2"
+net = "ADS_AIN2"
+x_mm = 38.0
+y_mm = 46.0
+side = "top"
+
+[[test_points]]
+name = "TP_ADS_AIN3"
+net = "ADS_AIN3"
+x_mm = 38.0
+y_mm = 50.0
+side = "top"
+
+[[test_points]]
+name = "TP_LED_PWM"
+net = "LED_EXC_PWM"
+x_mm = 55.0
+y_mm = 50.0
+side = "top"
+
+[[test_points]]
+name = "TP_LED_EN"
+net = "LED_EXC_EN"
+x_mm = 59.0
+y_mm = 50.0
+side = "top"
+
+[[test_points]]
+name = "TP_LED_SENSE"
+net = "LED_CURRENT_SENSE"
+x_mm = 63.0
+y_mm = 50.0
+side = "top"
+
+[[test_points]]
+name = "TP_LED_SUPPLY"
+net = "LED_SUPPLY"
+x_mm = 55.0
+y_mm = 47.0
+side = "top"
+
+[[test_points]]
+name = "TP_FRAME_TRIG"
+net = "FRAME_TRIG_OUT"
+x_mm = 71.0
+y_mm = 64.0
+side = "top"
+
+[[test_points]]
+name = "TP_EXPOSURE"
+net = "EXPOSURE_ACTIVE_IN"
+x_mm = 86.0
+y_mm = 72.0
+side = "top"
+
+[[test_points]]
+name = "TP_LED_SYNC"
+net = "LED_SYNC_OUT"
+x_mm = 75.0
+y_mm = 64.0
+side = "top"
+
+[[test_points]]
+name = "TP_LID"
+net = "LID_CLOSED_N"
+x_mm = 51.0
+y_mm = 80.0
+side = "top"
+
+[[test_points]]
+name = "TP_CART"
+net = "CART_PRESENT_N"
+x_mm = 55.0
+y_mm = 80.0
+side = "top"
+
+[[test_points]]
+name = "TP_LATCH"
+net = "LATCH_LOCKED_N"
+x_mm = 59.0
+y_mm = 76.0
+side = "top"
+
+[[test_points]]
+name = "TP_CUTOFF"
+net = "AUX_IO0_THERMAL_CUTOFF_OK"
+x_mm = 59.0
+y_mm = 80.0
+side = "top"
+
+[[test_points]]
+name = "TP_FAN_PWM"
+net = "FAN_PWM"
+x_mm = 80.0
+y_mm = 82.0
+side = "top"
+
+[[test_points]]
+name = "TP_FAN_TACH"
+net = "FAN_TACH"
+x_mm = 80.0
+y_mm = 85.0
+side = "top"
+
+[[test_points]]
+name = "TP_RUN"
+net = "STATUS_RUN_LED"
+x_mm = 31.0
+y_mm = 27.0
+side = "top"
+
+[[test_points]]
+name = "TP_FAULT"
+net = "STATUS_FAULT_LED"
+x_mm = 35.0
+y_mm = 27.0
+side = "top"
+
+[[test_points]]
+name = "TP_SPARE42"
+net = "SPARE_GPIO42"
+x_mm = 86.0
+y_mm = 75.0
+side = "top"
+
+[[test_points]]
+name = "TP_AUX_ANALOG"
+net = "AUX_ANALOG_IN"
+x_mm = 46.0
+y_mm = 60.0
+side = "top"
