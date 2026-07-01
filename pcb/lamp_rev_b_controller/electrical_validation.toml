@@ -12,12 +12,12 @@ checks = ["VBUS current below 500 mA", "+3V3 present", "ESP32 enumerates or UART
 [[gate]]
 name = "external_power_rails"
 status = "required before load connection"
-checks = ["VIN_12_24 polarity", "VIN_PROTECTED after PTC/TVS", "P7805-2000-S +5V no-load and loaded voltage/current", "AP63203WU-7 +3V3 ripple and thermal check at representative ESP32/camera-header load", "+3V3_ANA noise check", "confirm VDRV remains 12 V-only unless optional P7812-500R path is populated"]
+checks = ["VIN_12_24 polarity", "VIN_PROTECTED after PTC/TVS", "P7805-2000-S +5V no-load and loaded voltage/current", "AP63203WU-7 +3V3 ripple and thermal check at representative ESP32/camera-header load", "FB1 continuity and +3V3_ANA noise check", "confirm R55 is populated only for 12 V first article and DNP for any 24 V build unless optional P7812-500R path is populated"]
 
 [[gate]]
 name = "heater_dummy_load"
 status = "required before heater pad connection"
-checks = ["HEATER_ARM default low", "HEATER0_PWM/HEATER1_PWM default low", "gate pulldowns active", "dummy-load current within connector/fuse limits", "thermal cutoff loop opens heater enable"]
+checks = ["HEATER_ARM default low", "HEATER0_PWM/HEATER1_PWM default low", "gate pulldowns active", "J24 continuity through external normally-closed thermal cutoff or rated jumper before energizing VIN_HEATER", "dummy-load current within connector/fuse limits", "opening the J24 thermal cutoff loop removes VIN_HEATER before firmware commands are trusted"]
 
 [[gate]]
 name = "thermistor_adc"

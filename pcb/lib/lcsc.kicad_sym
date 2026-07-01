@@ -2600,4 +2600,28 @@
       (pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
     )
   )
+  (symbol "FB0805"
+    (in_bom yes)
+    (on_board yes)
+    (property "Reference" "FB" (id 0) (at 0 3.81 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "0805 ferrite bead / analog rail link" (id 1) (at 0 -3.81 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "lcsc:R0805" (id 2) (at 0 -6.35 0) (effects (font (size 1.27 1.27)) hide))
+    (symbol "FB0805_0_1"
+      (rectangle (start -2.54 1.27) (end 2.54 -1.27) (stroke (width 0) (type default) (color 0 0 0 0)) (fill (type background)))
+      (pin passive line (at -5.08 0 0) (length 2.54) (name "1" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
+      (pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
+    )
+  )
+  (symbol "JUMPER_0805_0R"
+    (in_bom yes)
+    (on_board yes)
+    (property "Reference" "R" (id 0) (at 0 3.81 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "0R 0805 jumper link" (id 1) (at 0 -3.81 0) (effects (font (size 1.27 1.27))))
+    (property "Footprint" "lcsc:R0805" (id 2) (at 0 -6.35 0) (effects (font (size 1.27 1.27)) hide))
+    (symbol "JUMPER_0805_0R_0_1"
+      (rectangle (start -2.54 1.27) (end 2.54 -1.27) (stroke (width 0) (type default) (color 0 0 0 0)) (fill (type background)))
+      (pin passive line (at -5.08 0 0) (length 2.54) (name "1" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
+      (pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
+    )
+  )
 )

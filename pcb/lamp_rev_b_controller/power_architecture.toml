@@ -7,10 +7,10 @@ source_artifact = "A-8633FB3D"
 [topology]
 input_mode = "external current-limited 12 V default; 24 V option remains blocked unless protection, MOSFETs, capacitors, connectors, and VDRV regulator population are rated"
 usb_role = "USB-C UFP/device only; never powers heater"
-heater_power_source = "VIN_HEATER through protection, cutoff loop, and low-side MOSFET channels"
+heater_power_source = "VIN_PROTECTED reaches VIN_HEATER only through J24 high-current external normally-closed cutoff or rated jumper loop, then low-side MOSFET channels"
 logic_power_source = "P7805-2000-S from VIN_PROTECTED creates +5V, then AP63203WU-7 from +5V creates +3V3"
-analog_power_source = "filtered +3V3_ANA branch for ADS1115/mux/dividers"
-gate_driver_rail = "VDRV is 12 V-only in the first-article population; 24 V builds require DNP direct-VIN path and optional P7812-500R or equivalent approved 12 V regulator"
+analog_power_source = "FB1 is the physical filtered branch from +3V3 to +3V3_ANA for ADS1115/mux/dividers"
+gate_driver_rail = "R55 feeds VDRV from VIN_PROTECTED only for the 12 V first-article population; 24 V builds require R55 DNP and optional P7812-500R or equivalent approved 12 V regulator"
 usb_logic_bringup = "USB may power logic only through explicit debug jumper/power-mux option"
 
 [five_v_buck]
@@ -33,9 +33,21 @@ inductor = "Wurth 74439346068, JLC C2041388, 6.8 uH shielded power inductor"
 support_passives = ["100 nF BST-SW bootstrap capacitor", "local +5V input capacitor", "two local +3V3 output capacitors"]
 
 [vdrv_population]
-default = "12 V-only direct driver rail population"
-twenty_four_v_rule = "Direct VIN-to-VDRV is DNP/blocked for 24 V input."
+default = "R55 0R VDRV feed link populated for 12 V-only direct driver rail population"
+twenty_four_v_rule = "R55 direct VIN_PROTECTED-to-VDRV path is DNP/blocked for 24 V input."
 optional_regulator = "CUI P7812-500R, JLC C6351743, DNP unless a 24 V heater population is explicitly approved."
+
+[analog_3v3_filter]
+source = "+3V3"
+sink = "+3V3_ANA"
+component = "FB1"
+rule = "FB1 is the only physical +3V3_ANA source boundary; 0R is allowed only as a documented bring-up substitute for the selected 0805 ferrite bead."
+
+[heater_cutoff_loop]
+source = "VIN_PROTECTED"
+sink = "VIN_HEATER"
+component = "J24"
+rule = "External normally-closed thermal cutoff or rated jumper closes J24; do not merge VIN_PROTECTED and VIN_HEATER in copper."
 
 [[protection]]
 name = "input_fuse_ptc"

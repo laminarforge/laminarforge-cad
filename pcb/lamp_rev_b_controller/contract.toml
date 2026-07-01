@@ -104,13 +104,13 @@ deliverable = "USB-C UFP/device path with CC pull-downs, ESD, D+/D-, VBUS sense,
 name = "power_entry"
 status = "required"
 owner = "schematic"
-deliverable = "External 12 V default input connector, PTC/fuse footprint, TVS footprint, protected VIN, P7805-2000-S 5 V module, AP63203WU-7 3.3 V buck, and 24 V VDRV population explicitly DNP unless regulated."
+deliverable = "External 12 V default input connector, PTC/fuse footprint, TVS footprint, protected VIN, P7805-2000-S 5 V module, AP63203WU-7 3.3 V buck, FB1 filtered +3V3_ANA branch, and R55 12 V-only VDRV feed explicitly DNP unless regulated for 24 V."
 
 [[modules]]
 name = "heater_drive"
 status = "required"
 owner = "schematic"
-deliverable = "Two low-side heater channels using TC4427-class drive, MOSFET footprints, heater terminals, current-sense footprints, hardware heater arm, cutoff loop."
+deliverable = "Two low-side heater channels using TC4427-class drive, MOSFET footprints, heater terminals, current-sense footprints, hardware heater arm, and J24 high-current external cutoff loop between VIN_PROTECTED and VIN_HEATER."
 
 [[modules]]
 name = "temperature_sense"
@@ -167,14 +167,14 @@ must_have_testpoint = true
 name = "VIN_HEATER"
 nominal_voltage_v = 12.0
 max_current_ma = 5000
-source = "protected_heater_domain_after_kill_loop"
+source = "VIN_PROTECTED through J24 high-current external normally-closed cutoff or rated jumper loop; do not short VIN_PROTECTED to VIN_HEATER in copper"
 must_have_testpoint = true
 
 [[rails]]
 name = "VDRV"
 nominal_voltage_v = 12.0
 max_current_ma = 100
-source = "12 V-only driver rail; direct VIN path is DNP for 24 V unless optional P7812-500R or approved 12 V regulator is populated"
+source = "R55 0R feed link from VIN_PROTECTED for 12 V first article only; direct VIN path is DNP for 24 V unless optional P7812-500R or approved 12 V regulator is populated"
 must_have_testpoint = true
 
 [[rails]]
@@ -195,7 +195,7 @@ must_have_testpoint = true
 name = "+3V3_ANA"
 nominal_voltage_v = 3.3
 max_current_ma = 100
-source = "filtered_branch_from_3v3"
+source = "FB1 filtered branch from +3V3; FB1 pin 1 is +3V3 and pin 2 is +3V3_ANA"
 must_have_testpoint = true
 
 [[nets]]

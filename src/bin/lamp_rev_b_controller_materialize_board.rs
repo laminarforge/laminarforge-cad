@@ -604,7 +604,7 @@ fn write_controller_fixture_labels(
         ("NTC0-7", 23.0, 80.5, 0.8),
         ("LED/CAMERA", 61.0, 39.0, 0.8),
         ("INTERLOCK", 50.0, 78.0, 0.8),
-        ("HEATER0/1", 103.0, 42.0, 0.8),
+        ("HEATER0/1", 96.0, 43.5, 0.8),
     ];
 
     for (text, x_mm, y_mm, size_mm) in labels {

@@ -238,12 +238,32 @@ side = "top"
 locked = true
 
 [[placements]]
+reference = "FB1"
+part_id = "analog_3v3_filter_link"
+zone = "thermistor_analog"
+x_mm = 44.0
+y_mm = 36.5
+rotation_deg = 270.0
+side = "top"
+locked = true
+
+[[placements]]
 reference = "C6"
 part_id = "rail_bulk_caps"
 zone = "heater_power"
 x_mm = 91.0
 y_mm = 37.0
 rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "J24"
+part_id = "heater_cutoff_loop_terminal"
+zone = "heater_power"
+x_mm = 112.0
+y_mm = 42.0
+rotation_deg = 180.0
 side = "top"
 locked = true
 
@@ -554,6 +574,16 @@ zone = "heater_power"
 x_mm = 92.0
 y_mm = 48.0
 rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R55"
+part_id = "vdrv_12v_feed_link"
+zone = "heater_power"
+x_mm = 86.0
+y_mm = 45.0
+rotation_deg = 90.0
 side = "top"
 locked = true
 

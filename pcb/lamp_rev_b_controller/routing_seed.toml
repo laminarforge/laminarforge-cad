@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 1
-expected_route_count = 2
+expected_route_count = 8
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -45,6 +45,85 @@ points = [
   { x_mm = 4.000, y_mm = 84.000, layer = "F.Cu", anchor = "TP_GND:1" },
   { x_mm = 10.000, y_mm = 80.000, layer = "F.Cu" },
   { x_mm = 10.000, y_mm = 80.000, layer = "B.Cu", via_id = "v_gnd_therm_return_plane_1" },
+]
+
+[[routes]]
+id = "led_supply_r52_to_zone_and_tp"
+phase = "5_optics_camera_interlocks"
+net = "LED_SUPPLY"
+width_mm = 1.000
+intent = "Reviewed short feed from R52 output to the LED_SUPPLY zone corner and manufacturing test point."
+points = [
+  { x_mm = 78.000, y_mm = 34.000, layer = "F.Cu", anchor = "R52:2" },
+  { x_mm = 78.000, y_mm = 36.000, layer = "F.Cu" },
+  { x_mm = 72.000, y_mm = 36.000, layer = "F.Cu", anchor = "led_supply_area" },
+  { x_mm = 72.000, y_mm = 34.000, layer = "F.Cu", anchor = "TP_LED_SUPPLY:1" },
+]
+
+[[routes]]
+id = "plus3v3_to_fb1_source"
+phase = "2_power_tree"
+net = "+3V3"
+width_mm = 0.350
+intent = "Reviewed source-side tie from the existing +3V3 seed spine to FB1 pin 1."
+points = [
+  { x_mm = 44.000, y_mm = 34.000, layer = "F.Cu", anchor = "existing +3V3 seed" },
+  { x_mm = 44.000, y_mm = 35.500, layer = "F.Cu", anchor = "FB1:1" },
+]
+
+[[routes]]
+id = "analog_3v3_fb1_to_c5_tp"
+phase = "4_thermistor_analog"
+net = "+3V3_ANA"
+width_mm = 0.300
+intent = "Reviewed filtered analog rail route from FB1 pin 2 to TP_3V3A and C5 without shorting the adjacent C5 ground pad."
+points = [
+  { x_mm = 44.000, y_mm = 37.500, layer = "F.Cu", anchor = "FB1:2" },
+  { x_mm = 44.000, y_mm = 42.000, layer = "F.Cu", anchor = "TP_3V3A:1" },
+  { x_mm = 44.000, y_mm = 40.000, layer = "F.Cu" },
+  { x_mm = 39.500, y_mm = 40.000, layer = "F.Cu" },
+  { x_mm = 39.500, y_mm = 37.000, layer = "F.Cu", anchor = "C5:1" },
+]
+
+[[routes]]
+id = "vdrv_r55_to_tp_and_u6"
+phase = "2_power_tree"
+net = "VDRV"
+width_mm = 0.400
+intent = "Reviewed 12 V first-article VDRV route from R55 to TP_VDRV and U6 pin 6."
+points = [
+  { x_mm = 86.000, y_mm = 44.000, layer = "F.Cu", anchor = "R55:2" },
+  { x_mm = 84.000, y_mm = 44.000, layer = "F.Cu" },
+  { x_mm = 84.000, y_mm = 49.000, layer = "F.Cu" },
+  { x_mm = 88.000, y_mm = 49.000, layer = "F.Cu", anchor = "TP_VDRV:1" },
+  { x_mm = 92.630, y_mm = 49.000, layer = "F.Cu" },
+  { x_mm = 92.630, y_mm = 45.430, layer = "F.Cu", anchor = "U6:6" },
+]
+
+[[routes]]
+id = "gnd_status_led_resistor_return"
+phase = "1_usb_and_boot"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed local ground return tie between the two status LED current-limit resistors, jogged around the R31 signal-side pad."
+points = [
+  { x_mm = 32.000, y_mm = 23.000, layer = "F.Cu", anchor = "R30:2" },
+  { x_mm = 32.000, y_mm = 25.000, layer = "F.Cu" },
+  { x_mm = 36.000, y_mm = 25.000, layer = "F.Cu" },
+  { x_mm = 36.000, y_mm = 23.000, layer = "F.Cu", anchor = "R31:2" },
+]
+
+[[routes]]
+id = "gnd_heater_pulldown_return_spine"
+phase = "3_heater_power"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed local heater pulldown return spine with a branch to the nearby optical header ground."
+points = [
+  { x_mm = 89.000, y_mm = 56.000, layer = "F.Cu", anchor = "R22:2" },
+  { x_mm = 89.000, y_mm = 61.000, layer = "F.Cu", anchor = "R23:2" },
+  { x_mm = 89.000, y_mm = 66.000, layer = "F.Cu", anchor = "R24:2" },
+  { x_mm = 87.620, y_mm = 70.000, layer = "F.Cu", anchor = "J16:4" },
 ]
 
 [[segments]]

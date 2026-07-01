@@ -736,6 +736,33 @@ fn validate_parts(
     );
     require_selected_part(
         &parts_by_id,
+        "analog_3v3_filter_link",
+        "0805 ferrite",
+        "lcsc:R0805",
+        "",
+        &["+3V3", "+3V3_ANA"],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "vdrv_12v_feed_link",
+        "0R VDRV",
+        "lcsc:R0805",
+        "0R 0805",
+        &["VIN_PROTECTED", "VDRV"],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "heater_cutoff_loop_terminal",
+        "DB128H-5.08-2P",
+        "lcsc:TERM-BLOCK-5.08-2P",
+        "C430605",
+        &["VIN_PROTECTED", "VIN_HEATER"],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
         "led_driver_module",
         "LDD-700H",
         "lcsc:MEANWELL_LDD-300-1000H_THT",
@@ -975,6 +1002,52 @@ fn validate_pin_nets(
                     assignment.reference, net
                 ));
             }
+        }
+    }
+    let assignments_by_ref = pin_nets
+        .assignments
+        .iter()
+        .map(|assignment| (assignment.reference.as_str(), assignment))
+        .collect::<BTreeMap<_, _>>();
+    require_pin_assignment(
+        &assignments_by_ref,
+        "FB1",
+        &[("1", "+3V3"), ("2", "+3V3_ANA")],
+        errors,
+    );
+    require_pin_assignment(
+        &assignments_by_ref,
+        "R55",
+        &[("1", "VIN_PROTECTED"), ("2", "VDRV")],
+        errors,
+    );
+    require_pin_assignment(
+        &assignments_by_ref,
+        "J24",
+        &[("1", "VIN_PROTECTED"), ("2", "VIN_HEATER")],
+        errors,
+    );
+}
+
+fn require_pin_assignment(
+    assignments_by_ref: &BTreeMap<&str, &PinNetAssignment>,
+    reference: &str,
+    required_pins: &[(&str, &str)],
+    errors: &mut Vec<String>,
+) {
+    let Some(assignment) = assignments_by_ref.get(reference) else {
+        errors.push(format!("missing pin-net assignment {reference}"));
+        return;
+    };
+    for (pin, net) in required_pins {
+        match assignment.pins.get(*pin) {
+            Some(actual) if actual == *net => {}
+            Some(actual) => errors.push(format!(
+                "pin-net assignment {reference} pin {pin} must be {net}, got {actual}"
+            )),
+            None => errors.push(format!(
+                "pin-net assignment {reference} missing required pin {pin}"
+            )),
         }
     }
 }
@@ -1330,8 +1403,13 @@ fn same_route_coordinate(first: f64, second: f64) -> bool {
 fn validate_text_content(root: &Path, errors: &mut Vec<String>, warnings: &mut Vec<String>) {
     let package_text = fs::read_to_string(root.join(CONTRACT_PATH)).unwrap_or_default()
         + &fs::read_to_string(root.join(PARTS_PATH)).unwrap_or_default()
+        + &fs::read_to_string(root.join(POWER_PATH)).unwrap_or_default()
+        + &fs::read_to_string(root.join(ELECTRICAL_PATH)).unwrap_or_default()
         + &fs::read_to_string(root.join(OPTICAL_PATH)).unwrap_or_default()
-        + &fs::read_to_string(root.join(README_PATH)).unwrap_or_default();
+        + &fs::read_to_string(root.join(README_PATH)).unwrap_or_default()
+        + &fs::read_to_string(root.join(BRINGUP_PATH)).unwrap_or_default()
+        + &fs::read_to_string(root.join(FAB_CONFIG_PATH)).unwrap_or_default()
+        + &fs::read_to_string(root.join(FOLLOWUP_PATH)).unwrap_or_default();
     for forbidden in ["650 nm turbidimetry", "eight LED/photodiode channels"] {
         if package_text.contains(forbidden) {
             errors.push(format!(
@@ -1339,8 +1417,34 @@ fn validate_text_content(root: &Path, errors: &mut Vec<String>, warnings: &mut V
             ));
         }
     }
+    require_text_tokens(
+        "+3V3_ANA source boundary",
+        &package_text,
+        &["FB1", "+3V3", "+3V3_ANA"],
+        errors,
+    );
+    require_text_tokens(
+        "VDRV source boundary",
+        &package_text,
+        &["R55", "VIN_PROTECTED", "VDRV", "12 V"],
+        errors,
+    );
+    require_text_tokens(
+        "VIN_HEATER cutoff boundary",
+        &package_text,
+        &["J24", "VIN_PROTECTED", "VIN_HEATER", "cutoff"],
+        errors,
+    );
     let followup = fs::read_to_string(root.join(FOLLOWUP_PATH)).unwrap_or_default();
     if !followup.contains("lamp_rev_b_controller_fab_release") {
         warnings.push("fab_release follow-up does not name the future release binary".to_string());
+    }
+}
+
+fn require_text_tokens(label: &str, text: &str, tokens: &[&str], errors: &mut Vec<String>) {
+    for token in tokens {
+        if !text.contains(token) {
+            errors.push(format!("{label} text must mention {token}"));
+        }
     }
 }

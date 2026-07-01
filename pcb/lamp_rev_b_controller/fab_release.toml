@@ -35,6 +35,7 @@ manual_part_ids = [
   "thermistor_headers",
   "heater_mosfets",
   "heater_output_terminals",
+  "heater_cutoff_loop_terminal",
   "led_driver_module",
   "led_output_terminal",
   "led_sense_header",
@@ -50,6 +51,9 @@ no_substitution_part_ids = [
   "five_v_buck_module",
   "three_v_three_regulator",
   "three_v_three_inductor",
+  "analog_3v3_filter_link",
+  "vdrv_12v_feed_link",
+  "heater_cutoff_loop_terminal",
   "led_driver_module",
   "led_dim_and_gate",
   "led_current_sense_amp",
@@ -58,12 +62,14 @@ no_substitution_part_ids = [
 dnp_alternates = [
   "Mean Well LDD-1000H C17529736 is a thermal-validation alternate only and is DNP for the first release population.",
   "CUI P7812-500R C6351743 24 V VDRV regulator path is DNP unless a 24 V heater population is explicitly approved.",
+  "R55 direct VIN_PROTECTED-to-VDRV feed is populated only for the 12 V first article and is DNP for any 24 V build unless an approved 12 V regulator path is populated.",
 ]
 
 [release_blockers]
 items = [
   "KiCad schematic capture is ERC-clean, but final fab release still requires a zero-unconnected routed PCB.",
-  "Materialized PCB has physical DRC 0 with a schema-v2 deterministic routing_seed, but lamp_rev_b_controller_route_report still reports 212 real unconnected items.",
+  "Materialized PCB has physical DRC 0 with a schema-v2 deterministic routing_seed, but lamp_rev_b_controller_route_report still reports 206 real unconnected items.",
+  "FB1, R55, and J24 are explicit source-boundary components and must remain routed as components, not copper shorts between +3V3/+3V3_ANA, VIN_PROTECTED/VDRV, or VIN_PROTECTED/VIN_HEATER.",
   "Selected P7805/AP63203/LDD-700H hardware is represented, but final fanout/channel routing is not complete.",
   "Camera connector family remains optional/debug until camera module is selected.",
 ]

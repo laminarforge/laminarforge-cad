@@ -233,6 +233,13 @@ notes = "Filtered analog rail bulk."
 "2" = "GND"
 
 [[assignments]]
+reference = "FB1"
+notes = "Analog +3V3 source filter/link; pin 1 is logic +3V3 source, pin 2 is filtered +3V3_ANA branch."
+[assignments.pins]
+"1" = "+3V3"
+"2" = "+3V3_ANA"
+
+[[assignments]]
 reference = "C6"
 notes = "Heater rail bulk."
 [assignments.pins]
@@ -316,6 +323,13 @@ notes = "TC4427 dual heater gate-driver interface."
 "8" = "HEATER1_PWM"
 
 [[assignments]]
+reference = "R55"
+notes = "12 V first-article VDRV feed link; DNP for any 24 V build unless an approved regulator path is populated."
+[assignments.pins]
+"1" = "VIN_PROTECTED"
+"2" = "VDRV"
+
+[[assignments]]
 reference = "Q1"
 notes = "HEATER0 low-side MOSFET, TO-220 pinout gate/drain/source."
 [assignments.pins]
@@ -344,6 +358,13 @@ notes = "Secondary heater output terminal."
 [assignments.pins]
 "1" = "VIN_HEATER"
 "2" = "HEATER1_LOW"
+
+[[assignments]]
+reference = "J24"
+notes = "High-current external heater cutoff loop terminal."
+[assignments.pins]
+"1" = "VIN_PROTECTED"
+"2" = "VIN_HEATER"
 
 [[assignments]]
 reference = "R20"

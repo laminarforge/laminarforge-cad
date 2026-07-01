@@ -178,6 +178,18 @@ nets = ["3V3_SW", "+3V3"]
 verification = "No low-current inductor substitution; selected for AP63203 2A rail margin."
 
 [[selected_parts]]
+id = "analog_3v3_filter_link"
+module = "power_entry"
+quantity = 1
+reference_prefix = "FB"
+value = "0805 ferrite bead / approved analog rail link from +3V3 to +3V3_ANA"
+symbol = "FB0805"
+footprint = "lcsc:R0805"
+lcsc_part = "select real 0805 ferrite before fab; 0R only as documented bring-up jumper"
+nets = ["+3V3", "+3V3_ANA"]
+verification = "FB1 is the only physical source for +3V3_ANA. Route +3V3 to FB1 pin 1 and +3V3_ANA from FB1 pin 2; C5 remains on +3V3_ANA."
+
+[[selected_parts]]
 id = "three_v_three_bootstrap_cap"
 module = "power_entry"
 quantity = 1
@@ -248,6 +260,18 @@ footprint = "lcsc:C1206"
 lcsc_part = "C5672"
 nets = ["VBUS", "VIN_HEATER", "+3V3_ANA", "GND"]
 verification = "VBUS, heater-domain, and filtered analog rail bulk capacitance."
+
+[[selected_parts]]
+id = "vdrv_12v_feed_link"
+module = "power_entry"
+quantity = 1
+reference_prefix = "R"
+value = "0R VDRV feed link from VIN_PROTECTED, 12 V population only"
+symbol = "JUMPER_0805_0R"
+footprint = "lcsc:R0805"
+lcsc_part = "source real 0R 0805 before fab; DNP for any 24 V build"
+nets = ["VIN_PROTECTED", "VDRV"]
+verification = "R55 is populated only for the 12 V first-article build. 24 V builds require this link DNP and an approved VIN_PROTECTED-to-VDRV 12 V regulator path."
 
 [[selected_parts]]
 id = "adc"
@@ -344,6 +368,18 @@ footprint = "lcsc:TERM-BLOCK-5.08-2P"
 lcsc_part = "C430605"
 nets = ["VIN_HEATER", "HEATER0_LOW", "HEATER1_LOW", "GND"]
 verification = "External heater pads only; no PCB serpentine heater."
+
+[[selected_parts]]
+id = "heater_cutoff_loop_terminal"
+module = "heater_drive"
+quantity = 1
+reference_prefix = "J"
+value = "DB128H-5.08-2P high-current heater cutoff loop/link"
+symbol = "DB128H-5.08-2P-BK-S"
+footprint = "lcsc:TERM-BLOCK-5.08-2P"
+lcsc_part = "C430605"
+nets = ["VIN_PROTECTED", "VIN_HEATER"]
+verification = "J24 carries the external normally-closed thermal cutoff or rated jumper loop. Route VIN_PROTECTED to J24 pin 1 and VIN_HEATER from J24 pin 2; do not merge the nets in copper."
 
 [[selected_parts]]
 id = "heater_gate_resistors"
@@ -640,7 +676,7 @@ quantity = 1
 value = "normally-closed thermal cutoff bonded to heater/spreader"
 lcsc_part = "external"
 role = "hardware heater safety loop"
-installation = "Off-board in heater stack, wired through J_INTERLOCK/cutoff loop."
+installation = "Off-board in heater stack, wired through J24 heater_cutoff_loop_terminal for the high-current cutoff loop. J19/AUX_IO0_THERMAL_CUTOFF_OK is status/control only."
 
 [[external_safety_parts]]
 id = "heater_pad"
