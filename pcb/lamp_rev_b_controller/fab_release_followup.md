@@ -15,6 +15,7 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 - Added `R55` as the 12 V first-article-only `VIN_PROTECTED` to `VDRV` feed link, with 24 V population blocked unless a regulator path is added.
 - Added `J24` as the high-current external cutoff-loop terminal from `VIN_PROTECTED` to `VIN_HEATER`; `J19` remains status/control only.
 - Added DRC-clean schema-v2 route records for the FB1 analog rail source tie, R55-to-U6 VDRV route, LED_SUPPLY local feed, and two local GND return ties. Physical DRC remains `0`; real unconnected items are reduced to `206`.
+- Added a second DRC-clean schema-v2 route-reduction pass covering duplicated USB data pads, local +3V3/+5V rails, selected `VIN_PROTECTED` branches, the U4 ground pair, and the HEATER0 gate local path. Physical DRC remains `0`; real unconnected items are reduced to `191`.
 
 Concrete follow-up to reach release:
 

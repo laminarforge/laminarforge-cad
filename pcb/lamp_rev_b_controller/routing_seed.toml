@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 1
-expected_route_count = 8
+expected_route_count = 20
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -124,6 +124,165 @@ points = [
   { x_mm = 89.000, y_mm = 61.000, layer = "F.Cu", anchor = "R23:2" },
   { x_mm = 89.000, y_mm = 66.000, layer = "F.Cu", anchor = "R24:2" },
   { x_mm = 87.620, y_mm = 70.000, layer = "F.Cu", anchor = "J16:4" },
+]
+
+[[routes]]
+id = "usb_dn_j1_ab_pair"
+phase = "1_usb_and_boot"
+net = "USB_DN"
+width_mm = 0.200
+intent = "Reviewed short top-layer tie between the duplicated USB-C D- receptacle pads."
+points = [
+  { x_mm = 8.250, y_mm = 5.610, layer = "F.Cu", anchor = "J1:A7" },
+  { x_mm = 8.250, y_mm = 6.800, layer = "F.Cu" },
+  { x_mm = 7.250, y_mm = 6.800, layer = "F.Cu" },
+  { x_mm = 7.250, y_mm = 5.610, layer = "F.Cu", anchor = "J1:B7" },
+]
+
+[[routes]]
+id = "usb_dp_j1_ab_pair"
+phase = "1_usb_and_boot"
+net = "USB_DP"
+width_mm = 0.200
+intent = "Reviewed short top-layer tie between the duplicated USB-C D+ receptacle pads."
+points = [
+  { x_mm = 8.750, y_mm = 5.610, layer = "F.Cu", anchor = "J1:B6" },
+  { x_mm = 8.750, y_mm = 4.400, layer = "F.Cu" },
+  { x_mm = 7.750, y_mm = 4.400, layer = "F.Cu" },
+  { x_mm = 7.750, y_mm = 5.610, layer = "F.Cu", anchor = "J1:A6" },
+]
+
+[[routes]]
+id = "gnd_u4_adc_pair_return"
+phase = "4_thermistor_analog"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed U4 ground-pad tie jogged below the ADC body to avoid the intervening signal pad."
+points = [
+  { x_mm = 29.000, y_mm = 44.110, layer = "F.Cu", anchor = "U4:1" },
+  { x_mm = 29.000, y_mm = 45.600, layer = "F.Cu" },
+  { x_mm = 30.000, y_mm = 45.600, layer = "F.Cu" },
+  { x_mm = 30.000, y_mm = 44.110, layer = "F.Cu", anchor = "U4:3" },
+]
+
+[[routes]]
+id = "plus3v3_r48_r49_local_bus"
+phase = "2_power_tree"
+net = "+3V3"
+width_mm = 0.350
+intent = "Reviewed short +3V3 local bus between adjacent MCU pullup resistors."
+points = [
+  { x_mm = 50.000, y_mm = 32.000, layer = "F.Cu", anchor = "R48:2" },
+  { x_mm = 50.000, y_mm = 30.500, layer = "F.Cu" },
+  { x_mm = 56.000, y_mm = 30.500, layer = "F.Cu" },
+  { x_mm = 56.000, y_mm = 32.000, layer = "F.Cu", anchor = "R49:2" },
+]
+
+[[routes]]
+id = "plus3v3_tp_to_u3_c7_branch"
+phase = "2_power_tree"
+net = "+3V3"
+width_mm = 0.350
+intent = "Reviewed +3V3 branch from TP_3V3 to the regulator output and C7 pad, jogged clear of the J22 ground pin."
+points = [
+  { x_mm = 82.000, y_mm = 30.000, layer = "F.Cu", anchor = "TP_3V3:1" },
+  { x_mm = 82.000, y_mm = 25.500, layer = "F.Cu" },
+  { x_mm = 83.550, y_mm = 25.500, layer = "F.Cu", anchor = "U3:1" },
+  { x_mm = 82.000, y_mm = 25.500, layer = "F.Cu" },
+  { x_mm = 82.000, y_mm = 28.500, layer = "F.Cu" },
+  { x_mm = 86.500, y_mm = 28.500, layer = "F.Cu" },
+  { x_mm = 86.500, y_mm = 31.000, layer = "F.Cu", anchor = "C7:1" },
+]
+
+[[routes]]
+id = "plus3v3_c7_c8_l1_branch"
+phase = "2_power_tree"
+net = "+3V3"
+width_mm = 0.350
+intent = "Reviewed +3V3 output-capacitor and inductor tie routed north of the adjacent ground pads."
+points = [
+  { x_mm = 86.500, y_mm = 31.000, layer = "F.Cu", anchor = "C7:1" },
+  { x_mm = 86.500, y_mm = 34.500, layer = "F.Cu" },
+  { x_mm = 91.500, y_mm = 34.500, layer = "F.Cu" },
+  { x_mm = 91.500, y_mm = 31.000, layer = "F.Cu" },
+  { x_mm = 92.500, y_mm = 31.000, layer = "F.Cu", anchor = "C8:1" },
+  { x_mm = 93.350, y_mm = 26.000, layer = "F.Cu", anchor = "L1:2" },
+]
+
+[[routes]]
+id = "plus5v_c2_tp_u7_branch"
+phase = "2_power_tree"
+net = "+5V"
+width_mm = 0.500
+intent = "Reviewed local +5V branch from the buck output capacitor to TP_5V and U7 output."
+points = [
+  { x_mm = 96.500, y_mm = 24.000, layer = "F.Cu", anchor = "C2:1" },
+  { x_mm = 96.500, y_mm = 30.000, layer = "F.Cu" },
+  { x_mm = 100.000, y_mm = 30.000, layer = "F.Cu", anchor = "TP_5V:1" },
+]
+
+[[routes]]
+id = "plus5v_c3_to_u3_input"
+phase = "2_power_tree"
+net = "+5V"
+width_mm = 0.500
+intent = "Reviewed local +5V tie from C3 to the U3 input pad, jogged north of the adjacent ground pads."
+points = [
+  { x_mm = 81.000, y_mm = 21.000, layer = "F.Cu", anchor = "C3:1" },
+  { x_mm = 81.000, y_mm = 19.500, layer = "F.Cu" },
+  { x_mm = 85.450, y_mm = 19.500, layer = "F.Cu" },
+  { x_mm = 85.450, y_mm = 23.500, layer = "F.Cu", anchor = "U3:4" },
+]
+
+[[routes]]
+id = "vin_protected_c4_d1_jog"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+width_mm = 1.500
+intent = "Reviewed protected VIN tie from C4 to D1, jogged above the D1 ground pad."
+points = [
+  { x_mm = 98.500, y_mm = 15.500, layer = "F.Cu", anchor = "C4:1" },
+  { x_mm = 98.500, y_mm = 11.500, layer = "F.Cu" },
+  { x_mm = 89.350, y_mm = 11.500, layer = "F.Cu" },
+  { x_mm = 89.350, y_mm = 15.000, layer = "F.Cu", anchor = "D1:1" },
+]
+
+[[routes]]
+id = "vin_protected_f1_to_c4_spine"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+width_mm = 1.500
+intent = "Reviewed protected VIN feed from F1 into the C4/D1 spine, kept north of the D1 ground pad."
+points = [
+  { x_mm = 94.700, y_mm = 7.000, layer = "F.Cu", anchor = "F1:2" },
+  { x_mm = 94.700, y_mm = 11.500, layer = "F.Cu" },
+  { x_mm = 98.500, y_mm = 11.500, layer = "F.Cu", anchor = "VIN_PROTECTED spine" },
+]
+
+[[routes]]
+id = "vin_protected_tp_to_u7"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+width_mm = 1.500
+intent = "Reviewed protected VIN branch from TP_VIN_PROT to the U7 input pad."
+points = [
+  { x_mm = 114.000, y_mm = 28.000, layer = "F.Cu", anchor = "TP_VIN_PROT:1" },
+  { x_mm = 103.960, y_mm = 28.000, layer = "F.Cu" },
+  { x_mm = 103.960, y_mm = 24.000, layer = "F.Cu", anchor = "U7:1" },
+]
+
+[[routes]]
+id = "heater0_gate_r20_tp_q1"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+width_mm = 0.300
+intent = "Reviewed local HEATER0 gate route tying R20, TP_HEATER0_GATE, and the Q1 gate pad."
+points = [
+  { x_mm = 96.000, y_mm = 56.000, layer = "F.Cu", anchor = "R20:2" },
+  { x_mm = 99.000, y_mm = 56.000, layer = "F.Cu" },
+  { x_mm = 99.000, y_mm = 52.000, layer = "F.Cu", anchor = "TP_HEATER0_GATE:1" },
+  { x_mm = 103.000, y_mm = 52.000, layer = "F.Cu" },
+  { x_mm = 103.000, y_mm = 49.000, layer = "F.Cu", anchor = "Q1:1" },
 ]
 
 [[segments]]
