@@ -15050,11 +15050,443 @@
     (uuid "00000000-0000-4000-8000-00000000067b")
   )
 
+  (segment
+    (start 72 23)
+    (end 72 21)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 22)
+    (uuid "00000000-0000-4000-8000-00000000067c")
+  )
+
+  (segment
+    (start 72 21)
+    (end 76 21)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 22)
+    (uuid "00000000-0000-4000-8000-00000000067d")
+  )
+
+  (segment
+    (start 76 21)
+    (end 76 26)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 22)
+    (uuid "00000000-0000-4000-8000-00000000067e")
+  )
+
+  (segment
+    (start 76 26)
+    (end 76 31)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 22)
+    (uuid "00000000-0000-4000-8000-00000000067f")
+  )
+
+  (segment
+    (start 72 26)
+    (end 72 28)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 23)
+    (uuid "00000000-0000-4000-8000-000000000680")
+  )
+
+  (segment
+    (start 72 28)
+    (end 74.500 28)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 23)
+    (uuid "00000000-0000-4000-8000-000000000681")
+  )
+
+  (segment
+    (start 74.500 28)
+    (end 74.500 33)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 23)
+    (uuid "00000000-0000-4000-8000-000000000682")
+  )
+
+  (segment
+    (start 74.500 33)
+    (end 78.540 33)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 23)
+    (uuid "00000000-0000-4000-8000-000000000683")
+  )
+
+  (segment
+    (start 78.540 33)
+    (end 78.540 31)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 23)
+    (uuid "00000000-0000-4000-8000-000000000684")
+  )
+
+  (segment
+    (start 78.540 31)
+    (end 79 26)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 23)
+    (uuid "00000000-0000-4000-8000-000000000685")
+  )
+
+  (segment
+    (start 56.620 84)
+    (end 59 80)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 65)
+    (uuid "00000000-0000-4000-8000-000000000686")
+  )
+
+  (segment
+    (start 76.700 79)
+    (end 78 79)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 27)
+    (uuid "00000000-0000-4000-8000-000000000687")
+  )
+
+  (segment
+    (start 78 79)
+    (end 78 60)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 27)
+    (uuid "00000000-0000-4000-8000-000000000688")
+  )
+
+  (segment
+    (start 78 60)
+    (end 82 60)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 27)
+    (uuid "00000000-0000-4000-8000-000000000689")
+  )
+
+  (segment
+    (start 100 30)
+    (end 117 30)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 8)
+    (uuid "00000000-0000-4000-8000-00000000068a")
+  )
+
+  (segment
+    (start 117 30)
+    (end 117 24)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 8)
+    (uuid "00000000-0000-4000-8000-00000000068b")
+  )
+
+  (segment
+    (start 117 24)
+    (end 109.040 24)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 8)
+    (uuid "00000000-0000-4000-8000-00000000068c")
+  )
+
+  (segment
+    (start 24 7)
+    (end 24 4)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 3)
+    (uuid "00000000-0000-4000-8000-00000000068d")
+  )
+
+  (segment
+    (start 24 4)
+    (end 27 4)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 3)
+    (uuid "00000000-0000-4000-8000-00000000068e")
+  )
+
+  (segment
+    (start 27 4)
+    (end 27 5)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 3)
+    (uuid "00000000-0000-4000-8000-00000000068f")
+  )
+
+  (segment
+    (start 21.500 15)
+    (end 21.500 4)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 3)
+    (uuid "00000000-0000-4000-8000-000000000690")
+  )
+
+  (segment
+    (start 21.500 4)
+    (end 24 4)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 3)
+    (uuid "00000000-0000-4000-8000-000000000691")
+  )
+
+  (segment
+    (start 24 4)
+    (end 24 7)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 3)
+    (uuid "00000000-0000-4000-8000-000000000692")
+  )
+
+  (segment
+    (start 24.500 15)
+    (end 24 9)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-000000000693")
+  )
+
+  (segment
+    (start 24 9)
+    (end 24 11.500)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-000000000694")
+  )
+
+  (segment
+    (start 24 11.500)
+    (end 29 11.500)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-000000000695")
+  )
+
+  (segment
+    (start 29 11.500)
+    (end 29 10)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-000000000696")
+  )
+
+  (segment
+    (start 99.500 24)
+    (end 99.500 21)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-000000000697")
+  )
+
+  (segment
+    (start 99.500 21)
+    (end 106.500 21)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-000000000698")
+  )
+
+  (segment
+    (start 106.500 21)
+    (end 106.500 24)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-000000000699")
+  )
+
+  (segment
+    (start 101.500 15.500)
+    (end 101.500 18)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-00000000069a")
+  )
+
+  (segment
+    (start 101.500 18)
+    (end 94.650 18)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-00000000069b")
+  )
+
+  (segment
+    (start 94.650 18)
+    (end 94.650 15)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-00000000069c")
+  )
+
+  (segment
+    (start 35 17.250)
+    (end 44 17.250)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 9)
+    (uuid "00000000-0000-4000-8000-00000000069d")
+  )
+
+  (segment
+    (start 44 17.250)
+    (end 44 28)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 9)
+    (uuid "00000000-0000-4000-8000-00000000069e")
+  )
+
+  (segment
+    (start 18 4.500)
+    (end 18 3.500)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-00000000069f")
+  )
+
+  (segment
+    (start 18 3.500)
+    (end 13.580 3.500)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-0000000006a0")
+  )
+
+  (segment
+    (start 13.580 3.500)
+    (end 13.580 6.390)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-0000000006a1")
+  )
+
+  (segment
+    (start 18 9.500)
+    (end 16.500 9.500)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-0000000006a2")
+  )
+
+  (segment
+    (start 16.500 9.500)
+    (end 16.500 12)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-0000000006a3")
+  )
+
+  (segment
+    (start 16.500 12)
+    (end 13.580 12)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-0000000006a4")
+  )
+
+  (segment
+    (start 13.580 12)
+    (end 13.580 10.390)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 1)
+    (uuid "00000000-0000-4000-8000-0000000006a5")
+  )
+
+  (segment
+    (start 44 31)
+    (end 50 31)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 9)
+    (uuid "00000000-0000-4000-8000-0000000006a6")
+  )
+
+  (segment
+    (start 50 31)
+    (end 50 32)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 9)
+    (uuid "00000000-0000-4000-8000-0000000006a7")
+  )
+
+  (segment
+    (start 85 37)
+    (end 86.500 37)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 9)
+    (uuid "00000000-0000-4000-8000-0000000006a8")
+  )
+
+  (segment
+    (start 86.500 37)
+    (end 86.500 31)
+    (width 0.300)
+    (layer "F.Cu")
+    (net 9)
+    (uuid "00000000-0000-4000-8000-0000000006a9")
+  )
+
+  (segment
+    (start 96.500 24)
+    (end 96.500 19.500)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 8)
+    (uuid "00000000-0000-4000-8000-0000000006aa")
+  )
+
+  (segment
+    (start 96.500 19.500)
+    (end 85.450 19.500)
+    (width 0.500)
+    (layer "F.Cu")
+    (net 8)
+    (uuid "00000000-0000-4000-8000-0000000006ab")
+  )
+
   (zone
     (net 1)
     (net_name "GND")
     (layer "In1.Cu")
-    (uuid "00000000-0000-4000-8000-00000000067c")
+    (uuid "00000000-0000-4000-8000-0000000006ac")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.250))
     (min_thickness 0.200)
@@ -15073,7 +15505,7 @@
     (net 9)
     (net_name "+3V3")
     (layer "In2.Cu")
-    (uuid "00000000-0000-4000-8000-00000000067d")
+    (uuid "00000000-0000-4000-8000-0000000006ad")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.250))
     (min_thickness 0.200)
@@ -15092,7 +15524,7 @@
     (net 6)
     (net_name "VIN_HEATER")
     (layer "F.Cu")
-    (uuid "00000000-0000-4000-8000-00000000067e")
+    (uuid "00000000-0000-4000-8000-0000000006ae")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.300))
     (min_thickness 0.300)
@@ -15111,7 +15543,7 @@
     (net 55)
     (net_name "LED_SUPPLY")
     (layer "F.Cu")
-    (uuid "00000000-0000-4000-8000-00000000067f")
+    (uuid "00000000-0000-4000-8000-0000000006af")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.300))
     (min_thickness 0.300)
