@@ -61,14 +61,14 @@ Current validation state:
 
 - KiCad ERC on the captured schematic: `0` violations.
 - KiCad physical DRC on the materialized board: `0` violations.
-- Real unconnected items from `lamp_rev_b_controller_route_report`: `144`.
+- Real unconnected items from `lamp_rev_b_controller_route_report`: `138`.
 - `routing_seed.toml` contains the deterministic DRC-clean local F.Cu segments accepted by `lamp_rev_b_controller_seed_routes_from_drc`, plus schema-v2 reviewed `[[vias]]` and named `[[routes]]` records.
 - Source-boundary components are explicit in the Rev B source model: `FB1` sources `+3V3_ANA` from `+3V3`, `R55` sources `VDRV` from `VIN_PROTECTED` for the 12 V first article only, and `J24` carries the external high-current cutoff loop from `VIN_PROTECTED` to `VIN_HEATER`.
 
 Known release blockers:
 
 - The PCB is still a partial materialized route seed; it is not routed to zero real unconnected items.
-- The schema-v2 seed now includes `57` named routes and `16` explicit vias and can capture DRC-clean local top-layer routes, reviewed bottom-layer escapes, and named channel routes, but the remaining nets require deliberate fanout/channel routing, especially `GND` (`13`), `+3V3_ANA` (`3`), `ESP_EN` (`3`), `HEATER0_PWM` (`3`), `HEATER1_GATE` (`3`), `HEATER1_PWM` (`3`), `I2C_SCL` (`3`), `I2C_SDA` (`3`), USB, thermistor mux/ADC, camera/debug, and interlock nets.
+- The schema-v2 seed now includes `62` named routes and `21` explicit vias and can capture DRC-clean local top-layer routes, reviewed bottom-layer escapes, and named channel routes, but the remaining nets require deliberate fanout/channel routing, especially `GND` (`13`), `+3V3_ANA` (`3`), `HEATER0_PWM` (`3`), `HEATER1_GATE` (`3`), `HEATER1_PWM` (`3`), `I2C_SCL` (`3`), `I2C_SDA` (`3`), `USB_DN` (`3`), `USB_DP` (`3`), `VIN_PROTECTED` (`3`), thermistor mux/ADC, camera/debug, and interlock nets.
 - The selected `P7805-2000-S`, `AP63203WU-7`, `74439346068`, `LDD-700H`, `SN74LVC1G08DBVR`, `INA180A1IDBVR`, and LED shunt path are represented, but the board is not routed to zero unconnected items.
 - `R55` is a 12 V first-article-only VDRV feed and must be DNP for any 24 V build unless an approved 12 V regulator path is added.
 - `J24` requires an external normally-closed thermal cutoff or rated jumper before heater dummy-load tests; do not bridge `VIN_PROTECTED` to `VIN_HEATER` in copper.

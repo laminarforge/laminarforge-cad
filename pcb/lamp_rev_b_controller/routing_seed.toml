@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 16
-expected_route_count = 57
+expected_via_count = 21
+expected_route_count = 62
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -185,6 +185,61 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed +3V3 bottom-layer escape from the existing logic spine toward the programming/debug header supply pad."
+
+[[vias]]
+id = "v_esp_en_r48_bcu_escape"
+phase = "1_usb_and_boot"
+net = "ESP_EN"
+x_mm = 48.000
+y_mm = 33.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed ESP_EN bottom-layer escape above R48 pin 1, avoiding the existing +3V3 pullup bus on F.Cu."
+
+[[vias]]
+id = "v_esp_en_tp_bcu_escape"
+phase = "1_usb_and_boot"
+net = "ESP_EN"
+x_mm = 50.500
+y_mm = 26.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed ESP_EN bottom-layer escape beside TP_EN for the reset pullup/programming-header branch."
+
+[[vias]]
+id = "v_esp_en_mcu_bcu_entry"
+phase = "1_usb_and_boot"
+net = "ESP_EN"
+x_mm = 50.500
+y_mm = 11.590
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed ESP_EN return via west of the ESP32-S3 enable pad, clear of the neighboring castellated pins."
+
+[[vias]]
+id = "v_status_fault_local_bcu_escape"
+phase = "1_usb_and_boot"
+net = "STATUS_FAULT_LED"
+x_mm = 38.000
+y_mm = 21.200
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed STATUS_FAULT_LED bottom-layer escape from the local status LED jog, clear of the adjacent grounded resistor pads."
+
+[[vias]]
+id = "v_status_fault_mcu_bcu_entry"
+phase = "1_usb_and_boot"
+net = "STATUS_FAULT_LED"
+x_mm = 72.000
+y_mm = 16.670
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed STATUS_FAULT_LED MCU-entry via east of the ESP32-S3 pad column, offset from adjacent castellated pads."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -961,6 +1016,84 @@ points = [
   { x_mm = 48.000, y_mm = 17.250, layer = "F.Cu" },
   { x_mm = 48.000, y_mm = 10.320, layer = "F.Cu" },
   { x_mm = 52.100, y_mm = 10.320, layer = "F.Cu", anchor = "U1:2" },
+]
+
+[[routes]]
+id = "status_fault_led_local_top_chain"
+phase = "1_usb_and_boot"
+net = "STATUS_FAULT_LED"
+width_mm = 0.200
+intent = "Reviewed local fault-status LED signal chain tying D3, R31, and TP_FAULT on F.Cu, jogged around the existing status-ground return."
+points = [
+  { x_mm = 35.000, y_mm = 18.750, layer = "F.Cu", anchor = "D3:1" },
+  { x_mm = 34.000, y_mm = 18.750, layer = "F.Cu" },
+  { x_mm = 34.000, y_mm = 23.000, layer = "F.Cu", anchor = "R31:1" },
+  { x_mm = 34.000, y_mm = 21.200, layer = "F.Cu" },
+  { x_mm = 37.500, y_mm = 21.200, layer = "F.Cu" },
+  { x_mm = 37.500, y_mm = 27.000, layer = "F.Cu" },
+  { x_mm = 35.000, y_mm = 27.000, layer = "F.Cu", anchor = "TP_FAULT:1" },
+]
+
+[[routes]]
+id = "status_fault_led_mcu_bcu_branch"
+phase = "1_usb_and_boot"
+net = "STATUS_FAULT_LED"
+width_mm = 0.200
+intent = "Reviewed STATUS_FAULT_LED MCU branch using a low B.Cu jog below the ESP32-S3 fanout and the ESP_EN bottom-layer branch."
+points = [
+  { x_mm = 37.500, y_mm = 21.200, layer = "F.Cu", anchor = "existing STATUS_FAULT_LED top jog" },
+  { x_mm = 38.000, y_mm = 21.200, layer = "F.Cu" },
+  { x_mm = 38.000, y_mm = 21.200, layer = "B.Cu", via_id = "v_status_fault_local_bcu_escape" },
+  { x_mm = 38.000, y_mm = 9.500, layer = "B.Cu" },
+  { x_mm = 70.000, y_mm = 9.500, layer = "B.Cu" },
+  { x_mm = 70.000, y_mm = 16.670, layer = "B.Cu" },
+  { x_mm = 72.000, y_mm = 16.670, layer = "B.Cu" },
+  { x_mm = 72.000, y_mm = 16.670, layer = "F.Cu", via_id = "v_status_fault_mcu_bcu_entry" },
+  { x_mm = 69.900, y_mm = 16.670, layer = "F.Cu", anchor = "U1:34" },
+]
+
+[[routes]]
+id = "esp_en_pullup_to_tp_bcu_branch"
+phase = "1_usb_and_boot"
+net = "ESP_EN"
+width_mm = 0.200
+intent = "Reviewed ESP_EN pullup-to-test branch using B.Cu to avoid the existing +3V3 pullup spine on F.Cu."
+points = [
+  { x_mm = 48.000, y_mm = 32.000, layer = "F.Cu", anchor = "R48:1" },
+  { x_mm = 48.000, y_mm = 33.500, layer = "F.Cu" },
+  { x_mm = 48.000, y_mm = 33.500, layer = "B.Cu", via_id = "v_esp_en_r48_bcu_escape" },
+  { x_mm = 50.500, y_mm = 26.000, layer = "B.Cu" },
+  { x_mm = 50.500, y_mm = 26.000, layer = "F.Cu", via_id = "v_esp_en_tp_bcu_escape" },
+  { x_mm = 49.000, y_mm = 26.000, layer = "F.Cu", anchor = "TP_EN:1" },
+]
+
+[[routes]]
+id = "esp_en_tp_to_mcu_bcu_branch"
+phase = "1_usb_and_boot"
+net = "ESP_EN"
+width_mm = 0.200
+intent = "Reviewed ESP_EN branch from TP_EN to the ESP32-S3 enable pad using B.Cu to avoid the dense left-side module fanout."
+points = [
+  { x_mm = 49.000, y_mm = 26.000, layer = "F.Cu", anchor = "TP_EN:1" },
+  { x_mm = 50.500, y_mm = 26.000, layer = "F.Cu" },
+  { x_mm = 50.500, y_mm = 26.000, layer = "B.Cu", via_id = "v_esp_en_tp_bcu_escape" },
+  { x_mm = 50.500, y_mm = 11.590, layer = "B.Cu" },
+  { x_mm = 50.500, y_mm = 11.590, layer = "F.Cu", via_id = "v_esp_en_mcu_bcu_entry" },
+  { x_mm = 52.100, y_mm = 11.590, layer = "F.Cu", anchor = "U1:3" },
+]
+
+[[routes]]
+id = "esp_en_j21_program_header_bcu_branch"
+phase = "1_usb_and_boot"
+net = "ESP_EN"
+width_mm = 0.200
+intent = "Reviewed ESP_EN programming-header branch from the TP_EN escape to J21 pin 5 on B.Cu."
+points = [
+  { x_mm = 49.000, y_mm = 26.000, layer = "F.Cu", anchor = "TP_EN:1" },
+  { x_mm = 50.500, y_mm = 26.000, layer = "F.Cu" },
+  { x_mm = 50.500, y_mm = 26.000, layer = "B.Cu", via_id = "v_esp_en_tp_bcu_escape" },
+  { x_mm = 16.540, y_mm = 26.000, layer = "B.Cu" },
+  { x_mm = 16.540, y_mm = 23.540, layer = "B.Cu", anchor = "J21:5" },
 ]
 
 [[segments]]
