@@ -19,6 +19,7 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 - Added a third DRC-clean schema-v2 route-reduction pass covering local I2C header/test branches, camera/interlock test branches, USB/VBUS local feeds, AP63203/P7805 local returns, and selected +3V3/+5V bridges. Physical DRC remains `0`; real unconnected items are reduced to `172`.
 - Added a fourth DRC-clean schema-v2 route-reduction pass covering reviewed B.Cu escapes for selected +3V3, GND, I2C_SDA, VIN_PROTECTED, USB ground, and optics/interlock header branches. Physical DRC remains `0`; real unconnected items are reduced to `159`.
 - Added a fifth DRC-clean schema-v2 route-reduction pass covering the USB-C VBUS duplicated-pad/feed tie, ESP32 module ground tie, RUN LED test branch, lid/cartridge interlock test branches, and local HEATER0/HEATER1 low-side terminal/test/shunt branches. Physical DRC remains `0`; real unconnected items are reduced to `149`.
+- Added a sixth DRC-clean schema-v2 route-reduction pass covering the AP63203/P7805 input-capacitor ground return bridge, U5-to-J9 thermistor mux ground return, I2C_SCL bottom-layer MCU branch, ESP32 +3V3 module supply tie, and +3V3 J21 header branch. Physical DRC remains `0`; real unconnected items are reduced to `144`.
 
 Concrete follow-up to reach release:
 

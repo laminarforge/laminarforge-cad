@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 12
-expected_route_count = 52
+expected_via_count = 16
+expected_route_count = 57
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -141,6 +141,50 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed +3V3 tie via beside the AP63203 output/test branch, clear of the J22 ground pad."
+
+[[vias]]
+id = "v_i2c_scl_pullup_bcu_escape"
+phase = "1_usb_and_boot"
+net = "I2C_SCL"
+x_mm = 79.000
+y_mm = 26.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed SCL bottom-layer escape at the existing pullup/header seed endpoint, clear of the neighboring SDA top trace."
+
+[[vias]]
+id = "v_i2c_scl_mcu_bcu_entry"
+phase = "1_usb_and_boot"
+net = "I2C_SCL"
+x_mm = 72.500
+y_mm = 11.590
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed SCL return via near the ESP32-S3 pad, offset east of the castellated pad column."
+
+[[vias]]
+id = "v_gnd_u5_j9_bcu_escape"
+phase = "4_thermistor_analog"
+net = "GND"
+x_mm = 32.170
+y_mm = 62.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed U5/J9 ground return escape below the mux pad, avoiding the adjacent AUX_ANALOG and C17 top-layer pads."
+
+[[vias]]
+id = "v_plus3v3_j21_bcu_escape"
+phase = "1_usb_and_boot"
+net = "+3V3"
+x_mm = 31.000
+y_mm = 17.250
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3 bottom-layer escape from the existing logic spine toward the programming/debug header supply pad."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -850,6 +894,73 @@ points = [
   { x_mm = 113.000, y_mm = 62.000, layer = "F.Cu", anchor = "TP_HEATER1_LOW:1" },
   { x_mm = 110.000, y_mm = 62.000, layer = "F.Cu" },
   { x_mm = 110.000, y_mm = 58.000, layer = "F.Cu", anchor = "R26:1" },
+]
+
+[[routes]]
+id = "gnd_input_cap_return_bridge"
+phase = "2_power_tree"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed local P7805/AP63203 input-capacitor ground bridge between the two existing return seed segments."
+points = [
+  { x_mm = 99.500, y_mm = 21.000, layer = "F.Cu", anchor = "existing C7/C8 ground seed" },
+  { x_mm = 99.500, y_mm = 18.000, layer = "F.Cu" },
+  { x_mm = 101.500, y_mm = 18.000, layer = "F.Cu", anchor = "existing C4/C7 ground seed" },
+]
+
+[[routes]]
+id = "gnd_u5_to_j9_bcu_return"
+phase = "4_thermistor_analog"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed bottom-layer U5 ground return to the J9 harness ground pad, avoiding blocked top-layer analog pads."
+points = [
+  { x_mm = 32.170, y_mm = 60.740, layer = "F.Cu", anchor = "U5:7" },
+  { x_mm = 32.170, y_mm = 62.000, layer = "F.Cu" },
+  { x_mm = 32.170, y_mm = 62.000, layer = "B.Cu", via_id = "v_gnd_u5_j9_bcu_escape" },
+  { x_mm = 31.000, y_mm = 67.460, layer = "B.Cu", anchor = "J9:2" },
+]
+
+[[routes]]
+id = "i2c_scl_pullup_to_mcu_bcu_branch"
+phase = "1_usb_and_boot"
+net = "I2C_SCL"
+width_mm = 0.200
+intent = "Reviewed SCL branch from the existing pullup/header seed to the ESP32-S3 pad using B.Cu to avoid the top-layer SDA branch."
+points = [
+  { x_mm = 79.000, y_mm = 26.000, layer = "F.Cu", anchor = "existing I2C_SCL header/test branch" },
+  { x_mm = 79.000, y_mm = 26.000, layer = "B.Cu", via_id = "v_i2c_scl_pullup_bcu_escape" },
+  { x_mm = 83.000, y_mm = 26.000, layer = "B.Cu" },
+  { x_mm = 83.000, y_mm = 11.590, layer = "B.Cu" },
+  { x_mm = 72.500, y_mm = 11.590, layer = "B.Cu" },
+  { x_mm = 72.500, y_mm = 11.590, layer = "F.Cu", via_id = "v_i2c_scl_mcu_bcu_entry" },
+  { x_mm = 69.900, y_mm = 11.590, layer = "F.Cu", anchor = "U1:38" },
+]
+
+[[routes]]
+id = "plus3v3_j21_header_bcu_branch"
+phase = "1_usb_and_boot"
+net = "+3V3"
+width_mm = 0.300
+intent = "Reviewed +3V3 branch from the existing logic spine to the J21 header supply pad using B.Cu to avoid the USB/status top-layer fanout."
+points = [
+  { x_mm = 31.000, y_mm = 17.250, layer = "F.Cu", anchor = "existing +3V3 logic spine" },
+  { x_mm = 31.000, y_mm = 17.250, layer = "B.Cu", via_id = "v_plus3v3_j21_bcu_escape" },
+  { x_mm = 16.540, y_mm = 17.250, layer = "B.Cu" },
+  { x_mm = 16.540, y_mm = 21.000, layer = "B.Cu", anchor = "J21:2" },
+]
+
+[[routes]]
+id = "plus3v3_esp_module_supply_branch"
+phase = "1_usb_and_boot"
+net = "+3V3"
+width_mm = 0.300
+intent = "Reviewed +3V3 branch from the existing logic supply spine to the ESP32-S3 module supply pad."
+points = [
+  { x_mm = 44.000, y_mm = 17.250, layer = "F.Cu", anchor = "existing +3V3 logic spine" },
+  { x_mm = 48.000, y_mm = 17.250, layer = "F.Cu" },
+  { x_mm = 48.000, y_mm = 10.320, layer = "F.Cu" },
+  { x_mm = 52.100, y_mm = 10.320, layer = "F.Cu", anchor = "U1:2" },
 ]
 
 [[segments]]
