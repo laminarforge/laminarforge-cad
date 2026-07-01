@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 1
-expected_route_count = 37
+expected_via_count = 12
+expected_route_count = 45
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -20,6 +20,127 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed ground-plane stitching via near the thermistor harness return area; away from pad centers."
+
+[[vias]]
+id = "v_plus3v3_optics_u9_escape"
+phase = "5_optics_camera_interlocks"
+net = "+3V3"
+x_mm = 45.500
+y_mm = 42.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3 bottom-layer escape beside the U9 supply pad, clear of adjacent LED_DIM/LED_EXC pads."
+
+[[vias]]
+id = "v_plus3v3_optics_u10_escape"
+phase = "5_optics_camera_interlocks"
+net = "+3V3"
+x_mm = 45.500
+y_mm = 57.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3 bottom-layer escape beside the U10 supply pad, clear of adjacent LED driver pads."
+
+[[vias]]
+id = "v_plus3v3_r54_escape"
+phase = "5_optics_camera_interlocks"
+net = "+3V3"
+x_mm = 45.500
+y_mm = 63.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3 bottom-layer escape to the R54 pullup supply pad, clear of the LED_FAULT_N pad."
+
+[[vias]]
+id = "v_gnd_heater_u6_escape"
+phase = "3_heater_power"
+net = "GND"
+x_mm = 94.000
+y_mm = 50.570
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed U6 ground escape via to avoid the adjacent HEATER0_PWM and HEATER_ARM pads."
+
+[[vias]]
+id = "v_gnd_heater_pulldown_spine_tie"
+phase = "3_heater_power"
+net = "GND"
+x_mm = 89.000
+y_mm = 56.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed heater pulldown ground-spine tie via on the existing GND seed segment."
+
+[[vias]]
+id = "v_vin_protected_cutoff_escape"
+phase = "3_heater_power"
+net = "VIN_PROTECTED"
+x_mm = 112.000
+y_mm = 28.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 1.200
+drill_mm = 0.500
+intent = "Reviewed protected-VIN escape via from TP_VIN_PROT to reach the cutoff-loop input on B.Cu, placed left of the +5V top trace."
+
+[[vias]]
+id = "v_gnd_usb_cc_return_escape"
+phase = "1_usb_and_boot"
+net = "GND"
+x_mm = 16.500
+y_mm = 9.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed CC2 pull-down ground escape via placed left of the R2 pad pair."
+
+[[vias]]
+id = "v_gnd_usb_esd_return_tie"
+phase = "1_usb_and_boot"
+net = "GND"
+x_mm = 24.000
+y_mm = 11.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed tie via on the existing U2/R4 USB ground return seed segment."
+
+[[vias]]
+id = "v_plus3v3_logic_bus_escape"
+phase = "1_usb_and_boot"
+net = "+3V3"
+x_mm = 50.000
+y_mm = 29.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3 escape from the R48/R49 local pullup bus, offset below the resistor pads."
+
+[[vias]]
+id = "v_plus3v3_i2c_pullup_bus_tie"
+phase = "1_usb_and_boot"
+net = "+3V3"
+x_mm = 74.000
+y_mm = 24.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3 tie via on the local I2C pullup supply spine between the R40/R41 supply pads."
+
+[[vias]]
+id = "v_plus3v3_regulator_branch_tie"
+phase = "2_power_tree"
+net = "+3V3"
+x_mm = 82.000
+y_mm = 24.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3 tie via beside the AP63203 output/test branch, clear of the J22 ground pad."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -501,6 +622,141 @@ points = [
   { x_mm = 96.500, y_mm = 24.000, layer = "F.Cu", anchor = "existing +5V C2 branch" },
   { x_mm = 96.500, y_mm = 19.500, layer = "F.Cu" },
   { x_mm = 85.450, y_mm = 19.500, layer = "F.Cu", anchor = "existing +5V U3 input branch" },
+]
+
+[[routes]]
+id = "gnd_usb_bulk_to_status_return"
+phase = "1_usb_and_boot"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed local USB bulk-capacitor ground bridge into the status-LED ground return, jogged above the adjacent +3V3 LED pads."
+points = [
+  { x_mm = 24.500, y_mm = 15.000, layer = "F.Cu", anchor = "C1:2" },
+  { x_mm = 24.500, y_mm = 20.000, layer = "F.Cu" },
+  { x_mm = 32.000, y_mm = 20.000, layer = "F.Cu" },
+  { x_mm = 32.000, y_mm = 23.000, layer = "F.Cu", anchor = "R30:2" },
+]
+
+[[routes]]
+id = "plus3v3_optics_local_bcu_spine"
+phase = "5_optics_camera_interlocks"
+net = "+3V3"
+width_mm = 0.300
+intent = "Reviewed +3V3 optics pullup/supply spine using bottom-layer hops to avoid the dense U9/U10/R54 signal pads."
+points = [
+  { x_mm = 44.000, y_mm = 34.000, layer = "F.Cu", anchor = "existing +3V3 seed" },
+  { x_mm = 45.500, y_mm = 34.000, layer = "F.Cu" },
+  { x_mm = 45.500, y_mm = 42.000, layer = "F.Cu" },
+  { x_mm = 46.050, y_mm = 42.000, layer = "F.Cu", anchor = "U9:5" },
+  { x_mm = 45.500, y_mm = 42.000, layer = "F.Cu" },
+  { x_mm = 45.500, y_mm = 42.000, layer = "B.Cu", via_id = "v_plus3v3_optics_u9_escape" },
+  { x_mm = 45.500, y_mm = 57.000, layer = "B.Cu" },
+  { x_mm = 45.500, y_mm = 57.000, layer = "F.Cu", via_id = "v_plus3v3_optics_u10_escape" },
+  { x_mm = 46.050, y_mm = 57.000, layer = "F.Cu", anchor = "U10:5" },
+  { x_mm = 45.500, y_mm = 57.000, layer = "F.Cu" },
+  { x_mm = 45.500, y_mm = 57.000, layer = "B.Cu", via_id = "v_plus3v3_optics_u10_escape" },
+  { x_mm = 45.500, y_mm = 63.000, layer = "B.Cu" },
+  { x_mm = 45.500, y_mm = 63.000, layer = "F.Cu", via_id = "v_plus3v3_r54_escape" },
+  { x_mm = 47.000, y_mm = 63.000, layer = "F.Cu", anchor = "R54:2" },
+]
+
+[[routes]]
+id = "plus3v3_optics_header_chain_bcu"
+phase = "5_optics_camera_interlocks"
+net = "+3V3"
+width_mm = 0.300
+intent = "Reviewed +3V3 bottom-layer header chain from the R54 pullup escape to J17, J19, and J18 without crossing adjacent header grounds."
+points = [
+  { x_mm = 45.500, y_mm = 63.000, layer = "F.Cu", anchor = "existing +3V3 R54 escape" },
+  { x_mm = 45.500, y_mm = 63.000, layer = "B.Cu", via_id = "v_plus3v3_r54_escape" },
+  { x_mm = 45.500, y_mm = 71.000, layer = "B.Cu" },
+  { x_mm = 51.540, y_mm = 71.000, layer = "B.Cu" },
+  { x_mm = 51.540, y_mm = 73.000, layer = "B.Cu", anchor = "J17:2" },
+  { x_mm = 51.540, y_mm = 71.000, layer = "B.Cu" },
+  { x_mm = 45.500, y_mm = 71.000, layer = "B.Cu" },
+  { x_mm = 45.500, y_mm = 86.000, layer = "B.Cu" },
+  { x_mm = 59.160, y_mm = 86.000, layer = "B.Cu" },
+  { x_mm = 59.160, y_mm = 84.000, layer = "B.Cu", anchor = "J19:5" },
+  { x_mm = 59.160, y_mm = 86.000, layer = "B.Cu" },
+  { x_mm = 60.500, y_mm = 86.000, layer = "B.Cu" },
+  { x_mm = 60.500, y_mm = 77.000, layer = "B.Cu" },
+  { x_mm = 64.000, y_mm = 77.000, layer = "B.Cu" },
+  { x_mm = 64.000, y_mm = 79.000, layer = "B.Cu", anchor = "J18:1" },
+]
+
+[[routes]]
+id = "plus3v3_logic_i2c_regulator_bcu_tie"
+phase = "1_usb_and_boot"
+net = "+3V3"
+width_mm = 0.300
+intent = "Reviewed +3V3 bottom-layer tie joining the boot/reset pullup bus, I2C pullup spine, and AP63203 output branch."
+points = [
+  { x_mm = 50.000, y_mm = 30.500, layer = "F.Cu", anchor = "existing R48/R49 +3V3 bus" },
+  { x_mm = 50.000, y_mm = 29.500, layer = "F.Cu" },
+  { x_mm = 50.000, y_mm = 29.500, layer = "B.Cu", via_id = "v_plus3v3_logic_bus_escape" },
+  { x_mm = 74.000, y_mm = 24.500, layer = "B.Cu" },
+  { x_mm = 74.000, y_mm = 24.500, layer = "F.Cu", via_id = "v_plus3v3_i2c_pullup_bus_tie" },
+  { x_mm = 74.000, y_mm = 23.000, layer = "F.Cu", anchor = "existing I2C pullup +3V3 bus" },
+  { x_mm = 74.000, y_mm = 24.500, layer = "F.Cu" },
+  { x_mm = 74.000, y_mm = 24.500, layer = "B.Cu", via_id = "v_plus3v3_i2c_pullup_bus_tie" },
+  { x_mm = 82.000, y_mm = 24.000, layer = "B.Cu" },
+  { x_mm = 82.000, y_mm = 24.000, layer = "F.Cu", via_id = "v_plus3v3_regulator_branch_tie" },
+  { x_mm = 82.000, y_mm = 25.500, layer = "F.Cu", anchor = "existing AP63203 +3V3 output branch" },
+]
+
+[[routes]]
+id = "gnd_heater_driver_bcu_return"
+phase = "3_heater_power"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed U6 ground return using a bottom-layer hop into the existing heater pulldown ground spine."
+points = [
+  { x_mm = 92.630, y_mm = 50.570, layer = "F.Cu", anchor = "U6:3" },
+  { x_mm = 94.000, y_mm = 50.570, layer = "F.Cu" },
+  { x_mm = 94.000, y_mm = 50.570, layer = "B.Cu", via_id = "v_gnd_heater_u6_escape" },
+  { x_mm = 94.000, y_mm = 56.000, layer = "B.Cu" },
+  { x_mm = 89.000, y_mm = 56.000, layer = "B.Cu" },
+  { x_mm = 89.000, y_mm = 56.000, layer = "F.Cu", via_id = "v_gnd_heater_pulldown_spine_tie" },
+]
+
+[[routes]]
+id = "i2c_sda_branch_to_mcu_pin"
+phase = "1_usb_and_boot"
+net = "I2C_SDA"
+width_mm = 0.200
+intent = "Reviewed SDA branch from the existing pullup/header seed branch to the ESP32-S3 pad, starting east of the R40 +3V3 pad."
+points = [
+  { x_mm = 76.000, y_mm = 21.000, layer = "F.Cu", anchor = "existing I2C_SDA header/test branch" },
+  { x_mm = 77.000, y_mm = 21.000, layer = "F.Cu" },
+  { x_mm = 77.000, y_mm = 10.320, layer = "F.Cu" },
+  { x_mm = 69.900, y_mm = 10.320, layer = "F.Cu", anchor = "U1:39" },
+]
+
+[[routes]]
+id = "gnd_usb_cc_to_esd_return_bcu"
+phase = "1_usb_and_boot"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed bottom-layer GND hop from the CC2 pull-down return into the USB ESD/bulk-capacitor return track."
+points = [
+  { x_mm = 18.000, y_mm = 9.500, layer = "F.Cu", anchor = "R2:2 return branch" },
+  { x_mm = 16.500, y_mm = 9.500, layer = "F.Cu" },
+  { x_mm = 16.500, y_mm = 9.500, layer = "B.Cu", via_id = "v_gnd_usb_cc_return_escape" },
+  { x_mm = 24.000, y_mm = 11.000, layer = "B.Cu" },
+  { x_mm = 24.000, y_mm = 11.000, layer = "F.Cu", via_id = "v_gnd_usb_esd_return_tie" },
+]
+
+[[routes]]
+id = "vin_protected_tp_to_cutoff_loop_bcu"
+phase = "3_heater_power"
+net = "VIN_PROTECTED"
+width_mm = 1.500
+intent = "Reviewed protected VIN branch from the test point to the external cutoff-loop input pad using B.Cu to avoid the +5V top trace."
+points = [
+  { x_mm = 114.000, y_mm = 28.000, layer = "F.Cu", anchor = "TP_VIN_PROT:1" },
+  { x_mm = 112.000, y_mm = 28.000, layer = "F.Cu" },
+  { x_mm = 112.000, y_mm = 28.000, layer = "B.Cu", via_id = "v_vin_protected_cutoff_escape" },
+  { x_mm = 112.000, y_mm = 42.000, layer = "B.Cu", anchor = "J24:1" },
 ]
 
 [[segments]]
