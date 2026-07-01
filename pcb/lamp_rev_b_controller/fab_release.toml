@@ -30,11 +30,11 @@ route_report = "drc.json"
 machine_side = "top"
 manual_part_ids = [
   "dc_input_terminal",
-  "buck_module_header",
+  "five_v_buck_module",
   "thermistor_headers",
   "heater_mosfets",
   "heater_output_terminals",
-  "led_driver_header",
+  "led_driver_module",
   "led_output_terminal",
   "led_sense_header",
   "opt_sync_header",
@@ -45,11 +45,24 @@ manual_part_ids = [
   "i2c_exp_header",
   "analog_opt_header",
 ]
+no_substitution_part_ids = [
+  "five_v_buck_module",
+  "three_v_three_regulator",
+  "three_v_three_inductor",
+  "led_driver_module",
+  "led_dim_and_gate",
+  "led_current_sense_amp",
+  "led_current_shunt",
+]
+dnp_alternates = [
+  "Mean Well LDD-1000H C17529736 is a thermal-validation alternate only and is DNP for the first release population.",
+  "CUI P7812-500R C6351743 24 V VDRV regulator path is DNP unless a 24 V heater population is explicitly approved.",
+]
 
 [release_blockers]
 items = [
   "KiCad schematic is an architecture shell, not full ERC-clean schematic capture.",
-  "Materialized PCB is placement/test-pad source seed; routing_seed is intentionally empty.",
-  "Integrated buck regulator and constant-current LED driver are module/header placeholders.",
+  "Materialized PCB is placement/test-pad source seed; routing_seed remains incomplete for release.",
+  "Selected P7805/AP63203/LDD-700H hardware is represented, but final routing and schematic capture are not complete.",
   "Camera connector family remains optional/debug until camera module is selected.",
 ]

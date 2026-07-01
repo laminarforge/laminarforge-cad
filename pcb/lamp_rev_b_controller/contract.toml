@@ -13,6 +13,10 @@ source_artifacts = [
   "A-5F5799DF",
   "A-6804F5CC",
   "A-528A0BE2",
+  "A-DDD3B7FB",
+  "A-E46A0558",
+  "A-68A6AF42",
+  "A-D1FEBE37",
 ]
 
 [board]
@@ -100,7 +104,7 @@ deliverable = "USB-C UFP/device path with CC pull-downs, ESD, D+/D-, VBUS sense,
 name = "power_entry"
 status = "required"
 owner = "schematic"
-deliverable = "External 12/24 V input connector, PTC/fuse footprint, TVS footprint, protected VIN, 5 V buck/module option, 3.3 V regulator, injection jumpers."
+deliverable = "External 12 V default input connector, PTC/fuse footprint, TVS footprint, protected VIN, P7805-2000-S 5 V module, AP63203WU-7 3.3 V buck, and 24 V VDRV population explicitly DNP unless regulated."
 
 [[modules]]
 name = "heater_drive"
@@ -118,7 +122,7 @@ deliverable = "ADS1115 + CD74HC4051 thermal front end with eight 10K NTC channel
 name = "optics_control"
 status = "required"
 owner = "schematic"
-deliverable = "Constant-current LED driver control/header, LED output connector, LED current/thermal sense, external camera sync, optional SPI/FIFO camera connector."
+deliverable = "Mean Well LDD-700H constant-current LED driver module, SN74LVC1G08 DIM gating, INA180 current telemetry, LED output connector, LED thermal sense, external camera sync, optional SPI/FIFO camera connector."
 
 [[modules]]
 name = "interlocks"
@@ -170,21 +174,21 @@ must_have_testpoint = true
 name = "VDRV"
 nominal_voltage_v = 12.0
 max_current_ma = 100
-source = "VIN_12_24 in 12 V build or regulated driver rail in 24 V build"
+source = "12 V-only driver rail; direct VIN path is DNP for 24 V unless optional P7812-500R or approved 12 V regulator is populated"
 must_have_testpoint = true
 
 [[rails]]
 name = "+5V"
 nominal_voltage_v = 5.0
 max_current_ma = 2000
-source = "buck_or_debug_injection_from_protected_vin"
+source = "P7805-2000-S from VIN_PROTECTED"
 must_have_testpoint = true
 
 [[rails]]
 name = "+3V3"
 nominal_voltage_v = 3.3
 max_current_ma = 800
-source = "logic_regulator_from_5v"
+source = "AP63203WU-7 fixed buck from +5V"
 must_have_testpoint = true
 
 [[rails]]
@@ -247,6 +251,18 @@ name = "+3V3"
 class = "Power"
 min_track_width_mm = 0.30
 must_have_testpoint = true
+
+[[nets]]
+name = "3V3_SW"
+class = "Power"
+min_track_width_mm = 0.40
+must_have_testpoint = false
+
+[[nets]]
+name = "3V3_BST"
+class = "Power"
+min_track_width_mm = 0.20
+must_have_testpoint = false
 
 [[nets]]
 name = "+3V3_ANA"
@@ -483,6 +499,18 @@ min_track_width_mm = 0.25
 must_have_testpoint = true
 
 [[nets]]
+name = "LED_DIM_GATE"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
+name = "LED_DIM_DRIVE"
+class = "Digital"
+min_track_width_mm = 0.20
+must_have_testpoint = false
+
+[[nets]]
 name = "LED_FAULT_N"
 class = "Digital"
 min_track_width_mm = 0.20
@@ -499,6 +527,12 @@ name = "LED_SUPPLY"
 class = "Power"
 min_track_width_mm = 1.00
 must_have_testpoint = true
+
+[[nets]]
+name = "LED_DRV_PLUS"
+class = "Heater"
+min_track_width_mm = 1.00
+must_have_testpoint = false
 
 [[nets]]
 name = "LED_PLUS"

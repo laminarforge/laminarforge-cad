@@ -19,7 +19,7 @@ required_nets = ["+3V3", "GND", "USB_DP", "USB_DN", "USB_CC1", "USB_CC2", "VBUS"
 name = "power_entry"
 title = "External Power / Rails"
 modules = ["power_entry"]
-required_nets = ["VIN_12_24", "VIN_PROTECTED", "VIN_HEATER", "VDRV", "+5V", "+3V3", "+3V3_ANA", "GND"]
+required_nets = ["VIN_12_24", "VIN_PROTECTED", "VIN_HEATER", "VDRV", "+5V", "+3V3", "+3V3_ANA", "3V3_SW", "3V3_BST", "GND"]
 
 [[blocks]]
 name = "heater_drive"
@@ -37,7 +37,7 @@ required_nets = ["+3V3_ANA", "+3V3", "I2C_SDA", "I2C_SCL", "THERM_MUX_S0", "THER
 name = "optics_camera"
 title = "Optics / Camera / Sync"
 modules = ["optics_control"]
-required_nets = ["LED_EXC_PWM", "LED_EXC_EN", "LED_FAULT_N", "LED_CURRENT_SENSE", "LED_SUPPLY", "LED_PLUS", "LED_MINUS", "LED_SYNC_OUT", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N", "CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "I2C_SDA", "I2C_SCL", "+3V3", "GND"]
+required_nets = ["LED_EXC_PWM", "LED_EXC_EN", "LED_DIM_GATE", "LED_DIM_DRIVE", "LED_FAULT_N", "LED_CURRENT_SENSE", "LED_SUPPLY", "LED_DRV_PLUS", "LED_PLUS", "LED_MINUS", "LED_SYNC_OUT", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N", "CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "I2C_SDA", "I2C_SCL", "+3V3", "GND"]
 
 [[blocks]]
 name = "interlocks_and_expansion"
@@ -142,40 +142,112 @@ nets = ["VIN_PROTECTED", "GND"]
 verification = "Select actual TVS voltage for 12 V or 24 V build before fab release."
 
 [[selected_parts]]
-id = "buck_module_header"
+id = "five_v_buck_module"
 module = "power_entry"
 quantity = 1
-reference_prefix = "J"
-value = "5V buck module / injection header"
-symbol = "HEADER_1X04"
-footprint = "lcsc:PINHEADER_1X04_2.54MM"
-lcsc_part = "MANUAL"
+reference_prefix = "U"
+value = "CUI/Bel P7805-2000-S 5V 2A 8-36V buck module; hand-place no-substitution"
+symbol = "P7805-2000-S"
+footprint = "lcsc:P78-2000-S_SIP3"
+lcsc_part = "C2848816"
 nets = ["VIN_PROTECTED", "+5V", "GND"]
-verification = "Module-friendly first article; exact integrated buck is a fab-release gap."
+verification = "DigiKey 11569191. Manual/THT placement for first articles; do not substitute lower input-voltage or lower-current modules."
 
 [[selected_parts]]
 id = "three_v_three_regulator"
 module = "power_entry"
 quantity = 1
 reference_prefix = "U"
-value = "AMS1117-3.3"
-symbol = "AMS1117-3.3"
-footprint = "lcsc:SOT-223"
-lcsc_part = "C6186"
-nets = ["+5V", "+3V3", "GND"]
-verification = "Prototype regulator path; thermal review before Wi-Fi-heavy operation."
+value = "Diodes AP63203WU-7 fixed 3.3V 2A buck"
+symbol = "AP63203WU-7"
+footprint = "lcsc:TSOT26_AP63203WU"
+lcsc_part = "C780769"
+nets = ["+5V", "+3V3", "3V3_SW", "3V3_BST", "GND"]
+verification = "DigiKey 9858426. Fixed-output AP63203WU-7 from +5V; FB tied to +3V3 and EN tied to +5V."
 
 [[selected_parts]]
-id = "regulator_bulk_caps"
+id = "three_v_three_inductor"
 module = "power_entry"
-quantity = 6
+quantity = 1
+reference_prefix = "L"
+value = "Wurth 74439346068 6.8uH shielded inductor"
+symbol = "74439346068"
+footprint = "lcsc:IND_74439346068"
+lcsc_part = "C2041388"
+nets = ["3V3_SW", "+3V3"]
+verification = "No low-current inductor substitution; selected for AP63203 2A rail margin."
+
+[[selected_parts]]
+id = "three_v_three_bootstrap_cap"
+module = "power_entry"
+quantity = 1
 reference_prefix = "C"
-value = "22uF"
+value = "100nF bootstrap"
+symbol = "CC0603KRX7R9BB104"
+footprint = "lcsc:C0603"
+lcsc_part = "C14663"
+nets = ["3V3_BST", "3V3_SW"]
+verification = "Place directly between AP63203 BST and SW pins."
+
+[[selected_parts]]
+id = "vin_buck_input_cap_50v"
+module = "power_entry"
+quantity = 1
+reference_prefix = "C"
+value = "22uF 50V VIN buck input"
+symbol = "CL31A226KAHNNNE"
+footprint = "lcsc:C1206"
+lcsc_part = "source 50V X7R before 24V population"
+nets = ["VIN_PROTECTED", "GND"]
+verification = "Voltage rating must be >=50V for any 24V input population; existing 25V MLCC is not acceptable on VIN."
+
+[[selected_parts]]
+id = "five_v_buck_output_cap"
+module = "power_entry"
+quantity = 1
+reference_prefix = "C"
+value = "22uF >=10V +5V buck output"
 symbol = "CL31A226KAHNNNE"
 footprint = "lcsc:C1206"
 lcsc_part = "C5672"
-nets = ["VIN_12_24", "VIN_PROTECTED", "+5V", "+3V3", "+3V3_ANA", "GND"]
-verification = "Rail entry and regulator bulk capacitance."
+nets = ["+5V", "GND"]
+verification = "Local P7805 output capacitance."
+
+[[selected_parts]]
+id = "three_v_three_input_cap"
+module = "power_entry"
+quantity = 1
+reference_prefix = "C"
+value = "22uF AP63203 input"
+symbol = "CL31A226KAHNNNE"
+footprint = "lcsc:C1206"
+lcsc_part = "C5672"
+nets = ["+5V", "GND"]
+verification = "Local AP63203 VIN decoupling from +5V."
+
+[[selected_parts]]
+id = "three_v_three_output_caps"
+module = "power_entry"
+quantity = 2
+reference_prefix = "C"
+value = "22uF AP63203 output"
+symbol = "CL31A226KAHNNNE"
+footprint = "lcsc:C1206"
+lcsc_part = "C5672"
+nets = ["+3V3", "GND"]
+verification = "Two output ceramics close to the inductor/AP63203 output node."
+
+[[selected_parts]]
+id = "rail_bulk_caps"
+module = "power_entry"
+quantity = 3
+reference_prefix = "C"
+value = "22uF rail bulk"
+symbol = "CL31A226KAHNNNE"
+footprint = "lcsc:C1206"
+lcsc_part = "C5672"
+nets = ["VBUS", "VIN_HEATER", "+3V3_ANA", "GND"]
+verification = "VBUS, heater-domain, and filtered analog rail bulk capacitance."
 
 [[selected_parts]]
 id = "adc"
@@ -310,16 +382,100 @@ nets = ["HEATER0_LOW", "HEATER1_LOW", "GND", "HEATER_SUPPLY_SENSE"]
 verification = "Optional Kelvin sense placeholder; not populated unless current range is confirmed."
 
 [[selected_parts]]
-id = "led_driver_header"
+id = "led_supply_link"
 module = "optics_control"
 quantity = 1
-reference_prefix = "J"
-value = "LED driver module/control header"
-symbol = "HEADER_1X06"
-footprint = "lcsc:PINHEADER_1X06_2.54MM"
-lcsc_part = "MANUAL"
-nets = ["LED_SUPPLY", "LED_EXC_PWM", "LED_EXC_EN", "LED_FAULT_N", "LED_CURRENT_SENSE", "GND"]
-verification = "Module-friendly constant-current path until exact driver IC is selected."
+reference_prefix = "R"
+value = "0R LED_SUPPLY feed link from VIN_PROTECTED"
+symbol = "0805W8F1000T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17408"
+nets = ["VIN_PROTECTED", "LED_SUPPLY"]
+verification = "Population link for the LDD-H input rail; replace with rated protection if optical-head current or harness data require it."
+
+[[selected_parts]]
+id = "led_driver_module"
+module = "optics_control"
+quantity = 1
+reference_prefix = "U"
+value = "Mean Well LDD-700H 700mA CC buck LED driver; LDD-1000H C17529736 DNP thermal-validation alternate"
+symbol = "LDD-700H"
+footprint = "lcsc:MEANWELL_LDD-300-1000H_THT"
+lcsc_part = "C17537709"
+nets = ["LED_SUPPLY", "GND", "LED_DIM_DRIVE", "LED_DRV_PLUS", "LED_MINUS"]
+verification = "Manual/THT module, no substitution of current rating. LED remains external on heatsunk optical carrier via J15."
+
+[[selected_parts]]
+id = "led_dim_and_gate"
+module = "optics_control"
+quantity = 1
+reference_prefix = "U"
+value = "SN74LVC1G08DBVR LED_EXC_PWM AND LED_EXC_EN"
+symbol = "SN74LVC1G08DBVR"
+footprint = "lcsc:SOT-23-5"
+lcsc_part = "C7666"
+nets = ["+3V3", "GND", "LED_EXC_PWM", "LED_EXC_EN", "LED_DIM_GATE"]
+verification = "3.3V AND gate drives LDD PWM DIM only when firmware PWM and hardware enable are both true."
+
+[[selected_parts]]
+id = "led_dim_series_resistor"
+module = "optics_control"
+quantity = 1
+reference_prefix = "R"
+value = "100R LED DIM series"
+symbol = "0805W8F1000T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17408"
+nets = ["LED_DIM_GATE", "LED_DIM_DRIVE"]
+verification = "Small series resistor between logic gate output and LDD-H PWM DIM input."
+
+[[selected_parts]]
+id = "led_dim_pulldown"
+module = "optics_control"
+quantity = 1
+reference_prefix = "R"
+value = "100k LED DIM pulldown"
+symbol = "0805W8F1004T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17514"
+nets = ["LED_DIM_DRIVE", "GND"]
+verification = "Reset/default-off bias so LDD-H DIM is low unless explicitly driven."
+
+[[selected_parts]]
+id = "led_current_shunt"
+module = "optics_control"
+quantity = 1
+reference_prefix = "R"
+value = "0.1R 1% >=1W LED current shunt"
+symbol = "WSL2512R1000FEA"
+footprint = "lcsc:R2512"
+lcsc_part = "manual or assembler-sourced 2512 0.1R >=1W"
+nets = ["LED_DRV_PLUS", "LED_PLUS"]
+verification = "Series high-side output shunt between LDD +Vout and external LED_PLUS; Kelvin routing required in final route."
+
+[[selected_parts]]
+id = "led_current_sense_amp"
+module = "optics_control"
+quantity = 1
+reference_prefix = "U"
+value = "INA180A1IDBVR gain 20 LED current sense"
+symbol = "INA180A1IDBVR"
+footprint = "lcsc:SOT-23-5"
+lcsc_part = "C122228"
+nets = ["+3V3", "GND", "LED_DRV_PLUS", "LED_PLUS", "LED_CURRENT_SENSE"]
+verification = "0.7A through 0.1R gives about 1.4V on LED_CURRENT_SENSE; common-mode valid for low-voltage external LED head."
+
+[[selected_parts]]
+id = "led_fault_pullup"
+module = "optics_control"
+quantity = 1
+reference_prefix = "R"
+value = "10k LED_FAULT_N pull-up"
+symbol = "0805W8F1002T5E"
+footprint = "lcsc:R0805"
+lcsc_part = "C17414"
+nets = ["LED_FAULT_N", "+3V3"]
+verification = "LDD-H has no native fault pin; firmware must treat this as pulled-up/no-driver-fault-populated unless future hardware pulls it low."
 
 [[selected_parts]]
 id = "led_output_terminal"
@@ -495,19 +651,17 @@ lcsc_part = "external"
 role = "thermal coupon heater"
 installation = "Off-board only; connectorized through heater output terminal."
 
-[[selection_gaps]]
+[[resolved_selections]]
 id = "integrated_buck_regulator"
 module = "power_entry"
-blocks_fabrication = true
-reason = "First source package uses a buck-module/header footprint so bring-up can proceed without hardcoding a regulator layout before VIN and load are verified."
-resolve_with = "Select exact >=36 V input buck regulator/module population, layout requirements, BOM source, and thermal margin before fab release."
+resolved_by = "P7805-2000-S for +5V and AP63203WU-7 with 74439346068 for +3V3"
+source_artifacts = ["A-E46A0558", "A-DDD3B7FB"]
 
-[[selection_gaps]]
+[[resolved_selections]]
 id = "constant_current_led_driver_ic"
 module = "optics_control"
-blocks_fabrication = true
-reason = "Rev B optics lane requires controlled constant current, but LED module/current/heatsink are not frozen."
-resolve_with = "Choose exact 470-490 nm LED driver or driver module, current set range, dimming method, and connector before order release."
+resolved_by = "Mean Well LDD-700H on-controller driver with LDD-1000H DNP alternate, SN74LVC1G08DBVR DIM gating, and INA180 current telemetry"
+source_artifacts = ["A-68A6AF42", "A-DDD3B7FB"]
 
 [[selection_gaps]]
 id = "camera_module_connector_family"

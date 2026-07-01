@@ -51,3 +51,19 @@ points = [
   { x_mm = 117.0, y_mm = 86.0 },
   { x_mm = 84.0, y_mm = 86.0 },
 ]
+
+[[zones]]
+name = "led_supply_area"
+net = "LED_SUPPLY"
+layer = "F.Cu"
+clearance_mm = 0.30
+min_thickness_mm = 0.30
+thermal_gap_mm = 0.45
+thermal_bridge_width_mm = 0.50
+remove_islands = true
+points = [
+  { x_mm = 72.0, y_mm = 36.0 },
+  { x_mm = 83.0, y_mm = 36.0 },
+  { x_mm = 83.0, y_mm = 66.0 },
+  { x_mm = 72.0, y_mm = 66.0 },
+]

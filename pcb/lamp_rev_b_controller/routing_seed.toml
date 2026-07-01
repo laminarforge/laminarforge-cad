@@ -4,6 +4,7 @@ ticket = "T-4C206871"
 revision = "Rev B prototype"
 source_stage = "unrouted_seed"
 
-# Intentionally empty. This pass materializes placement, net assignments,
-# copper zones, and test pads but does not claim a routed/fab-release board.
+# Still intentionally empty for release: this pass materializes selected
+# P7805/AP63203/LDD-700H hardware, net assignments, copper zones, and test
+# pads, but does not claim a routed/fab-release board.
 segments = []

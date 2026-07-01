@@ -42,7 +42,10 @@ pwm = "LED_EXC_PWM"
 enable = "LED_EXC_EN"
 current_sense = "LED_CURRENT_SENSE"
 sync = "LED_SYNC_OUT"
-fault_policy = "forced off on boot, fault, lid open, cartridge missing, and camera error"
+dim_gate = "SN74LVC1G08 gates LED_EXC_PWM AND LED_EXC_EN before LDD-700H PWM DIM"
+current_scale = "INA180A1 gain 20 across 0.1 ohm shunt: about 1.4 V at 700 mA"
+fault_input = "LED_FAULT_N is pulled up only; LDD-H has no native fault output in this population"
+fault_policy = "forced off on boot, fault, lid open, cartridge missing, camera error, invalid current-sense reading, and LED heatsink over-temperature"
 
 [[peripheral]]
 name = "SpiCameraFrameSource"

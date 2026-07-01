@@ -16,7 +16,7 @@ scope = "USB D+/D-, CC pull-downs, ESD, ESP_EN, ESP_GPIO0_BOOT, UART header."
 
 [[phase]]
 name = "2_power_tree"
-scope = "VIN input, PTC/TVS, +5V buck/injection, +3V3 regulator, +3V3_ANA filtering, rail test pads."
+scope = "VIN input, PTC/TVS, P7805-2000-S +5V module, AP63203WU-7 switch node/bootstrap/inductor/output caps, +3V3_ANA filtering, rail test pads, and 12 V-only VDRV."
 
 [[phase]]
 name = "3_heater_power"
@@ -28,4 +28,4 @@ scope = "ADS1115, CD74HC4051, eight thermistor channels, quiet analog return, I2
 
 [[phase]]
 name = "5_optics_camera_interlocks"
-scope = "LED driver control, LED output, camera sync/SPI header, lid/cartridge/cutoff, fan and analog optical diagnostic."
+scope = "LDD-700H LED driver input/output, SN74LVC1G08 DIM gate, INA180/shunt current telemetry, LED_FAULT_N pull-up, external LED output pair, camera sync/SPI header, lid/cartridge/cutoff, fan and analog optical diagnostic."

@@ -168,11 +168,11 @@ side = "top"
 locked = true
 
 [[placements]]
-reference = "J3"
-part_id = "buck_module_header"
+reference = "U7"
+part_id = "five_v_buck_module"
 zone = "low_voltage_power"
-x_mm = 105.0
-y_mm = 23.0
+x_mm = 106.5
+y_mm = 24.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -181,15 +181,15 @@ locked = true
 reference = "U3"
 part_id = "three_v_three_regulator"
 zone = "low_voltage_power"
-x_mm = 88.0
-y_mm = 25.0
+x_mm = 84.5
+y_mm = 24.5
 rotation_deg = 0.0
 side = "top"
 locked = true
 
 [[placements]]
 reference = "C1"
-part_id = "regulator_bulk_caps"
+part_id = "rail_bulk_caps"
 zone = "usb_debug"
 x_mm = 23.0
 y_mm = 15.0
@@ -199,37 +199,37 @@ locked = true
 
 [[placements]]
 reference = "C2"
-part_id = "regulator_bulk_caps"
+part_id = "five_v_buck_output_cap"
 zone = "low_voltage_power"
-x_mm = 96.0
-y_mm = 23.0
+x_mm = 98.0
+y_mm = 24.0
 rotation_deg = 0.0
 side = "top"
 locked = true
 
 [[placements]]
 reference = "C3"
-part_id = "regulator_bulk_caps"
+part_id = "three_v_three_input_cap"
 zone = "low_voltage_power"
-x_mm = 84.0
-y_mm = 18.0
+x_mm = 82.5
+y_mm = 21.0
 rotation_deg = 0.0
 side = "top"
 locked = true
 
 [[placements]]
 reference = "C4"
-part_id = "regulator_bulk_caps"
+part_id = "vin_buck_input_cap_50v"
 zone = "low_voltage_power"
 x_mm = 100.0
-y_mm = 15.0
+y_mm = 15.5
 rotation_deg = 0.0
 side = "top"
 locked = true
 
 [[placements]]
 reference = "C5"
-part_id = "regulator_bulk_caps"
+part_id = "rail_bulk_caps"
 zone = "thermistor_analog"
 x_mm = 41.0
 y_mm = 37.0
@@ -239,10 +239,50 @@ locked = true
 
 [[placements]]
 reference = "C6"
-part_id = "regulator_bulk_caps"
+part_id = "rail_bulk_caps"
 zone = "heater_power"
 x_mm = 91.0
 y_mm = 37.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C7"
+part_id = "three_v_three_output_caps"
+zone = "low_voltage_power"
+x_mm = 88.0
+y_mm = 31.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C8"
+part_id = "three_v_three_output_caps"
+zone = "low_voltage_power"
+x_mm = 94.0
+y_mm = 31.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "C9"
+part_id = "three_v_three_bootstrap_cap"
+zone = "low_voltage_power"
+x_mm = 88.0
+y_mm = 20.5
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "L1"
+part_id = "three_v_three_inductor"
+zone = "low_voltage_power"
+x_mm = 91.0
+y_mm = 26.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -628,12 +668,82 @@ side = "top"
 locked = true
 
 [[placements]]
-reference = "J14"
-part_id = "led_driver_header"
+reference = "U8"
+part_id = "led_driver_module"
 zone = "optical_interface"
-x_mm = 49.0
+x_mm = 66.0
+y_mm = 52.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U9"
+part_id = "led_dim_and_gate"
+zone = "optical_interface"
+x_mm = 47.0
 y_mm = 43.0
 rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "U10"
+part_id = "led_current_sense_amp"
+zone = "optical_interface"
+x_mm = 47.0
+y_mm = 58.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R50"
+part_id = "led_dim_series_resistor"
+zone = "optical_interface"
+x_mm = 47.0
+y_mm = 48.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R51"
+part_id = "led_dim_pulldown"
+zone = "optical_interface"
+x_mm = 47.0
+y_mm = 54.0
+rotation_deg = 90.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R52"
+part_id = "led_supply_link"
+zone = "optical_interface"
+x_mm = 77.0
+y_mm = 34.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R53"
+part_id = "led_current_shunt"
+zone = "optical_interface"
+x_mm = 100.0
+y_mm = 39.0
+rotation_deg = 0.0
+side = "top"
+locked = true
+
+[[placements]]
+reference = "R54"
+part_id = "led_fault_pullup"
+zone = "optical_interface"
+x_mm = 47.0
+y_mm = 64.0
+rotation_deg = 90.0
 side = "top"
 locked = true
 
@@ -641,8 +751,8 @@ locked = true
 reference = "J15"
 part_id = "led_output_terminal"
 zone = "optical_interface"
-x_mm = 76.0
-y_mm = 43.0
+x_mm = 94.0
+y_mm = 33.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -651,8 +761,8 @@ locked = true
 reference = "J16"
 part_id = "led_sense_header"
 zone = "optical_interface"
-x_mm = 65.0
-y_mm = 43.0
+x_mm = 80.0
+y_mm = 70.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -662,7 +772,7 @@ reference = "J17"
 part_id = "opt_sync_header"
 zone = "optical_interface"
 x_mm = 49.0
-y_mm = 63.0
+y_mm = 73.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -672,7 +782,7 @@ reference = "J18"
 part_id = "camera_spi_header"
 zone = "optical_interface"
 x_mm = 64.0
-y_mm = 72.0
+y_mm = 79.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -682,7 +792,7 @@ reference = "J19"
 part_id = "interlock_header"
 zone = "optical_interface"
 x_mm = 49.0
-y_mm = 82.0
+y_mm = 84.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -691,8 +801,8 @@ locked = true
 reference = "J20"
 part_id = "fan_header"
 zone = "optical_interface"
-x_mm = 67.0
-y_mm = 82.0
+x_mm = 70.0
+y_mm = 84.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -701,9 +811,9 @@ locked = true
 reference = "J23"
 part_id = "analog_opt_header"
 zone = "optical_interface"
-x_mm = 49.0
-y_mm = 54.0
-rotation_deg = 0.0
+x_mm = 34.0
+y_mm = 82.0
+rotation_deg = 90.0
 side = "top"
 locked = true
 
@@ -750,9 +860,9 @@ locked = true
 [[placements]]
 reference = "R44"
 part_id = "logic_pullups"
-zone = "optical_interface"
-x_mm = 74.0
-y_mm = 54.0
+zone = "mcu_antenna"
+x_mm = 43.0
+y_mm = 25.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -760,9 +870,9 @@ locked = true
 [[placements]]
 reference = "R45"
 part_id = "logic_pullups"
-zone = "optical_interface"
-x_mm = 74.0
-y_mm = 58.0
+zone = "mcu_antenna"
+x_mm = 43.0
+y_mm = 28.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -770,9 +880,9 @@ locked = true
 [[placements]]
 reference = "R46"
 part_id = "logic_pullups"
-zone = "optical_interface"
-x_mm = 74.0
-y_mm = 62.0
+zone = "mcu_antenna"
+x_mm = 43.0
+y_mm = 31.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -780,9 +890,9 @@ locked = true
 [[placements]]
 reference = "R47"
 part_id = "logic_pullups"
-zone = "optical_interface"
-x_mm = 74.0
-y_mm = 66.0
+zone = "mcu_antenna"
+x_mm = 43.0
+y_mm = 34.0
 rotation_deg = 0.0
 side = "top"
 locked = true
@@ -978,15 +1088,15 @@ side = "top"
 [[test_points]]
 name = "TP_CAM_RESET"
 net = "CAM_RESET_N"
-x_mm = 82.0
-y_mm = 66.0
+x_mm = 94.0
+y_mm = 68.0
 side = "top"
 
 [[test_points]]
 name = "TP_CAM_PWDN"
 net = "CAM_PWDN_N"
-x_mm = 82.0
-y_mm = 69.0
+x_mm = 94.0
+y_mm = 72.0
 side = "top"
 
 [[test_points]]
@@ -1118,36 +1228,36 @@ side = "top"
 [[test_points]]
 name = "TP_LED_PWM"
 net = "LED_EXC_PWM"
-x_mm = 55.0
-y_mm = 50.0
+x_mm = 41.0
+y_mm = 45.0
 side = "top"
 
 [[test_points]]
 name = "TP_LED_EN"
 net = "LED_EXC_EN"
-x_mm = 59.0
-y_mm = 50.0
+x_mm = 41.0
+y_mm = 49.0
 side = "top"
 
 [[test_points]]
 name = "TP_LED_SENSE"
 net = "LED_CURRENT_SENSE"
-x_mm = 63.0
-y_mm = 50.0
+x_mm = 41.0
+y_mm = 58.0
 side = "top"
 
 [[test_points]]
 name = "TP_LED_SUPPLY"
 net = "LED_SUPPLY"
-x_mm = 55.0
-y_mm = 47.0
+x_mm = 72.0
+y_mm = 34.0
 side = "top"
 
 [[test_points]]
 name = "TP_FRAME_TRIG"
 net = "FRAME_TRIG_OUT"
-x_mm = 71.0
-y_mm = 64.0
+x_mm = 47.0
+y_mm = 69.0
 side = "top"
 
 [[test_points]]
@@ -1160,8 +1270,8 @@ side = "top"
 [[test_points]]
 name = "TP_LED_SYNC"
 net = "LED_SYNC_OUT"
-x_mm = 75.0
-y_mm = 64.0
+x_mm = 51.0
+y_mm = 69.0
 side = "top"
 
 [[test_points]]
@@ -1230,6 +1340,6 @@ side = "top"
 [[test_points]]
 name = "TP_AUX_ANALOG"
 net = "AUX_ANALOG_IN"
-x_mm = 46.0
+x_mm = 35.0
 y_mm = 60.0
 side = "top"

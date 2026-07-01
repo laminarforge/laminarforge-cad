@@ -179,22 +179,23 @@ notes = "VIN TVS clamp footprint."
 "2" = "GND"
 
 [[assignments]]
-reference = "J3"
-notes = "5 V buck module or bench injection header."
+reference = "U7"
+notes = "CUI/Bel P7805-2000-S 5 V / 2 A buck module."
 [assignments.pins]
 "1" = "VIN_PROTECTED"
 "2" = "GND"
 "3" = "+5V"
-"4" = "GND"
 
 [[assignments]]
 reference = "U3"
-notes = "AMS1117-3.3 logic regulator."
+notes = "Diodes AP63203WU-7 fixed 3.3 V buck regulator."
 [assignments.pins]
-"1" = "GND"
-"2" = "+3V3"
-"3" = "+5V"
-"4" = "+3V3"
+"1" = "+3V3"
+"2" = "+5V"
+"3" = "GND"
+"4" = "+5V"
+"5" = "3V3_SW"
+"6" = "3V3_BST"
 
 [[assignments]]
 reference = "C1"
@@ -205,21 +206,21 @@ notes = "VBUS bulk."
 
 [[assignments]]
 reference = "C2"
-notes = "+5V bulk."
+notes = "P7805 +5V output capacitor."
 [assignments.pins]
 "1" = "+5V"
 "2" = "GND"
 
 [[assignments]]
 reference = "C3"
-notes = "+3V3 bulk."
+notes = "AP63203 +5V input capacitor."
 [assignments.pins]
-"1" = "+3V3"
+"1" = "+5V"
 "2" = "GND"
 
 [[assignments]]
 reference = "C4"
-notes = "Protected VIN bulk."
+notes = "P7805 protected-VIN input capacitor, 50 V-rated for 24 V population."
 [assignments.pins]
 "1" = "VIN_PROTECTED"
 "2" = "GND"
@@ -237,6 +238,34 @@ notes = "Heater rail bulk."
 [assignments.pins]
 "1" = "VIN_HEATER"
 "2" = "GND"
+
+[[assignments]]
+reference = "C7"
+notes = "AP63203 first +3V3 output capacitor."
+[assignments.pins]
+"1" = "+3V3"
+"2" = "GND"
+
+[[assignments]]
+reference = "C8"
+notes = "AP63203 second +3V3 output capacitor."
+[assignments.pins]
+"1" = "+3V3"
+"2" = "GND"
+
+[[assignments]]
+reference = "C9"
+notes = "AP63203 bootstrap capacitor."
+[assignments.pins]
+"1" = "3V3_BST"
+"2" = "3V3_SW"
+
+[[assignments]]
+reference = "L1"
+notes = "Wurth 74439346068 AP63203 buck inductor."
+[assignments.pins]
+"1" = "3V3_SW"
+"2" = "+3V3"
 
 [[assignments]]
 reference = "U4"
@@ -366,15 +395,73 @@ notes = "HEATER1 optional current shunt."
 "2" = "GND"
 
 [[assignments]]
-reference = "J14"
-notes = "LED driver module/control header."
+reference = "U8"
+notes = "Mean Well LDD-700H LED driver module. LDD-H -Vin/GND and -Vout/LED_MINUS remain separate pads/nets except at intended system return."
 [assignments.pins]
-"1" = "LED_SUPPLY"
-"2" = "LED_EXC_PWM"
+"1" = "GND"
+"2" = "GND"
+"11" = "LED_MINUS"
+"12" = "LED_MINUS"
+"13" = "LED_DRV_PLUS"
+"14" = "LED_DRV_PLUS"
+"22" = "LED_DIM_DRIVE"
+"23" = "LED_SUPPLY"
+"24" = "LED_SUPPLY"
+
+[[assignments]]
+reference = "U9"
+notes = "SN74LVC1G08DBVR gates LED_EXC_PWM and LED_EXC_EN."
+[assignments.pins]
+"1" = "LED_EXC_PWM"
+"2" = "GND"
 "3" = "LED_EXC_EN"
-"4" = "LED_FAULT_N"
-"5" = "LED_CURRENT_SENSE"
-"6" = "GND"
+"4" = "LED_DIM_GATE"
+"5" = "+3V3"
+
+[[assignments]]
+reference = "U10"
+notes = "INA180A1IDBVR LED current telemetry across high-side output shunt."
+[assignments.pins]
+"1" = "LED_DRV_PLUS"
+"2" = "GND"
+"3" = "LED_PLUS"
+"4" = "LED_CURRENT_SENSE"
+"5" = "+3V3"
+
+[[assignments]]
+reference = "R50"
+notes = "LED DIM series resistor from AND gate to LDD DIM."
+[assignments.pins]
+"1" = "LED_DIM_GATE"
+"2" = "LED_DIM_DRIVE"
+
+[[assignments]]
+reference = "R51"
+notes = "LED DIM pulldown."
+[assignments.pins]
+"1" = "LED_DIM_DRIVE"
+"2" = "GND"
+
+[[assignments]]
+reference = "R52"
+notes = "LED_SUPPLY feed link from protected VIN."
+[assignments.pins]
+"1" = "VIN_PROTECTED"
+"2" = "LED_SUPPLY"
+
+[[assignments]]
+reference = "R53"
+notes = "0.1 ohm LED output current shunt."
+[assignments.pins]
+"1" = "LED_DRV_PLUS"
+"2" = "LED_PLUS"
+
+[[assignments]]
+reference = "R54"
+notes = "LED_FAULT_N pull-up because LDD-H has no native fault output."
+[assignments.pins]
+"1" = "LED_FAULT_N"
+"2" = "+3V3"
 
 [[assignments]]
 reference = "J15"

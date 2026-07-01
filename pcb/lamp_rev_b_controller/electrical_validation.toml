@@ -12,7 +12,7 @@ checks = ["VBUS current below 500 mA", "+3V3 present", "ESP32 enumerates or UART
 [[gate]]
 name = "external_power_rails"
 status = "required before load connection"
-checks = ["VIN_12_24 polarity", "VIN_PROTECTED after PTC/TVS", "+5V and +3V3 rail current", "+3V3_ANA noise check"]
+checks = ["VIN_12_24 polarity", "VIN_PROTECTED after PTC/TVS", "P7805-2000-S +5V no-load and loaded voltage/current", "AP63203WU-7 +3V3 ripple and thermal check at representative ESP32/camera-header load", "+3V3_ANA noise check", "confirm VDRV remains 12 V-only unless optional P7812-500R path is populated"]
 
 [[gate]]
 name = "heater_dummy_load"
@@ -27,7 +27,7 @@ checks = ["ADS1115 I2C at 0x48", "mux select lines settle", "10K resistor reads 
 [[gate]]
 name = "optics_driver_dummy_load"
 status = "required before optical head connection"
-checks = ["LED_EXC_EN default low", "constant-current driver/module current measured", "LED_SYNC_OUT timestamps match enable window", "lid/cartridge open disables excitation"]
+checks = ["LED_EXC_EN default low", "LED_EXC_PWM low or LED_EXC_EN low keeps SN74LVC1G08/LDD DIM off", "LDD-700H dummy-load current measured near 700 mA with external calibrated meter", "INA180 LED_CURRENT_SENSE reads about 1.4 V at 700 mA through 0.1 ohm shunt", "LED_FAULT_N is pulled up and not treated as a native LDD fault", "LED_SYNC_OUT timestamps match enable window", "lid/cartridge open disables excitation", "no exposed 470 nm emitter outside covered heatsunk optical head"]
 
 [[gate]]
 name = "camera_sync"

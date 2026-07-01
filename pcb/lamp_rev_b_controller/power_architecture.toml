@@ -5,13 +5,37 @@ revision = "Rev B prototype"
 source_artifact = "A-8633FB3D"
 
 [topology]
-input_mode = "external current-limited 12 V default, 24 V option only with rated population"
+input_mode = "external current-limited 12 V default; 24 V option remains blocked unless protection, MOSFETs, capacitors, connectors, and VDRV regulator population are rated"
 usb_role = "USB-C UFP/device only; never powers heater"
 heater_power_source = "VIN_HEATER through protection, cutoff loop, and low-side MOSFET channels"
-logic_power_source = "+5V buck/module or bench injection, then +3V3 regulator"
+logic_power_source = "P7805-2000-S from VIN_PROTECTED creates +5V, then AP63203WU-7 from +5V creates +3V3"
 analog_power_source = "filtered +3V3_ANA branch for ADS1115/mux/dividers"
-gate_driver_rail = "VDRV from 12 V build or derated auxiliary regulator in 24 V build"
+gate_driver_rail = "VDRV is 12 V-only in the first-article population; 24 V builds require DNP direct-VIN path and optional P7812-500R or equivalent approved 12 V regulator"
 usb_logic_bringup = "USB may power logic only through explicit debug jumper/power-mux option"
+
+[five_v_buck]
+mpn = "P7805-2000-S"
+manufacturer = "CUI/Bel Power"
+lcsc_part = "C2848816"
+digikey = "11569191"
+input = "VIN_PROTECTED, 8-36 V module rating"
+output = "+5V, 5 V / 2 A"
+assembly = "hand-place/manual THT module, no substitution for prototype release"
+
+[three_v_three_buck]
+mpn = "AP63203WU-7"
+manufacturer = "Diodes Incorporated"
+lcsc_part = "C780769"
+digikey = "9858426"
+input = "+5V"
+output = "+3V3, 3.3 V / 2 A capable against 800 mA board contract"
+inductor = "Wurth 74439346068, JLC C2041388, 6.8 uH shielded power inductor"
+support_passives = ["100 nF BST-SW bootstrap capacitor", "local +5V input capacitor", "two local +3V3 output capacitors"]
+
+[vdrv_population]
+default = "12 V-only direct driver rail population"
+twenty_four_v_rule = "Direct VIN-to-VDRV is DNP/blocked for 24 V input."
+optional_regulator = "CUI P7812-500R, JLC C6351743, DNP unless a 24 V heater population is explicitly approved."
 
 [[protection]]
 name = "input_fuse_ptc"
@@ -23,7 +47,7 @@ requirement = "Use polarized connector plus fuse for first bench build or source
 
 [[protection]]
 name = "tvs_bulk"
-requirement = "VIN TVS footprint and at least 100 uF bulk plus local ceramic decoupling near heater switching."
+requirement = "VIN TVS footprint and bulk plus local ceramic decoupling near heater switching; VIN-side ceramics must be rated for the selected 12 V or 24 V population."
 
 [[heater_channel]]
 name = "HEATER0"

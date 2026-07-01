@@ -41,13 +41,13 @@ Run through the LaminarForge MCP build tool:
 
 ## Current Release State
 
-This implementation pass creates a source package and fab preview, not an order-ready fab release.
+This implementation pass creates an updated source package and fab preview with the Rev B regulator and excitation-driver selections represented, not an order-ready fab release.
 
 Known release blockers:
 
 - The schematic is an architecture shell, not full ERC-clean schematic capture.
 - The PCB is a materialized placement/test-pad seed with copper zones and no routed signal/power completion.
-- The 5 V buck and constant-current LED driver are module/header placeholders until exact parts are selected.
+- The selected `P7805-2000-S`, `AP63203WU-7`, `74439346068`, `LDD-700H`, `SN74LVC1G08DBVR`, `INA180A1IDBVR`, and LED shunt path are represented, but the board is not routed to zero unconnected items.
 - The optional embedded camera connector remains SPI/FIFO-module oriented and debug-populated until a camera module is selected.
 
-Do not send this package to a PCBA vendor as a fabrication release until `lamp_rev_b_controller_route_report` shows zero physical DRC and zero real unconnected items, schematic ERC is complete, and the selection gaps in `parts.toml` are resolved or explicitly marked DNP/manual.
+Do not send this package to a PCBA vendor as a fabrication release until `lamp_rev_b_controller_route_report` shows zero physical DRC and zero real unconnected items, schematic ERC is complete on captured connectivity, and manual/DNP/no-substitution assembly notes are reviewed against the selected vendor.

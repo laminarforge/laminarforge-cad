@@ -6,6 +6,7 @@ use std::path::Path;
 
 const PARTS_PATH: &str = "pcb/lamp_rev_b_controller/parts.toml";
 const PLACEMENT_PATH: &str = "pcb/lamp_rev_b_controller/placement.toml";
+const FAB_CONFIG_PATH: &str = "pcb/lamp_rev_b_controller/fab_release.toml";
 const OUTPUT_DIR: &str = "pcb/lamp_rev_b_controller/fab";
 
 #[derive(Debug, Deserialize)]
@@ -37,23 +38,47 @@ struct Placement {
     side: String,
 }
 
+#[derive(Debug, Deserialize)]
+struct FabConfig {
+    assembly: AssemblyConfig,
+}
+
+#[derive(Debug, Default, Deserialize)]
+struct AssemblyConfig {
+    #[serde(default)]
+    manual_part_ids: BTreeSet<String>,
+    #[serde(default)]
+    no_substitution_part_ids: BTreeSet<String>,
+    #[serde(default)]
+    dnp_alternates: Vec<String>,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let root = std::env::current_dir()?;
     let parts = read_toml::<PartsManifest>(&root.join(PARTS_PATH))?;
     let placement = read_toml::<PlacementPlan>(&root.join(PLACEMENT_PATH))?;
-    validate(&parts, &placement)?;
+    let fab_config = read_toml::<FabConfig>(&root.join(FAB_CONFIG_PATH))?;
+    validate(&parts, &placement, &fab_config)?;
 
     let output_dir = root.join(OUTPUT_DIR);
     fs::create_dir_all(&output_dir)?;
-    write_bom(&parts, &placement, &output_dir.join("bom.csv"))?;
-    write_cpl(&placement, &output_dir.join("cpl.csv"))?;
+    write_bom(&parts, &placement, &fab_config, &output_dir.join("bom.csv"))?;
+    write_cpl(&parts, &placement, &fab_config, &output_dir.join("cpl.csv"))?;
 
     println!("Wrote LAMP Rev B controller fab preview:");
     println!("  {}/bom.csv", OUTPUT_DIR);
     println!("  {}/cpl.csv", OUTPUT_DIR);
     println!(
-        "Preview only: resolve release blockers, route, and pass ERC/DRC before order release."
+        "  manual/THT groups: {}",
+        fab_config.assembly.manual_part_ids.len()
     );
+    if !fab_config.assembly.dnp_alternates.is_empty() {
+        println!("  DNP alternates:");
+        for note in &fab_config.assembly.dnp_alternates {
+            println!("    - {note}");
+        }
+    }
+    println!("Preview only: complete routing and pass release ERC/DRC before order release.");
     Ok(())
 }
 
@@ -62,7 +87,11 @@ fn read_toml<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, Box<dyn Err
     Ok(toml::from_str(&content)?)
 }
 
-fn validate(parts: &PartsManifest, placement: &PlacementPlan) -> Result<(), Box<dyn Error>> {
+fn validate(
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    fab_config: &FabConfig,
+) -> Result<(), Box<dyn Error>> {
     let part_ids: BTreeSet<&str> = parts
         .selected_parts
         .iter()
@@ -106,6 +135,20 @@ fn validate(parts: &PartsManifest, placement: &PlacementPlan) -> Result<(), Box<
             ));
         }
     }
+    for manual_id in &fab_config.assembly.manual_part_ids {
+        if !part_ids.contains(manual_id.as_str()) {
+            errors.push(format!(
+                "manual assembly part id {manual_id} is not in selected_parts"
+            ));
+        }
+    }
+    for no_sub_id in &fab_config.assembly.no_substitution_part_ids {
+        if !part_ids.contains(no_sub_id.as_str()) {
+            errors.push(format!(
+                "no-substitution part id {no_sub_id} is not in selected_parts"
+            ));
+        }
+    }
 
     if errors.is_empty() {
         Ok(())
@@ -117,6 +160,7 @@ fn validate(parts: &PartsManifest, placement: &PlacementPlan) -> Result<(), Box<
 fn write_bom(
     parts: &PartsManifest,
     placement: &PlacementPlan,
+    fab_config: &FabConfig,
     path: &Path,
 ) -> Result<(), Box<dyn Error>> {
     let mut by_part: BTreeMap<&str, Vec<&Placement>> = BTreeMap::new();
@@ -125,7 +169,14 @@ fn write_bom(
     }
 
     let mut writer = csv::Writer::from_path(path)?;
-    writer.write_record(["Comment", "Designator", "Footprint", "LCSC Part #"])?;
+    writer.write_record([
+        "Comment",
+        "Designator",
+        "Footprint",
+        "LCSC Part #",
+        "Assembly",
+        "Notes",
+    ])?;
 
     for part in &parts.selected_parts {
         let mut placements = by_part
@@ -137,24 +188,63 @@ fn write_bom(
             .map(|item| item.reference.as_str())
             .collect::<Vec<_>>()
             .join(",");
+        let assembly = if fab_config.assembly.manual_part_ids.contains(&part.id) {
+            "Manual/THT"
+        } else {
+            "SMT"
+        };
+        let mut notes = Vec::new();
+        if fab_config
+            .assembly
+            .no_substitution_part_ids
+            .contains(&part.id)
+        {
+            notes.push("no substitution");
+        }
+        if fab_config.assembly.manual_part_ids.contains(&part.id) {
+            notes.push("hand-place or vendor-confirmed manual assembly");
+        }
         writer.write_record([
             part.value.as_str(),
             designators.as_str(),
             part.footprint.as_str(),
             part.lcsc_part.as_str(),
+            assembly,
+            notes.join("; ").as_str(),
         ])?;
     }
     writer.flush()?;
     Ok(())
 }
 
-fn write_cpl(placement: &PlacementPlan, path: &Path) -> Result<(), Box<dyn Error>> {
-    let mut placements = placement.placements.iter().collect::<Vec<_>>();
+fn write_cpl(
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    fab_config: &FabConfig,
+    path: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let part_by_id = parts
+        .selected_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
+    let mut placements = placement
+        .placements
+        .iter()
+        .filter(|item| !fab_config.assembly.manual_part_ids.contains(&item.part_id))
+        .collect::<Vec<_>>();
     placements.sort_by_key(|item| reference_order(&item.reference));
 
     let mut writer = csv::Writer::from_path(path)?;
     writer.write_record(["Designator", "Mid X", "Mid Y", "Layer", "Rotation"])?;
     for item in placements {
+        if !part_by_id.contains_key(item.part_id.as_str()) {
+            return Err(format!(
+                "placement {} references unknown part group {}",
+                item.reference, item.part_id
+            )
+            .into());
+        }
         writer.write_record([
             item.reference.as_str(),
             format!("{:.3}", item.x_mm).as_str(),

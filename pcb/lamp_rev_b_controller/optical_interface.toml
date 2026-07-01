@@ -12,12 +12,28 @@ optical_mechanics = "LED module, filter, lens, camera module, baffles, heatsink,
 
 [excitation_led]
 wavelength_nm = "470-490"
-driver = "constant-current driver or driver-module header, controller owns enable/PWM/sense and LED output connector"
-current_range_ma = "20-700 first target, resistor/config option toward 1 A only after LED/driver/heatsink selection"
-control_nets = ["LED_EXC_PWM", "LED_EXC_EN", "LED_FAULT_N"]
+driver = "Mean Well LDD-700H fixed-current buck module on controller; LDD-1000H DNP alternate only after thermal/optical validation"
+current_range_ma = "20-700 average via PWM with 700 mA instantaneous primary current; 1000 mA alternate remains DNP"
+control_nets = ["LED_EXC_PWM", "LED_EXC_EN", "LED_DIM_GATE", "LED_DIM_DRIVE", "LED_FAULT_N"]
 sense_nets = ["LED_CURRENT_SENSE", "THERM_CH_5"]
 sync_nets = ["LED_SYNC_OUT", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN"]
 default_state = "forced off on boot, fault, lid open, cartridge missing, camera error, or fixture not armed"
+led_location = "High-power excitation LED remains off-board on an external MCPCB/star/heatsunk optical head connected through LED_PLUS/LED_MINUS."
+
+[excitation_driver]
+primary_mpn = "Mean Well LDD-700H"
+primary_lcsc = "C17537709"
+dnp_alternate = "Mean Well LDD-1000H, LCSC/JLC C17529736"
+input = "LED_SUPPLY from VIN_PROTECTED through populated LED supply link"
+output = "LED_DRV_PLUS through 0.1 ohm shunt to LED_PLUS, and LED_MINUS return to external optical head"
+dim_logic = "SN74LVC1G08DBVR gates LED_EXC_PWM AND LED_EXC_EN into LED_DIM_GATE, then series resistor to LED_DIM_DRIVE/LDD PWM DIM"
+fault_logic = "LDD-H has no native fault pin; LED_FAULT_N is pulled up unless future adapter/comparator hardware pulls it low."
+
+[current_telemetry]
+shunt = "0.1 ohm, 1%, >=1 W 2512 current shunt in series with LED output high side"
+amplifier = "INA180A1IDBVR gain 20 powered from +3V3"
+expected_output = "0.7 A gives about 1.4 V at LED_CURRENT_SENSE; 1.0 A alternate would give about 2.0 V"
+firmware_limit = "Firmware may use LED_CURRENT_SENSE for bring-up/fault checks, but final optical calibration still requires external current/light validation."
 
 [external_camera_sync]
 connector = "J_OPT_SYNC"
@@ -40,6 +56,7 @@ notes = "Supports external OPT101/photodiode/TIA or light-leak diagnostics witho
 rules = [
   "Keep heater and LED switching returns out of camera and thermistor analog returns.",
   "Route high-current LED output as closely coupled LED_PLUS/LED_MINUS to the optical carrier connector.",
+  "Keep LED_DRV_PLUS/LED_PLUS shunt sense Kelvin-style and away from heater gate loops.",
   "Support quiet acquisition mode by pausing or phase-controlling heater PWM during camera exposure.",
   "Keep status LEDs outside the optical cavity or firmware-disableable during acquisition.",
 ]

@@ -546,6 +546,11 @@ fn validate_parts(
         }
     }
     let mut part_ids = BTreeSet::new();
+    let parts_by_id = parts
+        .selected_parts
+        .iter()
+        .map(|part| (part.id.as_str(), part))
+        .collect::<BTreeMap<_, _>>();
     for part in &parts.selected_parts {
         if !part_ids.insert(part.id.as_str()) {
             errors.push(format!("duplicate selected part id {}", part.id));
@@ -599,6 +604,81 @@ fn validate_parts(
             }
         }
     }
+    require_selected_part(
+        &parts_by_id,
+        "five_v_buck_module",
+        "P7805-2000-S",
+        "lcsc:P78-2000-S_SIP3",
+        "C2848816",
+        &["VIN_PROTECTED", "+5V", "GND"],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "three_v_three_regulator",
+        "AP63203WU-7",
+        "lcsc:TSOT26_AP63203WU",
+        "C780769",
+        &["+5V", "+3V3", "3V3_SW", "3V3_BST", "GND"],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "three_v_three_inductor",
+        "74439346068",
+        "lcsc:IND_74439346068",
+        "C2041388",
+        &["3V3_SW", "+3V3"],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "led_driver_module",
+        "LDD-700H",
+        "lcsc:MEANWELL_LDD-300-1000H_THT",
+        "C17537709",
+        &[
+            "LED_SUPPLY",
+            "GND",
+            "LED_DIM_DRIVE",
+            "LED_DRV_PLUS",
+            "LED_MINUS",
+        ],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "led_dim_and_gate",
+        "SN74LVC1G08DBVR",
+        "lcsc:SOT-23-5",
+        "C7666",
+        &["+3V3", "GND", "LED_EXC_PWM", "LED_EXC_EN", "LED_DIM_GATE"],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "led_current_sense_amp",
+        "INA180A1IDBVR",
+        "lcsc:SOT-23-5",
+        "C122228",
+        &[
+            "+3V3",
+            "GND",
+            "LED_DRV_PLUS",
+            "LED_PLUS",
+            "LED_CURRENT_SENSE",
+        ],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "led_current_shunt",
+        "0.1R",
+        "lcsc:R2512",
+        "",
+        &["LED_DRV_PLUS", "LED_PLUS"],
+        errors,
+    );
     for gap in &parts.selection_gaps {
         if !module_names.contains(gap.module.as_str()) {
             errors.push(format!(
@@ -613,11 +693,61 @@ fn validate_parts(
             ));
         }
     }
+    for resolved_blocker in [
+        "integrated_buck_regulator",
+        "constant_current_led_driver_ic",
+    ] {
+        if parts
+            .selection_gaps
+            .iter()
+            .any(|gap| gap.id == resolved_blocker && gap.blocks_fabrication)
+        {
+            errors.push(format!(
+                "resolved release blocker {resolved_blocker} must not remain fabrication-blocking"
+            ));
+        }
+    }
     for forbidden in ["turbidity_emitters", "photodiodes", "optical_tia_opamp"] {
         if part_ids.contains(forbidden) {
             errors.push(format!(
                 "Rev A optical part group {forbidden} must not appear"
             ));
+        }
+    }
+}
+
+fn require_selected_part(
+    parts_by_id: &BTreeMap<&str, &SelectedPart>,
+    id: &str,
+    value_token: &str,
+    footprint: &str,
+    lcsc_token: &str,
+    required_nets: &[&str],
+    errors: &mut Vec<String>,
+) {
+    let Some(part) = parts_by_id.get(id) else {
+        errors.push(format!("missing selected part {id}"));
+        return;
+    };
+    if !value_token.is_empty() && !part.value.contains(value_token) {
+        errors.push(format!(
+            "selected part {id} value must mention {value_token}"
+        ));
+    }
+    if part.footprint != footprint {
+        errors.push(format!(
+            "selected part {id} footprint must be {footprint}, got {}",
+            part.footprint
+        ));
+    }
+    if !lcsc_token.is_empty() && !part.lcsc_part.contains(lcsc_token) {
+        errors.push(format!(
+            "selected part {id} source must mention {lcsc_token}"
+        ));
+    }
+    for net in required_nets {
+        if !part.nets.iter().any(|candidate| candidate == net) {
+            errors.push(format!("selected part {id} missing required net {net}"));
         }
     }
 }

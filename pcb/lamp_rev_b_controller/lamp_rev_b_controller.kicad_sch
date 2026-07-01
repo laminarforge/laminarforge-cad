@@ -17,7 +17,7 @@
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "b0000000-0000-4000-8000-000000000101")
   )
-  (text "Power: external current-limited 12 V default, 24 V option only with rated population, USB never powers heater."
+  (text "Power: external current-limited 12 V default, P7805-2000-S to +5V, AP63203WU-7 to +3V3, 24 V VDRV path DNP unless regulated."
     (at 20.32 35.56 0)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "b0000000-0000-4000-8000-000000000102")
@@ -32,7 +32,7 @@
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "b0000000-0000-4000-8000-000000000104")
   )
-  (text "Optics: controlled 470-490 nm LED driver control/output, LED current/thermal sense, external camera sync, optional SPI/FIFO camera header."
+  (text "Optics: LDD-700H 470-490 nm excitation driver, AND-gated DIM, INA180 current sense, external heatsunk LED head, camera sync/debug."
     (at 20.32 66.04 0)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "b0000000-0000-4000-8000-000000000105")
