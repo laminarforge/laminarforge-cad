@@ -63,7 +63,7 @@ dnp_alternates = [
 [release_blockers]
 items = [
   "KiCad schematic capture is ERC-clean, but final fab release still requires a zero-unconnected routed PCB.",
-  "Materialized PCB has physical DRC 0 with a deterministic local routing_seed, but lamp_rev_b_controller_route_report still reports 214 real unconnected items.",
+  "Materialized PCB has physical DRC 0 with a schema-v2 deterministic routing_seed, but lamp_rev_b_controller_route_report still reports 212 real unconnected items.",
   "Selected P7805/AP63203/LDD-700H hardware is represented, but final fanout/channel routing is not complete.",
   "Camera connector family remains optional/debug until camera module is selected.",
 ]

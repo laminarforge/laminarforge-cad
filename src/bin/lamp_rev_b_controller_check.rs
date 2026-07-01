@@ -240,6 +240,103 @@ struct CopperZonePoint {
     y_mm: f64,
 }
 
+#[derive(Debug, Deserialize)]
+struct RoutingPlan {
+    phase: Vec<RoutingPhase>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RoutingPhase {
+    name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct RoutingSeed {
+    #[serde(default)]
+    package: Option<RoutingSeedPackage>,
+    #[serde(default)]
+    segments: Vec<RouteSegment>,
+    #[serde(default)]
+    vias: Vec<RouteVia>,
+    #[serde(default)]
+    routes: Vec<RoutePath>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RoutingSeedPackage {
+    #[serde(default)]
+    schema_version: Option<u32>,
+    #[serde(default)]
+    expected_segment_count: Option<usize>,
+    #[serde(default)]
+    expected_via_count: Option<usize>,
+    #[serde(default)]
+    expected_route_count: Option<usize>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RouteSegment {
+    #[serde(default)]
+    id: Option<String>,
+    #[serde(default)]
+    phase: Option<String>,
+    #[serde(default)]
+    route_id: Option<String>,
+    #[serde(default)]
+    intent: Option<String>,
+    net: String,
+    layer: String,
+    #[serde(default)]
+    via_at_ends: bool,
+    #[serde(default)]
+    via_at_start: Option<bool>,
+    #[serde(default)]
+    via_at_end: Option<bool>,
+    width_mm: f64,
+    start_x_mm: f64,
+    start_y_mm: f64,
+    end_x_mm: f64,
+    end_y_mm: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct RouteVia {
+    id: String,
+    phase: String,
+    net: String,
+    x_mm: f64,
+    y_mm: f64,
+    layers: Vec<String>,
+    size_mm: f64,
+    drill_mm: f64,
+    #[serde(default)]
+    intent: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RoutePath {
+    id: String,
+    phase: String,
+    net: String,
+    width_mm: f64,
+    #[serde(default)]
+    intent: Option<String>,
+    points: Vec<RoutePathPoint>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RoutePathPoint {
+    x_mm: f64,
+    y_mm: f64,
+    layer: String,
+    #[serde(default)]
+    anchor: Option<String>,
+    #[serde(default)]
+    via_id: Option<String>,
+    #[serde(default)]
+    via: bool,
+}
+
 fn main() {
     let root = std::env::current_dir().expect("current dir");
     let contract = load_toml::<Contract>(&root.join(CONTRACT_PATH));
@@ -247,6 +344,8 @@ fn main() {
     let placement = load_toml::<PlacementPlan>(&root.join(PLACEMENT_PATH));
     let pin_nets = load_toml::<PinNetManifest>(&root.join(PIN_NETS_PATH));
     let copper_zones = load_toml::<CopperZonePlan>(&root.join(COPPER_ZONES_PATH));
+    let routing_plan = load_toml::<RoutingPlan>(&root.join(ROUTING_PLAN_PATH));
+    let routing_seed = load_toml::<RoutingSeed>(&root.join(ROUTING_SEED_PATH));
 
     let mut errors = Vec::new();
     let mut warnings = Vec::new();
@@ -286,6 +385,7 @@ fn main() {
     validate_placement(&placement, &parts, &contract, &nets, &mut errors);
     validate_pin_nets(&pin_nets, &placement, &nets, &mut errors);
     validate_copper_zones(&copper_zones, &contract, &nets, &mut errors);
+    validate_routing_seed(&routing_seed, &routing_plan, &contract, &nets, &mut errors);
     validate_text_content(&root, &mut errors, &mut warnings);
 
     if !warnings.is_empty() {
@@ -310,6 +410,9 @@ fn main() {
             "  pin-net assignment groups: {}",
             pin_nets.assignments.len()
         );
+        println!("  routing seed segments: {}", routing_seed.segments.len());
+        println!("  routing seed vias: {}", routing_seed.vias.len());
+        println!("  routing seed routes: {}", routing_seed.routes.len());
         println!(
             "  fab-release blocking gaps: {}",
             parts
@@ -916,6 +1019,312 @@ fn validate_copper_zones(
             }
         }
     }
+}
+
+fn validate_routing_seed(
+    routing_seed: &RoutingSeed,
+    routing_plan: &RoutingPlan,
+    contract: &Contract,
+    nets: &BTreeMap<String, Net>,
+    errors: &mut Vec<String>,
+) {
+    let phases = routing_plan
+        .phase
+        .iter()
+        .map(|phase| phase.name.as_str())
+        .collect::<BTreeSet<_>>();
+    let has_v2_data = !routing_seed.vias.is_empty() || !routing_seed.routes.is_empty();
+    let schema_version = routing_seed
+        .package
+        .as_ref()
+        .and_then(|package| package.schema_version);
+    if has_v2_data && schema_version != Some(2) {
+        errors.push(
+            "routing_seed.toml must set package.schema_version = 2 when vias/routes are present"
+                .to_string(),
+        );
+    }
+    if let Some(package) = &routing_seed.package {
+        if let Some(expected) = package.expected_segment_count {
+            if expected != routing_seed.segments.len() {
+                errors.push(format!(
+                    "routing seed expected_segment_count is {expected} but found {} [[segments]]",
+                    routing_seed.segments.len()
+                ));
+            }
+        }
+        if let Some(expected) = package.expected_via_count {
+            if expected != routing_seed.vias.len() {
+                errors.push(format!(
+                    "routing seed expected_via_count is {expected} but found {} [[vias]]",
+                    routing_seed.vias.len()
+                ));
+            }
+        }
+        if let Some(expected) = package.expected_route_count {
+            if expected != routing_seed.routes.len() {
+                errors.push(format!(
+                    "routing seed expected_route_count is {expected} but found {} [[routes]]",
+                    routing_seed.routes.len()
+                ));
+            }
+        }
+    }
+
+    let mut ids = BTreeSet::new();
+    for segment in &routing_seed.segments {
+        if let Some(id) = &segment.id {
+            if !ids.insert(format!("segment:{id}")) {
+                errors.push(format!("duplicate route segment id {id}"));
+            }
+        }
+        if let Some(phase) = &segment.phase {
+            if !phases.contains(phase.as_str()) {
+                errors.push(format!(
+                    "route segment phase {phase} is not in routing_plan.toml"
+                ));
+            }
+        }
+        if !nets.contains_key(&segment.net) {
+            errors.push(format!(
+                "route segment references unknown net {}",
+                segment.net
+            ));
+        }
+        validate_route_layer(contract, &segment.layer, "route segment", errors);
+        if segment.layer != "F.Cu"
+            && !segment.via_at_ends
+            && segment.via_at_start.is_none()
+            && segment.via_at_end.is_none()
+        {
+            errors.push(format!(
+                "{} route segment for {} must set via_at_ends or explicit via_at_start/via_at_end",
+                segment.layer, segment.net
+            ));
+        }
+        validate_route_width(
+            nets,
+            &segment.net,
+            segment.width_mm,
+            "route segment",
+            errors,
+        );
+        validate_route_point(
+            contract,
+            segment.start_x_mm,
+            segment.start_y_mm,
+            &segment.net,
+            errors,
+        );
+        validate_route_point(
+            contract,
+            segment.end_x_mm,
+            segment.end_y_mm,
+            &segment.net,
+            errors,
+        );
+    }
+
+    let vias = routing_seed
+        .vias
+        .iter()
+        .map(|via| (via.id.as_str(), via))
+        .collect::<BTreeMap<_, _>>();
+    for via in &routing_seed.vias {
+        if !ids.insert(format!("via:{}", via.id)) {
+            errors.push(format!("duplicate route via id {}", via.id));
+        }
+        if !phases.contains(via.phase.as_str()) {
+            errors.push(format!(
+                "route via {} phase {} is not in routing_plan.toml",
+                via.id, via.phase
+            ));
+        }
+        validate_route_via(via, contract, nets, errors);
+    }
+
+    for route in &routing_seed.routes {
+        if !ids.insert(format!("route:{}", route.id)) {
+            errors.push(format!("duplicate route id {}", route.id));
+        }
+        if !phases.contains(route.phase.as_str()) {
+            errors.push(format!(
+                "route {} phase {} is not in routing_plan.toml",
+                route.id, route.phase
+            ));
+        }
+        if !nets.contains_key(&route.net) {
+            errors.push(format!(
+                "route {} references unknown net {}",
+                route.id, route.net
+            ));
+        }
+        validate_route_width(nets, &route.net, route.width_mm, &route.id, errors);
+        if route.points.len() < 2 {
+            errors.push(format!("route {} needs at least two points", route.id));
+        }
+        for point in &route.points {
+            validate_route_layer(contract, &point.layer, &route.id, errors);
+            validate_route_point(contract, point.x_mm, point.y_mm, &route.net, errors);
+        }
+        for pair in route.points.windows(2) {
+            let start = &pair[0];
+            let end = &pair[1];
+            if start.layer == end.layer {
+                continue;
+            }
+            if !same_route_coordinate(start.x_mm, end.x_mm)
+                || !same_route_coordinate(start.y_mm, end.y_mm)
+            {
+                errors.push(format!(
+                    "route {} changes layer from {} to {} without a same-coordinate via",
+                    route.id, start.layer, end.layer
+                ));
+                continue;
+            }
+            if let Some(via_id) = end.via_id.as_ref().or(start.via_id.as_ref()) {
+                match vias.get(via_id.as_str()) {
+                    Some(via) => {
+                        if via.net != route.net {
+                            errors.push(format!(
+                                "route {} via {} is on net {} instead of {}",
+                                route.id, via.id, via.net, route.net
+                            ));
+                        }
+                        if !same_route_coordinate(via.x_mm, start.x_mm)
+                            || !same_route_coordinate(via.y_mm, start.y_mm)
+                        {
+                            errors.push(format!(
+                                "route {} via {} coordinate does not match the layer transition",
+                                route.id, via.id
+                            ));
+                        }
+                        if !via.layers.iter().any(|layer| layer == &start.layer)
+                            || !via.layers.iter().any(|layer| layer == &end.layer)
+                        {
+                            errors.push(format!(
+                                "route {} via {} layers do not cover {} to {}",
+                                route.id, via.id, start.layer, end.layer
+                            ));
+                        }
+                    }
+                    None => {
+                        errors.push(format!(
+                            "route {} references unknown via {via_id}",
+                            route.id
+                        ));
+                    }
+                }
+            } else if !(start.via || end.via) {
+                errors.push(format!(
+                    "route {} changes layer at {},{} without via_id or via = true",
+                    route.id, start.x_mm, start.y_mm
+                ));
+            } else if start.layer != "F.Cu" || end.layer != "B.Cu" {
+                errors.push(format!(
+                    "route {} default via can only connect F.Cu to B.Cu in this schema pass",
+                    route.id
+                ));
+            }
+        }
+    }
+}
+
+fn validate_route_via(
+    via: &RouteVia,
+    contract: &Contract,
+    nets: &BTreeMap<String, Net>,
+    errors: &mut Vec<String>,
+) {
+    if !nets.contains_key(&via.net) {
+        errors.push(format!(
+            "route via {} references unknown net {}",
+            via.id, via.net
+        ));
+    }
+    validate_route_point(contract, via.x_mm, via.y_mm, &via.net, errors);
+    if via.layers != ["F.Cu".to_string(), "B.Cu".to_string()] {
+        errors.push(format!(
+            "route via {} must be a reviewed through-via from F.Cu to B.Cu",
+            via.id
+        ));
+    }
+    for layer in &via.layers {
+        validate_route_layer(contract, layer, &format!("route via {}", via.id), errors);
+    }
+    if via.size_mm <= 0.0 || via.drill_mm <= 0.0 {
+        errors.push(format!(
+            "route via {} has non-positive size or drill",
+            via.id
+        ));
+    }
+    if via.drill_mm < contract.stackup.min_via_drill_mm {
+        errors.push(format!(
+            "route via {} drill {} is below stackup minimum {}",
+            via.id, via.drill_mm, contract.stackup.min_via_drill_mm
+        ));
+    }
+    let minimum_size = contract.stackup.min_via_drill_mm + 2.0 * contract.stackup.min_clearance_mm;
+    if via.size_mm < minimum_size {
+        errors.push(format!(
+            "route via {} size {} is below stackup minimum {}",
+            via.id, via.size_mm, minimum_size
+        ));
+    }
+    if via.size_mm <= via.drill_mm {
+        errors.push(format!("route via {} size must exceed drill", via.id));
+    }
+}
+
+fn validate_route_layer(contract: &Contract, layer: &str, label: &str, errors: &mut Vec<String>) {
+    if !contract
+        .stackup
+        .copper_layers
+        .iter()
+        .any(|candidate| candidate == layer)
+    {
+        errors.push(format!("{label} uses unsupported layer {layer}"));
+    }
+}
+
+fn validate_route_width(
+    nets: &BTreeMap<String, Net>,
+    net: &str,
+    width_mm: f64,
+    label: &str,
+    errors: &mut Vec<String>,
+) {
+    if width_mm <= 0.0 {
+        errors.push(format!("{label} for {net} has non-positive width"));
+        return;
+    }
+    if let Some(net_contract) = nets.get(net) {
+        if width_mm < net_contract.min_track_width_mm {
+            errors.push(format!(
+                "{label} width {width_mm} for {net} is below contract minimum {}",
+                net_contract.min_track_width_mm
+            ));
+        }
+    }
+}
+
+fn validate_route_point(
+    contract: &Contract,
+    x_mm: f64,
+    y_mm: f64,
+    net: &str,
+    errors: &mut Vec<String>,
+) {
+    if x_mm < 0.0 || y_mm < 0.0 || x_mm > contract.board.width_mm || y_mm > contract.board.height_mm
+    {
+        errors.push(format!(
+            "route point for {net} is off-board at {x_mm},{y_mm}"
+        ));
+    }
+}
+
+fn same_route_coordinate(first: f64, second: f64) -> bool {
+    (first - second).abs() < 0.001
 }
 
 fn validate_text_content(root: &Path, errors: &mut Vec<String>, warnings: &mut Vec<String>) {

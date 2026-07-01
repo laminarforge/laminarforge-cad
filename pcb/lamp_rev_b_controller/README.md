@@ -61,13 +61,13 @@ Current validation state:
 
 - KiCad ERC on the captured schematic: `0` violations.
 - KiCad physical DRC on the materialized board: `0` violations.
-- Real unconnected items from `lamp_rev_b_controller_route_report`: `214`.
-- `routing_seed.toml` contains the deterministic DRC-clean local F.Cu segments accepted by `lamp_rev_b_controller_seed_routes_from_drc`.
+- Real unconnected items from `lamp_rev_b_controller_route_report`: `212`.
+- `routing_seed.toml` contains the deterministic DRC-clean local F.Cu segments accepted by `lamp_rev_b_controller_seed_routes_from_drc`, plus schema-v2 reviewed `[[vias]]` and named `[[routes]]` records.
 
 Known release blockers:
 
 - The PCB is still a partial materialized route seed; it is not routed to zero real unconnected items.
-- The current seed schema can capture DRC-clean local top-layer routes, but the remaining nets require deliberate fanout/channel routing and reviewed via placement, especially power, ground, USB, AP63203 switch/bootstrap, LED driver output/shunt, heater drive, thermistor mux/ADC, camera/debug, and interlock nets.
+- The schema-v2 seed can capture DRC-clean local top-layer routes, reviewed explicit vias, and named channel routes, but the remaining nets require deliberate fanout/channel routing, especially power, ground, USB, AP63203 switch/bootstrap, LED driver output/shunt, heater drive, thermistor mux/ADC, camera/debug, and interlock nets.
 - The selected `P7805-2000-S`, `AP63203WU-7`, `74439346068`, `LDD-700H`, `SN74LVC1G08DBVR`, `INA180A1IDBVR`, and LED shunt path are represented, but the board is not routed to zero unconnected items.
 - The optional embedded camera connector remains SPI/FIFO-module oriented and debug-populated until a camera module is selected.
 
