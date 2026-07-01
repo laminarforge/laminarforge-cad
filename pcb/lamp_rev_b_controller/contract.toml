@@ -1131,10 +1131,12 @@ purpose = "Auxiliary analog diagnostic input."
 [verification]
 required_gates = [
   "lamp_rev_b_controller_check",
+  "lamp_rev_b_controller_materialize_schematic",
+  "lamp_rev_b_controller_erc_report",
   "lamp_rev_b_controller_materialize_board",
+  "lamp_rev_b_controller_seed_routes_from_drc",
   "lamp_rev_b_controller_route_report",
   "lamp_rev_b_controller_fab_preview",
-  "kicad-cli sch erc when schematic capture is promoted beyond architecture shell",
   "kicad-cli pcb drc before any fab release claim",
 ]
 autorouter_policy = "Use manual or KiCad-reviewed routing first. Freerouting is diagnostic only after zero physical pre-route DRC."

@@ -78,7 +78,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("    - {note}");
         }
     }
-    println!("Preview only: complete routing and pass release ERC/DRC before order release.");
+    println!(
+        "Preview only: complete zero-unconnected routing and pass release ERC/DRC before order release."
+    );
     Ok(())
 }
 

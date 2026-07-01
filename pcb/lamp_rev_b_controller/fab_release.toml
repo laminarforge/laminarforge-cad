@@ -1,9 +1,9 @@
 [package]
 name = "lamp_rev_b_controller_fab_preview"
-ticket = "T-4C206871"
+ticket = "T-49FD0ECC"
 revision = "Rev B prototype"
 source_stage = "preview_not_order_release"
-release_state = "blocked_until_routed_and_erc_drc_clean"
+release_state = "blocked_until_zero_unconnected_routing"
 
 [toolchain]
 min_kicad_major = 10
@@ -25,6 +25,7 @@ reports_dir = "pcb/lamp_rev_b_controller/reports"
 bom_file = "bom.csv"
 cpl_file = "cpl.csv"
 route_report = "drc.json"
+erc_report = "erc.json"
 
 [assembly]
 machine_side = "top"
@@ -61,8 +62,8 @@ dnp_alternates = [
 
 [release_blockers]
 items = [
-  "KiCad schematic is an architecture shell, not full ERC-clean schematic capture.",
-  "Materialized PCB is placement/test-pad source seed; routing_seed remains incomplete for release.",
-  "Selected P7805/AP63203/LDD-700H hardware is represented, but final routing and schematic capture are not complete.",
+  "KiCad schematic capture is ERC-clean, but final fab release still requires a zero-unconnected routed PCB.",
+  "Materialized PCB has physical DRC 0 with a deterministic local routing_seed, but lamp_rev_b_controller_route_report still reports 214 real unconnected items.",
+  "Selected P7805/AP63203/LDD-700H hardware is represented, but final fanout/channel routing is not complete.",
   "Camera connector family remains optional/debug until camera module is selected.",
 ]

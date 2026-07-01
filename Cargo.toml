@@ -531,12 +531,24 @@ name = "lamp_rev_b_controller_check"
 path = "src/bin/lamp_rev_b_controller_check.rs"
 
 [[bin]]
+name = "lamp_rev_b_controller_materialize_schematic"
+path = "src/bin/lamp_rev_b_controller_materialize_schematic.rs"
+
+[[bin]]
+name = "lamp_rev_b_controller_erc_report"
+path = "src/bin/lamp_rev_b_controller_erc_report.rs"
+
+[[bin]]
 name = "lamp_rev_b_controller_materialize_board"
 path = "src/bin/lamp_rev_b_controller_materialize_board.rs"
 
 [[bin]]
 name = "lamp_rev_b_controller_route_report"
 path = "src/bin/lamp_rev_b_controller_route_report.rs"
+
+[[bin]]
+name = "lamp_rev_b_controller_seed_routes_from_drc"
+path = "src/bin/lamp_rev_b_controller_seed_routes_from_drc.rs"
 
 [[bin]]
 name = "lamp_rev_b_controller_fab_preview"

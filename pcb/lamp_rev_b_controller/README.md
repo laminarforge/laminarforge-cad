@@ -1,6 +1,8 @@
 # LAMP Rev B Controller PCBA
 
-Ticket: `T-4C206871`
+Source-package ticket: `T-4C206871`
+
+Implementation ticket: `T-49FD0ECC`
 
 This package is the Rev B prototype controller carrier source package. It is not a final diagnostic-product board and not an external validation plan.
 
@@ -28,7 +30,19 @@ Run through the LaminarForge MCP build tool:
 ```
 
 ```json
+{"repo":"laminarforge-cad","action":"run","bin":"lamp_rev_b_controller_materialize_schematic"}
+```
+
+```json
+{"repo":"laminarforge-cad","action":"run","bin":"lamp_rev_b_controller_erc_report"}
+```
+
+```json
 {"repo":"laminarforge-cad","action":"run","bin":"lamp_rev_b_controller_materialize_board"}
+```
+
+```json
+{"repo":"laminarforge-cad","action":"run","bin":"lamp_rev_b_controller_seed_routes_from_drc"}
 ```
 
 ```json
@@ -41,13 +55,20 @@ Run through the LaminarForge MCP build tool:
 
 ## Current Release State
 
-This implementation pass creates an updated source package and fab preview with the Rev B regulator and excitation-driver selections represented, not an order-ready fab release.
+This implementation pass replaces the architecture-shell schematic with generated captured connectivity and keeps the Rev B regulator and excitation-driver selections represented, but it is still not an order-ready fab release.
+
+Current validation state:
+
+- KiCad ERC on the captured schematic: `0` violations.
+- KiCad physical DRC on the materialized board: `0` violations.
+- Real unconnected items from `lamp_rev_b_controller_route_report`: `214`.
+- `routing_seed.toml` contains the deterministic DRC-clean local F.Cu segments accepted by `lamp_rev_b_controller_seed_routes_from_drc`.
 
 Known release blockers:
 
-- The schematic is an architecture shell, not full ERC-clean schematic capture.
-- The PCB is a materialized placement/test-pad seed with copper zones and no routed signal/power completion.
+- The PCB is still a partial materialized route seed; it is not routed to zero real unconnected items.
+- The current seed schema can capture DRC-clean local top-layer routes, but the remaining nets require deliberate fanout/channel routing and reviewed via placement, especially power, ground, USB, AP63203 switch/bootstrap, LED driver output/shunt, heater drive, thermistor mux/ADC, camera/debug, and interlock nets.
 - The selected `P7805-2000-S`, `AP63203WU-7`, `74439346068`, `LDD-700H`, `SN74LVC1G08DBVR`, `INA180A1IDBVR`, and LED shunt path are represented, but the board is not routed to zero unconnected items.
 - The optional embedded camera connector remains SPI/FIFO-module oriented and debug-populated until a camera module is selected.
 
-Do not send this package to a PCBA vendor as a fabrication release until `lamp_rev_b_controller_route_report` shows zero physical DRC and zero real unconnected items, schematic ERC is complete on captured connectivity, and manual/DNP/no-substitution assembly notes are reviewed against the selected vendor.
+Do not send this package to a PCBA vendor as a fabrication release until `lamp_rev_b_controller_erc_report` and `lamp_rev_b_controller_route_report` both pass with ERC `0`, physical DRC `0`, and real unconnected items `0`, and manual/DNP/no-substitution assembly notes are reviewed against the selected vendor.

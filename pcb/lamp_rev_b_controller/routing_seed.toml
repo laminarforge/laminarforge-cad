@@ -1,10 +1,259 @@
 [package]
 name = "lamp_rev_b_controller_routing_seed"
-ticket = "T-4C206871"
+ticket = "T-49FD0ECC"
 revision = "Rev B prototype"
-source_stage = "unrouted_seed"
+source_stage = "drc_clean_local_top_seed"
+source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
+max_local_top_route_mm = 4.0
+segments = 25
 
-# Still intentionally empty for release: this pass materializes selected
-# P7805/AP63203/LDD-700H hardware, net assignments, copper zones, and test
-# pads, but does not claim a routed/fab-release board.
-segments = []
+
+[[segments]]
+net = "GND"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 32.170
+start_y_mm = 60.740
+end_x_mm = 33.440
+end_y_mm = 60.740
+
+[[segments]]
+net = "GND"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 92.630
+start_y_mm = 50.570
+end_x_mm = 93.900
+end_y_mm = 50.570
+
+[[segments]]
+net = "GND_EP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 58.100
+start_y_mm = 16.760
+end_x_mm = 59.500
+end_y_mm = 16.760
+
+[[segments]]
+net = "GND_EP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 58.100
+start_y_mm = 18.160
+end_x_mm = 59.500
+end_y_mm = 18.160
+
+[[segments]]
+net = "GND_EP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 59.500
+start_y_mm = 16.760
+end_x_mm = 59.500
+end_y_mm = 18.160
+
+[[segments]]
+net = "GND_EP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 59.500
+start_y_mm = 16.760
+end_x_mm = 60.900
+end_y_mm = 16.760
+
+[[segments]]
+net = "GND_EP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 60.900
+start_y_mm = 18.160
+end_x_mm = 60.900
+end_y_mm = 16.760
+
+[[segments]]
+net = "GND_EP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 58.100
+start_y_mm = 15.360
+end_x_mm = 58.100
+end_y_mm = 16.760
+
+[[segments]]
+net = "GND_EP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 59.500
+start_y_mm = 15.360
+end_x_mm = 59.500
+end_y_mm = 16.760
+
+[[segments]]
+net = "GND_EP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 60.900
+start_y_mm = 16.760
+end_x_mm = 60.900
+end_y_mm = 15.360
+
+[[segments]]
+net = "USB_DN"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 24.950
+start_y_mm = 7.000
+end_x_mm = 24.950
+end_y_mm = 9.000
+
+[[segments]]
+net = "USB_DP"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 23.050
+start_y_mm = 7.000
+end_x_mm = 23.050
+end_y_mm = 9.000
+
+[[segments]]
+net = "+5V"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.350
+start_x_mm = 84.500
+start_y_mm = 25.500
+end_x_mm = 85.450
+end_y_mm = 23.500
+
+[[segments]]
+net = "GND"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 13.580
+start_y_mm = 6.390
+end_x_mm = 11.210
+end_y_mm = 5.610
+
+[[segments]]
+net = "GND"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 4.790
+start_y_mm = 5.610
+end_x_mm = 2.420
+end_y_mm = 6.390
+
+[[segments]]
+net = "LED_DRV_PLUS"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 76.160
+start_y_mm = 38.030
+end_x_mm = 76.160
+end_y_mm = 40.570
+
+[[segments]]
+net = "LED_MINUS"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.500
+start_x_mm = 55.840
+start_y_mm = 38.030
+end_x_mm = 55.840
+end_y_mm = 40.570
+
+[[segments]]
+net = "HEATER_ARM"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 91.000
+start_y_mm = 53.000
+end_x_mm = 90.090
+end_y_mm = 50.570
+
+[[segments]]
+net = "+3V3"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.350
+start_x_mm = 44.000
+start_y_mm = 28.000
+end_x_mm = 44.000
+end_y_mm = 25.000
+
+[[segments]]
+net = "+3V3"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.350
+start_x_mm = 44.000
+start_y_mm = 28.000
+end_x_mm = 44.000
+end_y_mm = 31.000
+
+[[segments]]
+net = "+3V3"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.350
+start_x_mm = 44.000
+start_y_mm = 31.000
+end_x_mm = 44.000
+end_y_mm = 34.000
+
+[[segments]]
+net = "+3V3"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.350
+start_x_mm = 74.000
+start_y_mm = 23.000
+end_x_mm = 74.000
+end_y_mm = 26.000
+
+[[segments]]
+net = "+3V3"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.350
+start_x_mm = 85.000
+start_y_mm = 40.000
+end_x_mm = 85.000
+end_y_mm = 37.000
+
+[[segments]]
+net = "HEATER1_GATE"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.200
+start_x_mm = 109.000
+start_y_mm = 52.000
+end_x_mm = 111.000
+end_y_mm = 49.000
+
+[[segments]]
+net = "+3V3"
+layer = "F.Cu"
+via_at_ends = false
+width_mm = 0.350
+start_x_mm = 35.000
+start_y_mm = 17.250
+end_x_mm = 31.000
+end_y_mm = 17.250
