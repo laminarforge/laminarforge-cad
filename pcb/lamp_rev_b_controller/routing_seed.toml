@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 21
-expected_route_count = 62
+expected_via_count = 26
+expected_route_count = 67
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -88,6 +88,17 @@ drill_mm = 0.500
 intent = "Reviewed protected-VIN escape via from TP_VIN_PROT to reach the cutoff-loop input on B.Cu, placed left of the +5V top trace."
 
 [[vias]]
+id = "v_vin_protected_input_spine_bcu_escape"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+x_mm = 98.500
+y_mm = 12.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 1.200
+drill_mm = 0.500
+intent = "Reviewed protected-VIN B.Cu escape above C4 to join the input spine to the existing TP/U7/cutoff-loop branch without crossing the ground return."
+
+[[vias]]
 id = "v_gnd_usb_cc_return_escape"
 phase = "1_usb_and_boot"
 net = "GND"
@@ -97,6 +108,50 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed CC2 pull-down ground escape via placed left of the R2 pad pair."
+
+[[vias]]
+id = "v_usb_dp_esd_bcu_escape"
+phase = "1_usb_and_boot"
+net = "USB_DP"
+x_mm = 23.050
+y_mm = 7.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed USB D+ bottom-layer escape from the ESD-protected local trace."
+
+[[vias]]
+id = "v_usb_dp_tp_bcu_entry"
+phase = "1_usb_and_boot"
+net = "USB_DP"
+x_mm = 18.000
+y_mm = 13.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed USB D+ return via beside TP_USB_DP, clear of the VBUS bulk capacitor pads."
+
+[[vias]]
+id = "v_usb_dn_esd_bcu_escape"
+phase = "1_usb_and_boot"
+net = "USB_DN"
+x_mm = 24.950
+y_mm = 7.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed USB D- bottom-layer escape from the ESD-protected local trace."
+
+[[vias]]
+id = "v_usb_dn_tp_bcu_entry"
+phase = "1_usb_and_boot"
+net = "USB_DN"
+x_mm = 20.000
+y_mm = 14.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed USB D- return via beside TP_USB_DN, offset above the test point to avoid the C1 ground pad."
 
 [[vias]]
 id = "v_gnd_usb_esd_return_tie"
@@ -1094,6 +1149,80 @@ points = [
   { x_mm = 50.500, y_mm = 26.000, layer = "B.Cu", via_id = "v_esp_en_tp_bcu_escape" },
   { x_mm = 16.540, y_mm = 26.000, layer = "B.Cu" },
   { x_mm = 16.540, y_mm = 23.540, layer = "B.Cu", anchor = "J21:5" },
+]
+
+[[routes]]
+id = "vin_protected_c4_u7_spine_join"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+width_mm = 1.500
+intent = "Reviewed protected-VIN trunk join from the C4/D1 input spine to the existing U7/test-point input branch."
+points = [
+  { x_mm = 98.500, y_mm = 15.500, layer = "F.Cu", anchor = "existing C4/D1 VIN_PROTECTED spine" },
+  { x_mm = 98.500, y_mm = 12.500, layer = "F.Cu" },
+  { x_mm = 98.500, y_mm = 12.500, layer = "B.Cu", via_id = "v_vin_protected_input_spine_bcu_escape" },
+  { x_mm = 112.000, y_mm = 12.500, layer = "B.Cu" },
+  { x_mm = 112.000, y_mm = 28.000, layer = "B.Cu", via_id = "v_vin_protected_cutoff_escape" },
+  { x_mm = 112.000, y_mm = 28.000, layer = "F.Cu", via_id = "v_vin_protected_cutoff_escape" },
+]
+
+[[routes]]
+id = "usb_dp_tp_to_esd_bcu_branch"
+phase = "1_usb_and_boot"
+net = "USB_DP"
+width_mm = 0.200
+intent = "Reviewed USB D+ branch from the ESD-protected trace to TP_USB_DP using B.Cu to avoid the VBUS/C1 top-layer return area."
+points = [
+  { x_mm = 23.050, y_mm = 7.000, layer = "F.Cu", anchor = "existing USB_DP ESD trace" },
+  { x_mm = 23.050, y_mm = 7.000, layer = "B.Cu", via_id = "v_usb_dp_esd_bcu_escape" },
+  { x_mm = 15.200, y_mm = 7.000, layer = "B.Cu" },
+  { x_mm = 15.200, y_mm = 13.000, layer = "B.Cu" },
+  { x_mm = 18.000, y_mm = 13.000, layer = "B.Cu" },
+  { x_mm = 18.000, y_mm = 13.000, layer = "F.Cu", via_id = "v_usb_dp_tp_bcu_entry" },
+  { x_mm = 18.000, y_mm = 15.000, layer = "F.Cu", anchor = "TP_USB_DP:1" },
+]
+
+[[routes]]
+id = "usb_dn_tp_to_esd_bcu_branch"
+phase = "1_usb_and_boot"
+net = "USB_DN"
+width_mm = 0.200
+intent = "Reviewed USB D- branch from the ESD-protected trace to TP_USB_DN using B.Cu to avoid the VBUS/C1 top-layer return area."
+points = [
+  { x_mm = 24.950, y_mm = 7.000, layer = "F.Cu", anchor = "existing USB_DN ESD trace" },
+  { x_mm = 24.950, y_mm = 7.000, layer = "B.Cu", via_id = "v_usb_dn_esd_bcu_escape" },
+  { x_mm = 26.000, y_mm = 7.000, layer = "B.Cu" },
+  { x_mm = 26.000, y_mm = 14.000, layer = "B.Cu" },
+  { x_mm = 20.000, y_mm = 14.000, layer = "B.Cu" },
+  { x_mm = 20.000, y_mm = 14.000, layer = "F.Cu", via_id = "v_usb_dn_tp_bcu_entry" },
+  { x_mm = 20.000, y_mm = 17.000, layer = "F.Cu", anchor = "TP_USB_DN:1" },
+]
+
+[[routes]]
+id = "fan_tach_j20_to_tp_branch"
+phase = "5_optics_camera_interlocks"
+net = "FAN_TACH"
+width_mm = 0.200
+intent = "Reviewed local fan tach branch from J20 to the manufacturing test point."
+points = [
+  { x_mm = 72.540, y_mm = 84.000, layer = "F.Cu", anchor = "J20:2" },
+  { x_mm = 72.540, y_mm = 86.500, layer = "F.Cu" },
+  { x_mm = 80.000, y_mm = 86.500, layer = "F.Cu" },
+  { x_mm = 80.000, y_mm = 85.000, layer = "F.Cu", anchor = "TP_FAN_TACH:1" },
+]
+
+[[routes]]
+id = "usb_vbus_sense_r4_to_r3_divider"
+phase = "1_usb_and_boot"
+net = "USB_VBUS_SENSE"
+width_mm = 0.200
+intent = "Reviewed local USB VBUS sense-divider link from R4 to R3, jogged outside the VBUS and ground pads."
+points = [
+  { x_mm = 27.000, y_mm = 10.000, layer = "F.Cu", anchor = "R4:1" },
+  { x_mm = 27.000, y_mm = 8.000, layer = "F.Cu" },
+  { x_mm = 31.000, y_mm = 8.000, layer = "F.Cu" },
+  { x_mm = 31.000, y_mm = 5.000, layer = "F.Cu" },
+  { x_mm = 29.000, y_mm = 5.000, layer = "F.Cu", anchor = "R3:2" },
 ]
 
 [[segments]]
