@@ -31,6 +31,7 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 - Added a fifteenth DRC-clean schema-v2 route-reduction pass covering the C5 analog-decoupler ground return, ADS_AIN0 ADC test branch, SD_CS_N pullup/test/MCU spine, and a compact 3V3_SW U3/L1/C9 local star. Physical DRC remains `0`; real unconnected items are reduced to `94`.
 - Added a sixteenth DRC-clean schema-v2 route-reduction pass covering CAM_FRAME_INT and CAM_RESET_N camera header/test branches plus the local THERM_CH_5 U5-to-J9 branch. Physical DRC remains `0`; real unconnected items are reduced to `91`.
 - Added a seventeenth DRC-clean schema-v2 route-reduction pass covering the U4/C5 analog GND return tie and the filtered `+3V3_ANA` branch from FB1/C5/TP_3V3A to U5 and J23. Physical DRC remains `0`; real unconnected items are reduced to `88`.
+- Added an eighteenth DRC-clean schema-v2 route-reduction pass covering the `ESP_GPIO0_BOOT` R49-to-MCU top-layer dogleg. Physical DRC remains `0`; real unconnected items are reduced to `87`.
 
 Concrete follow-up to reach release:
 

@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 62
-expected_route_count = 109
+expected_route_count = 110
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1458,6 +1458,20 @@ points = [
   { x_mm = 29.000, y_mm = 23.000, layer = "B.Cu" },
   { x_mm = 29.000, y_mm = 23.000, layer = "F.Cu", via_id = "v_status_run_r30_bcu_entry" },
   { x_mm = 30.000, y_mm = 23.000, layer = "F.Cu", anchor = "R30:1" },
+]
+
+[[routes]]
+id = "esp_gpio0_boot_r49_to_mcu_top_dogleg"
+phase = "1_usb_and_boot"
+net = "ESP_GPIO0_BOOT"
+width_mm = 0.200
+intent = "Reviewed ESP_GPIO0_BOOT MCU-tail dogleg from R49 to the ESP32-S3 pad, staying on F.Cu inside the module body and outside the USB lanes."
+points = [
+  { x_mm = 54.000, y_mm = 32.000, layer = "F.Cu", anchor = "R49:1" },
+  { x_mm = 54.000, y_mm = 34.000, layer = "F.Cu" },
+  { x_mm = 70.800, y_mm = 34.000, layer = "F.Cu" },
+  { x_mm = 70.800, y_mm = 25.560, layer = "F.Cu" },
+  { x_mm = 69.900, y_mm = 25.560, layer = "F.Cu", anchor = "U1:27" },
 ]
 
 [[routes]]
