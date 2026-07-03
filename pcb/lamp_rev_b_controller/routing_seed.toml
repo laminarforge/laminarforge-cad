@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 59
-expected_route_count = 106
+expected_via_count = 62
+expected_route_count = 109
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -539,6 +539,39 @@ drill_mm = 0.300
 intent = "Reviewed C5 ground return via west of the +3V3 optics B.Cu spine before tying into the U9/R51 return corner on F.Cu."
 
 [[vias]]
+id = "v_gnd_u4_adc_return_bcu_tie"
+phase = "4_thermistor_analog"
+net = "GND"
+x_mm = 30.000
+y_mm = 45.600
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed U4 ADC return B.Cu tie via on the existing ground-pair track, placed below the ADS pad row and before the C5 return hop."
+
+[[vias]]
+id = "v_plus3v3_ana_fb1_bcu_escape"
+phase = "4_thermistor_analog"
+net = "+3V3_ANA"
+x_mm = 44.000
+y_mm = 40.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3_ANA B.Cu escape on the accepted FB1/C5/TP_3V3A rail bend, left of the +3V3 optics supply via column."
+
+[[vias]]
+id = "v_plus3v3_ana_u5_bcu_entry"
+phase = "4_thermistor_analog"
+net = "+3V3_ANA"
+x_mm = 24.550
+y_mm = 54.800
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed +3V3_ANA U5 entry via in the open window above U5 pin 16, clear of THERM_MUX_S0/S2 top traces and local channel harness lanes."
+
+[[vias]]
 id = "v_ads_ain0_u4_bcu_escape"
 phase = "4_thermistor_analog"
 net = "ADS_AIN0"
@@ -724,6 +757,36 @@ points = [
 ]
 
 [[routes]]
+id = "plus3v3_ana_fb1_to_u5_bcu_branch"
+phase = "4_thermistor_analog"
+net = "+3V3_ANA"
+width_mm = 0.300
+intent = "Reviewed quiet analog rail branch from the FB1/C5/TP_3V3A rail to U5 pin 16, doglegged below the ADS fanout and above thermistor harness lanes."
+points = [
+  { x_mm = 44.000, y_mm = 40.000, layer = "F.Cu", anchor = "existing +3V3_ANA FB1/C5/TP rail" },
+  { x_mm = 44.000, y_mm = 40.000, layer = "B.Cu", via_id = "v_plus3v3_ana_fb1_bcu_escape" },
+  { x_mm = 44.000, y_mm = 53.000, layer = "B.Cu" },
+  { x_mm = 29.500, y_mm = 53.000, layer = "B.Cu" },
+  { x_mm = 29.500, y_mm = 54.800, layer = "B.Cu" },
+  { x_mm = 24.550, y_mm = 54.800, layer = "B.Cu" },
+  { x_mm = 24.550, y_mm = 54.800, layer = "F.Cu", via_id = "v_plus3v3_ana_u5_bcu_entry" },
+  { x_mm = 24.550, y_mm = 55.260, layer = "F.Cu", anchor = "U5:16" },
+]
+
+[[routes]]
+id = "plus3v3_ana_u5_to_j23_bcu_branch"
+phase = "4_thermistor_analog"
+net = "+3V3_ANA"
+width_mm = 0.300
+intent = "Reviewed J23 analog supply extension from the accepted U5 branch using the east-side B.Cu corridor outside the thermistor harness lanes."
+points = [
+  { x_mm = 44.000, y_mm = 53.000, layer = "B.Cu", anchor = "existing +3V3_ANA U5 branch" },
+  { x_mm = 42.500, y_mm = 53.000, layer = "B.Cu" },
+  { x_mm = 42.500, y_mm = 82.000, layer = "B.Cu" },
+  { x_mm = 34.000, y_mm = 82.000, layer = "B.Cu", anchor = "J23:1" },
+]
+
+[[routes]]
 id = "vdrv_r55_to_tp_and_u6"
 phase = "2_power_tree"
 net = "VDRV"
@@ -814,6 +877,21 @@ points = [
   { x_mm = 29.000, y_mm = 45.600, layer = "F.Cu" },
   { x_mm = 30.000, y_mm = 45.600, layer = "F.Cu" },
   { x_mm = 30.000, y_mm = 44.110, layer = "F.Cu", anchor = "U4:3" },
+]
+
+[[routes]]
+id = "gnd_u4_adc_to_c5_return_bcu_tie"
+phase = "4_thermistor_analog"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed U4 ADC ground-pair return tie to the accepted C5/optics return via using a lower B.Cu jog beneath the ADS input lanes."
+points = [
+  { x_mm = 30.000, y_mm = 45.600, layer = "F.Cu", anchor = "existing U4 ADC ground-pair return" },
+  { x_mm = 30.000, y_mm = 45.600, layer = "B.Cu", via_id = "v_gnd_u4_adc_return_bcu_tie" },
+  { x_mm = 30.000, y_mm = 52.000, layer = "B.Cu" },
+  { x_mm = 42.500, y_mm = 52.000, layer = "B.Cu" },
+  { x_mm = 42.500, y_mm = 45.000, layer = "B.Cu" },
+  { x_mm = 42.500, y_mm = 45.000, layer = "F.Cu", via_id = "v_gnd_c5_return_bcu_entry" },
 ]
 
 [[routes]]
