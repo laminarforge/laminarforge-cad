@@ -28,6 +28,7 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 - Added a twelfth DRC-clean schema-v2 route-reduction pass covering the local optics GND return chain, AUX_ANALOG_IN J23 branch, and RUN LED D2-to-R30 bottom-layer hop. Physical DRC remains `0`; real unconnected items are reduced to `111`.
 - Added a thirteenth DRC-clean schema-v2 route-reduction pass covering THERM_MUX_S1/S2 local branches, THERM_CH_0/1/4 bottom-layer thermistor branches, and the USB_CC1 receptacle-to-pulldown tie. Physical DRC remains `0`; real unconnected items are reduced to `105`.
 - Added a fourteenth DRC-clean schema-v2 route-reduction pass covering bottom-layer SPI MISO/MOSI/SCLK and UART0 TX/RX local debug branches with reviewed return vias. Physical DRC remains `0`; real unconnected items are reduced to `100`.
+- Added a fifteenth DRC-clean schema-v2 route-reduction pass covering the C5 analog-decoupler ground return, ADS_AIN0 ADC test branch, SD_CS_N pullup/test/MCU spine, and a compact 3V3_SW U3/L1/C9 local star. Physical DRC remains `0`; real unconnected items are reduced to `94`.
 
 Concrete follow-up to reach release:
 

@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 46
-expected_route_count = 99
+expected_via_count = 55
+expected_route_count = 103
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -516,6 +516,105 @@ size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed UART0_RXD return via beside TP_UART_RX, above the VBUS test branch."
 
+[[vias]]
+id = "v_gnd_c5_bcu_escape"
+phase = "4_thermistor_analog"
+net = "GND"
+x_mm = 42.500
+y_mm = 38.800
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed C5 analog-decoupler ground escape below the pad, offset from the +3V3_ANA top-layer jog."
+
+[[vias]]
+id = "v_gnd_c5_return_bcu_entry"
+phase = "4_thermistor_analog"
+net = "GND"
+x_mm = 42.500
+y_mm = 45.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed C5 ground return via west of the +3V3 optics B.Cu spine before tying into the U9/R51 return corner on F.Cu."
+
+[[vias]]
+id = "v_ads_ain0_u4_bcu_escape"
+phase = "4_thermistor_analog"
+net = "ADS_AIN0"
+x_mm = 30.500
+y_mm = 42.700
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed ADS_AIN0 bottom-layer escape below U4 pin 4, away from the accepted ADS_AIN1 top trace and U4 ground pads."
+
+[[vias]]
+id = "v_ads_ain0_tp_bcu_entry"
+phase = "4_thermistor_analog"
+net = "ADS_AIN0"
+x_mm = 38.000
+y_mm = 36.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed ADS_AIN0 return via below TP_ADS_AIN0, clear of the +3V3_ANA C5 branch."
+
+[[vias]]
+id = "v_sd_cs_r43_bcu_escape"
+phase = "5_optics_camera_interlocks"
+net = "SD_CS_N"
+x_mm = 83.000
+y_mm = 42.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed SD card chip-select pullup-side escape above R43, clear of the adjacent camera pullup pads."
+
+[[vias]]
+id = "v_sd_cs_tp_bcu_tie"
+phase = "5_optics_camera_interlocks"
+net = "SD_CS_N"
+x_mm = 73.000
+y_mm = 31.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed SD card chip-select test-point tie via above TP_SD_CS, offset from the I2C header pads."
+
+[[vias]]
+id = "v_sd_cs_mcu_bcu_entry"
+phase = "5_optics_camera_interlocks"
+net = "SD_CS_N"
+x_mm = 64.180
+y_mm = 29.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed SD card chip-select MCU return via above U1 pin 23, between the camera-control fanout lanes."
+
+[[vias]]
+id = "v_3v3_sw_u3_bcu_escape"
+phase = "2_power_tree"
+net = "3V3_SW"
+x_mm = 84.500
+y_mm = 22.800
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed AP63203 switch-node B.Cu escape below U3 pin 5, avoiding the +5V input trace and C3 ground pad."
+
+[[vias]]
+id = "v_3v3_sw_l1_c9_bcu_entry"
+phase = "2_power_tree"
+net = "3V3_SW"
+x_mm = 88.700
+y_mm = 22.800
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed AP63203 switch-node return via between L1 and C9 for the compact local star."
+
 [[routes]]
 id = "led_current_sense_u10_to_tp"
 phase = "5_optics_camera_interlocks"
@@ -848,6 +947,28 @@ points = [
 ]
 
 [[routes]]
+id = "sd_cs_r43_tp_mcu_bcu_spine"
+phase = "5_optics_camera_interlocks"
+net = "SD_CS_N"
+width_mm = 0.200
+intent = "Reviewed SD card chip-select pullup/test/MCU spine using B.Cu to avoid the camera-header top-layer fanout."
+points = [
+  { x_mm = 83.000, y_mm = 40.000, layer = "F.Cu", anchor = "R43:1" },
+  { x_mm = 83.000, y_mm = 42.000, layer = "F.Cu", via_id = "v_sd_cs_r43_bcu_escape" },
+  { x_mm = 83.000, y_mm = 42.000, layer = "B.Cu", via_id = "v_sd_cs_r43_bcu_escape" },
+  { x_mm = 73.000, y_mm = 42.000, layer = "B.Cu" },
+  { x_mm = 73.000, y_mm = 31.000, layer = "B.Cu", via_id = "v_sd_cs_tp_bcu_tie" },
+  { x_mm = 73.000, y_mm = 31.000, layer = "F.Cu", via_id = "v_sd_cs_tp_bcu_tie" },
+  { x_mm = 73.000, y_mm = 29.000, layer = "F.Cu", anchor = "TP_SD_CS:1" },
+  { x_mm = 73.000, y_mm = 31.000, layer = "F.Cu", via_id = "v_sd_cs_tp_bcu_tie" },
+  { x_mm = 73.000, y_mm = 31.000, layer = "B.Cu", via_id = "v_sd_cs_tp_bcu_tie" },
+  { x_mm = 64.180, y_mm = 31.000, layer = "B.Cu" },
+  { x_mm = 64.180, y_mm = 29.500, layer = "B.Cu", via_id = "v_sd_cs_mcu_bcu_entry" },
+  { x_mm = 64.180, y_mm = 29.500, layer = "F.Cu", via_id = "v_sd_cs_mcu_bcu_entry" },
+  { x_mm = 64.180, y_mm = 26.950, layer = "F.Cu", anchor = "U1:23" },
+]
+
+[[routes]]
 id = "plus5v_tp_to_u7_output"
 phase = "2_power_tree"
 net = "+5V"
@@ -1009,6 +1130,23 @@ points = [
   { x_mm = 96.500, y_mm = 24.000, layer = "F.Cu", anchor = "existing +5V C2 branch" },
   { x_mm = 96.500, y_mm = 19.500, layer = "F.Cu" },
   { x_mm = 85.450, y_mm = 19.500, layer = "F.Cu", anchor = "existing +5V U3 input branch" },
+]
+
+[[routes]]
+id = "threev3_sw_u3_l1_c9_local_star"
+phase = "2_power_tree"
+net = "3V3_SW"
+width_mm = 0.400
+intent = "Reviewed compact AP63203 switch-node star from U3 to L1 and C9, kept local to avoid the regulator ground corridor."
+points = [
+  { x_mm = 84.500, y_mm = 23.500, layer = "F.Cu", anchor = "U3:5" },
+  { x_mm = 84.500, y_mm = 22.800, layer = "F.Cu", via_id = "v_3v3_sw_u3_bcu_escape" },
+  { x_mm = 84.500, y_mm = 22.800, layer = "B.Cu", via_id = "v_3v3_sw_u3_bcu_escape" },
+  { x_mm = 88.700, y_mm = 22.800, layer = "B.Cu", via_id = "v_3v3_sw_l1_c9_bcu_entry" },
+  { x_mm = 88.700, y_mm = 22.800, layer = "F.Cu", via_id = "v_3v3_sw_l1_c9_bcu_entry" },
+  { x_mm = 88.700, y_mm = 20.500, layer = "F.Cu", anchor = "C9:2" },
+  { x_mm = 88.700, y_mm = 22.800, layer = "F.Cu" },
+  { x_mm = 88.650, y_mm = 26.000, layer = "F.Cu", anchor = "L1:1" },
 ]
 
 [[routes]]
@@ -1540,6 +1678,23 @@ points = [
 ]
 
 [[routes]]
+id = "ads_ain0_u4_to_tp_bcu_branch"
+phase = "4_thermistor_analog"
+net = "ADS_AIN0"
+width_mm = 0.200
+intent = "Reviewed ADS_AIN0 local branch using B.Cu below the accepted ADS_AIN1 top trace."
+points = [
+  { x_mm = 30.500, y_mm = 44.110, layer = "F.Cu", anchor = "U4:4" },
+  { x_mm = 30.500, y_mm = 42.700, layer = "F.Cu" },
+  { x_mm = 30.500, y_mm = 42.700, layer = "B.Cu", via_id = "v_ads_ain0_u4_bcu_escape" },
+  { x_mm = 28.500, y_mm = 42.700, layer = "B.Cu" },
+  { x_mm = 28.500, y_mm = 36.000, layer = "B.Cu" },
+  { x_mm = 38.000, y_mm = 36.000, layer = "B.Cu", via_id = "v_ads_ain0_tp_bcu_entry" },
+  { x_mm = 38.000, y_mm = 36.000, layer = "F.Cu", via_id = "v_ads_ain0_tp_bcu_entry" },
+  { x_mm = 38.000, y_mm = 38.000, layer = "F.Cu", anchor = "TP_ADS_AIN0:1" },
+]
+
+[[routes]]
 id = "ads_ain3_u4_to_tp_bcu_branch"
 phase = "4_thermistor_analog"
 net = "ADS_AIN3"
@@ -1707,6 +1862,21 @@ points = [
   { x_mm = 45.000, y_mm = 45.000, layer = "F.Cu" },
   { x_mm = 45.000, y_mm = 53.000, layer = "F.Cu" },
   { x_mm = 47.000, y_mm = 53.000, layer = "F.Cu", anchor = "R51:2" },
+]
+
+[[routes]]
+id = "gnd_c5_to_optics_return_bcu_bridge"
+phase = "4_thermistor_analog"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed C5 analog-decoupler ground return into the existing optics ground spine using B.Cu to avoid the FB1 +3V3 top trace."
+points = [
+  { x_mm = 42.500, y_mm = 37.000, layer = "F.Cu", anchor = "C5:2" },
+  { x_mm = 42.500, y_mm = 38.800, layer = "F.Cu", via_id = "v_gnd_c5_bcu_escape" },
+  { x_mm = 42.500, y_mm = 38.800, layer = "B.Cu", via_id = "v_gnd_c5_bcu_escape" },
+  { x_mm = 42.500, y_mm = 45.000, layer = "B.Cu" },
+  { x_mm = 42.500, y_mm = 45.000, layer = "F.Cu", via_id = "v_gnd_c5_return_bcu_entry" },
+  { x_mm = 45.000, y_mm = 45.000, layer = "F.Cu", anchor = "existing gnd_u9_to_r51_local_return" },
 ]
 
 [[routes]]
