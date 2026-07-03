@@ -22,6 +22,7 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 - Added a sixth DRC-clean schema-v2 route-reduction pass covering the AP63203/P7805 input-capacitor ground return bridge, U5-to-J9 thermistor mux ground return, I2C_SCL bottom-layer MCU branch, ESP32 +3V3 module supply tie, and +3V3 J21 header branch. Physical DRC remains `0`; real unconnected items are reduced to `144`.
 - Added a seventh DRC-clean schema-v2 route-reduction pass covering ESP_EN pullup/test/MCU/programming-header branches and the STATUS_FAULT_LED local/MCU chain. Physical DRC remains `0`; real unconnected items are reduced to `138`.
 - Added an eighth DRC-clean schema-v2 route-reduction pass covering the protected-VIN input-spine B.Cu join, USB D+/D- test-point B.Cu hops, the fan tach local test branch, and the USB VBUS sense-divider link. Physical DRC remains `0`; real unconnected items are reduced to `133`.
+- Added a ninth DRC-clean schema-v2 route-reduction pass covering the HEATER0 PWM test/resistor branch, VIN_12_24 input/test branch, USB VBUS test branch, ADS_AIN1 test branch, thermistor mux OUT/EN/S0 local branches, FAN_PWM local branch, and LED_DIM_GATE local branch. Physical DRC remains `0`; real unconnected items are reduced to `123`.
 
 Concrete follow-up to reach release:
 
