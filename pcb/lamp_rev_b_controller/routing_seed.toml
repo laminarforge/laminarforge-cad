@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 78
-expected_route_count = 121
+expected_via_count = 82
+expected_route_count = 122
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -218,6 +218,50 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed SCL return via near the ESP32-S3 pad, offset east of the castellated pad column."
+
+[[vias]]
+id = "v_i2c_scl_sdcs_overpass_north"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SCL"
+x_mm = 72.000
+y_mm = 30.100
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Post-76 SCL center-spine overpass entry north of the SD_CS_N B.Cu horizontal/vertical junction, sourced from the existing SCL B.Cu pullup escape."
+
+[[vias]]
+id = "v_i2c_scl_sdcs_overpass_south"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SCL"
+x_mm = 72.000
+y_mm = 32.300
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Post-76 SCL return south of SD_CS_N, keeping the B.Cu spine west of the SD_CS_N vertical at x 73.000 until below its endpoint."
+
+[[vias]]
+id = "v_i2c_scl_spi_fanout_overpass_north"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SCL"
+x_mm = 72.900
+y_mm = 71.400
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Post-76 SCL F.Cu overpass entry north of the J18 SPI fanout lanes, west of CAM_CS_N and outside the LED_SUPPLY F.Cu zone."
+
+[[vias]]
+id = "v_i2c_scl_spi_fanout_overpass_south"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SCL"
+x_mm = 72.900
+y_mm = 77.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Post-76 SCL return to B.Cu between J18 SPI pads, west of the MISO lane start and before the lower-row J18 I2C approach."
 
 [[vias]]
 id = "v_gnd_u5_j9_bcu_escape"
@@ -1863,6 +1907,31 @@ points = [
   { x_mm = 72.500, y_mm = 11.590, layer = "B.Cu" },
   { x_mm = 72.500, y_mm = 11.590, layer = "F.Cu", via_id = "v_i2c_scl_mcu_bcu_entry" },
   { x_mm = 69.900, y_mm = 11.590, layer = "F.Cu", anchor = "U1:38" },
+]
+
+[[routes]]
+id = "i2c_scl_top_island_to_j18_center_spine"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SCL"
+width_mm = 0.200
+intent = "Post-76 alternate SCL route from the existing top I2C island to J18 pad 11 using a center B.Cu spine, local F.Cu overpasses over SD_CS_N and the J18 SPI fanout, and a controlled lower-row B.Cu approach."
+points = [
+  { x_mm = 79.000, y_mm = 26.000, layer = "F.Cu", anchor = "existing I2C_SCL header/test branch" },
+  { x_mm = 79.000, y_mm = 26.000, layer = "B.Cu", via_id = "v_i2c_scl_pullup_bcu_escape" },
+  { x_mm = 72.000, y_mm = 26.000, layer = "B.Cu" },
+  { x_mm = 72.000, y_mm = 30.100, layer = "B.Cu", via_id = "v_i2c_scl_sdcs_overpass_north" },
+  { x_mm = 72.000, y_mm = 30.100, layer = "F.Cu", via_id = "v_i2c_scl_sdcs_overpass_north" },
+  { x_mm = 72.000, y_mm = 32.300, layer = "F.Cu", via_id = "v_i2c_scl_sdcs_overpass_south" },
+  { x_mm = 72.000, y_mm = 32.300, layer = "B.Cu", via_id = "v_i2c_scl_sdcs_overpass_south" },
+  { x_mm = 72.000, y_mm = 43.200, layer = "B.Cu" },
+  { x_mm = 72.900, y_mm = 43.200, layer = "B.Cu" },
+  { x_mm = 72.900, y_mm = 71.400, layer = "B.Cu", via_id = "v_i2c_scl_spi_fanout_overpass_north" },
+  { x_mm = 72.900, y_mm = 71.400, layer = "F.Cu", via_id = "v_i2c_scl_spi_fanout_overpass_north" },
+  { x_mm = 72.900, y_mm = 77.000, layer = "F.Cu", via_id = "v_i2c_scl_spi_fanout_overpass_south" },
+  { x_mm = 72.900, y_mm = 77.000, layer = "B.Cu", via_id = "v_i2c_scl_spi_fanout_overpass_south" },
+  { x_mm = 72.900, y_mm = 82.700, layer = "B.Cu" },
+  { x_mm = 74.160, y_mm = 82.700, layer = "B.Cu" },
+  { x_mm = 74.160, y_mm = 81.540, layer = "B.Cu", anchor = "J18:11" },
 ]
 
 [[routes]]
