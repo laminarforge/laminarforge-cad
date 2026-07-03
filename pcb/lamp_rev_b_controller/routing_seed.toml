@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 41
-expected_route_count = 94
+expected_via_count = 46
+expected_route_count = 99
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -460,6 +460,61 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed THERM_CH_1 bottom-layer entry above U5 pin 14, staggered above the accepted THERM_CH_0 branch."
+
+[[vias]]
+id = "v_spi_miso_tp_bcu_entry"
+phase = "5_optics_camera_interlocks"
+net = "SPI_MISO"
+x_mm = 80.500
+y_mm = 78.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed SPI_MISO return via near TP_SPI_MISO, offset from the accepted CAM_CS_N top-layer branch."
+
+[[vias]]
+id = "v_spi_mosi_tp_bcu_entry"
+phase = "5_optics_camera_interlocks"
+net = "SPI_MOSI"
+x_mm = 80.500
+y_mm = 75.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed SPI_MOSI return via near TP_SPI_MOSI, staggered below the SPI_MISO bottom-layer lane."
+
+[[vias]]
+id = "v_spi_sclk_tp_bcu_entry"
+phase = "5_optics_camera_interlocks"
+net = "SPI_SCLK"
+x_mm = 80.500
+y_mm = 72.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed SPI_SCLK return via near TP_SPI_SCLK, routed below the other SPI bottom-layer lanes."
+
+[[vias]]
+id = "v_uart0_txd_tp_bcu_entry"
+phase = "1_usb_and_boot"
+net = "UART0_TXD"
+x_mm = 23.500
+y_mm = 24.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed UART0_TXD return via east of the VBUS branch so the route crosses the ESP_EN B.Cu corridor on F.Cu."
+
+[[vias]]
+id = "v_uart0_rxd_tp_bcu_entry"
+phase = "1_usb_and_boot"
+net = "UART0_RXD"
+x_mm = 24.500
+y_mm = 29.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed UART0_RXD return via beside TP_UART_RX, above the VBUS test branch."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -1769,6 +1824,78 @@ points = [
   { x_mm = 2.000, y_mm = 76.000, layer = "B.Cu" },
   { x_mm = 11.000, y_mm = 76.000, layer = "B.Cu" },
   { x_mm = 11.000, y_mm = 70.000, layer = "B.Cu", anchor = "J5:1" },
+]
+
+[[routes]]
+id = "spi_miso_j18_to_tp_bcu_branch"
+phase = "5_optics_camera_interlocks"
+net = "SPI_MISO"
+width_mm = 0.200
+intent = "Reviewed SPI_MISO branch from J18 to TP_SPI_MISO using B.Cu to avoid the accepted CAM_CS_N top-layer route."
+points = [
+  { x_mm = 74.160, y_mm = 79.000, layer = "B.Cu", anchor = "J18:5" },
+  { x_mm = 74.160, y_mm = 77.500, layer = "B.Cu" },
+  { x_mm = 80.500, y_mm = 77.500, layer = "B.Cu" },
+  { x_mm = 80.500, y_mm = 78.000, layer = "B.Cu", via_id = "v_spi_miso_tp_bcu_entry" },
+  { x_mm = 80.500, y_mm = 78.000, layer = "F.Cu", via_id = "v_spi_miso_tp_bcu_entry" },
+  { x_mm = 82.000, y_mm = 78.000, layer = "F.Cu", anchor = "TP_SPI_MISO:1" },
+]
+
+[[routes]]
+id = "spi_mosi_j18_to_tp_bcu_branch"
+phase = "5_optics_camera_interlocks"
+net = "SPI_MOSI"
+width_mm = 0.200
+intent = "Reviewed SPI_MOSI branch from J18 to TP_SPI_MOSI using a B.Cu lane below the MISO escape."
+points = [
+  { x_mm = 71.620, y_mm = 79.000, layer = "B.Cu", anchor = "J18:4" },
+  { x_mm = 71.620, y_mm = 76.000, layer = "B.Cu" },
+  { x_mm = 80.500, y_mm = 75.000, layer = "B.Cu", via_id = "v_spi_mosi_tp_bcu_entry" },
+  { x_mm = 80.500, y_mm = 75.000, layer = "F.Cu", via_id = "v_spi_mosi_tp_bcu_entry" },
+  { x_mm = 82.000, y_mm = 75.000, layer = "F.Cu", anchor = "TP_SPI_MOSI:1" },
+]
+
+[[routes]]
+id = "spi_sclk_j18_to_tp_bcu_branch"
+phase = "5_optics_camera_interlocks"
+net = "SPI_SCLK"
+width_mm = 0.200
+intent = "Reviewed SPI clock branch from J18 to TP_SPI_SCLK using the lowest B.Cu lane in the camera/debug fanout."
+points = [
+  { x_mm = 69.080, y_mm = 79.000, layer = "B.Cu", anchor = "J18:3" },
+  { x_mm = 69.080, y_mm = 73.000, layer = "B.Cu" },
+  { x_mm = 80.500, y_mm = 72.000, layer = "B.Cu", via_id = "v_spi_sclk_tp_bcu_entry" },
+  { x_mm = 80.500, y_mm = 72.000, layer = "F.Cu", via_id = "v_spi_sclk_tp_bcu_entry" },
+  { x_mm = 82.000, y_mm = 72.000, layer = "F.Cu", anchor = "TP_SPI_SCLK:1" },
+]
+
+[[routes]]
+id = "uart0_txd_j21_to_tp_bcu_branch"
+phase = "1_usb_and_boot"
+net = "UART0_TXD"
+width_mm = 0.200
+intent = "Reviewed UART0_TXD branch from J21 to TP_UART_TX using B.Cu to avoid the ESP_GPIO0_BOOT header pad and VBUS top trace."
+points = [
+  { x_mm = 19.080, y_mm = 21.000, layer = "B.Cu", anchor = "J21:3" },
+  { x_mm = 23.500, y_mm = 21.000, layer = "B.Cu" },
+  { x_mm = 23.500, y_mm = 24.000, layer = "B.Cu", via_id = "v_uart0_txd_tp_bcu_entry" },
+  { x_mm = 23.500, y_mm = 24.000, layer = "F.Cu", via_id = "v_uart0_txd_tp_bcu_entry" },
+  { x_mm = 23.500, y_mm = 29.000, layer = "F.Cu" },
+  { x_mm = 22.000, y_mm = 29.000, layer = "F.Cu", anchor = "TP_UART_TX:1" },
+]
+
+[[routes]]
+id = "uart0_rxd_j21_to_tp_bcu_branch"
+phase = "1_usb_and_boot"
+net = "UART0_RXD"
+width_mm = 0.200
+intent = "Reviewed UART0_RXD branch from J21 to TP_UART_RX using B.Cu above the USB VBUS test branch."
+points = [
+  { x_mm = 14.000, y_mm = 23.540, layer = "B.Cu", anchor = "J21:4" },
+  { x_mm = 14.000, y_mm = 29.500, layer = "B.Cu" },
+  { x_mm = 24.500, y_mm = 29.500, layer = "B.Cu", via_id = "v_uart0_rxd_tp_bcu_entry" },
+  { x_mm = 24.500, y_mm = 29.500, layer = "F.Cu", via_id = "v_uart0_rxd_tp_bcu_entry" },
+  { x_mm = 26.000, y_mm = 29.000, layer = "F.Cu", anchor = "TP_UART_RX:1" },
 ]
 
 [[segments]]
