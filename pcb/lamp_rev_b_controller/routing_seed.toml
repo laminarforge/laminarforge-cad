@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 88
-expected_route_count = 123
+expected_via_count = 90
+expected_route_count = 124
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -262,6 +262,28 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Post-76 SCL return to B.Cu between J18 SPI pads, west of the MISO lane start and before the lower-row J18 I2C approach."
+
+[[vias]]
+id = "v_i2c_scl_j23_u8_gap_overpass_east"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SCL"
+x_mm = 71.200
+y_mm = 64.700
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "J23 SCL U8-gap overpass entry from the accepted SCL center spine, set west of the LED_SUPPLY F.Cu zone and east of the accepted SDA B.Cu spine."
+
+[[vias]]
+id = "v_i2c_scl_j23_u8_gap_dogleg_west"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SCL"
+x_mm = 40.000
+y_mm = 62.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "J23 SCL return to B.Cu after the U8 inter-pad F.Cu pass and R54 avoidance dogleg, west of +3V3_ANA and east of AUX_ANALOG_IN."
 
 [[vias]]
 id = "v_gnd_u5_j9_bcu_escape"
@@ -1998,6 +2020,24 @@ points = [
   { x_mm = 72.900, y_mm = 82.700, layer = "B.Cu" },
   { x_mm = 74.160, y_mm = 82.700, layer = "B.Cu" },
   { x_mm = 74.160, y_mm = 81.540, layer = "B.Cu", anchor = "J18:11" },
+]
+
+[[routes]]
+id = "i2c_scl_j18_center_spine_to_j23_u8_gap_dogleg_branch"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SCL"
+width_mm = 0.200
+intent = "Repair J23 SCL by branching from the accepted center SCL spine, passing through the U8:1/U8:2 inter-pad gap on F.Cu, doglegging below R54, then approaching J23:6 from below on B.Cu."
+points = [
+  { x_mm = 72.900, y_mm = 64.700, layer = "B.Cu", anchor = "accepted i2c_scl_top_island_to_j18_center_spine B.Cu segment" },
+  { x_mm = 71.200, y_mm = 64.700, layer = "B.Cu", via_id = "v_i2c_scl_j23_u8_gap_overpass_east" },
+  { x_mm = 71.200, y_mm = 64.700, layer = "F.Cu", via_id = "v_i2c_scl_j23_u8_gap_overpass_east" },
+  { x_mm = 49.000, y_mm = 64.700, layer = "F.Cu" },
+  { x_mm = 49.000, y_mm = 62.000, layer = "F.Cu" },
+  { x_mm = 40.000, y_mm = 62.000, layer = "F.Cu", via_id = "v_i2c_scl_j23_u8_gap_dogleg_west" },
+  { x_mm = 40.000, y_mm = 62.000, layer = "B.Cu", via_id = "v_i2c_scl_j23_u8_gap_dogleg_west" },
+  { x_mm = 34.000, y_mm = 62.000, layer = "B.Cu" },
+  { x_mm = 34.000, y_mm = 69.300, layer = "B.Cu", anchor = "J23:6" },
 ]
 
 [[routes]]
