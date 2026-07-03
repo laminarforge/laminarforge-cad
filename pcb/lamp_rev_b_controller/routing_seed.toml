@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 82
-expected_route_count = 122
+expected_via_count = 88
+expected_route_count = 123
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -911,6 +911,72 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed R26 shunt ground entry above the pad, clear of Q2 PTH pads and the HEATER1_LOW shunt pad."
+
+[[vias]]
+id = "v_i2c_sda_sdcs_east_overpass_north"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SDA"
+x_mm = 74.500
+y_mm = 40.800
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "SDA east-side SD_CS_N overpass entry, sourced from J22:1 on B.Cu and offset west of U8 pad 15."
+
+[[vias]]
+id = "v_i2c_sda_sdcs_east_overpass_south"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SDA"
+x_mm = 74.500
+y_mm = 43.200
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "SDA return south of the SD_CS_N B.Cu horizontal at y=42.000, kept clear of U8 no-net pad 15."
+
+[[vias]]
+id = "v_i2c_sda_scl_mid_overpass_east"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SDA"
+x_mm = 74.500
+y_mm = 60.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "East entry for the mid-board F.Cu bridge over the accepted SCL B.Cu center spine."
+
+[[vias]]
+id = "v_i2c_sda_scl_mid_overpass_west"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SDA"
+x_mm = 70.350
+y_mm = 60.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "West return after crossing the accepted SCL B.Cu center spine on F.Cu."
+
+[[vias]]
+id = "v_i2c_sda_spi_gap_overpass_north"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SDA"
+x_mm = 70.350
+y_mm = 71.200
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "F.Cu overpass entry north of the J18 SPI fanout, centered between the SPI_SCLK and SPI_MOSI pad columns."
+
+[[vias]]
+id = "v_i2c_sda_spi_gap_overpass_south"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SDA"
+x_mm = 70.350
+y_mm = 77.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Return to B.Cu above the J18 top row, before the below-pad approach to J18:10."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -1932,6 +1998,32 @@ points = [
   { x_mm = 72.900, y_mm = 82.700, layer = "B.Cu" },
   { x_mm = 74.160, y_mm = 82.700, layer = "B.Cu" },
   { x_mm = 74.160, y_mm = 81.540, layer = "B.Cu", anchor = "J18:11" },
+]
+
+[[routes]]
+id = "i2c_sda_j22_to_j18_east_mid_overpass"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SDA"
+width_mm = 0.200
+intent = "Route SDA from the already-connected J22/R40/TP_I2C_SDA island to J18 pad 10 using a J22 B.Cu source, an east SD_CS_N overpass, a mid-board F.Cu bridge over the accepted SCL spine, and a lower SPI-fanout overpass before approaching J18:10 from below."
+points = [
+  { x_mm = 76.000, y_mm = 31.000, layer = "B.Cu", anchor = "J22:1 / existing I2C_SDA header branch" },
+  { x_mm = 74.500, y_mm = 31.000, layer = "B.Cu" },
+  { x_mm = 74.500, y_mm = 40.800, layer = "B.Cu", via_id = "v_i2c_sda_sdcs_east_overpass_north" },
+  { x_mm = 74.500, y_mm = 40.800, layer = "F.Cu", via_id = "v_i2c_sda_sdcs_east_overpass_north" },
+  { x_mm = 74.500, y_mm = 43.200, layer = "F.Cu", via_id = "v_i2c_sda_sdcs_east_overpass_south" },
+  { x_mm = 74.500, y_mm = 43.200, layer = "B.Cu", via_id = "v_i2c_sda_sdcs_east_overpass_south" },
+  { x_mm = 74.500, y_mm = 60.000, layer = "B.Cu", via_id = "v_i2c_sda_scl_mid_overpass_east" },
+  { x_mm = 74.500, y_mm = 60.000, layer = "F.Cu", via_id = "v_i2c_sda_scl_mid_overpass_east" },
+  { x_mm = 70.350, y_mm = 60.000, layer = "F.Cu", via_id = "v_i2c_sda_scl_mid_overpass_west" },
+  { x_mm = 70.350, y_mm = 60.000, layer = "B.Cu", via_id = "v_i2c_sda_scl_mid_overpass_west" },
+  { x_mm = 70.350, y_mm = 71.200, layer = "B.Cu", via_id = "v_i2c_sda_spi_gap_overpass_north" },
+  { x_mm = 70.350, y_mm = 71.200, layer = "F.Cu", via_id = "v_i2c_sda_spi_gap_overpass_north" },
+  { x_mm = 70.350, y_mm = 77.000, layer = "F.Cu", via_id = "v_i2c_sda_spi_gap_overpass_south" },
+  { x_mm = 70.350, y_mm = 77.000, layer = "B.Cu", via_id = "v_i2c_sda_spi_gap_overpass_south" },
+  { x_mm = 70.350, y_mm = 82.700, layer = "B.Cu" },
+  { x_mm = 71.620, y_mm = 82.700, layer = "B.Cu" },
+  { x_mm = 71.620, y_mm = 81.540, layer = "B.Cu", anchor = "J18:10" },
 ]
 
 [[routes]]
