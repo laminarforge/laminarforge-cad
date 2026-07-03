@@ -33,6 +33,7 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 - Added a seventeenth DRC-clean schema-v2 route-reduction pass covering the U4/C5 analog GND return tie and the filtered `+3V3_ANA` branch from FB1/C5/TP_3V3A to U5 and J23. Physical DRC remains `0`; real unconnected items are reduced to `88`.
 - Added an eighteenth DRC-clean schema-v2 route-reduction pass covering the `ESP_GPIO0_BOOT` R49-to-MCU top-layer dogleg. Physical DRC remains `0`; real unconnected items are reduced to `87`.
 - Added a nineteenth DRC-clean schema-v2 route-reduction pass covering the `FRAME_TRIG_OUT` U1-to-TP/J17 bottom-layer tail. Physical DRC remains `0`; real unconnected items are reduced to `86`.
+- Added a twentieth DRC-clean schema-v2 route-reduction pass covering the `LED_EXC_PWM` U1-to-existing-U9/TP bottom-layer tail with a short F.Cu bridge over the `ESP_EN` programming-header branch. Physical DRC remains `0`; real unconnected items are reduced to `85`.
 
 Concrete follow-up to reach release:
 

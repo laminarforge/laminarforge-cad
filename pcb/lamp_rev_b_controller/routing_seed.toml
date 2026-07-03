@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 64
-expected_route_count = 111
+expected_via_count = 68
+expected_route_count = 112
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -702,6 +702,50 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed FRAME_TRIG_OUT return via above TP_FRAME_TRIG, west of U8 and the J17 header branch."
+
+[[vias]]
+id = "v_led_exc_pwm_mcu_bcu_escape"
+phase = "5_optics_camera_interlocks"
+net = "LED_EXC_PWM"
+x_mm = 49.000
+y_mm = 16.670
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed LED_EXC_PWM MCU escape west of U1 pin 7, offset from the ESP_EN bottom-layer column."
+
+[[vias]]
+id = "v_led_exc_pwm_tp_bcu_entry"
+phase = "5_optics_camera_interlocks"
+net = "LED_EXC_PWM"
+x_mm = 41.000
+y_mm = 43.200
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed LED_EXC_PWM re-entry below the existing TP_LED_PWM/U9 island, clear of the C5 ground return."
+
+[[vias]]
+id = "v_led_exc_pwm_esp_en_bridge_fcu_entry"
+phase = "5_optics_camera_interlocks"
+net = "LED_EXC_PWM"
+x_mm = 40.000
+y_mm = 24.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed LED_EXC_PWM F.Cu bridge entry before crossing the ESP_EN B.Cu programming-header branch."
+
+[[vias]]
+id = "v_led_exc_pwm_esp_en_bridge_bcu_return"
+phase = "5_optics_camera_interlocks"
+net = "LED_EXC_PWM"
+x_mm = 40.000
+y_mm = 28.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed LED_EXC_PWM B.Cu return after crossing the ESP_EN B.Cu programming-header branch on F.Cu."
 
 [[vias]]
 id = "v_therm_ch5_u5_bcu_escape"
@@ -1981,6 +2025,27 @@ points = [
   { x_mm = 46.050, y_mm = 44.000, layer = "F.Cu", anchor = "U9:1" },
   { x_mm = 41.000, y_mm = 44.000, layer = "F.Cu" },
   { x_mm = 41.000, y_mm = 45.000, layer = "F.Cu", anchor = "TP_LED_PWM:1" },
+]
+
+[[routes]]
+id = "led_exc_pwm_mcu_to_existing_u9_tp_bcu_branch"
+phase = "5_optics_camera_interlocks"
+net = "LED_EXC_PWM"
+width_mm = 0.250
+intent = "Reviewed LED_EXC_PWM MCU tail tying U1 pin 7 to the existing U9/TP_LED_PWM island with a west-side B.Cu descent."
+points = [
+  { x_mm = 52.100, y_mm = 16.670, layer = "F.Cu", anchor = "U1:7" },
+  { x_mm = 49.000, y_mm = 16.670, layer = "F.Cu", via_id = "v_led_exc_pwm_mcu_bcu_escape" },
+  { x_mm = 49.000, y_mm = 16.670, layer = "B.Cu", via_id = "v_led_exc_pwm_mcu_bcu_escape" },
+  { x_mm = 40.000, y_mm = 16.670, layer = "B.Cu" },
+  { x_mm = 40.000, y_mm = 24.000, layer = "B.Cu", via_id = "v_led_exc_pwm_esp_en_bridge_fcu_entry" },
+  { x_mm = 40.000, y_mm = 24.000, layer = "F.Cu", via_id = "v_led_exc_pwm_esp_en_bridge_fcu_entry" },
+  { x_mm = 40.000, y_mm = 28.000, layer = "F.Cu", via_id = "v_led_exc_pwm_esp_en_bridge_bcu_return" },
+  { x_mm = 40.000, y_mm = 28.000, layer = "B.Cu", via_id = "v_led_exc_pwm_esp_en_bridge_bcu_return" },
+  { x_mm = 40.000, y_mm = 43.200, layer = "B.Cu" },
+  { x_mm = 41.000, y_mm = 43.200, layer = "B.Cu", via_id = "v_led_exc_pwm_tp_bcu_entry" },
+  { x_mm = 41.000, y_mm = 43.200, layer = "F.Cu", via_id = "v_led_exc_pwm_tp_bcu_entry" },
+  { x_mm = 41.000, y_mm = 44.000, layer = "F.Cu", anchor = "existing LED_EXC_PWM U9/TP branch" },
 ]
 
 [[routes]]
