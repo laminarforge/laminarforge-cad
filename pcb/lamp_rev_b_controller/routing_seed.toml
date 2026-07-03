@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 55
-expected_route_count = 103
+expected_via_count = 59
+expected_route_count = 106
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -614,6 +614,50 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed AP63203 switch-node return via between L1 and C9 for the compact local star."
+
+[[vias]]
+id = "v_cam_frame_tp_bcu_entry"
+phase = "5_optics_camera_interlocks"
+net = "CAM_FRAME_INT"
+x_mm = 82.000
+y_mm = 63.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed CAM_FRAME_INT test-point re-entry at TP_CAM_FRAME after the B.Cu header escape stays below the SPI lanes."
+
+[[vias]]
+id = "v_cam_reset_far_bcu_entry"
+phase = "5_optics_camera_interlocks"
+net = "CAM_RESET_N"
+x_mm = 105.000
+y_mm = 68.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed CAM_RESET_N far-right B.Cu re-entry before the final top-layer jog into TP_CAM_RESET, avoiding the accepted CAM_FRAME_INT B.Cu leg."
+
+[[vias]]
+id = "v_cam_reset_j18_bcu_escape"
+phase = "5_optics_camera_interlocks"
+net = "CAM_RESET_N"
+x_mm = 66.540
+y_mm = 86.900
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed CAM_RESET_N B.Cu escape below J18 pad 8 after crossing the accepted CAM_FRAME_INT bottom lane on F.Cu."
+
+[[vias]]
+id = "v_therm_ch5_u5_bcu_escape"
+phase = "4_thermistor_analog"
+net = "THERM_CH_5"
+x_mm = 29.630
+y_mm = 62.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed THERM_CH_5 local B.Cu escape below U5 pin 5, offset from the accepted J9 ground return."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -2066,6 +2110,53 @@ points = [
   { x_mm = 24.500, y_mm = 29.500, layer = "B.Cu", via_id = "v_uart0_rxd_tp_bcu_entry" },
   { x_mm = 24.500, y_mm = 29.500, layer = "F.Cu", via_id = "v_uart0_rxd_tp_bcu_entry" },
   { x_mm = 26.000, y_mm = 29.000, layer = "F.Cu", anchor = "TP_UART_RX:1" },
+]
+
+[[routes]]
+id = "cam_frame_j18_to_tp_bcu_branch"
+phase = "5_optics_camera_interlocks"
+net = "CAM_FRAME_INT"
+width_mm = 0.200
+intent = "Reviewed CAM_FRAME_INT branch from the camera header to its manufacturing test point using the bottom B.Cu corridor, clear of accepted SPI header fanout lanes."
+points = [
+  { x_mm = 64.000, y_mm = 81.540, layer = "B.Cu", anchor = "J18:7" },
+  { x_mm = 64.000, y_mm = 86.000, layer = "B.Cu" },
+  { x_mm = 100.000, y_mm = 86.000, layer = "B.Cu" },
+  { x_mm = 100.000, y_mm = 67.000, layer = "B.Cu" },
+  { x_mm = 82.000, y_mm = 67.000, layer = "B.Cu" },
+  { x_mm = 82.000, y_mm = 63.000, layer = "B.Cu", via_id = "v_cam_frame_tp_bcu_entry" },
+  { x_mm = 82.000, y_mm = 63.000, layer = "F.Cu", via_id = "v_cam_frame_tp_bcu_entry", anchor = "TP_CAM_FRAME:1" },
+]
+
+[[routes]]
+id = "cam_reset_j18_to_tp_bcu_branch"
+phase = "5_optics_camera_interlocks"
+net = "CAM_RESET_N"
+width_mm = 0.200
+intent = "Reviewed CAM_RESET_N branch from the camera header to TP_CAM_RESET using a separate bottom-edge B.Cu lane above the accepted CAM_FRAME_INT escape."
+points = [
+  { x_mm = 66.540, y_mm = 81.540, layer = "F.Cu", anchor = "J18:8" },
+  { x_mm = 66.540, y_mm = 86.900, layer = "F.Cu", via_id = "v_cam_reset_j18_bcu_escape" },
+  { x_mm = 66.540, y_mm = 86.900, layer = "B.Cu", via_id = "v_cam_reset_j18_bcu_escape" },
+  { x_mm = 105.000, y_mm = 86.900, layer = "B.Cu" },
+  { x_mm = 105.000, y_mm = 68.000, layer = "B.Cu", via_id = "v_cam_reset_far_bcu_entry" },
+  { x_mm = 105.000, y_mm = 68.000, layer = "F.Cu", via_id = "v_cam_reset_far_bcu_entry" },
+  { x_mm = 94.000, y_mm = 68.000, layer = "F.Cu", anchor = "TP_CAM_RESET:1" },
+]
+
+[[routes]]
+id = "therm_ch5_u5_to_j9_bcu_branch"
+phase = "4_thermistor_analog"
+net = "THERM_CH_5"
+width_mm = 0.200
+intent = "Reviewed local THERM_CH_5 branch from U5 to J9 using a short B.Cu drop beside the existing thermistor return."
+points = [
+  { x_mm = 29.630, y_mm = 60.740, layer = "F.Cu", anchor = "U5:5" },
+  { x_mm = 29.630, y_mm = 62.000, layer = "F.Cu", via_id = "v_therm_ch5_u5_bcu_escape" },
+  { x_mm = 29.630, y_mm = 62.000, layer = "B.Cu", via_id = "v_therm_ch5_u5_bcu_escape" },
+  { x_mm = 29.630, y_mm = 72.000, layer = "B.Cu" },
+  { x_mm = 31.000, y_mm = 72.000, layer = "B.Cu" },
+  { x_mm = 31.000, y_mm = 70.000, layer = "B.Cu", anchor = "J9:1" },
 ]
 
 [[segments]]
