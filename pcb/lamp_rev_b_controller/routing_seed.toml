@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 91
-expected_route_count = 127
+expected_via_count = 92
+expected_route_count = 129
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1010,6 +1010,17 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Return to B.Cu above the J18 top row, before the below-pad approach to J18:10."
+
+[[vias]]
+id = "v_i2c_sda_u4_west_in2_escape"
+phase = "4_thermistor_analog"
+net = "I2C_SDA"
+x_mm = 29.500
+y_mm = 38.300
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Through-via for the U4:9 SDA west/In2 repair: the F.Cu pad escape lands on this via, and a separate In2.Cu lane starts at the same coordinate without declaring an F.Cu-to-In2 route transition."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -2856,6 +2867,33 @@ points = [
   { x_mm = 36.500, y_mm = 71.500, layer = "In2.Cu" },
   { x_mm = 36.500, y_mm = 71.840, layer = "In2.Cu" },
   { x_mm = 34.000, y_mm = 71.840, layer = "In2.Cu", anchor = "J23:5" },
+]
+
+[[routes]]
+id = "i2c_sda_u4_to_west_in2_escape_fcu_stub"
+phase = "4_thermistor_analog"
+net = "I2C_SDA"
+width_mm = 0.200
+intent = "Short U4:9 SDA F.Cu escape to the west/In2 through-via, staying between the accepted U4 SCL pad/stub and U4 +3V3 pad without moving accepted U4 SCL geometry."
+points = [
+  { x_mm = 29.500, y_mm = 39.890, layer = "F.Cu", anchor = "U4:9" },
+  { x_mm = 29.500, y_mm = 38.300, layer = "F.Cu", via_id = "v_i2c_sda_u4_west_in2_escape" },
+]
+
+[[routes]]
+id = "i2c_sda_u4_west_escape_to_j23_sda_in2_control_lane"
+phase = "4_thermistor_analog"
+net = "I2C_SDA"
+width_mm = 0.200
+intent = "All-In2.Cu U4 SDA repair lane from the new U4 through-via to the accepted J23 SDA In2 control lane at (36.500, 71.500), staying west of the accepted SCL lane below y=60.800, then jogging into the J7/J8 header gap above the SCL lane before joining the accepted SDA lane above the thermistor header pads."
+points = [
+  { x_mm = 29.500, y_mm = 38.300, layer = "In2.Cu", anchor = "v_i2c_sda_u4_west_in2_escape through-via" },
+  { x_mm = 29.500, y_mm = 37.000, layer = "In2.Cu" },
+  { x_mm = 22.000, y_mm = 37.000, layer = "In2.Cu" },
+  { x_mm = 22.000, y_mm = 61.800, layer = "In2.Cu" },
+  { x_mm = 23.800, y_mm = 61.800, layer = "In2.Cu" },
+  { x_mm = 23.800, y_mm = 71.500, layer = "In2.Cu" },
+  { x_mm = 36.500, y_mm = 71.500, layer = "In2.Cu", anchor = "accepted i2c_sda_j18_to_j23_in2_control_lane at (36.500, 71.500)" },
 ]
 
 [[segments]]
