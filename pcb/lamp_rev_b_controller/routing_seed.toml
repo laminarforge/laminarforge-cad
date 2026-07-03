@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 68
-expected_route_count = 112
+expected_via_count = 75
+expected_route_count = 119
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -758,6 +758,83 @@ size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed THERM_CH_5 local B.Cu escape below U5 pin 5, offset from the accepted J9 ground return."
 
+[[vias]]
+id = "v_gnd_c3_input_return_bcu_escape"
+phase = "2_power_tree"
+net = "GND"
+x_mm = 83.700
+y_mm = 22.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed C3 input-capacitor ground escape below the GND pad, clear of the +5V pad, SCL B.Cu corner, and switch-node via."
+
+[[vias]]
+id = "v_gnd_u3_header_return_bcu_entry"
+phase = "2_power_tree"
+net = "GND"
+x_mm = 86.200
+y_mm = 26.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed U3 ground return entry east of the regulator GND pad, reusable by the J22 header return branch."
+
+[[vias]]
+id = "v_gnd_c7_output_return_bcu_entry"
+phase = "2_power_tree"
+net = "GND"
+x_mm = 89.500
+y_mm = 33.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed C7 output-capacitor ground entry below the pad, fed from the J22/U3 B.Cu ground branch."
+
+[[vias]]
+id = "v_gnd_c8_output_return_bcu_entry"
+phase = "2_power_tree"
+net = "GND"
+x_mm = 97.000
+y_mm = 35.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed C8 ground return entry east and below the output-capacitor pad, clear of the J15 through-hole pad field."
+
+[[vias]]
+id = "v_gnd_c6_heater_bulk_bcu_entry"
+phase = "2_power_tree"
+net = "GND"
+x_mm = 94.500
+y_mm = 37.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed C6 bulk-return entry east of the GND pad, clear of VIN_HEATER and the LED terminal pad field."
+
+[[vias]]
+id = "v_gnd_r25_shunt_return_bcu_escape"
+phase = "3_heater_power"
+net = "GND"
+x_mm = 102.000
+y_mm = 60.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed R25 shunt ground escape below the pad into the accepted heater-driver B.Cu ground return."
+
+[[vias]]
+id = "v_gnd_r26_shunt_return_bcu_entry"
+phase = "3_heater_power"
+net = "GND"
+x_mm = 112.000
+y_mm = 56.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed R26 shunt ground entry above the pad, clear of Q2 PTH pads and the HEATER1_LOW shunt pad."
+
 [[routes]]
 id = "led_current_sense_u10_to_tp"
 phase = "5_optics_camera_interlocks"
@@ -1027,6 +1104,82 @@ points = [
   { x_mm = 81.000, y_mm = 19.500, layer = "F.Cu" },
   { x_mm = 85.450, y_mm = 19.500, layer = "F.Cu" },
   { x_mm = 85.450, y_mm = 23.500, layer = "F.Cu", anchor = "U3:4" },
+]
+
+[[routes]]
+id = "gnd_c3_to_u3_buck_input_return_local_tie"
+phase = "2_power_tree"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed short AP63203 input ground tie from C3 to U3, doglegged east of the +5V pad field."
+points = [
+  { x_mm = 84.000, y_mm = 21.000, layer = "F.Cu", anchor = "C3:2" },
+  { x_mm = 83.700, y_mm = 22.000, layer = "F.Cu", via_id = "v_gnd_c3_input_return_bcu_escape" },
+  { x_mm = 83.700, y_mm = 22.000, layer = "B.Cu", via_id = "v_gnd_c3_input_return_bcu_escape" },
+  { x_mm = 83.700, y_mm = 26.500, layer = "B.Cu" },
+  { x_mm = 86.200, y_mm = 26.500, layer = "B.Cu", via_id = "v_gnd_u3_header_return_bcu_entry" },
+  { x_mm = 86.200, y_mm = 26.500, layer = "F.Cu", via_id = "v_gnd_u3_header_return_bcu_entry" },
+  { x_mm = 85.450, y_mm = 25.500, layer = "F.Cu", anchor = "U3:3" },
+]
+
+[[routes]]
+id = "gnd_j22_to_u3_buck_header_return_bcu_branch"
+phase = "2_power_tree"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed J22 ground header branch into the existing U3 ground return entry via on B.Cu."
+points = [
+  { x_mm = 83.620, y_mm = 31.000, layer = "B.Cu", anchor = "J22:4" },
+  { x_mm = 86.200, y_mm = 31.000, layer = "B.Cu" },
+  { x_mm = 86.200, y_mm = 26.500, layer = "B.Cu", via_id = "v_gnd_u3_header_return_bcu_entry" },
+]
+
+[[routes]]
+id = "gnd_j22_to_c7_output_return_bcu_branch"
+phase = "2_power_tree"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed C7 output-capacitor ground return from the J22/U3 B.Cu ground branch."
+points = [
+  { x_mm = 86.200, y_mm = 31.000, layer = "B.Cu", anchor = "existing J22/U3 GND branch" },
+  { x_mm = 86.200, y_mm = 33.000, layer = "B.Cu" },
+  { x_mm = 89.500, y_mm = 33.000, layer = "B.Cu", via_id = "v_gnd_c7_output_return_bcu_entry" },
+  { x_mm = 89.500, y_mm = 33.000, layer = "F.Cu", via_id = "v_gnd_c7_output_return_bcu_entry" },
+  { x_mm = 89.500, y_mm = 31.000, layer = "F.Cu", anchor = "C7:2" },
+]
+
+[[routes]]
+id = "gnd_c7_to_c8_output_cap_bcu_south_detour"
+phase = "2_power_tree"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed south/east B.Cu ground return detour between C7 and C8, avoiding C8 +3V3, L1, and the J15 through-hole pad field."
+points = [
+  { x_mm = 89.500, y_mm = 31.000, layer = "F.Cu", anchor = "C7:2" },
+  { x_mm = 89.500, y_mm = 33.000, layer = "F.Cu", via_id = "v_gnd_c7_output_return_bcu_entry" },
+  { x_mm = 89.500, y_mm = 33.000, layer = "B.Cu", via_id = "v_gnd_c7_output_return_bcu_entry" },
+  { x_mm = 89.500, y_mm = 35.000, layer = "B.Cu" },
+  { x_mm = 97.000, y_mm = 35.000, layer = "B.Cu", via_id = "v_gnd_c8_output_return_bcu_entry" },
+  { x_mm = 97.000, y_mm = 35.000, layer = "F.Cu", via_id = "v_gnd_c8_output_return_bcu_entry" },
+  { x_mm = 97.000, y_mm = 31.000, layer = "F.Cu" },
+  { x_mm = 95.500, y_mm = 31.000, layer = "F.Cu", anchor = "C8:2" },
+]
+
+[[routes]]
+id = "gnd_c8_to_c6_bulk_return_bcu_link"
+phase = "2_power_tree"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed C8-to-C6 buck/bulk ground return using the accepted C8 entry and an east-side C6 entry."
+points = [
+  { x_mm = 95.500, y_mm = 31.000, layer = "F.Cu", anchor = "C8:2" },
+  { x_mm = 97.000, y_mm = 31.000, layer = "F.Cu" },
+  { x_mm = 97.000, y_mm = 35.000, layer = "F.Cu", via_id = "v_gnd_c8_output_return_bcu_entry" },
+  { x_mm = 97.000, y_mm = 35.000, layer = "B.Cu", via_id = "v_gnd_c8_output_return_bcu_entry" },
+  { x_mm = 97.000, y_mm = 37.000, layer = "B.Cu" },
+  { x_mm = 94.500, y_mm = 37.000, layer = "B.Cu", via_id = "v_gnd_c6_heater_bulk_bcu_entry" },
+  { x_mm = 94.500, y_mm = 37.000, layer = "F.Cu", via_id = "v_gnd_c6_heater_bulk_bcu_entry" },
+  { x_mm = 92.500, y_mm = 37.000, layer = "F.Cu", anchor = "C6:2" },
 ]
 
 [[routes]]
@@ -1430,6 +1583,35 @@ points = [
   { x_mm = 94.000, y_mm = 56.000, layer = "B.Cu" },
   { x_mm = 89.000, y_mm = 56.000, layer = "B.Cu" },
   { x_mm = 89.000, y_mm = 56.000, layer = "F.Cu", via_id = "v_gnd_heater_pulldown_spine_tie" },
+]
+
+[[routes]]
+id = "gnd_r25_shunt_to_heater_return_bcu_tail"
+phase = "3_heater_power"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed R25 shunt ground tail into the existing heater-driver B.Cu return branch."
+points = [
+  { x_mm = 102.000, y_mm = 58.000, layer = "F.Cu", anchor = "R25:2" },
+  { x_mm = 102.000, y_mm = 60.000, layer = "F.Cu", via_id = "v_gnd_r25_shunt_return_bcu_escape" },
+  { x_mm = 102.000, y_mm = 60.000, layer = "B.Cu", via_id = "v_gnd_r25_shunt_return_bcu_escape" },
+  { x_mm = 102.000, y_mm = 56.000, layer = "B.Cu" },
+  { x_mm = 94.000, y_mm = 56.000, layer = "B.Cu", anchor = "existing gnd_heater_driver_bcu_return" },
+]
+
+[[routes]]
+id = "gnd_q1_to_r26_heater_return_bcu_tail"
+phase = "3_heater_power"
+net = "GND"
+width_mm = 0.300
+intent = "Reviewed Q1 ground pad to R26 shunt ground tail routed on B.Cu above the HEATER1 low-side shunt."
+points = [
+  { x_mm = 108.080, y_mm = 49.000, layer = "B.Cu", anchor = "Q1:3" },
+  { x_mm = 108.080, y_mm = 54.500, layer = "B.Cu" },
+  { x_mm = 112.000, y_mm = 54.500, layer = "B.Cu" },
+  { x_mm = 112.000, y_mm = 56.500, layer = "B.Cu", via_id = "v_gnd_r26_shunt_return_bcu_entry" },
+  { x_mm = 112.000, y_mm = 56.500, layer = "F.Cu", via_id = "v_gnd_r26_shunt_return_bcu_entry" },
+  { x_mm = 112.000, y_mm = 58.000, layer = "F.Cu", anchor = "R26:2" },
 ]
 
 [[routes]]
