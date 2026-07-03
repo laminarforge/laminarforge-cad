@@ -26,6 +26,7 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 - Added a tenth DRC-clean schema-v2 route-reduction pass covering HEATER1 PWM/gate local B.Cu jumps and ADS_AIN2/ADS_AIN3 ADC test-point B.Cu branches. Physical DRC remains `0`; real unconnected items are reduced to `119`.
 - Added an eleventh DRC-clean schema-v2 route-reduction pass covering LED excitation PWM, LED sync, and frame-trigger local optics branches. Physical DRC remains `0`; real unconnected items are reduced to `116`.
 - Added a twelfth DRC-clean schema-v2 route-reduction pass covering the local optics GND return chain, AUX_ANALOG_IN J23 branch, and RUN LED D2-to-R30 bottom-layer hop. Physical DRC remains `0`; real unconnected items are reduced to `111`.
+- Added a thirteenth DRC-clean schema-v2 route-reduction pass covering THERM_MUX_S1/S2 local branches, THERM_CH_0/1/4 bottom-layer thermistor branches, and the USB_CC1 receptacle-to-pulldown tie. Physical DRC remains `0`; real unconnected items are reduced to `105`.
 
 Concrete follow-up to reach release:
 

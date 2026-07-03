@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 36
-expected_route_count = 88
+expected_via_count = 41
+expected_route_count = 94
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -406,6 +406,61 @@ size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed RUN LED return via left of R30 pin 1, offset from the local ground spine."
 
+[[vias]]
+id = "v_therm_mux_s1_tp_bcu_escape"
+phase = "4_thermistor_analog"
+net = "THERM_MUX_S1"
+x_mm = 8.000
+y_mm = 60.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed S1 bottom-layer escape below TP_THERM_S1, clear of the nearby no-net C14 pad."
+
+[[vias]]
+id = "v_therm_mux_s1_u5_bcu_entry"
+phase = "4_thermistor_analog"
+net = "THERM_MUX_S1"
+x_mm = 32.170
+y_mm = 53.800
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed S1 return via above U5 pin 10, avoiding the accepted S0 top-layer escape."
+
+[[vias]]
+id = "v_therm_ch4_u5_bcu_escape"
+phase = "4_thermistor_analog"
+net = "THERM_CH_4"
+x_mm = 24.550
+y_mm = 62.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed THERM_CH_4 bottom-layer escape below U5 pin 1, avoiding the top-layer THERM_MUX_OUT trace."
+
+[[vias]]
+id = "v_therm_ch0_u5_bcu_entry"
+phase = "4_thermistor_analog"
+net = "THERM_CH_0"
+x_mm = 28.370
+y_mm = 53.800
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed THERM_CH_0 bottom-layer entry above U5 pin 13, clear of the accepted S0/S1/S2 mux escapes."
+
+[[vias]]
+id = "v_therm_ch1_u5_bcu_entry"
+phase = "4_thermistor_analog"
+net = "THERM_CH_1"
+x_mm = 27.090
+y_mm = 53.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed THERM_CH_1 bottom-layer entry above U5 pin 14, staggered above the accepted THERM_CH_0 branch."
+
 [[routes]]
 id = "led_current_sense_u10_to_tp"
 phase = "5_optics_camera_interlocks"
@@ -535,6 +590,19 @@ points = [
   { x_mm = 8.750, y_mm = 4.400, layer = "F.Cu" },
   { x_mm = 7.750, y_mm = 4.400, layer = "F.Cu" },
   { x_mm = 7.750, y_mm = 5.610, layer = "F.Cu", anchor = "J1:A6" },
+]
+
+[[routes]]
+id = "usb_cc1_j1_to_r1_local_jog"
+phase = "1_usb_and_boot"
+net = "USB_CC1"
+width_mm = 0.200
+intent = "Reviewed local USB-C CC1 tie from receptacle pad A5 to the R1 pull-down pad, jogged below the data pads and clear of the shield ground pins."
+points = [
+  { x_mm = 6.750, y_mm = 5.610, layer = "F.Cu", anchor = "J1:A5" },
+  { x_mm = 6.750, y_mm = 8.000, layer = "F.Cu" },
+  { x_mm = 18.000, y_mm = 8.000, layer = "F.Cu" },
+  { x_mm = 18.000, y_mm = 6.500, layer = "F.Cu", anchor = "R1:1" },
 ]
 
 [[routes]]
@@ -1624,6 +1692,83 @@ points = [
   { x_mm = 38.500, y_mm = 60.000, layer = "F.Cu" },
   { x_mm = 38.500, y_mm = 74.380, layer = "F.Cu" },
   { x_mm = 34.000, y_mm = 74.380, layer = "F.Cu", anchor = "J23:4" },
+]
+
+[[routes]]
+id = "therm_mux_s1_u5_to_tp_branch"
+phase = "4_thermistor_analog"
+net = "THERM_MUX_S1"
+width_mm = 0.200
+intent = "Reviewed local thermistor mux S1 branch from U5 to its manufacturing test point, parallel to the accepted S0 escape and clear of the U5 ground return."
+points = [
+  { x_mm = 8.000, y_mm = 63.000, layer = "F.Cu", anchor = "TP_THERM_S1:1" },
+  { x_mm = 8.000, y_mm = 60.000, layer = "F.Cu" },
+  { x_mm = 8.000, y_mm = 60.000, layer = "B.Cu", via_id = "v_therm_mux_s1_tp_bcu_escape" },
+  { x_mm = 32.170, y_mm = 60.000, layer = "B.Cu" },
+  { x_mm = 32.170, y_mm = 53.800, layer = "B.Cu" },
+  { x_mm = 32.170, y_mm = 53.800, layer = "F.Cu", via_id = "v_therm_mux_s1_u5_bcu_entry" },
+  { x_mm = 32.170, y_mm = 55.260, layer = "F.Cu", anchor = "U5:10" },
+]
+
+[[routes]]
+id = "therm_mux_s2_u5_to_tp_branch"
+phase = "4_thermistor_analog"
+net = "THERM_MUX_S2"
+width_mm = 0.200
+intent = "Reviewed local thermistor mux S2 branch from U5 to its manufacturing test point, routed above the U5 pad row without entering the analog input fanout."
+points = [
+  { x_mm = 12.000, y_mm = 63.000, layer = "F.Cu", anchor = "TP_THERM_S2:1" },
+  { x_mm = 12.000, y_mm = 56.500, layer = "F.Cu" },
+  { x_mm = 33.440, y_mm = 56.500, layer = "F.Cu" },
+  { x_mm = 33.440, y_mm = 55.260, layer = "F.Cu", anchor = "U5:9" },
+]
+
+[[routes]]
+id = "therm_ch4_u5_to_j8_bcu_branch"
+phase = "4_thermistor_analog"
+net = "THERM_CH_4"
+width_mm = 0.200
+intent = "Reviewed short thermistor channel 4 branch from U5 to J8 using B.Cu to pass under the accepted local mux-output trace."
+points = [
+  { x_mm = 24.550, y_mm = 60.740, layer = "F.Cu", anchor = "U5:1" },
+  { x_mm = 24.550, y_mm = 62.000, layer = "F.Cu" },
+  { x_mm = 24.550, y_mm = 62.000, layer = "B.Cu", via_id = "v_therm_ch4_u5_bcu_escape" },
+  { x_mm = 23.000, y_mm = 62.000, layer = "B.Cu" },
+  { x_mm = 23.000, y_mm = 72.000, layer = "B.Cu" },
+  { x_mm = 26.000, y_mm = 72.000, layer = "B.Cu" },
+  { x_mm = 26.000, y_mm = 70.000, layer = "B.Cu", anchor = "J8:1" },
+]
+
+[[routes]]
+id = "therm_ch0_u5_to_j4_bcu_branch"
+phase = "4_thermistor_analog"
+net = "THERM_CH_0"
+width_mm = 0.200
+intent = "Reviewed thermistor channel 0 branch from U5 to J4 using the left-side B.Cu corridor to avoid the top-layer mux traces."
+points = [
+  { x_mm = 28.370, y_mm = 55.260, layer = "F.Cu", anchor = "U5:13" },
+  { x_mm = 28.370, y_mm = 53.800, layer = "F.Cu" },
+  { x_mm = 28.370, y_mm = 53.800, layer = "B.Cu", via_id = "v_therm_ch0_u5_bcu_entry" },
+  { x_mm = 3.000, y_mm = 53.800, layer = "B.Cu" },
+  { x_mm = 3.000, y_mm = 72.000, layer = "B.Cu" },
+  { x_mm = 6.000, y_mm = 72.000, layer = "B.Cu" },
+  { x_mm = 6.000, y_mm = 70.000, layer = "B.Cu", anchor = "J4:1" },
+]
+
+[[routes]]
+id = "therm_ch1_u5_to_j5_bcu_branch"
+phase = "4_thermistor_analog"
+net = "THERM_CH_1"
+width_mm = 0.200
+intent = "Reviewed thermistor channel 1 branch from U5 to J5, staggered around the accepted CH0 return and connector ground pad."
+points = [
+  { x_mm = 27.090, y_mm = 55.260, layer = "F.Cu", anchor = "U5:14" },
+  { x_mm = 27.090, y_mm = 53.000, layer = "F.Cu" },
+  { x_mm = 27.090, y_mm = 53.000, layer = "B.Cu", via_id = "v_therm_ch1_u5_bcu_entry" },
+  { x_mm = 2.000, y_mm = 53.000, layer = "B.Cu" },
+  { x_mm = 2.000, y_mm = 76.000, layer = "B.Cu" },
+  { x_mm = 11.000, y_mm = 76.000, layer = "B.Cu" },
+  { x_mm = 11.000, y_mm = 70.000, layer = "B.Cu", anchor = "J5:1" },
 ]
 
 [[segments]]
