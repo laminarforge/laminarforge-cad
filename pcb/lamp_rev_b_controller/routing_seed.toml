@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 90
-expected_route_count = 124
+expected_route_count = 125
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -2804,6 +2804,21 @@ points = [
   { x_mm = 29.630, y_mm = 72.000, layer = "B.Cu" },
   { x_mm = 31.000, y_mm = 72.000, layer = "B.Cu" },
   { x_mm = 31.000, y_mm = 70.000, layer = "B.Cu", anchor = "J9:1" },
+]
+
+[[routes]]
+id = "i2c_sda_j18_to_j23_in2_control_lane"
+phase = "5_optics_camera_interlocks"
+net = "I2C_SDA"
+width_mm = 0.200
+intent = "Repair J23 SDA with a materially different In2.Cu control lane from the accepted SDA through-via to J23:5, avoiding the failed +3V3 B.Cu J17-gap crossings and staying above the J10/J11 thermistor header pads."
+points = [
+  { x_mm = 70.350, y_mm = 77.000, layer = "In2.Cu", anchor = "accepted v_i2c_sda_spi_gap_overpass_south through-via / i2c_sda_j22_to_j18_east_mid_overpass" },
+  { x_mm = 63.400, y_mm = 77.000, layer = "In2.Cu" },
+  { x_mm = 63.400, y_mm = 71.500, layer = "In2.Cu" },
+  { x_mm = 36.500, y_mm = 71.500, layer = "In2.Cu" },
+  { x_mm = 36.500, y_mm = 71.840, layer = "In2.Cu" },
+  { x_mm = 34.000, y_mm = 71.840, layer = "In2.Cu", anchor = "J23:5" },
 ]
 
 [[segments]]
