@@ -17246,11 +17246,74 @@
     (uuid "00000000-0000-4000-8000-00000000076f")
   )
 
+  (segment
+    (start 46.050 44)
+    (end 41 44)
+    (width 0.250)
+    (layer "F.Cu")
+    (net 49)
+    (uuid "00000000-0000-4000-8000-000000000770")
+  )
+
+  (segment
+    (start 41 44)
+    (end 41 45)
+    (width 0.250)
+    (layer "F.Cu")
+    (net 49)
+    (uuid "00000000-0000-4000-8000-000000000771")
+  )
+
+  (segment
+    (start 51 69)
+    (end 59.160 69)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 59)
+    (uuid "00000000-0000-4000-8000-000000000772")
+  )
+
+  (segment
+    (start 59.160 69)
+    (end 59.160 73)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 59)
+    (uuid "00000000-0000-4000-8000-000000000773")
+  )
+
+  (segment
+    (start 47 69)
+    (end 47 75)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 60)
+    (uuid "00000000-0000-4000-8000-000000000774")
+  )
+
+  (segment
+    (start 47 75)
+    (end 54.080 75)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 60)
+    (uuid "00000000-0000-4000-8000-000000000775")
+  )
+
+  (segment
+    (start 54.080 75)
+    (end 54.080 73)
+    (width 0.200)
+    (layer "F.Cu")
+    (net 60)
+    (uuid "00000000-0000-4000-8000-000000000776")
+  )
+
   (zone
     (net 1)
     (net_name "GND")
     (layer "In1.Cu")
-    (uuid "00000000-0000-4000-8000-000000000770")
+    (uuid "00000000-0000-4000-8000-000000000777")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.250))
     (min_thickness 0.200)
@@ -17269,7 +17332,7 @@
     (net 9)
     (net_name "+3V3")
     (layer "In2.Cu")
-    (uuid "00000000-0000-4000-8000-000000000771")
+    (uuid "00000000-0000-4000-8000-000000000778")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.250))
     (min_thickness 0.200)
@@ -17288,7 +17351,7 @@
     (net 6)
     (net_name "VIN_HEATER")
     (layer "F.Cu")
-    (uuid "00000000-0000-4000-8000-000000000772")
+    (uuid "00000000-0000-4000-8000-000000000779")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.300))
     (min_thickness 0.300)
@@ -17307,7 +17370,7 @@
     (net 55)
     (net_name "LED_SUPPLY")
     (layer "F.Cu")
-    (uuid "00000000-0000-4000-8000-000000000773")
+    (uuid "00000000-0000-4000-8000-00000000077a")
     (hatch edge 0.5)
     (connect_pads yes (clearance 0.300))
     (min_thickness 0.300)
