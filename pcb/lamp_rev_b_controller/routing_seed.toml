@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 90
-expected_route_count = 125
+expected_via_count = 91
+expected_route_count = 127
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -284,6 +284,17 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "J23 SCL return to B.Cu after the U8 inter-pad F.Cu pass and R54 avoidance dogleg, west of +3V3_ANA and east of AUX_ANALOG_IN."
+
+[[vias]]
+id = "v_i2c_scl_u4_west_in2_escape"
+phase = "4_thermistor_analog"
+net = "I2C_SCL"
+x_mm = 27.200
+y_mm = 38.200
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Through-via for the U4:10 SCL west-margin In2 repair: the F.Cu stub lands on this via, and a separate In2.Cu dogleg starts at the same coordinate without declaring an F.Cu-to-In2 route transition."
 
 [[vias]]
 id = "v_gnd_u5_j9_bcu_escape"
@@ -2038,6 +2049,32 @@ points = [
   { x_mm = 40.000, y_mm = 62.000, layer = "B.Cu", via_id = "v_i2c_scl_j23_u8_gap_dogleg_west" },
   { x_mm = 34.000, y_mm = 62.000, layer = "B.Cu" },
   { x_mm = 34.000, y_mm = 69.300, layer = "B.Cu", anchor = "J23:6" },
+]
+
+[[routes]]
+id = "i2c_scl_u4_to_west_in2_escape_fcu_stub"
+phase = "4_thermistor_analog"
+net = "I2C_SCL"
+width_mm = 0.200
+intent = "Short U4:10 SCL F.Cu escape to the west-margin In2 through-via, preserving the existing U4 analog fanout and avoiding any route-layer transition in this route record."
+points = [
+  { x_mm = 29.000, y_mm = 39.890, layer = "F.Cu", anchor = "U4:10" },
+  { x_mm = 27.200, y_mm = 39.890, layer = "F.Cu" },
+  { x_mm = 27.200, y_mm = 38.200, layer = "F.Cu", via_id = "v_i2c_scl_u4_west_in2_escape" },
+]
+
+[[routes]]
+id = "i2c_scl_u4_west_escape_to_j23_dogleg_in2_margin_lane"
+phase = "4_thermistor_analog"
+net = "I2C_SCL"
+width_mm = 0.200
+intent = "All-In2.Cu west-margin SCL lane from the new U4 split through-via to the accepted J23 SCL dogleg through-via at (40.000, 62.000), avoiding the failed ADS_AIN3/ADS_AIN2 crossing and staying below the y=62 thermistor/GND via row until the final SCL dogleg rise."
+points = [
+  { x_mm = 27.200, y_mm = 38.200, layer = "In2.Cu", anchor = "v_i2c_scl_u4_west_in2_escape through-via" },
+  { x_mm = 23.300, y_mm = 38.200, layer = "In2.Cu" },
+  { x_mm = 23.300, y_mm = 60.800, layer = "In2.Cu" },
+  { x_mm = 40.000, y_mm = 60.800, layer = "In2.Cu" },
+  { x_mm = 40.000, y_mm = 62.000, layer = "In2.Cu", anchor = "accepted v_i2c_scl_j23_u8_gap_dogleg_west through-via / i2c_scl_j18_center_spine_to_j23_u8_gap_dogleg_branch" },
 ]
 
 [[routes]]
