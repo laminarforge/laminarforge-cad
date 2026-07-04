@@ -14,8 +14,8 @@ thermal_gap_mm = 0.35
 thermal_bridge_width_mm = 0.40
 remove_islands = true
 points = [
-  { x_mm = 1.0, y_mm = 1.0 },
-  { x_mm = 117.0, y_mm = 1.0 },
+  { x_mm = 1.0, y_mm = -5.0 },
+  { x_mm = 117.0, y_mm = -5.0 },
   { x_mm = 117.0, y_mm = 87.0 },
   { x_mm = 1.0, y_mm = 87.0 },
 ]
@@ -30,8 +30,8 @@ thermal_gap_mm = 0.35
 thermal_bridge_width_mm = 0.35
 remove_islands = true
 points = [
-  { x_mm = 42.0, y_mm = 2.0 },
-  { x_mm = 84.0, y_mm = 2.0 },
+  { x_mm = 42.0, y_mm = -4.0 },
+  { x_mm = 84.0, y_mm = -4.0 },
   { x_mm = 84.0, y_mm = 36.0 },
   { x_mm = 42.0, y_mm = 36.0 },
 ]

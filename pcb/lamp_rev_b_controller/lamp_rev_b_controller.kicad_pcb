@@ -142,7 +142,7 @@
   (net 78 "THERM_CH_6")
   (net 79 "THERM_CH_7")
   (gr_rect
-    (start 0 0)
+    (start 0 -6)
     (end 118 88)
     (stroke (width 0.1) (type solid))
     (fill none)
@@ -228,7 +228,7 @@
     (effects (font (size 0.800 0.800) (thickness 0.1)))
   )
   (gr_rect
-    (start 0 0)
+    (start 0 -6)
     (end 42 28)
     (stroke (width 0.05) (type dash))
     (fill none)
@@ -236,13 +236,13 @@
     (uuid "00000000-0000-4000-8000-00000000000f")
   )
   (gr_text "usb_debug: USB-C device/programming, boot/reset, UART, status LEDs, and host logging headers."
-    (at 1 2 0)
+    (at 1 -4 0)
     (layer "Dwgs.User")
     (uuid "00000000-0000-4000-8000-000000000010")
     (effects (font (size 0.750 0.750) (thickness 0.1)))
   )
   (gr_rect
-    (start 43 0)
+    (start 43 -6)
     (end 80 36)
     (stroke (width 0.05) (type dash))
     (fill none)
@@ -250,13 +250,13 @@
     (uuid "00000000-0000-4000-8000-000000000011")
   )
   (gr_text "mcu_antenna: ESP32-S3-WROOM body with antenna at a clean board edge and no-copper keepout forward of antenna."
-    (at 44 2 0)
+    (at 44 -4 0)
     (layer "Dwgs.User")
     (uuid "00000000-0000-4000-8000-000000000012")
     (effects (font (size 0.750 0.750) (thickness 0.1)))
   )
   (gr_rect
-    (start 80 0)
+    (start 80 -6)
     (end 118 32)
     (stroke (width 0.05) (type dash))
     (fill none)
@@ -264,7 +264,7 @@
     (uuid "00000000-0000-4000-8000-000000000013")
   )
   (gr_text "low_voltage_power: VIN protection handoff, 5 V buck/module option, 3.3 V logic, analog filtering, rail jumpers."
-    (at 81 2 0)
+    (at 81 -4 0)
     (layer "Dwgs.User")
     (uuid "00000000-0000-4000-8000-000000000014")
     (effects (font (size 0.750 0.750) (thickness 0.1)))
@@ -19660,8 +19660,8 @@
     (fill yes (thermal_gap 0.350) (thermal_bridge_width 0.400) (island_removal_mode 0))
     (polygon
       (pts
-        (xy 1 1)
-        (xy 117 1)
+        (xy 1 -5)
+        (xy 117 -5)
         (xy 117 87)
         (xy 1 87)
       )
@@ -19679,8 +19679,8 @@
     (fill yes (thermal_gap 0.350) (thermal_bridge_width 0.350) (island_removal_mode 0))
     (polygon
       (pts
-        (xy 42 2)
-        (xy 84 2)
+        (xy 42 -4)
+        (xy 84 -4)
         (xy 84 36)
         (xy 42 36)
       )

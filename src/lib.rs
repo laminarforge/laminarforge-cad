@@ -55,7 +55,7 @@ pub const CARTRIDGE_WASTE_CENTER_Y: f64 = 18.0;
 /// PCB heater dimensions (mm)
 pub const PCB_THICKNESS: f64 = 1.6; // standard 2-layer FR-4
 pub const PCB_LENGTH: f64 = 118.0; // full board length, spans enclosure
-pub const PCB_WIDTH: f64 = 88.0; // full board width
+pub const PCB_WIDTH: f64 = 94.0; // full board width
 
 /// Heater zone (serpentine copper trace on PCB bottom layer).
 pub const HEATER_ZONE_LENGTH: f64 = (NUM_SLOTS as f64 - 1.0) * SLOT_SPACING + 14.0;

@@ -22,7 +22,7 @@ source_artifacts = [
 [board]
 physical_board_count = 1
 width_mm = 118.0
-height_mm = 88.0
+height_mm = 94.0
 thickness_mm = 1.6
 layer_count = 4
 spatial_lane_count = 8
@@ -45,7 +45,7 @@ name = "usb_debug"
 purpose = "USB-C device/programming, boot/reset, UART, status LEDs, and host logging headers."
 x_min_mm = 0.0
 x_max_mm = 42.0
-y_min_mm = 0.0
+y_min_mm = -6.0
 y_max_mm = 28.0
 
 [[zones]]
@@ -53,7 +53,7 @@ name = "mcu_antenna"
 purpose = "ESP32-S3-WROOM body with antenna at a clean board edge and no-copper keepout forward of antenna."
 x_min_mm = 43.0
 x_max_mm = 80.0
-y_min_mm = 0.0
+y_min_mm = -6.0
 y_max_mm = 36.0
 
 [[zones]]
@@ -61,7 +61,7 @@ name = "low_voltage_power"
 purpose = "VIN protection handoff, 5 V buck/module option, 3.3 V logic, analog filtering, rail jumpers."
 x_min_mm = 80.0
 x_max_mm = 118.0
-y_min_mm = 0.0
+y_min_mm = -6.0
 y_max_mm = 32.0
 
 [[zones]]
