@@ -553,25 +553,28 @@ fn write_board_geometry(
     contract: &Contract,
     counter: &mut UuidCounter,
 ) -> Result<(), Box<dyn Error>> {
+    let y_min_mm = board_y_min_mm(contract);
+    let y_max_mm = y_min_mm + contract.board.height_mm;
     writeln!(
         board,
         r#"  (gr_rect
-    (start 0 0)
+    (start 0 {})
     (end {} {})
     (stroke (width 0.1) (type solid))
     (fill none)
     (layer "Edge.Cuts")
     (uuid "{}")
   )"#,
+        fmt(y_min_mm),
         fmt(contract.board.width_mm),
-        fmt(contract.board.height_mm),
+        fmt(y_max_mm),
         counter.next()
     )?;
     write_text(
         board,
         "LaminarForge LAMP Rev B Controller",
         contract.board.width_mm / 2.0,
-        contract.board.height_mm - 6.0,
+        y_max_mm - 6.0,
         "Dwgs.User",
         1.0,
         counter,
@@ -580,7 +583,7 @@ fn write_board_geometry(
         board,
         "CERN-OHL-S v2",
         contract.board.width_mm / 2.0,
-        contract.board.height_mm - 2.0,
+        y_max_mm - 2.0,
         "Dwgs.User",
         1.0,
         counter,
@@ -1382,11 +1385,20 @@ fn validate_board_point(
     contract: &Contract,
     net: &str,
 ) -> Result<(), Box<dyn Error>> {
-    if x_mm < 0.0 || y_mm < 0.0 || x_mm > contract.board.width_mm || y_mm > contract.board.height_mm
-    {
+    let y_min_mm = board_y_min_mm(contract);
+    let y_max_mm = y_min_mm + contract.board.height_mm;
+    if x_mm < 0.0 || y_mm < y_min_mm || x_mm > contract.board.width_mm || y_mm > y_max_mm {
         return Err(format!("route segment for {net} has off-board point {x_mm},{y_mm}").into());
     }
     Ok(())
+}
+
+fn board_y_min_mm(contract: &Contract) -> f64 {
+    contract
+        .zones
+        .iter()
+        .map(|zone| zone.y_min_mm)
+        .fold(0.0, f64::min)
 }
 
 fn write_via(

@@ -494,8 +494,8 @@ fn validate_contract(contract: &Contract, nets: &BTreeMap<String, Net>, errors: 
     if contract.board.physical_board_count != 1 {
         errors.push("Rev B controller must be one main carrier PCB".to_string());
     }
-    if contract.board.width_mm != 118.0 || contract.board.height_mm != 88.0 {
-        errors.push("Rev B controller envelope must be 118 x 88 mm".to_string());
+    if contract.board.width_mm != 118.0 || contract.board.height_mm != 94.0 {
+        errors.push("Rev B controller envelope must be 118 x 94 mm".to_string());
     }
     if contract.board.layer_count != 4 {
         errors.push("Rev B controller must use a 4-layer stackup".to_string());
@@ -516,10 +516,8 @@ fn validate_contract(contract: &Contract, nets: &BTreeMap<String, Net>, errors: 
         errors.push("In2.Cu must be the power/control plane".to_string());
     }
     for zone in &contract.zones {
-        if zone.x_min_mm < 0.0
-            || zone.y_min_mm < 0.0
-            || zone.x_max_mm > contract.board.width_mm
-            || zone.y_max_mm > contract.board.height_mm
+        if !within_board_bounds(contract, zone.x_min_mm, zone.y_min_mm)
+            || !within_board_bounds(contract, zone.x_max_mm, zone.y_max_mm)
             || zone.x_min_mm >= zone.x_max_mm
             || zone.y_min_mm >= zone.y_max_mm
         {
@@ -920,12 +918,7 @@ fn validate_placement(
         if item.side != "top" {
             errors.push(format!("placement {} must be top side", item.reference));
         }
-        if item.x_mm < 0.0
-            || item.y_mm < 0.0
-            || item.x_mm > contract.board.width_mm
-            || item.y_mm > contract.board.height_mm
-            || !item.rotation_deg.is_finite()
-        {
+        if !within_board_bounds(contract, item.x_mm, item.y_mm) || !item.rotation_deg.is_finite() {
             errors.push(format!(
                 "placement {} is outside board bounds",
                 item.reference
@@ -960,11 +953,7 @@ fn validate_placement(
         if tp.side != "top" {
             errors.push(format!("test point {} must be top side", tp.name));
         }
-        if tp.x_mm < 0.0
-            || tp.y_mm < 0.0
-            || tp.x_mm > contract.board.width_mm
-            || tp.y_mm > contract.board.height_mm
-        {
+        if !within_board_bounds(contract, tp.x_mm, tp.y_mm) {
             errors.push(format!("test point {} is outside board bounds", tp.name));
         }
     }
@@ -1083,11 +1072,7 @@ fn validate_copper_zones(
             ));
         }
         for point in &zone.points {
-            if point.x_mm < 0.0
-                || point.y_mm < 0.0
-                || point.x_mm > contract.board.width_mm
-                || point.y_mm > contract.board.height_mm
-            {
+            if !within_board_bounds(contract, point.x_mm, point.y_mm) {
                 errors.push(format!("copper zone {} has off-board point", zone.name));
             }
         }
@@ -1388,12 +1373,30 @@ fn validate_route_point(
     net: &str,
     errors: &mut Vec<String>,
 ) {
-    if x_mm < 0.0 || y_mm < 0.0 || x_mm > contract.board.width_mm || y_mm > contract.board.height_mm
-    {
+    if !within_board_bounds(contract, x_mm, y_mm) {
         errors.push(format!(
             "route point for {net} is off-board at {x_mm},{y_mm}"
         ));
     }
+}
+
+fn board_bounds(contract: &Contract) -> (f64, f64, f64, f64) {
+    let y_min_mm = contract
+        .zones
+        .iter()
+        .map(|zone| zone.y_min_mm)
+        .fold(0.0, f64::min);
+    (
+        0.0,
+        y_min_mm,
+        contract.board.width_mm,
+        y_min_mm + contract.board.height_mm,
+    )
+}
+
+fn within_board_bounds(contract: &Contract, x_mm: f64, y_mm: f64) -> bool {
+    let (x_min_mm, y_min_mm, x_max_mm, y_max_mm) = board_bounds(contract);
+    x_mm >= x_min_mm && y_mm >= y_min_mm && x_mm <= x_max_mm && y_mm <= y_max_mm
 }
 
 fn same_route_coordinate(first: f64, second: f64) -> bool {
