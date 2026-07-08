@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 92
-expected_route_count = 133
+expected_route_count = 134
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1474,6 +1474,19 @@ intent = "Reviewed short branch from the interlock header pad to the thermal-cut
 points = [
   { x_mm = 56.620, y_mm = 84.000, layer = "F.Cu", anchor = "J19:4" },
   { x_mm = 59.000, y_mm = 80.000, layer = "F.Cu", anchor = "TP_CUTOFF:1" },
+]
+
+[[routes]]
+id = "latch_locked_j19_to_tp_branch"
+phase = "5_optics_camera_interlocks"
+net = "LATCH_LOCKED_N"
+width_mm = 0.200
+intent = "Reviewed LATCH_LOCKED_N interlock-header branch from J19 pad 3 to the latch manufacturing test point."
+points = [
+  { x_mm = 54.080, y_mm = 84.000, layer = "F.Cu", anchor = "J19:3" },
+  { x_mm = 54.080, y_mm = 83.415, layer = "F.Cu" },
+  { x_mm = 59.000, y_mm = 78.495, layer = "F.Cu" },
+  { x_mm = 59.000, y_mm = 76.000, layer = "F.Cu", anchor = "TP_LATCH:1" },
 ]
 
 [[routes]]
