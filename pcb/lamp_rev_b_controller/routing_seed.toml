@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 96
-expected_route_count = 141
+expected_via_count = 97
+expected_route_count = 142
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -141,6 +141,17 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed USB_CC2 return to F.Cu east of R2 pin 1, clear of the USB_DP test-point via."
+
+[[vias]]
+id = "v_usb_cc2_tp_bcu_entry"
+phase = "1_usb_and_boot"
+net = "USB_CC2"
+x_mm = 17.000
+y_mm = 31.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed TP_USB_CC2 branch via below the test point, clear of VBUS/USB_CC1 top-layer copper and the UART0_RXD bottom-layer lane."
 
 [[vias]]
 id = "v_usb_dp_esd_bcu_escape"
@@ -1284,6 +1295,21 @@ points = [
   { x_mm = 19.000, y_mm = 11.500, layer = "B.Cu" },
   { x_mm = 19.000, y_mm = 11.500, layer = "F.Cu", via_id = "v_usb_cc2_r2_bcu_entry" },
   { x_mm = 18.000, y_mm = 11.500, layer = "F.Cu", anchor = "R2:1" },
+]
+
+[[routes]]
+id = "usb_cc2_tp_to_bcu_left_channel_branch"
+phase = "1_usb_and_boot"
+net = "USB_CC2"
+width_mm = 0.200
+intent = "Reviewed TP_USB_CC2 branch dropping below the test point to B.Cu, then routing west of the UART/ESP boot cluster into the existing USB_CC2 B.Cu trunk."
+points = [
+  { x_mm = 17.000, y_mm = 28.000, layer = "F.Cu", anchor = "TP_USB_CC2:1" },
+  { x_mm = 17.000, y_mm = 31.000, layer = "F.Cu", via_id = "v_usb_cc2_tp_bcu_entry" },
+  { x_mm = 17.000, y_mm = 31.000, layer = "B.Cu", via_id = "v_usb_cc2_tp_bcu_entry" },
+  { x_mm = 10.000, y_mm = 31.000, layer = "B.Cu" },
+  { x_mm = 10.000, y_mm = 13.800, layer = "B.Cu" },
+  { x_mm = 12.000, y_mm = 13.800, layer = "B.Cu", anchor = "existing USB_CC2 B.Cu trunk" },
 ]
 
 [[routes]]
