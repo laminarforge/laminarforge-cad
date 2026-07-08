@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 101
-expected_route_count = 148
+expected_via_count = 103
+expected_route_count = 149
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -108,6 +108,28 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 1.200
 drill_mm = 0.500
 intent = "Reviewed protected-VIN B.Cu escape above C4 to join the input spine to the existing TP/U7/cutoff-loop branch without crossing the ground return."
+
+[[vias]]
+id = "v_vin_protected_r52_in2_entry"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+x_mm = 76.000
+y_mm = 34.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 1.200
+drill_mm = 0.500
+intent = "Reviewed protected-VIN R52 In2 entry via for the R52-to-R55 population link, avoiding the crowded F.Cu heater-power crossover."
+
+[[vias]]
+id = "v_vin_protected_r55_in2_return"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+x_mm = 86.000
+y_mm = 46.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 1.200
+drill_mm = 0.500
+intent = "Reviewed protected-VIN R55 In2 return via for the R52-to-R55 population link, clear in scratch DRC."
 
 [[vias]]
 id = "v_gnd_usb_cc_return_escape"
@@ -2428,6 +2450,18 @@ points = [
   { x_mm = 112.000, y_mm = 12.500, layer = "B.Cu" },
   { x_mm = 112.000, y_mm = 28.000, layer = "B.Cu", via_id = "v_vin_protected_cutoff_escape" },
   { x_mm = 112.000, y_mm = 28.000, layer = "F.Cu", via_id = "v_vin_protected_cutoff_escape" },
+]
+
+[[routes]]
+id = "vin_protected_r52_r55_in2_bridge"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+width_mm = 1.500
+intent = "Reviewed protected-VIN R52-to-R55 population link using In2.Cu to avoid the F.Cu crossover cluster."
+points = [
+  { x_mm = 76.000, y_mm = 34.000, layer = "In2.Cu", anchor = "v_vin_protected_r52_in2_entry through-via / R52:1" },
+  { x_mm = 86.000, y_mm = 34.000, layer = "In2.Cu" },
+  { x_mm = 86.000, y_mm = 46.000, layer = "In2.Cu", anchor = "v_vin_protected_r55_in2_return through-via / R55:1" },
 ]
 
 [[routes]]
