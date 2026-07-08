@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 92
-expected_route_count = 134
+expected_route_count = 135
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -2958,6 +2958,23 @@ points = [
   { x_mm = 23.800, y_mm = 61.800, layer = "In2.Cu" },
   { x_mm = 23.800, y_mm = 71.500, layer = "In2.Cu" },
   { x_mm = 36.500, y_mm = 71.500, layer = "In2.Cu", anchor = "accepted i2c_sda_j18_to_j23_in2_control_lane at (36.500, 71.500)" },
+]
+
+[[routes]]
+id = "therm_ch2_u5_to_j6_top_branch"
+phase = "4_thermistor_analog"
+net = "THERM_CH_2"
+width_mm = 0.200
+intent = "Reviewed THERM_CH_2 top-layer branch from U5 to J6 using the bounded router skeleton validated in scratch with no physical DRC delta."
+points = [
+  { x_mm = 25.820, y_mm = 55.260, layer = "F.Cu", anchor = "U5:15" },
+  { x_mm = 25.820, y_mm = 54.023, layer = "F.Cu" },
+  { x_mm = 17.451, y_mm = 54.023, layer = "F.Cu" },
+  { x_mm = 15.330, y_mm = 56.145, layer = "F.Cu" },
+  { x_mm = 11.825, y_mm = 56.145, layer = "F.Cu" },
+  { x_mm = 10.957, y_mm = 57.013, layer = "F.Cu" },
+  { x_mm = 10.957, y_mm = 64.957, layer = "F.Cu" },
+  { x_mm = 16.000, y_mm = 70.000, layer = "F.Cu", anchor = "J6:1" },
 ]
 
 [[segments]]
