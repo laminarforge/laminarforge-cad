@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 97
-expected_route_count = 142
+expected_via_count = 99
+expected_route_count = 145
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1076,6 +1076,28 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Through-via for the U4:9 SDA west/In2 repair: the F.Cu pad escape lands on this via, and a separate In2.Cu lane starts at the same coordinate without declaring an F.Cu-to-In2 route transition."
+
+[[vias]]
+id = "v_spare_gpio42_j17_in2_entry"
+phase = "5_optics_camera_interlocks"
+net = "SPARE_GPIO42"
+x_mm = 65.000
+y_mm = 73.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Scratch-validated SPARE_GPIO42 In2.Cu entry east of J17 pad 6, avoiding the accepted I2C_SDA In2 repair lane."
+
+[[vias]]
+id = "v_spare_gpio42_tp_in2_return"
+phase = "5_optics_camera_interlocks"
+net = "SPARE_GPIO42"
+x_mm = 87.500
+y_mm = 75.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Scratch-validated SPARE_GPIO42 return via east of TP_SPARE42, offset from the SPI_MOSI return via before the short F.Cu test-point stub."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -3127,6 +3149,42 @@ points = [
   { x_mm = 10.957, y_mm = 57.013, layer = "F.Cu" },
   { x_mm = 10.957, y_mm = 64.957, layer = "F.Cu" },
   { x_mm = 16.000, y_mm = 70.000, layer = "F.Cu", anchor = "J6:1" },
+]
+
+[[routes]]
+id = "spare_gpio42_j17_in2_entry_stub"
+phase = "5_optics_camera_interlocks"
+net = "SPARE_GPIO42"
+width_mm = 0.200
+intent = "Scratch-validated SPARE_GPIO42 F.Cu stub from J17 pad 6 to the east-side through-via that feeds the In2.Cu control lane."
+points = [
+  { x_mm = 61.700, y_mm = 73.000, layer = "F.Cu", anchor = "J17:6" },
+  { x_mm = 65.000, y_mm = 73.000, layer = "F.Cu", via_id = "v_spare_gpio42_j17_in2_entry" },
+]
+
+[[routes]]
+id = "spare_gpio42_j17_to_tp_in2_control_lane"
+phase = "5_optics_camera_interlocks"
+net = "SPARE_GPIO42"
+width_mm = 0.200
+intent = "Scratch-validated SPARE_GPIO42 In2.Cu dogleg east of the accepted I2C_SDA repair lane and below the SPI_MOSI via clearance pocket."
+points = [
+  { x_mm = 65.000, y_mm = 73.000, layer = "In2.Cu", anchor = "v_spare_gpio42_j17_in2_entry through-via" },
+  { x_mm = 78.000, y_mm = 73.000, layer = "In2.Cu" },
+  { x_mm = 78.000, y_mm = 74.200, layer = "In2.Cu" },
+  { x_mm = 87.500, y_mm = 74.200, layer = "In2.Cu" },
+  { x_mm = 87.500, y_mm = 75.000, layer = "In2.Cu", anchor = "v_spare_gpio42_tp_in2_return through-via" },
+]
+
+[[routes]]
+id = "spare_gpio42_tp_return_stub"
+phase = "5_optics_camera_interlocks"
+net = "SPARE_GPIO42"
+width_mm = 0.200
+intent = "Scratch-validated SPARE_GPIO42 F.Cu return stub from the east-side through-via into TP_SPARE42."
+points = [
+  { x_mm = 87.500, y_mm = 75.000, layer = "F.Cu", via_id = "v_spare_gpio42_tp_in2_return" },
+  { x_mm = 86.000, y_mm = 75.000, layer = "F.Cu", anchor = "TP_SPARE42:1" },
 ]
 
 [[segments]]
