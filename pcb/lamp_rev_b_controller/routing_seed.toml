@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 92
-expected_route_count = 129
+expected_route_count = 130
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -2462,6 +2462,19 @@ points = [
 ]
 
 [[routes]]
+id = "led_dim_drive_r50_to_r51_left_dogleg"
+phase = "5_optics_camera_interlocks"
+net = "LED_DIM_DRIVE"
+width_mm = 0.200
+intent = "Reviewed LED dim drive branch from R50 to R51 using the freed left-side channel around the dim-gate and ground pads."
+points = [
+  { x_mm = 47.000, y_mm = 47.000, layer = "F.Cu", anchor = "R50:2" },
+  { x_mm = 43.000, y_mm = 47.000, layer = "F.Cu" },
+  { x_mm = 43.000, y_mm = 55.000, layer = "F.Cu" },
+  { x_mm = 47.000, y_mm = 55.000, layer = "F.Cu", anchor = "R51:1" },
+]
+
+[[routes]]
 id = "heater1_pwm_tp_to_r21_local_branch"
 phase = "3_heater_power"
 net = "HEATER1_PWM"
@@ -2590,17 +2603,16 @@ points = [
 ]
 
 [[routes]]
-id = "gnd_u9_to_r51_local_return"
+id = "gnd_u9_to_c5_local_return"
 phase = "5_optics_camera_interlocks"
 net = "GND"
 width_mm = 0.300
-intent = "Reviewed local U9-to-R51 ground return jogged left of the LED_DIM_GATE/LED_DIM_DRIVE resistor pads."
+intent = "Reviewed local U9 ground return tied into the existing C5 return while leaving the LED_DIM_DRIVE left-side escape open."
 points = [
   { x_mm = 47.000, y_mm = 44.000, layer = "F.Cu", anchor = "U9:2" },
   { x_mm = 47.000, y_mm = 45.000, layer = "F.Cu" },
   { x_mm = 45.000, y_mm = 45.000, layer = "F.Cu" },
-  { x_mm = 45.000, y_mm = 53.000, layer = "F.Cu" },
-  { x_mm = 47.000, y_mm = 53.000, layer = "F.Cu", anchor = "R51:2" },
+  { x_mm = 42.500, y_mm = 45.000, layer = "F.Cu", anchor = "existing C5 ground return via" },
 ]
 
 [[routes]]
@@ -2615,7 +2627,7 @@ points = [
   { x_mm = 42.500, y_mm = 38.800, layer = "B.Cu", via_id = "v_gnd_c5_bcu_escape" },
   { x_mm = 42.500, y_mm = 45.000, layer = "B.Cu" },
   { x_mm = 42.500, y_mm = 45.000, layer = "F.Cu", via_id = "v_gnd_c5_return_bcu_entry" },
-  { x_mm = 45.000, y_mm = 45.000, layer = "F.Cu", anchor = "existing gnd_u9_to_r51_local_return" },
+  { x_mm = 45.000, y_mm = 45.000, layer = "F.Cu", anchor = "existing gnd_u9_to_c5_local_return" },
 ]
 
 [[routes]]
