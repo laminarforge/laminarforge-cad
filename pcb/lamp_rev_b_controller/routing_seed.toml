@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 92
-expected_route_count = 131
+expected_route_count = 132
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1976,6 +1976,18 @@ points = [
   { x_mm = 113.000, y_mm = 62.000, layer = "F.Cu", anchor = "TP_HEATER1_LOW:1" },
   { x_mm = 110.000, y_mm = 62.000, layer = "F.Cu" },
   { x_mm = 110.000, y_mm = 58.000, layer = "F.Cu", anchor = "R26:1" },
+]
+
+[[routes]]
+id = "heater1_low_q2_trunk_drop"
+phase = "3_heater_power"
+net = "HEATER1_LOW"
+width_mm = 1.200
+intent = "Reviewed local Q2 low-side drain tie-in down the east side of the GND via into the existing HEATER1_LOW test-point/trunk copper."
+points = [
+  { x_mm = 113.540, y_mm = 49.000, layer = "F.Cu", anchor = "Q2:2" },
+  { x_mm = 113.540, y_mm = 62.000, layer = "F.Cu" },
+  { x_mm = 113.000, y_mm = 62.000, layer = "F.Cu", anchor = "existing HEATER1_LOW TP/trunk branch" },
 ]
 
 [[routes]]
