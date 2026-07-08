@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 92
-expected_route_count = 135
+expected_route_count = 136
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -2901,6 +2901,19 @@ points = [
   { x_mm = 105.000, y_mm = 68.000, layer = "B.Cu", via_id = "v_cam_reset_far_bcu_entry" },
   { x_mm = 105.000, y_mm = 68.000, layer = "F.Cu", via_id = "v_cam_reset_far_bcu_entry" },
   { x_mm = 94.000, y_mm = 68.000, layer = "F.Cu", anchor = "TP_CAM_RESET:1" },
+]
+
+[[routes]]
+id = "cam_pwdn_j18_to_tp_top_branch"
+phase = "5_optics_camera_interlocks"
+net = "CAM_PWDN_N"
+width_mm = 0.200
+intent = "Reviewed CAM_PWDN_N top-layer branch from TP_CAM_PWDN to J18:9 using the bounded router skeleton validated in scratch with no physical DRC delta."
+points = [
+  { x_mm = 94.000, y_mm = 72.000, layer = "F.Cu", anchor = "TP_CAM_PWDN:1" },
+  { x_mm = 85.730, y_mm = 80.270, layer = "F.Cu" },
+  { x_mm = 70.350, y_mm = 80.270, layer = "F.Cu" },
+  { x_mm = 69.080, y_mm = 81.540, layer = "F.Cu", anchor = "J18:9" },
 ]
 
 [[routes]]
