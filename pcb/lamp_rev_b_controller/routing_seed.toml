@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 92
-expected_route_count = 137
+expected_via_count = 93
+expected_route_count = 138
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -53,6 +53,17 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed +3V3 bottom-layer escape to the R54 pullup supply pad, clear of the LED_FAULT_N pad."
+
+[[vias]]
+id = "v_led_plus_r53_bcu_escape"
+phase = "5_optics_camera_interlocks"
+net = "LED_PLUS"
+x_mm = 106.550
+y_mm = 39.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 1.200
+drill_mm = 0.500
+intent = "Reviewed LED_PLUS R53-side high-current escape via east of the R53 pad before the B.Cu top approach to J15."
 
 [[vias]]
 id = "v_gnd_heater_u6_escape"
@@ -1059,6 +1070,21 @@ points = [
   { x_mm = 78.000, y_mm = 36.000, layer = "F.Cu" },
   { x_mm = 72.000, y_mm = 36.000, layer = "F.Cu", anchor = "led_supply_area" },
   { x_mm = 72.000, y_mm = 34.000, layer = "F.Cu", anchor = "TP_LED_SUPPLY:1" },
+]
+
+[[routes]]
+id = "led_plus_r53_to_j15_bcu_top_approach"
+phase = "5_optics_camera_interlocks"
+net = "LED_PLUS"
+width_mm = 1.000
+intent = "Reviewed R53-to-J15 LED_PLUS closure using a contract-width right-side F.Cu escape, B.Cu top approach, and J15:1 entry that avoids the adjacent LED_MINUS PTH and GND stitches."
+points = [
+  { x_mm = 102.550, y_mm = 39.000, layer = "F.Cu", anchor = "R53:2" },
+  { x_mm = 106.550, y_mm = 39.000, layer = "F.Cu", via_id = "v_led_plus_r53_bcu_escape" },
+  { x_mm = 106.550, y_mm = 39.000, layer = "B.Cu", via_id = "v_led_plus_r53_bcu_escape" },
+  { x_mm = 106.550, y_mm = 29.500, layer = "B.Cu" },
+  { x_mm = 94.000, y_mm = 29.500, layer = "B.Cu" },
+  { x_mm = 94.000, y_mm = 33.000, layer = "B.Cu", anchor = "J15:1" },
 ]
 
 [[routes]]
