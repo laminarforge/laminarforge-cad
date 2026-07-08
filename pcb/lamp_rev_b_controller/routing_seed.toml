@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 96
-expected_route_count = 140
+expected_route_count = 141
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1590,6 +1590,18 @@ points = [
   { x_mm = 78.000, y_mm = 79.000, layer = "F.Cu" },
   { x_mm = 78.000, y_mm = 60.000, layer = "F.Cu" },
   { x_mm = 82.000, y_mm = 60.000, layer = "F.Cu", anchor = "TP_CAM_CS:1" },
+]
+
+[[routes]]
+id = "cam_cs_tp_to_r42_west_clearance_bridge"
+phase = "5_optics_camera_interlocks"
+net = "CAM_CS_N"
+width_mm = 0.200
+intent = "Reviewed CAM_CS_N pullup bridge from TP_CAM_CS to R42 pad 1, jogging west of the SD_CS_N R43/via escape."
+points = [
+  { x_mm = 82.000, y_mm = 60.000, layer = "F.Cu", anchor = "TP_CAM_CS:1" },
+  { x_mm = 82.000, y_mm = 37.000, layer = "F.Cu" },
+  { x_mm = 83.000, y_mm = 37.000, layer = "F.Cu", anchor = "R42:1" },
 ]
 
 [[routes]]
