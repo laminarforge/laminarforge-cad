@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 92
-expected_route_count = 132
+expected_route_count = 133
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -2530,6 +2530,20 @@ points = [
   { x_mm = 85.500, y_mm = 66.000, layer = "B.Cu" },
   { x_mm = 85.500, y_mm = 66.000, layer = "F.Cu", via_id = "v_heater1_gate_r24_bcu_entry" },
   { x_mm = 87.000, y_mm = 66.000, layer = "F.Cu", anchor = "R24:1" },
+]
+
+[[routes]]
+id = "heater1_gate_tp_jog_closure"
+phase = "3_heater_power"
+net = "HEATER1_GATE"
+width_mm = 0.300
+intent = "Reviewed local HEATER1 gate test-point tie-in, jogging above the HEATER0_LOW shunt/test branch and right of the HEATER0_GATE endpoint."
+points = [
+  { x_mm = 97.500, y_mm = 61.000, layer = "F.Cu", anchor = "existing HEATER1_GATE R21/via branch" },
+  { x_mm = 97.500, y_mm = 56.800, layer = "F.Cu" },
+  { x_mm = 104.500, y_mm = 56.800, layer = "F.Cu" },
+  { x_mm = 104.500, y_mm = 52.000, layer = "F.Cu" },
+  { x_mm = 109.000, y_mm = 52.000, layer = "F.Cu", anchor = "TP_HEATER1_GATE:1" },
 ]
 
 [[routes]]
