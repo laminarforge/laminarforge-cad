@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 92
-expected_route_count = 130
+expected_route_count = 131
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -2303,6 +2303,19 @@ points = [
   { x_mm = 84.000, y_mm = 54.500, layer = "F.Cu" },
   { x_mm = 94.000, y_mm = 54.500, layer = "F.Cu" },
   { x_mm = 94.000, y_mm = 56.000, layer = "F.Cu", anchor = "R20:1" },
+]
+
+[[routes]]
+id = "heater0_pwm_u6_east_jog"
+phase = "3_heater_power"
+net = "HEATER0_PWM"
+width_mm = 0.250
+intent = "Reviewed local HEATER0 PWM tie-in from the existing TP/R20 branch into U6 pin 2, jogged east of the HEATER_ARM test-point/track clearance pocket."
+points = [
+  { x_mm = 92.200, y_mm = 54.500, layer = "F.Cu", anchor = "existing HEATER0_PWM TP/R20 branch" },
+  { x_mm = 92.200, y_mm = 52.000, layer = "F.Cu" },
+  { x_mm = 91.370, y_mm = 52.000, layer = "F.Cu" },
+  { x_mm = 91.370, y_mm = 50.570, layer = "F.Cu", anchor = "U6:2" },
 ]
 
 [[routes]]
