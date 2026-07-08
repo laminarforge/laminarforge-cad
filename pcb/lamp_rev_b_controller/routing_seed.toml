@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 99
-expected_route_count = 145
+expected_via_count = 101
+expected_route_count = 148
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1098,6 +1098,28 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Scratch-validated SPARE_GPIO42 return via east of TP_SPARE42, offset from the SPI_MOSI return via before the short F.Cu test-point stub."
+
+[[vias]]
+id = "v_heater_arm_r22_in2_entry"
+phase = "3_heater_power"
+net = "HEATER_ARM"
+x_mm = 86.300
+y_mm = 56.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Scratch-validated HEATER_ARM through-via west of R22 pad 1, feeding an In2.Cu bridge that avoids the HEATER0_PWM F.Cu crossing."
+
+[[vias]]
+id = "v_heater_arm_track_in2_return"
+phase = "3_heater_power"
+net = "HEATER_ARM"
+x_mm = 91.300
+y_mm = 53.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Scratch-validated HEATER_ARM return through-via at the existing F.Cu track endpoint, keeping the local closure off the obstructed F.Cu corridor."
 
 [[routes]]
 id = "led_current_sense_u10_to_tp"
@@ -3185,6 +3207,39 @@ intent = "Scratch-validated SPARE_GPIO42 F.Cu return stub from the east-side thr
 points = [
   { x_mm = 87.500, y_mm = 75.000, layer = "F.Cu", via_id = "v_spare_gpio42_tp_in2_return" },
   { x_mm = 86.000, y_mm = 75.000, layer = "F.Cu", anchor = "TP_SPARE42:1" },
+]
+
+[[routes]]
+id = "heater_arm_r22_in2_entry_stub"
+phase = "3_heater_power"
+net = "HEATER_ARM"
+width_mm = 0.250
+intent = "Scratch-validated HEATER_ARM F.Cu stub from R22 pad 1 to the west-side through-via, avoiding the rejected straight F.Cu crossing over HEATER0_PWM."
+points = [
+  { x_mm = 87.000, y_mm = 56.000, layer = "F.Cu", anchor = "R22:1" },
+  { x_mm = 86.300, y_mm = 56.000, layer = "F.Cu", via_id = "v_heater_arm_r22_in2_entry" },
+]
+
+[[routes]]
+id = "heater_arm_r22_to_track_in2_bridge"
+phase = "3_heater_power"
+net = "HEATER_ARM"
+width_mm = 0.250
+intent = "Scratch-validated HEATER_ARM In2.Cu bridge from the R22 entry through-via to the existing local F.Cu track return via, bypassing the HEATER0_PWM top-layer obstruction."
+points = [
+  { x_mm = 86.300, y_mm = 56.000, layer = "In2.Cu", anchor = "v_heater_arm_r22_in2_entry through-via" },
+  { x_mm = 91.300, y_mm = 53.000, layer = "In2.Cu", anchor = "v_heater_arm_track_in2_return through-via" },
+]
+
+[[routes]]
+id = "heater_arm_track_return_stub"
+phase = "3_heater_power"
+net = "HEATER_ARM"
+width_mm = 0.250
+intent = "Scratch-validated HEATER_ARM F.Cu return stub from the east-side through-via into the existing local F.Cu track endpoint."
+points = [
+  { x_mm = 91.300, y_mm = 53.000, layer = "F.Cu", via_id = "v_heater_arm_track_in2_return" },
+  { x_mm = 91.000, y_mm = 53.000, layer = "F.Cu", anchor = "existing HEATER_ARM F.Cu track endpoint" },
 ]
 
 [[segments]]
