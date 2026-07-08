@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 95
-expected_route_count = 139
+expected_via_count = 96
+expected_route_count = 140
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -878,6 +878,17 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed LED_EXC_EN re-entry below U9 pin 3, avoiding the LED_DIM_GATE east-side barrier and the TP-side PWM/GND row."
+
+[[vias]]
+id = "v_led_exc_en_tp_in2_escape"
+phase = "5_optics_camera_interlocks"
+net = "LED_EXC_EN"
+x_mm = 41.000
+y_mm = 49.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed LED_EXC_EN TP escape via centered on TP_LED_EN, enabling the scratch-clean In2 bridge around the LED_DIM_DRIVE top-layer barrier and local B.Cu power trunks."
 
 [[vias]]
 id = "v_therm_ch5_u5_bcu_escape"
@@ -2688,6 +2699,17 @@ points = [
   { x_mm = 47.950, y_mm = 45.300, layer = "B.Cu", via_id = "v_led_exc_en_u9_bcu_entry" },
   { x_mm = 47.950, y_mm = 45.300, layer = "F.Cu", via_id = "v_led_exc_en_u9_bcu_entry" },
   { x_mm = 47.950, y_mm = 44.000, layer = "F.Cu", anchor = "U9:3" },
+]
+
+[[routes]]
+id = "led_exc_en_tp_to_u9_in2_bridge"
+phase = "5_optics_camera_interlocks"
+net = "LED_EXC_EN"
+width_mm = 0.250
+intent = "Scratch-validated LED_EXC_EN TP closure at contract width using an In2.Cu bridge from TP_LED_EN to the existing U9 through-via, avoiding the rejected F.Cu LED_DIM_DRIVE crossings and the rejected B.Cu +3V3/+3V3_ANA/GND trunk crossings."
+points = [
+  { x_mm = 41.000, y_mm = 49.000, layer = "In2.Cu", anchor = "v_led_exc_en_tp_in2_escape through-via / TP_LED_EN:1" },
+  { x_mm = 47.950, y_mm = 45.300, layer = "In2.Cu", anchor = "v_led_exc_en_u9_bcu_entry through-via / led_exc_en_mcu_to_u9_right_bcu_branch" },
 ]
 
 [[routes]]
