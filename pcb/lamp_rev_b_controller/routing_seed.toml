@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 109
-expected_route_count = 157
+expected_route_count = 158
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -2187,6 +2187,18 @@ points = [
   { x_mm = 112.000, y_mm = 28.000, layer = "F.Cu" },
   { x_mm = 112.000, y_mm = 28.000, layer = "B.Cu", via_id = "v_vin_protected_cutoff_escape" },
   { x_mm = 112.000, y_mm = 42.000, layer = "B.Cu", anchor = "J24:1" },
+]
+
+[[routes]]
+id = "vin_protected_cutoff_to_r55_bcu_bridge"
+phase = "2_power_tree"
+net = "VIN_PROTECTED"
+width_mm = 1.500
+intent = "Scratch-validated contract-width protected-VIN B.Cu dogleg from the cutoff-loop branch to the R55 return via, dropping below J24:2 before crossing to avoid the VIN_HEATER pad."
+points = [
+  { x_mm = 112.000, y_mm = 42.000, layer = "B.Cu", anchor = "J24:1 / cutoff-loop branch" },
+  { x_mm = 112.000, y_mm = 46.000, layer = "B.Cu" },
+  { x_mm = 86.000, y_mm = 46.000, layer = "B.Cu", anchor = "v_vin_protected_r55_in2_return through-via / R55:1" },
 ]
 
 [[routes]]
