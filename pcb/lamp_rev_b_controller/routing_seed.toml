@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 109
-expected_route_count = 158
+expected_via_count = 110
+expected_route_count = 160
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1164,6 +1164,17 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Scratch-validated SPARE_GPIO42 return via east of TP_SPARE42, offset from the SPI_MOSI return via before the short F.Cu test-point stub."
+
+[[vias]]
+id = "v_spare_gpio42_u1_in2_return"
+phase = "5_optics_camera_interlocks"
+net = "SPARE_GPIO42"
+x_mm = 68.000
+y_mm = 15.400
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Scratch-validated SPARE_GPIO42 U1 return through-via east of the LED_EXC_EN and SD_CS_N via cluster, carrying the In2.Cu dogleg to U1 pad 35."
 
 [[vias]]
 id = "v_heater_arm_r22_in2_entry"
@@ -3416,6 +3427,29 @@ intent = "Scratch-validated SPARE_GPIO42 F.Cu return stub from the east-side thr
 points = [
   { x_mm = 87.500, y_mm = 75.000, layer = "F.Cu", via_id = "v_spare_gpio42_tp_in2_return" },
   { x_mm = 86.000, y_mm = 75.000, layer = "F.Cu", anchor = "TP_SPARE42:1" },
+]
+
+[[routes]]
+id = "spare_gpio42_j17_lane_to_u1_in2_dogleg"
+phase = "5_optics_camera_interlocks"
+net = "SPARE_GPIO42"
+width_mm = 0.200
+intent = "Scratch-validated SPARE_GPIO42 In2.Cu dogleg from the accepted J17/TP lane to the U1 return via, east of the LED_EXC_EN and SD_CS_N through-via cluster."
+points = [
+  { x_mm = 65.000, y_mm = 73.000, layer = "In2.Cu", anchor = "v_spare_gpio42_j17_in2_entry through-via / accepted SPARE_GPIO42 J17 lane" },
+  { x_mm = 68.000, y_mm = 73.000, layer = "In2.Cu" },
+  { x_mm = 68.000, y_mm = 15.400, layer = "In2.Cu", anchor = "v_spare_gpio42_u1_in2_return through-via" },
+]
+
+[[routes]]
+id = "spare_gpio42_u1_return_stub"
+phase = "5_optics_camera_interlocks"
+net = "SPARE_GPIO42"
+width_mm = 0.200
+intent = "Scratch-validated SPARE_GPIO42 F.Cu stub from the U1-side through-via into U1 pad 35."
+points = [
+  { x_mm = 68.000, y_mm = 15.400, layer = "F.Cu", via_id = "v_spare_gpio42_u1_in2_return" },
+  { x_mm = 69.900, y_mm = 15.400, layer = "F.Cu", anchor = "U1:35" },
 ]
 
 [[routes]]
