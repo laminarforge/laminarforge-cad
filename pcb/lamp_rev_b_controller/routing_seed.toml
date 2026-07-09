@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 103
-expected_route_count = 149
+expected_via_count = 105
+expected_route_count = 152
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1143,6 +1143,28 @@ size_mm = 0.700
 drill_mm = 0.300
 intent = "Scratch-validated HEATER_ARM return through-via at the existing F.Cu track endpoint, keeping the local closure off the obstructed F.Cu corridor."
 
+[[vias]]
+id = "v_heater0_gate_r20_in2_entry"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+x_mm = 96.000
+y_mm = 54.700
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Scratch-validated HEATER0_GATE In2 entry south of R20 pad 2, offset from the B.Cu heater GND return at y=56."
+
+[[vias]]
+id = "v_heater0_gate_r23_in2_return"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+x_mm = 86.300
+y_mm = 61.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Scratch-validated HEATER0_GATE In2 return west of R23 pad 1, avoiding the R21/R23 top-layer pad row."
+
 [[routes]]
 id = "led_current_sense_u10_to_tp"
 phase = "5_optics_camera_interlocks"
@@ -1615,6 +1637,39 @@ points = [
   { x_mm = 99.000, y_mm = 52.000, layer = "F.Cu", anchor = "TP_HEATER0_GATE:1" },
   { x_mm = 103.000, y_mm = 52.000, layer = "F.Cu" },
   { x_mm = 103.000, y_mm = 49.000, layer = "F.Cu", anchor = "Q1:1" },
+]
+
+[[routes]]
+id = "heater0_gate_r20_in2_entry_stub"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+width_mm = 0.300
+intent = "Scratch-validated HEATER0_GATE F.Cu stub from R20 pad 2 to the south-side In2 entry via, clear of the B.Cu GND return."
+points = [
+  { x_mm = 96.000, y_mm = 56.000, layer = "F.Cu", anchor = "R20:2" },
+  { x_mm = 96.000, y_mm = 54.700, layer = "F.Cu", via_id = "v_heater0_gate_r20_in2_entry" },
+]
+
+[[routes]]
+id = "heater0_gate_r20_to_r23_in2_bridge"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+width_mm = 0.300
+intent = "Scratch-validated HEATER0_GATE In2.Cu bridge from the R20 entry via to the R23 return via, bypassing the obstructed R21/R23 F.Cu row."
+points = [
+  { x_mm = 96.000, y_mm = 54.700, layer = "In2.Cu", anchor = "v_heater0_gate_r20_in2_entry through-via" },
+  { x_mm = 86.300, y_mm = 61.000, layer = "In2.Cu", anchor = "v_heater0_gate_r23_in2_return through-via" },
+]
+
+[[routes]]
+id = "heater0_gate_r23_return_stub"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+width_mm = 0.300
+intent = "Scratch-validated HEATER0_GATE F.Cu return stub from the west-side In2 return via into R23 pad 1."
+points = [
+  { x_mm = 86.300, y_mm = 61.000, layer = "F.Cu", via_id = "v_heater0_gate_r23_in2_return" },
+  { x_mm = 87.000, y_mm = 61.000, layer = "F.Cu", anchor = "R23:1" },
 ]
 
 [[routes]]
