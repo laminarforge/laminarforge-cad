@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 106
-expected_route_count = 154
+expected_via_count = 108
+expected_route_count = 156
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -471,6 +471,28 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed HEATER1 PWM return via west of R21 pin 1, clear of the local gate and ground routing."
+
+[[vias]]
+id = "v_heater1_pwm_tp_in2_entry"
+phase = "3_heater_power"
+net = "HEATER1_PWM"
+x_mm = 84.000
+y_mm = 57.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 1.200
+drill_mm = 0.500
+intent = "Scratch-validated HEATER1_PWM In2 entry through-via at the existing TP_HEATER1_PWM track endpoint, avoiding the rejected direct F.Cu VDRV crossing."
+
+[[vias]]
+id = "v_heater1_pwm_u6_in2_return"
+phase = "3_heater_power"
+net = "HEATER1_PWM"
+x_mm = 90.090
+y_mm = 47.500
+layers = ["F.Cu", "B.Cu"]
+size_mm = 1.200
+drill_mm = 0.500
+intent = "Scratch-validated HEATER1_PWM return through-via above U6 pad 8, keeping the In2 hop above the rejected VIN_PROTECTED crossing channel."
 
 [[vias]]
 id = "v_heater1_gate_r21_bcu_escape"
@@ -2825,6 +2847,29 @@ points = [
   { x_mm = 92.500, y_mm = 59.500, layer = "B.Cu" },
   { x_mm = 92.500, y_mm = 59.500, layer = "F.Cu", via_id = "v_heater1_pwm_r21_bcu_entry" },
   { x_mm = 94.000, y_mm = 61.000, layer = "F.Cu", anchor = "R21:1" },
+]
+
+[[routes]]
+id = "heater1_pwm_tp_to_u6_in2_bridge"
+phase = "3_heater_power"
+net = "HEATER1_PWM"
+width_mm = 0.250
+intent = "Scratch-validated HEATER1_PWM In2.Cu bridge from the existing TP_HEATER1_PWM endpoint to the U6-side return via on the current 51-open baseline; promoted at the contract-compliant 0.250 mm width."
+points = [
+  { x_mm = 84.000, y_mm = 57.000, layer = "In2.Cu", anchor = "v_heater1_pwm_tp_in2_entry through-via / TP_HEATER1_PWM:1" },
+  { x_mm = 84.000, y_mm = 47.500, layer = "In2.Cu" },
+  { x_mm = 90.090, y_mm = 47.500, layer = "In2.Cu", anchor = "v_heater1_pwm_u6_in2_return through-via" },
+]
+
+[[routes]]
+id = "heater1_pwm_u6_return_stub"
+phase = "3_heater_power"
+net = "HEATER1_PWM"
+width_mm = 0.250
+intent = "Scratch-validated HEATER1_PWM short F.Cu return stub from the U6-side through-via to U6 pad 8; promoted at the contract-compliant 0.250 mm width."
+points = [
+  { x_mm = 90.090, y_mm = 47.500, layer = "F.Cu", via_id = "v_heater1_pwm_u6_in2_return" },
+  { x_mm = 90.090, y_mm = 45.430, layer = "F.Cu", anchor = "U6:8" },
 ]
 
 [[routes]]
