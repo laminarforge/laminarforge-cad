@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 105
-expected_route_count = 152
+expected_route_count = 153
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -2223,6 +2223,20 @@ points = [
   { x_mm = 103.000, y_mm = 62.000, layer = "F.Cu", anchor = "TP_HEATER0_LOW:1" },
   { x_mm = 100.000, y_mm = 62.000, layer = "F.Cu" },
   { x_mm = 100.000, y_mm = 58.000, layer = "F.Cu", anchor = "R25:1" },
+]
+
+[[routes]]
+id = "heater0_low_q1_in2_return_bridge"
+phase = "3_heater_power"
+net = "HEATER0_LOW"
+width_mm = 1.500
+intent = "Scratch-validated In2.Cu HEATER0 low-side return bridge from Q1 pad 2 to the existing J12 terminal branch, using a straight pad escape before jogging west of the gate and GND geometry."
+points = [
+  { x_mm = 105.540, y_mm = 49.000, layer = "In2.Cu", anchor = "Q1:2" },
+  { x_mm = 105.540, y_mm = 53.000, layer = "In2.Cu" },
+  { x_mm = 99.000, y_mm = 58.000, layer = "In2.Cu" },
+  { x_mm = 99.000, y_mm = 66.000, layer = "In2.Cu" },
+  { x_mm = 101.920, y_mm = 66.000, layer = "In2.Cu", anchor = "J12:2" },
 ]
 
 [[routes]]
