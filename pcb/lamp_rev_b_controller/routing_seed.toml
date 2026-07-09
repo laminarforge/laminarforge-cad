@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 111
-expected_route_count = 162
+expected_via_count = 112
+expected_route_count = 163
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -988,6 +988,17 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed THERM_CH_6 local B.Cu escape below U5 pin 2, threading between the accepted THERM_CH_4/THERM_CH_5 exits and the J23 I2C pad column."
+
+[[vias]]
+id = "v_therm_ch7_u5_bcu_escape"
+phase = "4_thermistor_analog"
+net = "THERM_CH_7"
+x_mm = 28.370
+y_mm = 62.000
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed THERM_CH_7 local B.Cu escape below U5 pin 4, using the open column west of the analog rail spine before the J23 pad-gap crossing."
 
 [[vias]]
 id = "v_gnd_c3_input_return_bcu_escape"
@@ -3360,6 +3371,22 @@ points = [
   { x_mm = 32.780, y_mm = 73.110, layer = "B.Cu" },
   { x_mm = 36.000, y_mm = 73.110, layer = "B.Cu" },
   { x_mm = 36.000, y_mm = 70.000, layer = "B.Cu", anchor = "J10:1" },
+]
+
+[[routes]]
+id = "therm_ch7_u5_to_j11_bcu_j23_gap_branch"
+phase = "4_thermistor_analog"
+net = "THERM_CH_7"
+width_mm = 0.200
+intent = "Reviewed local THERM_CH_7 branch from U5 to J11 using a B.Cu escape west of the +3V3_ANA spine, crossing between J23 pads 3/4, then approaching J11:1 from the left."
+points = [
+  { x_mm = 28.370, y_mm = 60.740, layer = "F.Cu", anchor = "U5:4" },
+  { x_mm = 28.370, y_mm = 62.000, layer = "F.Cu", via_id = "v_therm_ch7_u5_bcu_escape" },
+  { x_mm = 28.370, y_mm = 62.000, layer = "B.Cu", via_id = "v_therm_ch7_u5_bcu_escape" },
+  { x_mm = 28.370, y_mm = 75.650, layer = "B.Cu" },
+  { x_mm = 39.500, y_mm = 75.650, layer = "B.Cu" },
+  { x_mm = 39.500, y_mm = 70.000, layer = "B.Cu" },
+  { x_mm = 41.000, y_mm = 70.000, layer = "B.Cu", anchor = "J11:1" },
 ]
 
 [[routes]]
