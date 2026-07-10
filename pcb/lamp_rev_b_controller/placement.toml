@@ -679,7 +679,7 @@ locked = true
 
 [[placements]]
 reference = "R25"
-part_id = "heater_current_shunts"
+part_id = "heater_low_bypass_dnp"
 zone = "heater_power"
 x_mm = 101.0
 y_mm = 58.0
@@ -689,7 +689,7 @@ locked = true
 
 [[placements]]
 reference = "R26"
-part_id = "heater_current_shunts"
+part_id = "heater_low_bypass_dnp"
 zone = "heater_power"
 x_mm = 111.0
 y_mm = 58.0
@@ -1186,13 +1186,6 @@ y_mm = 62.0
 side = "top"
 
 [[test_points]]
-name = "TP_HEATER_SENSE"
-net = "HEATER_SUPPLY_SENSE"
-x_mm = 91.0
-y_mm = 70.0
-side = "top"
-
-[[test_points]]
 name = "TP_THERM_S0"
 net = "THERM_MUX_S0"
 x_mm = 4.0
@@ -1229,28 +1222,21 @@ side = "top"
 
 [[test_points]]
 name = "TP_ADS_AIN0"
-net = "ADS_AIN0"
+net = "THERM_MUX_OUT"
 x_mm = 38.0
 y_mm = 38.0
 side = "top"
 
 [[test_points]]
-name = "TP_ADS_AIN1"
-net = "ADS_AIN1"
-x_mm = 38.0
-y_mm = 42.0
-side = "top"
-
-[[test_points]]
 name = "TP_ADS_AIN2"
-net = "ADS_AIN2"
+net = "LED_CURRENT_SENSE"
 x_mm = 38.0
 y_mm = 46.0
 side = "top"
 
 [[test_points]]
 name = "TP_ADS_AIN3"
-net = "ADS_AIN3"
+net = "AUX_ANALOG_IN"
 x_mm = 38.0
 y_mm = 50.0
 side = "top"

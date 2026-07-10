@@ -556,6 +556,8 @@ fn validate_contract(contract: &Contract, nets: &BTreeMap<String, Net>, errors: 
         "HEATER1_PWM",
         "HEATER_ARM",
         "THERM_MUX_OUT",
+        "LED_CURRENT_SENSE",
+        "AUX_ANALOG_IN",
         "LED_EXC_PWM",
         "LED_EXC_EN",
         "FRAME_TRIG_OUT",
@@ -564,6 +566,19 @@ fn validate_contract(contract: &Contract, nets: &BTreeMap<String, Net>, errors: 
     ] {
         if !nets.contains_key(net) {
             errors.push(format!("missing required net {net}"));
+        }
+    }
+    for retired in [
+        "HEATER_SUPPLY_SENSE",
+        "ADS_AIN0",
+        "ADS_AIN1",
+        "ADS_AIN2",
+        "ADS_AIN3",
+    ] {
+        if nets.contains_key(retired) {
+            errors.push(format!(
+                "retired analog placeholder net {retired} must not remain"
+            ));
         }
     }
     for rail in &contract.rails {
@@ -704,6 +719,35 @@ fn validate_parts(
                 ));
             }
         }
+    }
+    require_selected_part(
+        &parts_by_id,
+        "adc",
+        "ADS1115",
+        "lcsc:MSOP-10_L3.0-W3.0-P0.50-LS5.0-BL",
+        "C37593",
+        &[
+            "+3V3",
+            "GND",
+            "I2C_SDA",
+            "I2C_SCL",
+            "THERM_MUX_OUT",
+            "LED_CURRENT_SENSE",
+            "AUX_ANALOG_IN",
+        ],
+        errors,
+    );
+    require_selected_part(
+        &parts_by_id,
+        "heater_low_bypass_dnp",
+        "DNP",
+        "lcsc:R0805",
+        "DNP",
+        &["HEATER0_LOW", "HEATER1_LOW", "GND"],
+        errors,
+    );
+    if part_ids.contains("heater_current_shunts") {
+        errors.push("retired heater_current_shunts part group must not remain".to_string());
     }
     require_selected_part(
         &parts_by_id,
@@ -1006,6 +1050,36 @@ fn validate_pin_nets(
     );
     require_pin_assignment(
         &assignments_by_ref,
+        "U4",
+        &[
+            ("4", "THERM_MUX_OUT"),
+            ("6", "LED_CURRENT_SENSE"),
+            ("7", "AUX_ANALOG_IN"),
+        ],
+        errors,
+    );
+    require_unassigned_pin(&assignments_by_ref, "U4", "5", errors);
+    require_pin_assignment(
+        &assignments_by_ref,
+        "J23",
+        &[("4", "AUX_ANALOG_IN")],
+        errors,
+    );
+    require_unassigned_pin(&assignments_by_ref, "J23", "3", errors);
+    require_pin_assignment(
+        &assignments_by_ref,
+        "R25",
+        &[("1", "HEATER0_LOW"), ("2", "GND")],
+        errors,
+    );
+    require_pin_assignment(
+        &assignments_by_ref,
+        "R26",
+        &[("1", "HEATER1_LOW"), ("2", "GND")],
+        errors,
+    );
+    require_pin_assignment(
+        &assignments_by_ref,
         "FB1",
         &[("1", "+3V3"), ("2", "+3V3_ANA")],
         errors,
@@ -1022,6 +1096,23 @@ fn validate_pin_nets(
         &[("1", "VIN_PROTECTED"), ("2", "VIN_HEATER")],
         errors,
     );
+}
+
+fn require_unassigned_pin(
+    assignments_by_ref: &BTreeMap<&str, &PinNetAssignment>,
+    reference: &str,
+    pin: &str,
+    errors: &mut Vec<String>,
+) {
+    let Some(assignment) = assignments_by_ref.get(reference) else {
+        errors.push(format!("missing pin-net assignment {reference}"));
+        return;
+    };
+    if let Some(net) = assignment.pins.get(pin) {
+        errors.push(format!(
+            "pin-net assignment {reference} pin {pin} must be an explicit generator no-connect, got {net}"
+        ));
+    }
 }
 
 fn require_pin_assignment(
@@ -1442,6 +1533,46 @@ fn validate_text_content(root: &Path, errors: &mut Vec<String>, warnings: &mut V
         "VIN_HEATER cutoff boundary",
         &package_text,
         &["J24", "VIN_PROTECTED", "VIN_HEATER", "cutoff"],
+        errors,
+    );
+    require_text_tokens(
+        "ADS1115 functional map",
+        &package_text,
+        &[
+            "THERM_MUX_OUT",
+            "AIN0",
+            "AIN1",
+            "no-connect",
+            "LED_CURRENT_SENSE",
+            "AIN2",
+            "AUX_ANALOG_IN",
+            "AIN3",
+        ],
+        errors,
+    );
+    require_text_tokens(
+        "heater bypass DNP hazard",
+        &package_text,
+        &["R25", "R26", "DNP", "bypass", "MOSFET", "VIN_HEATER"],
+        errors,
+    );
+    let firmware = fs::read_to_string(root.join(FIRMWARE_PATH)).unwrap_or_default();
+    for unsupported in ["supply_fault", "HEATER_SUPPLY_SENSE"] {
+        if firmware.contains(unsupported) {
+            errors.push(format!(
+                "firmware handoff must not promise unsupported {unsupported}"
+            ));
+        }
+    }
+    require_text_tokens(
+        "firmware ADS1115 functional map",
+        &firmware,
+        &[
+            "AIN0=THERM_MUX_OUT",
+            "AIN1=SPARE_NO_CONNECT",
+            "AIN2=LED_CURRENT_SENSE",
+            "AIN3=AUX_ANALOG_IN",
+        ],
         errors,
     );
     let followup = fs::read_to_string(root.join(FOLLOWUP_PATH)).unwrap_or_default();

@@ -2,8 +2,8 @@
 name = "lamp_rev_b_controller_fab_preview"
 ticket = "T-C7BBBEA3"
 revision = "Rev B prototype"
-source_stage = "routed_preview_pending_electrical_resolution"
-release_state = "blocked_on_reviewed_electrical_issue"
+source_stage = "routed_release_candidate_afe_reconciled"
+release_state = "ready_for_first_article_fabrication_after_fresh_gates"
 
 [toolchain]
 min_kicad_major = 10
@@ -63,7 +63,7 @@ manual_part_ids = [
   "analog_opt_header",
 ]
 dnp_part_ids = [
-  "heater_current_shunts",
+  "heater_low_bypass_dnp",
 ]
 no_substitution_part_ids = [
   "five_v_buck_module",
@@ -82,8 +82,9 @@ dnp_alternates = [
   "CUI P7812-500R C6351743 24 V VDRV regulator path is DNP unless a 24 V heater population is explicitly approved.",
   "R55 direct VIN_PROTECTED-to-VDRV feed is populated only for the 12 V first article and is DNP for any 24 V build unless an approved 12 V regulator path is populated.",
 ]
+dnp_hazards = [
+  "R25 and R26 are mandatory DNP in the current layout. Populating either footprint bridges its HEATERx_LOW node to GND in parallel with the MOSFET, can energize the heater whenever VIN_HEATER is present, and does not provide current sensing.",
+]
 
 [release_blockers]
-items = [
-  "HEATER_SUPPLY_SENSE terminates only at TP_HEATER_SENSE and has no populated source or ADC endpoint; human review must either remove this unsupported interface or approve a concrete sensing circuit and ADC mapping.",
-]
+items = []

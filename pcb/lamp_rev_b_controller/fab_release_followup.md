@@ -1,6 +1,6 @@
 # Rev B Controller Fab Release Follow-Up
 
-The canonical board is now at physical DRC `0` and active unconnected `0`. The package remains blocked because the corrected KiCad 10 ERC reader identifies one real electrical-source issue after separating generated-library annotation noise and one justified population exception.
+The canonical `c122e737` board entered this reconciliation at physical DRC `0` and active unconnected `0`. The coupled analog-front-end correction retires the unsupported heater-supply interface, maps the three implemented analog sources directly to ADS1115 inputs, and preserves the proven U1 exposed-pad grounding correction.
 
 Reconciled in `T-C7BBBEA3`:
 
@@ -9,7 +9,10 @@ Reconciled in `T-C7BBBEA3`:
 - Updated `lamp_rev_b_controller_erc_report` for KiCad 10's sheet-nested JSON schema and explicit, item-scoped reviewed exceptions.
 - Assigned `U1` pad 41 and its nine replicated exposed-pad lands directly to system `GND`, retired the standalone `GND_EP` net from the deterministic contract and part manifest, and locked all three U1 ground pad numbers in `lamp_rev_b_controller_check`.
 - Reassigned the existing exposed-pad spoke records to `GND`, then used the stock Freerouting 10-pass workflow on the preserved canonical autoroute. It completed after two passes with one routed and zero remaining connections, adding only three segments and one via while preserving physical DRC `0` and active unconnected `0`.
-- Fresh ERC now reports `157` raw findings: `155` embedded `LF_CAPTURE` library annotations, one intentional pulled-up `LED_FAULT_N` singleton, and one blocking source finding: source-less `HEATER_SUPPLY_SENSE`.
+- The `c122e737` baseline ERC reported `157` raw findings: `155` embedded `LF_CAPTURE` library annotations, one intentional pulled-up `LED_FAULT_N` singleton, and the now-retired source-less heater-supply interface.
+- Retired the optional heater-supply telemetry contract/test point and firmware fault promise; ADS1115 AIN1 is now an explicit no-connect spare.
+- Replaced the unimplemented synthetic ADC boundaries with direct functional connectivity: `THERM_MUX_OUT -> AIN0`, `LED_CURRENT_SENSE -> AIN2`, and `AUX_ANALOG_IN -> AIN3`. Existing divider filters, the low-impedance INA180 output, and the bounded auxiliary source make additional bridge components unnecessary.
+- Kept R25/R26 mandatory DNP and corrected their source/assembly descriptions: each footprint bypasses its heater MOSFET if populated and cannot measure current.
 
 Completed through `T-49FD0ECC` and routing follow-up `T-3DFB93CC`:
 
@@ -46,6 +49,6 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 
 Concrete follow-up to reach release:
 
-1. Human review must either remove `HEATER_SUPPLY_SENSE` from the promised interface or approve a concrete sensing topology, selected parts, and ADC mapping before any board/net update.
-2. Re-run generated schematic/board validation, fresh KiCad ERC/DRC, BOM/CPL checks, and the MCP fab-readiness gate after that decision lands.
+1. Regenerate schematic/board outputs and close only the real functional-net opens with the reviewed stock Freerouting 10-pass scratch/import workflow.
+2. Require physical DRC `0`, active unconnected `0`, dangling route `0`, passing focused checks/build, reviewed ERC, clean BOM/CPL, and a green MCP fab-readiness gate before promotion.
 3. Add `lamp_rev_b_controller_fab_release` only after those gates are meaningful and green, then generate vendor Gerbers, drills, BOM, CPL, assembly notes, source snapshot, and review bundle.

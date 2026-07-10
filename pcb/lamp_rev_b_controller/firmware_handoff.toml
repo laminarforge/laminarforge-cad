@@ -20,7 +20,7 @@ name = "HeaterChannel::Block"
 control = "HEATER0_PWM"
 arm = "HEATER_ARM"
 thermistors = ["THERM_BLOCK_A", "THERM_BLOCK_B"]
-faults = ["over_temperature", "missing_thermistor", "open_short_thermistor", "supply_fault", "lid_open", "cartridge_missing", "watchdog_timeout"]
+faults = ["over_temperature", "missing_thermistor", "open_short_thermistor", "lid_open", "cartridge_missing", "watchdog_timeout"]
 
 [[peripheral]]
 name = "HeaterChannel::LidAux"
@@ -35,6 +35,17 @@ select_nets = ["THERM_MUX_S0", "THERM_MUX_S1", "THERM_MUX_S2"]
 enable = "THERM_MUX_EN_N"
 adc = "ADS1115"
 channels = ["THERM_BLOCK_A", "THERM_BLOCK_B", "THERM_LID_AUX", "THERM_AMBIENT", "THERM_CARTRIDGE_EDGE", "THERM_HEATSINK", "THERM_SPARE_0", "THERM_SPARE_1"]
+adc_input = "ADS1115 AIN0 on THERM_MUX_OUT"
+
+[[peripheral]]
+name = "Ads1115AnalogFrontEnd"
+address = "0x48"
+pga = "+/-4.096 V single-ended range"
+channel_map = ["AIN0=THERM_MUX_OUT", "AIN1=SPARE_NO_CONNECT", "AIN2=LED_CURRENT_SENSE", "AIN3=AUX_ANALOG_IN"]
+ain0_source = "Eight 10 kohm thermistor dividers filtered at each mux channel; 0-3.3 V and about 2.5 kohm worst-case divider Thevenin impedance plus CD74HC4051 on-resistance."
+ain1_policy = "First-article spare is physically unassigned and must never be selected by firmware."
+ain2_source = "INA180A1 low-impedance output; about 1.4 V at the populated 0.7 A LED drive and about 2.0 V only for the DNP 1.0 A alternate."
+ain3_source = "External AUX_ANALOG_IN must remain within 0-3.3 V and use source impedance <=10 kohm; J23 pin 3 is reserved no-connect."
 
 [[peripheral]]
 name = "LedChannel::Excitation"
@@ -56,8 +67,9 @@ notes = "External USB/CSI host remains the mandatory first optical data path."
 
 [[peripheral]]
 name = "SafetyInterlockSnapshot"
-inputs = ["LID_CLOSED_N", "CART_PRESENT_N", "LATCH_LOCKED_N", "AUX_IO0_THERMAL_CUTOFF_OK", "HEATER_SUPPLY_SENSE"]
+inputs = ["LID_CLOSED_N", "CART_PRESENT_N", "LATCH_LOCKED_N", "AUX_IO0_THERMAL_CUTOFF_OK"]
 unsafe_action = "disarm heaters, disable excitation LED, leave fan policy safe, and log transition"
+notes = "Rev B first article has no heater-rail telemetry. The normally-closed J24 cutoff loop, thermistor plausibility/over-temperature checks, and AUX_IO0_THERMAL_CUTOFF_OK remain authoritative."
 
 [[peripheral]]
 name = "RunLogStorage"

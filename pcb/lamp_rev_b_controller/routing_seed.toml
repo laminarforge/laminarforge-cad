@@ -8,7 +8,7 @@ source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
 expected_via_count = 113
-expected_route_count = 165
+expected_route_count = 164
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -530,46 +530,46 @@ intent = "Reviewed HEATER1 gate return via west of the R24 pulldown pad, avoidin
 [[vias]]
 id = "v_ads_ain3_u4_bcu_escape"
 phase = "4_thermistor_analog"
-net = "ADS_AIN3"
+net = "AUX_ANALOG_IN"
 x_mm = 30.500
 y_mm = 38.400
 layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
-intent = "Reviewed ADS_AIN3 bottom-layer escape north of U4 pin 7, clear of adjacent ADC input pads."
+intent = "Reviewed AUX_ANALOG_IN / AIN3 bottom-layer escape north of U4 pin 7, clear of adjacent ADC input pads."
 
 [[vias]]
 id = "v_ads_ain3_tp_bcu_entry"
 phase = "4_thermistor_analog"
-net = "ADS_AIN3"
+net = "AUX_ANALOG_IN"
 x_mm = 36.500
 y_mm = 50.000
 layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
-intent = "Reviewed ADS_AIN3 return via west of TP_ADS_AIN3, offset from neighboring LED excitation test pads."
+intent = "Reviewed AUX_ANALOG_IN / AIN3 return via west of TP_ADS_AIN3, offset from neighboring LED excitation test pads."
 
 [[vias]]
 id = "v_ads_ain2_u4_bcu_escape"
 phase = "4_thermistor_analog"
-net = "ADS_AIN2"
+net = "LED_CURRENT_SENSE"
 x_mm = 32.000
 y_mm = 37.200
 layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
-intent = "Reviewed ADS_AIN2 bottom-layer escape north-east of U4 pin 6, clear of the adjacent ADS_AIN3 bottom-layer path."
+intent = "Reviewed LED_CURRENT_SENSE / AIN2 bottom-layer escape north-east of U4 pin 6, clear of the adjacent AUX_ANALOG_IN / AIN3 bottom-layer path."
 
 [[vias]]
 id = "v_ads_ain2_tp_bcu_entry"
 phase = "4_thermistor_analog"
-net = "ADS_AIN2"
+net = "LED_CURRENT_SENSE"
 x_mm = 39.500
 y_mm = 46.000
 layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
-intent = "Reviewed ADS_AIN2 return via east of TP_ADS_AIN2, keeping the branch on B.Cu past the ADS_AIN1 top-layer trace."
+intent = "Reviewed LED_CURRENT_SENSE / AIN2 return via east of TP_ADS_AIN2, keeping the branch on B.Cu clear of adjacent ADC input copper."
 
 [[vias]]
 id = "v_status_run_d2_bcu_escape"
@@ -761,24 +761,24 @@ intent = "Reviewed +3V3_ANA U5 entry via in the open window above U5 pin 16, cle
 [[vias]]
 id = "v_ads_ain0_u4_bcu_escape"
 phase = "4_thermistor_analog"
-net = "ADS_AIN0"
+net = "THERM_MUX_OUT"
 x_mm = 30.500
 y_mm = 42.700
 layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
-intent = "Reviewed ADS_AIN0 bottom-layer escape below U4 pin 4, away from the accepted ADS_AIN1 top trace and U4 ground pads."
+intent = "Reviewed THERM_MUX_OUT / AIN0 bottom-layer escape below U4 pin 4, away from adjacent ADC pads and U4 ground pads."
 
 [[vias]]
 id = "v_ads_ain0_tp_bcu_entry"
 phase = "4_thermistor_analog"
-net = "ADS_AIN0"
+net = "THERM_MUX_OUT"
 x_mm = 38.000
 y_mm = 36.000
 layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
-intent = "Reviewed ADS_AIN0 return via below TP_ADS_AIN0, clear of the +3V3_ANA C5 branch."
+intent = "Reviewed THERM_MUX_OUT / AIN0 return via below TP_ADS_AIN0, clear of the +3V3_ANA C5 branch."
 
 [[vias]]
 id = "v_sd_cs_r43_bcu_escape"
@@ -1075,7 +1075,7 @@ y_mm = 60.000
 layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
-intent = "Reviewed R25 shunt ground escape below the pad into the accepted heater-driver B.Cu ground return."
+intent = "Reviewed R25 mandatory-DNP bypass-footprint ground escape below the pad into the accepted heater-driver B.Cu ground return."
 
 [[vias]]
 id = "v_gnd_r26_shunt_return_bcu_entry"
@@ -1086,7 +1086,7 @@ y_mm = 56.500
 layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
-intent = "Reviewed R26 shunt ground entry above the pad, clear of Q2 PTH pads and the HEATER1_LOW shunt pad."
+intent = "Reviewed R26 mandatory-DNP bypass-footprint ground entry above the pad, clear of Q2 PTH pads and the HEATER1_LOW bypass pad."
 
 [[vias]]
 id = "v_i2c_sda_sdcs_east_overpass_north"
@@ -2193,7 +2193,7 @@ id = "gnd_r25_shunt_to_heater_return_bcu_tail"
 phase = "3_heater_power"
 net = "GND"
 width_mm = 0.300
-intent = "Reviewed R25 shunt ground tail into the existing heater-driver B.Cu return branch."
+intent = "Reviewed R25 mandatory-DNP bypass-footprint ground tail into the existing heater-driver B.Cu return branch."
 points = [
   { x_mm = 102.000, y_mm = 58.000, layer = "F.Cu", anchor = "R25:2" },
   { x_mm = 102.000, y_mm = 60.000, layer = "F.Cu", via_id = "v_gnd_r25_shunt_return_bcu_escape" },
@@ -2207,7 +2207,7 @@ id = "gnd_q1_to_r26_heater_return_bcu_tail"
 phase = "3_heater_power"
 net = "GND"
 width_mm = 0.300
-intent = "Reviewed Q1 ground pad to R26 shunt ground tail routed on B.Cu above the HEATER1 low-side shunt."
+intent = "Reviewed Q1 ground pad to R26 mandatory-DNP bypass-footprint ground tail routed on B.Cu above the HEATER1 low-side bypass footprint."
 points = [
   { x_mm = 108.080, y_mm = 49.000, layer = "B.Cu", anchor = "Q1:3" },
   { x_mm = 108.080, y_mm = 54.500, layer = "B.Cu" },
@@ -2367,7 +2367,7 @@ id = "heater0_low_terminal_shunt_branch"
 phase = "3_heater_power"
 net = "HEATER0_LOW"
 width_mm = 1.200
-intent = "Reviewed local high-current HEATER0 low-side branch tying the output terminal, test point, and optional shunt pad."
+intent = "Reviewed local high-current HEATER0 low-side branch tying the output terminal, test point, and R25 mandatory-DNP bypass pad."
 points = [
   { x_mm = 101.920, y_mm = 66.000, layer = "F.Cu", anchor = "J12:2" },
   { x_mm = 103.000, y_mm = 66.000, layer = "F.Cu" },
@@ -2395,7 +2395,7 @@ id = "heater1_low_terminal_shunt_branch"
 phase = "3_heater_power"
 net = "HEATER1_LOW"
 width_mm = 1.200
-intent = "Reviewed local high-current HEATER1 low-side branch tying the output terminal, test point, and optional shunt pad."
+intent = "Reviewed local high-current HEATER1 low-side branch tying the output terminal, test point, and R26 mandatory-DNP bypass pad."
 points = [
   { x_mm = 101.920, y_mm = 80.000, layer = "F.Cu", anchor = "J13:2" },
   { x_mm = 101.920, y_mm = 83.000, layer = "F.Cu" },
@@ -2518,7 +2518,7 @@ id = "i2c_scl_u4_west_escape_to_j23_dogleg_in2_margin_lane"
 phase = "4_thermistor_analog"
 net = "I2C_SCL"
 width_mm = 0.200
-intent = "All-In2.Cu west-margin SCL lane from the new U4 split through-via to the accepted J23 SCL dogleg through-via at (40.000, 62.000), avoiding the failed ADS_AIN3/ADS_AIN2 crossing and staying below the y=62 thermistor/GND via row until the final SCL dogleg rise."
+intent = "All-In2.Cu west-margin SCL lane from the new U4 split through-via to the accepted J23 SCL dogleg through-via at (40.000, 62.000), avoiding the AUX_ANALOG_IN/LED_CURRENT_SENSE ADC-input crossing and staying below the y=62 thermistor/GND via row until the final SCL dogleg rise."
 points = [
   { x_mm = 27.200, y_mm = 38.200, layer = "In2.Cu", anchor = "v_i2c_scl_u4_west_in2_escape through-via" },
   { x_mm = 23.300, y_mm = 38.200, layer = "In2.Cu" },
@@ -2798,19 +2798,6 @@ points = [
 ]
 
 [[routes]]
-id = "ads_ain1_u4_to_tp_branch"
-phase = "4_thermistor_analog"
-net = "ADS_AIN1"
-width_mm = 0.200
-intent = "Reviewed local ADC input branch from U4 to the ADS_AIN1 manufacturing test point."
-points = [
-  { x_mm = 31.000, y_mm = 44.110, layer = "F.Cu", anchor = "U4:5" },
-  { x_mm = 34.000, y_mm = 44.110, layer = "F.Cu" },
-  { x_mm = 34.000, y_mm = 42.000, layer = "F.Cu" },
-  { x_mm = 38.000, y_mm = 42.000, layer = "F.Cu", anchor = "TP_ADS_AIN1:1" },
-]
-
-[[routes]]
 id = "therm_mux_out_u5_to_tp_branch"
 phase = "4_thermistor_analog"
 net = "THERM_MUX_OUT"
@@ -2825,9 +2812,9 @@ points = [
 [[routes]]
 id = "ads_ain0_u4_to_tp_bcu_branch"
 phase = "4_thermistor_analog"
-net = "ADS_AIN0"
+net = "THERM_MUX_OUT"
 width_mm = 0.200
-intent = "Reviewed ADS_AIN0 local branch using B.Cu below the accepted ADS_AIN1 top trace."
+intent = "Reviewed THERM_MUX_OUT / AIN0 local branch using B.Cu below adjacent ADC-input copper."
 points = [
   { x_mm = 30.500, y_mm = 44.110, layer = "F.Cu", anchor = "U4:4" },
   { x_mm = 30.500, y_mm = 42.700, layer = "F.Cu" },
@@ -2842,9 +2829,9 @@ points = [
 [[routes]]
 id = "ads_ain3_u4_to_tp_bcu_branch"
 phase = "4_thermistor_analog"
-net = "ADS_AIN3"
+net = "AUX_ANALOG_IN"
 width_mm = 0.200
-intent = "Reviewed local ADC input branch from U4 to the ADS_AIN3 manufacturing test point using B.Cu to avoid the existing ADS_AIN1 top trace."
+intent = "Reviewed AUX_ANALOG_IN local branch from U4 AIN3 to its ADC-side manufacturing test point using B.Cu to avoid adjacent ADC-input copper."
 points = [
   { x_mm = 30.500, y_mm = 39.890, layer = "F.Cu", anchor = "U4:7" },
   { x_mm = 30.500, y_mm = 38.400, layer = "F.Cu" },
@@ -2858,9 +2845,9 @@ points = [
 [[routes]]
 id = "ads_ain2_u4_to_tp_bcu_branch"
 phase = "4_thermistor_analog"
-net = "ADS_AIN2"
+net = "LED_CURRENT_SENSE"
 width_mm = 0.200
-intent = "Reviewed local ADC input branch from U4 to the ADS_AIN2 manufacturing test point using B.Cu to avoid the ADS_AIN1 and ADS_AIN3 traces."
+intent = "Reviewed LED_CURRENT_SENSE local branch from U4 AIN2 to its ADC-side manufacturing test point using B.Cu to avoid adjacent ADC-input copper."
 points = [
   { x_mm = 31.000, y_mm = 39.890, layer = "F.Cu", anchor = "U4:6" },
   { x_mm = 32.000, y_mm = 39.890, layer = "F.Cu" },

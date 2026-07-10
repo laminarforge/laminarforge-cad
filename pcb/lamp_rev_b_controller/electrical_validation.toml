@@ -17,12 +17,12 @@ checks = ["VIN_12_24 polarity", "VIN_PROTECTED after PTC/TVS", "P7805-2000-S +5V
 [[gate]]
 name = "heater_dummy_load"
 status = "required before heater pad connection"
-checks = ["HEATER_ARM default low", "HEATER0_PWM/HEATER1_PWM default low", "gate pulldowns active", "J24 continuity through external normally-closed thermal cutoff or rated jumper before energizing VIN_HEATER", "dummy-load current within connector/fuse limits", "opening the J24 thermal cutoff loop removes VIN_HEATER before firmware commands are trusted"]
+checks = ["HEATER_ARM default low", "HEATER0_PWM/HEATER1_PWM default low", "gate pulldowns active", "verify R25 and R26 are DNP and record that either populated footprint bypasses its heater MOSFET rather than sensing current", "J24 continuity through external normally-closed thermal cutoff or rated jumper before energizing VIN_HEATER", "dummy-load current within connector/fuse limits", "opening the J24 thermal cutoff loop removes VIN_HEATER before firmware commands are trusted"]
 
 [[gate]]
 name = "thermistor_adc"
 status = "required before thermal closed-loop"
-checks = ["ADS1115 I2C at 0x48", "mux select lines settle", "10K resistor reads near expected voltage", "open and short thermistor faults detected"]
+checks = ["ADS1115 I2C at 0x48 with +/-4.096 V PGA", "confirm THERM_MUX_OUT continuity to AIN0 and no synthetic/interposed ADC net", "confirm AIN1 is physically no-connect and firmware never selects it", "confirm LED_CURRENT_SENSE continuity to AIN2 and about 1.4 V at 700 mA", "confirm AUX_ANALOG_IN continuity to AIN3", "exercise AUX_ANALOG_IN at 0 V and 3.3 V from a <=10 kohm source and reject negative or above-rail drive", "mux select lines settle", "each 10 kohm NTC divider reads within 0-3.3 V near the expected voltage", "open and short thermistor faults detected"]
 
 [[gate]]
 name = "optics_driver_dummy_load"

@@ -276,14 +276,13 @@ notes = "Wurth 74439346068 AP63203 buck inductor."
 
 [[assignments]]
 reference = "U4"
-notes = "ADS1115 thermal/slow analog ADC."
+notes = "ADS1115 direct single-ended front end: AIN0 receives the filtered thermistor-mux divider (0-3.3 V, about 2.5 kohm worst-case divider Thevenin impedance plus mux resistance), AIN1 is an explicit unassigned no-connect spare, AIN2 receives the low-impedance INA180 LED_CURRENT_SENSE output (about 1.4 V at 0.7 A; about 2.0 V at the DNP 1.0 A alternate), and AIN3 receives bounded 0-3.3 V AUX_ANALOG_IN from a <=10 kohm external source."
 [assignments.pins]
 "1" = "GND"
 "3" = "GND"
-"4" = "ADS_AIN0"
-"5" = "ADS_AIN1"
-"6" = "ADS_AIN2"
-"7" = "ADS_AIN3"
+"4" = "THERM_MUX_OUT"
+"6" = "LED_CURRENT_SENSE"
+"7" = "AUX_ANALOG_IN"
 "8" = "+3V3"
 "9" = "I2C_SDA"
 "10" = "I2C_SCL"
@@ -403,14 +402,14 @@ notes = "HEATER1 gate pulldown."
 
 [[assignments]]
 reference = "R25"
-notes = "HEATER0 optional current shunt."
+notes = "DNP forbidden bypass placeholder. Populating R25 directly bridges HEATER0_LOW to GND in parallel with Q1, can energize heater 0 whenever VIN_HEATER is present, and does not measure current."
 [assignments.pins]
 "1" = "HEATER0_LOW"
 "2" = "GND"
 
 [[assignments]]
 reference = "R26"
-notes = "HEATER1 optional current shunt."
+notes = "DNP forbidden bypass placeholder. Populating R26 directly bridges HEATER1_LOW to GND in parallel with Q2, can energize heater 1 whenever VIN_HEATER is present, and does not measure current."
 [assignments.pins]
 "1" = "HEATER1_LOW"
 "2" = "GND"
@@ -550,11 +549,10 @@ notes = "Optional fan PWM/tach header."
 
 [[assignments]]
 reference = "J23"
-notes = "Analog optical diagnostic header."
+notes = "Analog optical diagnostic header. Pin 4 is the bounded 0-3.3 V, <=10 kohm AUX_ANALOG_IN source for ADS1115 AIN3. Pin 3 is an explicit unassigned no-connect spare on the first article."
 [assignments.pins]
 "1" = "+3V3_ANA"
 "2" = "GND"
-"3" = "ADS_AIN3"
 "4" = "AUX_ANALOG_IN"
 "5" = "I2C_SDA"
 "6" = "I2C_SCL"

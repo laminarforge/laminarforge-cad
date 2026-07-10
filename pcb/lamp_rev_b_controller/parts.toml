@@ -25,13 +25,13 @@ required_nets = ["VIN_12_24", "VIN_PROTECTED", "VIN_HEATER", "VDRV", "+5V", "+3V
 name = "heater_drive"
 title = "Heater Drive"
 modules = ["heater_drive", "interlocks"]
-required_nets = ["VIN_HEATER", "VDRV", "HEATER_ARM", "HEATER0_PWM", "HEATER1_PWM", "HEATER0_GATE", "HEATER1_GATE", "HEATER0_LOW", "HEATER1_LOW", "HEATER_SUPPLY_SENSE", "AUX_IO0_THERMAL_CUTOFF_OK", "GND"]
+required_nets = ["VIN_HEATER", "VDRV", "HEATER_ARM", "HEATER0_PWM", "HEATER1_PWM", "HEATER0_GATE", "HEATER1_GATE", "HEATER0_LOW", "HEATER1_LOW", "AUX_IO0_THERMAL_CUTOFF_OK", "GND"]
 
 [[blocks]]
 name = "temperature_sense"
 title = "Thermistor / ADC / Mux"
 modules = ["temperature_sense"]
-required_nets = ["+3V3_ANA", "+3V3", "I2C_SDA", "I2C_SCL", "THERM_MUX_S0", "THERM_MUX_S1", "THERM_MUX_S2", "THERM_MUX_EN_N", "THERM_MUX_OUT", "ADS_AIN0", "ADS_AIN1", "ADS_AIN2", "ADS_AIN3", "THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7", "GND"]
+required_nets = ["+3V3_ANA", "+3V3", "I2C_SDA", "I2C_SCL", "THERM_MUX_S0", "THERM_MUX_S1", "THERM_MUX_S2", "THERM_MUX_EN_N", "THERM_MUX_OUT", "LED_CURRENT_SENSE", "AUX_ANALOG_IN", "THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7", "GND"]
 
 [[blocks]]
 name = "optics_camera"
@@ -282,8 +282,8 @@ value = "ADS1115IDGSR"
 symbol = "ADS1115IDGSR"
 footprint = "lcsc:MSOP-10_L3.0-W3.0-P0.50-LS5.0-BL"
 lcsc_part = "C37593"
-nets = ["+3V3", "+3V3_ANA", "GND", "I2C_SDA", "I2C_SCL", "ADS_AIN0", "ADS_AIN1", "ADS_AIN2", "ADS_AIN3", "THERM_MUX_OUT", "HEATER_SUPPLY_SENSE", "LED_CURRENT_SENSE", "AUX_ANALOG_IN"]
-verification = "Thermistor/slow analog baseline; default address 0x48 with pads for future address option."
+nets = ["+3V3", "GND", "I2C_SDA", "I2C_SCL", "THERM_MUX_OUT", "LED_CURRENT_SENSE", "AUX_ANALOG_IN"]
+verification = "Direct single-ended map at default address 0x48: AIN0=THERM_MUX_OUT, AIN1=explicit no-connect spare, AIN2=LED_CURRENT_SENSE, AIN3=AUX_ANALOG_IN. Use the +/-4.096 V PGA range; populated sources remain within the 0-3.3 V supply rails."
 
 [[selected_parts]]
 id = "thermistor_mux"
@@ -406,16 +406,16 @@ nets = ["HEATER_ARM", "HEATER0_GATE", "HEATER1_GATE", "GND"]
 verification = "Hardware-off defaults for arm and gate nodes."
 
 [[selected_parts]]
-id = "heater_current_shunts"
+id = "heater_low_bypass_dnp"
 module = "heater_drive"
 quantity = 2
 reference_prefix = "R"
-value = "50mR DNP option"
+value = "50mR DNP forbidden low-side bypass placeholder"
 symbol = "0805W8F1001T5E"
 footprint = "lcsc:R0805"
 lcsc_part = "DNP"
-nets = ["HEATER0_LOW", "HEATER1_LOW", "GND", "HEATER_SUPPLY_SENSE"]
-verification = "Optional Kelvin sense placeholder; not populated unless current range is confirmed."
+nets = ["HEATER0_LOW", "HEATER1_LOW", "GND"]
+verification = "R25/R26 are DNP without exception in this layout. Each footprint is directly across a heater MOSFET drain-source path; populating it can bypass the MOSFET and energize its heater whenever VIN_HEATER is present. It is not a current-sense topology and has no ADC/Kelvin output."
 
 [[selected_parts]]
 id = "led_supply_link"
@@ -618,8 +618,8 @@ value = "Analog optical diagnostic header"
 symbol = "HEADER_1X06"
 footprint = "lcsc:PINHEADER_1X06_2.54MM"
 lcsc_part = "MANUAL"
-nets = ["+3V3_ANA", "GND", "ADS_AIN3", "AUX_ANALOG_IN", "I2C_SDA", "I2C_SCL"]
-verification = "External OPT101/TIA/light-leak diagnostic only."
+nets = ["+3V3_ANA", "GND", "AUX_ANALOG_IN", "I2C_SDA", "I2C_SCL"]
+verification = "External OPT101/TIA/light-leak diagnostic only. J23 pin 4 drives AUX_ANALOG_IN within 0-3.3 V from a <=10 kohm source; pin 3 is reserved no-connect on the first article."
 
 [[selected_parts]]
 id = "status_leds"

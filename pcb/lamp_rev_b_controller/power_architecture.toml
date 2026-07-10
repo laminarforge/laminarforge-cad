@@ -64,20 +64,27 @@ requirement = "VIN TVS footprint and bulk plus local ceramic decoupling near hea
 [[heater_channel]]
 name = "HEATER0"
 role = "main plate/coupon heater"
-topology = "external heater pad to VIN_HEATER, low-side N-MOSFET, optional current shunt, TC4427 channel A"
+topology = "external heater pad to VIN_HEATER, low-side N-MOSFET, TC4427 channel A; R25 is a mandatory-DNP footprint directly across Q1 drain-source and is not current sensing"
 default_state = "off during reset, firmware crash, USB-only power, missing lid/cartridge, cutoff open, invalid thermistor, or over-temp"
 
 [[heater_channel]]
 name = "HEATER1"
 role = "lid/guard/spare heater"
-topology = "external heater pad to VIN_HEATER, low-side N-MOSFET, optional current shunt, TC4427 channel B"
+topology = "external heater pad to VIN_HEATER, low-side N-MOSFET, TC4427 channel B; R26 is a mandatory-DNP footprint directly across Q2 drain-source and is not current sensing"
 default_state = "DNI allowed on first assembly; off under same fault policy as HEATER0"
+
+[heater_low_bypass_dnp]
+references = ["R25", "R26"]
+population = "DNP without exception for the current Rev B layout"
+hazard = "Populating R25 or R26 bridges the corresponding HEATERx_LOW node to GND in parallel with its MOSFET and can energize the heater whenever VIN_HEATER is present."
+measurement = "No Kelvin output, amplifier, or ADC connection exists; these footprints do not measure heater current."
 
 [thermistor_adc]
 adc = "ADS1115 at 0x48 on I2C"
 mux = "CD74HC4051 with THERM_MUX_S0/S1/S2 and THERM_MUX_EN_N"
 divider = "10K 0.1% upper resistor to +3V3_ANA, 10K NTC to analog ground, ADC midpoint"
-filter = "100-1K series plus 10-100 nF local filter per channel, compatible with mux settling"
+filter = "100 nF shunt capacitor on each thermistor-divider channel; divider Thevenin impedance plus CD74HC4051 on-resistance feeds AIN0 directly, with firmware settling after mux changes"
+adc_map = "THERM_MUX_OUT directly drives ADS1115 AIN0; AIN1 is explicit no-connect; LED_CURRENT_SENSE directly drives AIN2; AUX_ANALOG_IN directly drives AIN3"
 
 [[thermistor_channel]]
 index = 0

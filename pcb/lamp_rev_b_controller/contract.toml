@@ -421,12 +421,6 @@ min_track_width_mm = 1.20
 must_have_testpoint = true
 
 [[nets]]
-name = "HEATER_SUPPLY_SENSE"
-class = "Analog"
-min_track_width_mm = 0.20
-must_have_testpoint = true
-
-[[nets]]
 name = "THERM_MUX_S0"
 class = "Digital"
 min_track_width_mm = 0.20
@@ -452,30 +446,6 @@ must_have_testpoint = true
 
 [[nets]]
 name = "THERM_MUX_OUT"
-class = "Analog"
-min_track_width_mm = 0.20
-must_have_testpoint = true
-
-[[nets]]
-name = "ADS_AIN0"
-class = "Analog"
-min_track_width_mm = 0.20
-must_have_testpoint = true
-
-[[nets]]
-name = "ADS_AIN1"
-class = "Analog"
-min_track_width_mm = 0.20
-must_have_testpoint = true
-
-[[nets]]
-name = "ADS_AIN2"
-class = "Analog"
-min_track_width_mm = 0.20
-must_have_testpoint = true
-
-[[nets]]
-name = "ADS_AIN3"
 class = "Analog"
 min_track_width_mm = 0.20
 must_have_testpoint = true
@@ -988,11 +958,6 @@ net = "HEATER1_LOW"
 purpose = "Second heater switched low side."
 
 [[test_points]]
-name = "TP_HEATER_SENSE"
-net = "HEATER_SUPPLY_SENSE"
-purpose = "Heater rail/current sense ADC input."
-
-[[test_points]]
 name = "TP_THERM_S0"
 net = "THERM_MUX_S0"
 purpose = "Thermistor mux select bit 0."
@@ -1019,23 +984,18 @@ purpose = "Mux common into ADS1115."
 
 [[test_points]]
 name = "TP_ADS_AIN0"
-net = "ADS_AIN0"
-purpose = "Primary ADS1115 thermistor mux input."
-
-[[test_points]]
-name = "TP_ADS_AIN1"
-net = "ADS_AIN1"
-purpose = "Heater supply/current sense ADC input."
+net = "THERM_MUX_OUT"
+purpose = "ADC-side manufacturing access to THERM_MUX_OUT at ADS1115 AIN0."
 
 [[test_points]]
 name = "TP_ADS_AIN2"
-net = "ADS_AIN2"
-purpose = "LED current sense ADC input."
+net = "LED_CURRENT_SENSE"
+purpose = "ADC-side manufacturing access to LED_CURRENT_SENSE at ADS1115 AIN2."
 
 [[test_points]]
 name = "TP_ADS_AIN3"
-net = "ADS_AIN3"
-purpose = "Auxiliary analog input."
+net = "AUX_ANALOG_IN"
+purpose = "ADC-side manufacturing access to AUX_ANALOG_IN at ADS1115 AIN3."
 
 [[test_points]]
 name = "TP_LED_PWM"

@@ -13,7 +13,7 @@ Board class: 4-layer FR-4, 1.6 mm, ENIG preferred, top-side SMT first article. U
 - CPL CSV with designator, x, y, rotation, side, and footprint/package.
 - Assembly drawing or marked board plot showing polarity, pin 1, connector orientation, module antenna side, and DNP parts.
 - Assembly notes: no substitutions for ESP32 module, regulator, ADC, mux, LED driver path, MOSFET/gate driver, USB-C connector, camera connector, heater connectors, and safety parts without approval.
-- Manual/THT notes: hand-place `P7805-2000-S`, `LDD-700H`, and the connectorized heater cutoff loop terminal `J24` unless the assembler explicitly confirms through-hole module assembly. Keep `LDD-1000H` and any `P7812-500R` 24 V VDRV option DNP for first articles; populate `R55` only for the 12 V first-article VDRV feed.
+- Manual/THT notes: hand-place `P7805-2000-S`, `LDD-700H`, and the connectorized heater cutoff loop terminal `J24` unless the assembler explicitly confirms through-hole module assembly. Keep `LDD-1000H` and any `P7812-500R` 24 V VDRV option DNP for first articles; populate `R55` only for the 12 V first-article VDRV feed. `R25` and `R26` are mandatory DNP: populating either directly bypasses its heater MOSFET and can energize the heater whenever `VIN_HEATER` is present; neither footprint measures current.
 
 ## Incoming Electrical Bring-Up
 
@@ -21,10 +21,10 @@ Board class: 4-layer FR-4, 1.6 mm, ENIG preferred, top-side SMT first article. U
 2. Continuity: no rail shorts from `VIN_12_24`, `VBUS`, `+5V`, `+3V3`, `+3V3_ANA`, `VIN_HEATER`, or `VDRV` to `GND`.
 3. USB-only logic power: confirm `+3V3`, boot/reset, UART/native USB logs, and heater/LED rails disabled.
 4. External supply current-limited bring-up: confirm `VIN_PROTECTED`, P7805 `+5V`, AP63203 `+3V3`, `FB1` continuity/noise on `+3V3_ANA`, and `R55` 12 V-only VDRV population before fitting loads.
-5. Thermistor/ADC check: connect known 10K resistance and verify mux settling, ADS1115 reads, open/short fault classification.
+5. Analog-front-end check: confirm `THERM_MUX_OUT -> ADS1115 AIN0`, physical no-connect on AIN1, `LED_CURRENT_SENSE -> AIN2`, and `AUX_ANALOG_IN -> AIN3`. Use the +/-4.096 V PGA range; connect known 10K thermistor resistances and verify mux settling/open-short classification, verify about 1.4 V at AIN2 with the 700 mA LED dummy load, and exercise AIN3 only from a bounded 0-3.3 V, <=10 kohm source.
 6. Interlock check: lid, cartridge, latch, and cutoff inputs all force heater/LED unsafe state when open.
 7. LED dummy-load check: confirm `LED_EXC_EN` default off, `LED_EXC_PWM AND LED_EXC_EN` DIM gating, LDD-700H current near 700 mA, INA180 `LED_CURRENT_SENSE` scaling, pulled-up/no-native-fault `LED_FAULT_N`, and `LED_SYNC_OUT` timing before connecting optical head.
-8. Heater dummy-load check: confirm `J24` is closed through the external normally-closed thermal cutoff or rated jumper, then confirm `HEATER_ARM` default off, gate pulldowns, TC4427 output, low-frequency PWM, current sense, and cutoff-loop opening before connecting heater pad.
+8. Heater dummy-load check: verify `R25`/`R26` are unpopulated, confirm `J24` is closed through the external normally-closed thermal cutoff or rated jumper, then confirm `HEATER_ARM` default off, gate pulldowns, TC4427 output, low-frequency PWM, externally measured load current, and cutoff-loop opening before connecting a heater pad. The Rev B first article has no heater-rail or heater-current telemetry.
 9. Camera sync/log check: verify `FRAME_TRIG_OUT`, `EXPOSURE_ACTIVE_IN`, `LED_SYNC_OUT`, and UART/native USB logs align with host frame capture.
 10. Record board serial, lot, rail currents, firmware hash, rework notes, and pass/fail result.
 
