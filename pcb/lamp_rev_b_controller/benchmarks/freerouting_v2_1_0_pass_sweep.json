@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "ticket_id": "T-E6F292B9",
+  "harness_commit": "825d826069ef81be9277422627161febf4fef219",
+  "decision": "a_longer_stock_freerouting_is_enough",
+  "stop_reason": "The fresh pass-10 run reached zero post-import KiCad physical DRC violations and zero real unconnected items, so the pass-50 run was skipped as required.",
+  "bounds": {
+    "per_run_seconds": 1200,
+    "total_sweep_seconds": 2100,
+    "observed_freerouting_runtime_ms": 23297
+  },
+  "input": {
+    "board_sha256": "2e2722f4e5b4acc72965f36f6fecc1a5f201de26a8b326ed44ce2b1f0d21d884",
+    "dsn_sha256": "63f45876adb1d40e7fe629fd10340aca65b6791570441f99f2b40c20ed02449e",
+    "canonical_board_modified": false
+  },
+  "tools": {
+    "freerouting_version": "2.1.0",
+    "freerouting_revision": "1c1edc12bd20fbb328c2a52efbeb5f6a785849de",
+    "freerouting_jar_sha256": "2c07d58f75dac03782664081e7a58b41c25400d871a9fcf166a2ea6fe60d5def",
+    "java_version": "openjdk version \"26.0.1\" 2026-04-21",
+    "kicad_version": "10.0.3"
+  },
+  "reproducibility": {
+    "exactly_reproducible": false,
+    "reason": "Freerouting 2.1.0 shuffles autoroute work with an unseeded java.util.Random and exposes no seed control.",
+    "prior_pass_1_ses_sha256": "9aa9f765d4390cdcbebf1e4b3f7b8696382e40714140c92260dffe43e77b3932",
+    "current_pass_1_ses_sha256": "e6be32f1ac94557781fb322e7814f4ffafc1b43865af1ae8e615d30c2114ebc8"
+  },
+  "runs": [
+    {
+      "pass_budget": 1,
+      "status": "completed",
+      "observed_passes": 1,
+      "pass_count_verification": "exact_budget",
+      "runtime_ms": 8132,
+      "freerouting_routed_connections": 30,
+      "freerouting_total_completed_connections": 878,
+      "freerouting_remaining_connections": 13,
+      "ses": {
+        "sha256": "e6be32f1ac94557781fb322e7814f4ffafc1b43865af1ae8e615d30c2114ebc8",
+        "net_count": 76,
+        "wire_count": 735,
+        "segment_count": 941,
+        "via_count": 150,
+        "total_trace_length_mm": 4814.874062
+      },
+      "post_import_kicad": {
+        "physical_drc_errors": 1,
+        "dangling_warnings": 1,
+        "physical_drc_total": 2,
+        "real_unconnected": 12
+      },
+      "evidence": {
+        "result": "freerouting_v2_1_0_pass_sweep/pass_1/result.json",
+        "stdout": "freerouting_v2_1_0_pass_sweep/pass_1/freerouting.stdout.log",
+        "stderr": "freerouting_v2_1_0_pass_sweep/pass_1/freerouting.stderr.log"
+      }
+    },
+    {
+      "pass_budget": 10,
+      "status": "completed",
+      "observed_passes": 10,
+      "pass_count_verification": "exact_budget",
+      "runtime_ms": 15165,
+      "freerouting_routed_connections": 41,
+      "freerouting_total_completed_connections": 939,
+      "freerouting_remaining_connections": 2,
+      "ses": {
+        "sha256": "2d7a75b19f8459060b59737febd99df5e0e87a38f214b2f25aef0ad9c419526a",
+        "net_count": 76,
+        "wire_count": 488,
+        "segment_count": 1008,
+        "via_count": 167,
+        "total_trace_length_mm": 5492.45598
+      },
+      "post_import_kicad": {
+        "physical_drc_errors": 0,
+        "dangling_warnings": 0,
+        "physical_drc_total": 0,
+        "real_unconnected": 0
+      },
+      "evidence": {
+        "result": "freerouting_v2_1_0_pass_sweep/pass_10/result.json",
+        "stdout": "freerouting_v2_1_0_pass_sweep/pass_10/freerouting.stdout.log",
+        "stderr": "freerouting_v2_1_0_pass_sweep/pass_10/freerouting.stderr.log"
+      }
+    },
+    {
+      "pass_budget": 50,
+      "status": "skipped_after_clean_pass_10"
+    }
+  ]
+}

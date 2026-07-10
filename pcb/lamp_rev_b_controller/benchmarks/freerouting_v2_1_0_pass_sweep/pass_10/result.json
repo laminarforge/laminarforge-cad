@@ -1,0 +1,194 @@
+{
+  "schema_version": 2,
+  "run_id": "freerouting-2e2722f4e5b4-63f45876adb1-2d7a75b19f84",
+  "fixture_name": "lamp_rev_b_controller_current_route_closure",
+  "source_git_commit": "825d826069ef81be9277422627161febf4fef219",
+  "input": {
+    "board_path": "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pcb",
+    "board_sha256": "2e2722f4e5b4acc72965f36f6fecc1a5f201de26a8b326ed44ce2b1f0d21d884",
+    "dsn_sha256": "63f45876adb1d40e7fe629fd10340aca65b6791570441f99f2b40c20ed02449e",
+    "dsn_stats": {
+      "copper_layer_count": 4,
+      "footprint_count": 155,
+      "pad_count": 409,
+      "net_count": 79,
+      "protected_wire_count": 601,
+      "protected_via_count": 113,
+      "plane_count": 4
+    }
+  },
+  "tools": {
+    "freerouting_version": "2.1.0",
+    "freerouting_build_revision": "1c1edc12bd20fbb328c2a52efbeb5f6a785849de",
+    "freerouting_jar_path": "tools/freerouting.jar",
+    "freerouting_jar_sha256": "2c07d58f75dac03782664081e7a58b41c25400d871a9fcf166a2ea6fe60d5def",
+    "java_command": "java",
+    "java_version": "openjdk version \"26.0.1\" 2026-04-21",
+    "kicad_cli_command": "kicad-cli",
+    "kicad_version": "10.0.3"
+  },
+  "effective_settings": {
+    "max_runtime_seconds": 1200,
+    "pass_budget": 10,
+    "autorouter_threads": 1,
+    "optimizer_enabled": false,
+    "optimizer_threads": 1,
+    "optimizer_improvement_threshold_percent": 1.0,
+    "board_update_strategy": "greedy",
+    "item_selection_strategy": "sequential",
+    "fanout_enabled": false,
+    "analytics_disabled": true,
+    "random_seed_supported": false,
+    "random_seed": null,
+    "command_arguments": [
+      "-Djava.awt.headless=true",
+      "-jar",
+      "$REPO/tools/freerouting.jar",
+      "--user_data_path=$REPO/target/freerouting-benchmark/pass-sweep/pass-10/freerouting_user_data",
+      "-de",
+      "$REPO/target/freerouting-benchmark/pass-sweep/pass-10/input.dsn",
+      "-do",
+      "$REPO/target/freerouting-benchmark/pass-sweep/pass-10/output.ses",
+      "-mp",
+      "10",
+      "--router.stop_pass_no=10",
+      "--router.max_threads=1",
+      "--router.optimizer.enabled=false",
+      "-mt",
+      "1",
+      "-oit",
+      "1",
+      "-us",
+      "greedy",
+      "-is",
+      "sequential",
+      "--router.fanout.enabled=false",
+      "--router.job_timeout=00:20:00",
+      "--gui.enabled=false",
+      "-da"
+    ]
+  },
+  "execution": {
+    "runtime_ms": 15165,
+    "exit_code": 0,
+    "timed_out": false,
+    "observed_autorouter_passes": 10,
+    "pass_count_verification": "exact_budget",
+    "stdout_log": "freerouting.stdout.log",
+    "stderr_log": "freerouting.stderr.log",
+    "ses_output_sha256": "2d7a75b19f8459060b59737febd99df5e0e87a38f214b2f25aef0ad9c419526a"
+  },
+  "freerouting_statistics": {
+    "bends": {
+      "45_degree_count": 275,
+      "90_degree_count": 241,
+      "other_angle_count": 4,
+      "total_count": 520
+    },
+    "board": {
+      "bounding_box": {
+        "height": -881.0,
+        "width": -1.0,
+        "x": 1181.0,
+        "y": 61.0
+      },
+      "size": {
+        "height": 942.0,
+        "width": 1182.0,
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    "clearance_violations": {
+      "total_count": 0
+    },
+    "components": {
+      "total_count": 155
+    },
+    "connections": {
+      "incomplete_count": 2,
+      "maximum_count": 941
+    },
+    "host": "LaminarForge Rust benchmark,1",
+    "items": {
+      "component_count": 0,
+      "conduction_area_count": 4,
+      "drill_item_count": 409,
+      "other_count": 1,
+      "pin_count": 0,
+      "total_count": 1074,
+      "trace_count": 493,
+      "via_count": 167
+    },
+    "layers": {
+      "signal_count": 4,
+      "total_count": 4
+    },
+    "nets": {
+      "class_count": 1,
+      "total_count": 79
+    },
+    "pads": {
+      "total_count": 409
+    },
+    "traces": {
+      "average_length": 111.408844,
+      "total_angled_length": 7796.067,
+      "total_count": 493,
+      "total_horizontal_length": 21883.771,
+      "total_length": 54924.56,
+      "total_segment_count": 1013,
+      "total_vertical_length": 23361.793,
+      "total_weighted_length": 52849230.0
+    },
+    "unit": "mm",
+    "vias": {
+      "blind_count": 0,
+      "buried_count": 0,
+      "through_hole_count": 167,
+      "total_count": 167
+    }
+  },
+  "metrics": {
+    "freerouting_routed_connection_count": 41,
+    "freerouting_total_completed_connection_count": 939,
+    "freerouting_unrouted_connection_count": 2,
+    "ses_net_count": 76,
+    "ses_wire_count": 488,
+    "ses_segment_count": 1008,
+    "ses_via_count": 167,
+    "ses_total_trace_length_mm": 5492.45598
+  },
+  "validation": {
+    "before_import": {
+      "physical_violation_count": 0,
+      "error_violation_count": 0,
+      "warning_violation_count": 0,
+      "raw_unconnected_count": 44,
+      "real_unconnected_count": 43,
+      "ignored_self_zone_unconnected_count": 1,
+      "physical_violations": []
+    },
+    "after_import": {
+      "physical_violation_count": 0,
+      "error_violation_count": 0,
+      "warning_violation_count": 0,
+      "raw_unconnected_count": 2,
+      "real_unconnected_count": 0,
+      "ignored_self_zone_unconnected_count": 2,
+      "physical_violations": []
+    },
+    "imported_board_path": "validation_after/lamp_rev_b_controller.kicad_pcb",
+    "post_import_drc_report_path": "validation_after/drc.json",
+    "canonical_board_modified": false
+  },
+  "fixture_publication": {
+    "safe_for_public_upstream": true,
+    "rationale": "Generated only from the public LaminarForge board geometry, footprints, net names, and routing. It contains no credentials, patient data, firmware secrets, or private supplier terms."
+  },
+  "upstream_evidence": {
+    "repository": "freerouting/freerouting",
+    "source_path": "src/main/java/app/freerouting/autoroute/BatchAutorouter.java",
+    "finding": "Freerouting v2.1.0 shuffles autoroute work with Collections.shuffle(list, new Random()) and exposes no CLI/configuration seed."
+  }
+}
