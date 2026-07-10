@@ -1,0 +1,23 @@
+# Rev B Freerouting Benchmark
+
+This harness converts the canonical `lamp_rev_b_controller.kicad_pcb` into an isolated Specctra DSN fixture, runs the repository-pinned Freerouting JAR with bounded settings, imports the SES into a disposable board copy, and runs KiCad physical DRC/connectivity on that copy. It never writes routed copper back to the canonical board or `routing_seed.toml`.
+
+The fixture is safe to publish with a future upstream issue or pull request. It is derived only from this public repository's board geometry, footprints, net names, and routing and contains no credentials, patient data, firmware secrets, or private supplier terms.
+
+## Reproduce
+
+On macOS with Homebrew OpenJDK and KiCad on `PATH`:
+
+```sh
+PATH="/opt/homebrew/opt/openjdk/bin:$PATH" cargo run --release --bin lamp_rev_b_controller_freerouting_benchmark -- --output-dir target/freerouting-benchmark/baseline
+```
+
+Use `--java <path>` or `--kicad-cli <path>` when those executables are not on `PATH`. The output directory must be absent or empty. The run writes `result.json`, `summary.md`, the generated DSN, raw SES, Freerouting logs, disposable pre/post-import KiCad boards, and KiCad JSON DRC reports.
+
+The pinned version, JAR hash, build revision, runtime bound, routing settings, and public-fixture declaration live in `freerouting_benchmark.toml`. The harness fails immediately if the JAR hash, manifest revision, or runtime-reported Freerouting version differs.
+
+## Determinism limitation
+
+Freerouting 2.1.0 has no random-seed option. Its `BatchAutorouter` unconditionally calls `Collections.shuffle(..., new Random())`, including the single-threaded autorouter path. This harness therefore fixes every exposed control (one autorouter thread, one pass, sequential optimizer selection, optimizer and fanout disabled) and records `random_seed_supported: false` / `random_seed: null`, but the raw SES hash is observational rather than guaranteed reproducible. Adding an injectable seed and reporting the effective seed is the leading upstream contribution target.
+
+There is also a v2.1.0 CLI pass-limit defect: `-mp 1` updates `router.max_passes`, while the batch autorouter stops on a separate `stop_pass_no` field that otherwise remains `999`. The harness sets both fields and fails if the observed pass number exceeds the configured bound. A future upstream fix should make the public max-pass setting authoritative and add a regression test around CLI execution.

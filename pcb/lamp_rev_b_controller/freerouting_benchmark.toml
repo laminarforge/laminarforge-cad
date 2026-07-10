@@ -1,0 +1,34 @@
+[benchmark]
+schema_version = 1
+fixture_name = "lamp_rev_b_controller_current_route_closure"
+board_path = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pcb"
+project_path = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pro"
+design_rules_path = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_dru"
+freerouting_jar_path = "tools/freerouting.jar"
+expected_freerouting_version = "2.1.0"
+expected_freerouting_revision = "1c1edc12bd20fbb328c2a52efbeb5f6a785849de"
+expected_freerouting_jar_sha256 = "2c07d58f75dac03782664081e7a58b41c25400d871a9fcf166a2ea6fe60d5def"
+max_runtime_seconds = 180
+max_autorouter_passes = 1
+autorouter_threads = 1
+optimizer_enabled = false
+optimizer_threads = 1
+optimizer_improvement_threshold_percent = 1.0
+board_update_strategy = "greedy"
+item_selection_strategy = "sequential"
+fanout_enabled = false
+analytics_disabled = true
+default_track_width_mm = 0.20
+default_clearance_mm = 0.15
+default_via_size_mm = 0.70
+default_via_drill_mm = 0.30
+random_seed_supported = false
+
+[fixture_publication]
+safe_for_public_upstream = true
+rationale = "Generated only from the public LaminarForge board geometry, footprints, net names, and routing. It contains no credentials, patient data, firmware secrets, or private supplier terms."
+
+[upstream_evidence]
+repository = "freerouting/freerouting"
+source_path = "src/main/java/app/freerouting/autoroute/BatchAutorouter.java"
+finding = "Freerouting v2.1.0 shuffles autoroute work with Collections.shuffle(list, new Random()) and exposes no CLI/configuration seed."

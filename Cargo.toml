@@ -17,7 +17,7 @@ csv = "1.3"
 sha2 = "0.10"
 statrs = "0.17"
 toml = "0.8"
-zip = { version = "2", default-features = false }
+zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [features]
 step = ["opencascade"]
@@ -553,6 +553,10 @@ path = "src/bin/lamp_rev_b_controller_seed_routes_from_drc.rs"
 [[bin]]
 name = "lamp_rev_b_controller_fab_preview"
 path = "src/bin/lamp_rev_b_controller_fab_preview.rs"
+
+[[bin]]
+name = "lamp_rev_b_controller_freerouting_benchmark"
+path = "src/bin/lamp_rev_b_controller_freerouting_benchmark.rs"
 
 [[bin]]
 name = "sterile_gas_changeover_regulator_qualification_panel"
