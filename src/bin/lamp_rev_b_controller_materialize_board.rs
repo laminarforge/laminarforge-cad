@@ -11,6 +11,7 @@ const CONTRACT_PATH: &str = "pcb/lamp_rev_b_controller/contract.toml";
 const PARTS_PATH: &str = "pcb/lamp_rev_b_controller/parts.toml";
 const PLACEMENT_PATH: &str = "pcb/lamp_rev_b_controller/placement.toml";
 const PIN_NETS_PATH: &str = "pcb/lamp_rev_b_controller/pin_nets.toml";
+const FAB_CONFIG_PATH: &str = "pcb/lamp_rev_b_controller/fab_release.toml";
 const ROUTING_SEED_PATH: &str = "pcb/lamp_rev_b_controller/routing_seed.toml";
 const COPPER_ZONES_PATH: &str = "pcb/lamp_rev_b_controller/copper_zones.toml";
 const BOARD_PATH: &str = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pcb";
@@ -129,6 +130,19 @@ struct OpticalSlotPlacement {
 #[derive(Debug, Deserialize)]
 struct PinNetManifest {
     assignments: Vec<PinNetAssignment>,
+}
+
+#[derive(Debug, Deserialize)]
+struct FabConfig {
+    assembly: AssemblyConfig,
+}
+
+#[derive(Debug, Default, Deserialize)]
+struct AssemblyConfig {
+    #[serde(default)]
+    manual_part_ids: BTreeSet<String>,
+    #[serde(default)]
+    dnp_part_ids: BTreeSet<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -254,6 +268,7 @@ struct BoardSources<'a> {
     parts: &'a PartsManifest,
     placement: &'a PlacementPlan,
     pin_nets: &'a PinNetManifest,
+    fab_config: &'a FabConfig,
     routing_seed: &'a RoutingSeed,
     copper_zones: &'a CopperZonePlan,
     nets: &'a [String],
@@ -320,6 +335,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let parts = read_toml::<PartsManifest>(&root.join(PARTS_PATH))?;
     let placement = read_toml::<PlacementPlan>(&root.join(PLACEMENT_PATH))?;
     let pin_nets = read_toml::<PinNetManifest>(&root.join(PIN_NETS_PATH))?;
+    let fab_config = read_toml::<FabConfig>(&root.join(FAB_CONFIG_PATH))?;
     let routing_seed = read_toml::<RoutingSeed>(&root.join(ROUTING_SEED_PATH))?;
     let copper_zones = read_toml::<CopperZonePlan>(&root.join(COPPER_ZONES_PATH))?;
     let nets = expand_nets(&contract);
@@ -330,6 +346,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         parts: &parts,
         placement: &placement,
         pin_nets: &pin_nets,
+        fab_config: &fab_config,
         routing_seed: &routing_seed,
         copper_zones: &copper_zones,
         nets: &nets,
@@ -368,6 +385,40 @@ fn read_toml<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, Box<dyn Err
     Ok(toml::from_str(&content)?)
 }
 
+fn validate_assembly_part_ids(
+    parts: &PartsManifest,
+    fab_config: &FabConfig,
+) -> Result<(), Box<dyn Error>> {
+    let part_ids = parts
+        .selected_parts
+        .iter()
+        .map(|part| part.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let mut errors = Vec::new();
+    for part_id in &fab_config.assembly.manual_part_ids {
+        if !part_ids.contains(part_id.as_str()) {
+            errors.push(format!(
+                "manual assembly part id {part_id} is not in selected_parts"
+            ));
+        }
+    }
+    for part_id in &fab_config.assembly.dnp_part_ids {
+        if !part_ids.contains(part_id.as_str()) {
+            errors.push(format!("DNP part id {part_id} is not in selected_parts"));
+        }
+        if fab_config.assembly.manual_part_ids.contains(part_id) {
+            errors.push(format!(
+                "part id {part_id} cannot be both manual assembly and DNP"
+            ));
+        }
+    }
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(errors.join("\n").into())
+    }
+}
+
 fn expand_nets(contract: &Contract) -> Vec<String> {
     let mut names = contract
         .nets
@@ -397,6 +448,7 @@ fn render_board(sources: BoardSources<'_>) -> Result<RenderedBoard, Box<dyn Erro
         .iter()
         .map(|assignment| (assignment.reference.as_str(), assignment))
         .collect::<BTreeMap<_, _>>();
+    validate_assembly_part_ids(sources.parts, sources.fab_config)?;
 
     let mut board = String::new();
     write_header(&mut board, sources.contract, sources.nets)?;
@@ -419,6 +471,16 @@ fn render_board(sources: BoardSources<'_>) -> Result<RenderedBoard, Box<dyn Erro
             item,
             part,
             pin_nets_by_ref.get(item.reference.as_str()).copied(),
+            sources
+                .fab_config
+                .assembly
+                .manual_part_ids
+                .contains(item.part_id.as_str())
+                || sources
+                    .fab_config
+                    .assembly
+                    .dnp_part_ids
+                    .contains(item.part_id.as_str()),
             &net_ids,
             &mut counter,
         )?;
@@ -692,6 +754,7 @@ fn write_placed_footprint(
     item: &FootprintPlacement,
     part: &SelectedPart,
     pin_nets: Option<&PinNetAssignment>,
+    exclude_from_position_files: bool,
     net_ids: &BTreeMap<&str, usize>,
     counter: &mut UuidCounter,
 ) -> Result<(), Box<dyn Error>> {
@@ -714,6 +777,9 @@ fn write_placed_footprint(
     let mut footprint = rewrite_footprint_name(&source, &part.footprint)?;
     footprint = replace_property_value(&footprint, "Reference", &item.reference)?;
     footprint = replace_property_value(&footprint, "Value", &part.value)?;
+    if exclude_from_position_files {
+        footprint = ensure_footprint_attribute(&footprint, "exclude_from_pos_files")?;
+    }
     footprint = rewrite_uuids(&footprint, counter);
     footprint = insert_placement(&footprint, item, counter)?;
     if let Some(pin_nets) = pin_nets {
@@ -726,6 +792,35 @@ fn write_placed_footprint(
         writeln!(board, "  {line}")?;
     }
     Ok(())
+}
+
+fn ensure_footprint_attribute(footprint: &str, attribute: &str) -> Result<String, Box<dyn Error>> {
+    let attr_start = footprint
+        .find("(attr ")
+        .ok_or_else(|| "footprint is missing its top-level attr declaration".to_string())?;
+    let attr_end_relative = footprint[attr_start..]
+        .find(')')
+        .ok_or_else(|| "footprint has an unterminated attr declaration".to_string())?;
+    let attr_end = attr_start + attr_end_relative;
+    let attributes = footprint[attr_start + "(attr ".len()..attr_end]
+        .split_whitespace()
+        .collect::<BTreeSet<_>>();
+    if attributes.contains(attribute) {
+        return Ok(footprint.to_string());
+    }
+
+    let attr_line_start = footprint[..attr_start]
+        .rfind('\n')
+        .map(|index| index + 1)
+        .unwrap_or_default();
+    let mut updated = String::with_capacity(footprint.len() + attribute.len() + 3);
+    updated.push_str(&footprint[..attr_line_start]);
+    updated.push_str("  ");
+    updated.push_str(&footprint[attr_start..attr_end]);
+    updated.push(' ');
+    updated.push_str(attribute);
+    updated.push_str(&footprint[attr_end..]);
+    Ok(updated)
 }
 
 fn write_test_point(
@@ -752,7 +847,7 @@ fn write_test_point(
     (tstamp "{}")
     (property "Reference" "{}" (at 0 -1.8 0) (layer "F.Fab") (uuid "{}") (effects (font (size 0.8 0.8) (thickness 0.1))))
     (property "Value" "{}" (at 0 1.8 0) (layer "F.Fab") (uuid "{}") (effects (font (size 0.8 0.8) (thickness 0.1))))
-    (attr smd exclude_from_pos_files)
+    (attr smd exclude_from_pos_files exclude_from_bom)
     (pad "1" smd circle (at 0 0) (size 1.5 1.5) (layers "F.Cu" "F.Mask") (net {} "{}") (uuid "{}"))
   )"#,
         fmt(point.x_mm),

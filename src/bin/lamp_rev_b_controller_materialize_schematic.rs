@@ -8,6 +8,7 @@ use std::path::{Path, PathBuf};
 const PARTS_PATH: &str = "pcb/lamp_rev_b_controller/parts.toml";
 const PLACEMENT_PATH: &str = "pcb/lamp_rev_b_controller/placement.toml";
 const PIN_NETS_PATH: &str = "pcb/lamp_rev_b_controller/pin_nets.toml";
+const FAB_CONFIG_PATH: &str = "pcb/lamp_rev_b_controller/fab_release.toml";
 const SCHEMATIC_PATH: &str = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_sch";
 
 const GRID_MM: f64 = 1.27;
@@ -71,6 +72,17 @@ struct PinNetAssignment {
     pins: BTreeMap<String, String>,
 }
 
+#[derive(Debug, Deserialize)]
+struct FabConfig {
+    assembly: AssemblyConfig,
+}
+
+#[derive(Debug, Default, Deserialize)]
+struct AssemblyConfig {
+    #[serde(default)]
+    dnp_part_ids: BTreeSet<String>,
+}
+
 #[derive(Clone)]
 struct CaptureComponent {
     reference: String,
@@ -79,6 +91,8 @@ struct CaptureComponent {
     footprint: String,
     lcsc_part: String,
     notes: String,
+    in_bom: bool,
+    dnp: bool,
     pins: Vec<CapturePin>,
 }
 
@@ -110,7 +124,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let parts = read_toml::<PartsManifest>(&root.join(PARTS_PATH))?;
     let placement = read_toml::<PlacementPlan>(&root.join(PLACEMENT_PATH))?;
     let pin_nets = read_toml::<PinNetManifest>(&root.join(PIN_NETS_PATH))?;
-    let capture = build_capture(&root, &parts, &placement, &pin_nets)?;
+    let fab_config = read_toml::<FabConfig>(&root.join(FAB_CONFIG_PATH))?;
+    let capture = build_capture(&root, &parts, &placement, &pin_nets, &fab_config)?;
     let schematic = render_schematic(&capture)?;
     fs::write(root.join(SCHEMATIC_PATH), schematic)?;
 
@@ -147,6 +162,7 @@ fn build_capture(
     parts: &PartsManifest,
     placement: &PlacementPlan,
     pin_nets: &PinNetManifest,
+    fab_config: &FabConfig,
 ) -> Result<Vec<CaptureComponent>, Box<dyn Error>> {
     let part_by_id = parts
         .selected_parts
@@ -159,6 +175,11 @@ fn build_capture(
         .map(|assignment| (assignment.reference.as_str(), assignment))
         .collect::<BTreeMap<_, _>>();
     let footprint_dir = resolve_footprint_dir(root, &parts.schematic.footprint_library)?;
+    for part_id in &fab_config.assembly.dnp_part_ids {
+        if !part_by_id.contains_key(part_id.as_str()) {
+            return Err(format!("DNP part id {part_id} is not in selected_parts").into());
+        }
+    }
 
     let mut capture = Vec::new();
     for item in &placement.placements {
@@ -202,6 +223,11 @@ fn build_capture(
             notes: assignment
                 .map(|assignment| assignment.notes.clone())
                 .unwrap_or_default(),
+            in_bom: true,
+            dnp: fab_config
+                .assembly
+                .dnp_part_ids
+                .contains(item.part_id.as_str()),
             pins,
         });
     }
@@ -212,8 +238,11 @@ fn build_capture(
             value: format!("test point {}", point.net),
             source_symbol: "TESTPOINT_SMD_1.5MM".to_string(),
             footprint: "lcsc:TESTPOINT_SMD_1.5MM".to_string(),
-            lcsc_part: "DNP_TESTPOINT".to_string(),
-            notes: "Schematic capture test point generated from placement.toml".to_string(),
+            lcsc_part: "VIRTUAL_TESTPOINT".to_string(),
+            notes: "Virtual PCB test pad generated from placement.toml; excluded from fabrication BOM and CPL"
+                .to_string(),
+            in_bom: false,
+            dnp: false,
             pins: vec![CapturePin {
                 number: "1".to_string(),
                 name: point.net.clone(),
@@ -278,7 +307,7 @@ fn render_schematic(capture: &[CaptureComponent]) -> Result<String, Box<dyn Erro
     (rev "B-proto")
     (company "LaminarForge")
     (comment 1 "Captured connectivity generated from parts, placement, pin_nets, and test point manifests.")
-    (comment 2 "Selected P7805/AP63203/LDD-700H source package preserved; manual/DNP semantics remain in parts.toml.")
+    (comment 2 "Selected P7805/AP63203/LDD-700H source package preserved; manual/DNP semantics come from fab_release.toml.")
     (comment 3 "Heater pad, optics, camera module, cartridge wet path, and enclosure are connectorized.")
   )"#,
         counter.next()
@@ -313,7 +342,7 @@ fn write_lib_symbols(
             r#"    (symbol "{}"
       (pin_names (offset 0.508))
       (exclude_from_sim no)
-      (in_bom yes)
+      (in_bom {})
       (on_board yes)
       (property "Reference" "{}" (at 0 {} 0) (effects (font (size 1.27 1.27))))
       (property "Value" "{}" (at 0 {} 0) (effects (font (size 1.27 1.27))))
@@ -328,6 +357,7 @@ fn write_lib_symbols(
           (fill (type background))
         )"#,
             symbol_name(&component.reference),
+            yes_no(component.in_bom),
             reference_prefix(&component.reference),
             fmt(-(half_height + 5.08)),
             escape(&component.value),
@@ -426,9 +456,9 @@ fn write_symbols_and_connectivity(
     (at {} {} 0)
     (unit 1)
     (exclude_from_sim no)
-    (in_bom yes)
+    (in_bom {})
     (on_board yes)
-    (dnp no)
+    (dnp {})
     (uuid "{}")
     (property "Reference" "{}" (at {} {} 0) (effects (font (size 1.27 1.27))))
     (property "Value" "{}" (at {} {} 0) (effects (font (size 1.27 1.27))))
@@ -438,6 +468,8 @@ fn write_symbols_and_connectivity(
             symbol_name(&component.reference),
             fmt(origin_x),
             fmt(origin_y),
+            yes_no(component.in_bom),
+            yes_no(component.dnp),
             symbol_uuid,
             escape(&component.reference),
             fmt(origin_x),
@@ -629,6 +661,14 @@ fn reference_sort_key(reference: &str) -> (String, u32, String) {
 
 fn symbol_path_uuid(index: usize) -> String {
     format!("b1000000-0000-4000-8000-{:012x}", index + 1)
+}
+
+fn yes_no(value: bool) -> &'static str {
+    if value {
+        "yes"
+    } else {
+        "no"
+    }
 }
 
 fn fmt(value: f64) -> String {

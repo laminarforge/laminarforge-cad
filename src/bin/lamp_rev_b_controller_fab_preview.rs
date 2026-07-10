@@ -60,6 +60,8 @@ struct AssemblyConfig {
     #[serde(default)]
     manual_part_ids: BTreeSet<String>,
     #[serde(default)]
+    dnp_part_ids: BTreeSet<String>,
+    #[serde(default)]
     no_substitution_part_ids: BTreeSet<String>,
     #[serde(default)]
     dnp_alternates: Vec<String>,
@@ -83,6 +85,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!(
         "  manual/THT groups: {}",
         fab_config.assembly.manual_part_ids.len()
+    );
+    println!(
+        "  DNP groups excluded from CPL: {}",
+        fab_config.assembly.dnp_part_ids.len()
     );
     if !fab_config.assembly.dnp_alternates.is_empty() {
         println!("  DNP alternates:");
@@ -159,6 +165,16 @@ fn validate(
             ));
         }
     }
+    for dnp_id in &fab_config.assembly.dnp_part_ids {
+        if !part_ids.contains(dnp_id.as_str()) {
+            errors.push(format!("DNP part id {dnp_id} is not in selected_parts"));
+        }
+        if fab_config.assembly.manual_part_ids.contains(dnp_id) {
+            errors.push(format!(
+                "part id {dnp_id} cannot be both manual assembly and DNP"
+            ));
+        }
+    }
     for no_sub_id in &fab_config.assembly.no_substitution_part_ids {
         if !part_ids.contains(no_sub_id.as_str()) {
             errors.push(format!(
@@ -205,7 +221,9 @@ fn write_bom(
             .map(|item| item.reference.as_str())
             .collect::<Vec<_>>()
             .join(",");
-        let assembly = if fab_config.assembly.manual_part_ids.contains(&part.id) {
+        let assembly = if fab_config.assembly.dnp_part_ids.contains(&part.id) {
+            "DNP"
+        } else if fab_config.assembly.manual_part_ids.contains(&part.id) {
             "Manual/THT"
         } else {
             "SMT"
@@ -220,6 +238,9 @@ fn write_bom(
         }
         if fab_config.assembly.manual_part_ids.contains(&part.id) {
             notes.push("hand-place or vendor-confirmed manual assembly");
+        }
+        if fab_config.assembly.dnp_part_ids.contains(&part.id) {
+            notes.push("do not populate; footprint retained for optional fit");
         }
         writer.write_record([
             part.value.as_str(),
@@ -248,7 +269,10 @@ fn write_cpl(
     let mut placements = placement
         .placements
         .iter()
-        .filter(|item| !fab_config.assembly.manual_part_ids.contains(&item.part_id))
+        .filter(|item| {
+            !fab_config.assembly.manual_part_ids.contains(&item.part_id)
+                && !fab_config.assembly.dnp_part_ids.contains(&item.part_id)
+        })
         .collect::<Vec<_>>();
     placements.sort_by_key(|item| reference_order(&item.reference));
 

@@ -62,6 +62,9 @@ manual_part_ids = [
   "i2c_exp_header",
   "analog_opt_header",
 ]
+dnp_part_ids = [
+  "heater_current_shunts",
+]
 no_substitution_part_ids = [
   "five_v_buck_module",
   "three_v_three_regulator",
