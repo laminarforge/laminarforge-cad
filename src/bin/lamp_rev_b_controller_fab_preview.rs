@@ -40,7 +40,19 @@ struct Placement {
 
 #[derive(Debug, Deserialize)]
 struct FabConfig {
+    package: PackageConfig,
     assembly: AssemblyConfig,
+    release_blockers: ReleaseBlockers,
+}
+
+#[derive(Debug, Deserialize)]
+struct PackageConfig {
+    release_state: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ReleaseBlockers {
+    items: Vec<String>,
 }
 
 #[derive(Debug, Default, Deserialize)]
@@ -78,9 +90,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("    - {note}");
         }
     }
-    println!(
-        "Preview only: complete zero-unconnected routing and pass release ERC/DRC before order release."
-    );
+    println!("  release state: {}", fab_config.package.release_state);
+    println!("  release blockers:");
+    for blocker in &fab_config.release_blockers.items {
+        println!("    - {blocker}");
+    }
+    println!("Preview only: resolve every reviewed blocker and pass the release gates before order release.");
     Ok(())
 }
 

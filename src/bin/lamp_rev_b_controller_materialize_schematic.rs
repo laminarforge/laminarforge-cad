@@ -10,12 +10,15 @@ const PLACEMENT_PATH: &str = "pcb/lamp_rev_b_controller/placement.toml";
 const PIN_NETS_PATH: &str = "pcb/lamp_rev_b_controller/pin_nets.toml";
 const SCHEMATIC_PATH: &str = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_sch";
 
-const SYMBOL_WIDTH_MM: f64 = 18.0;
+const GRID_MM: f64 = 1.27;
+const SYMBOL_WIDTH_MM: f64 = 14.0 * GRID_MM;
 const PIN_LENGTH_MM: f64 = 2.54;
 const PIN_PITCH_MM: f64 = 2.54;
-const COMPONENT_X_PITCH_MM: f64 = 54.0;
-const COMPONENT_Y_PITCH_MM: f64 = 52.0;
-const COMPONENTS_PER_ROW: usize = 4;
+const COMPONENT_ORIGIN_X_MM: f64 = 24.0 * GRID_MM;
+const COMPONENT_ORIGIN_Y_MM: f64 = 40.0 * GRID_MM;
+const COMPONENT_X_PITCH_MM: f64 = 54.0 * GRID_MM;
+const COMPONENT_Y_PITCH_MM: f64 = 60.0 * GRID_MM;
+const COMPONENTS_PER_ROW: usize = 16;
 
 #[derive(Debug, Deserialize)]
 struct PartsManifest {
@@ -268,7 +271,7 @@ fn render_schematic(capture: &[CaptureComponent]) -> Result<String, Box<dyn Erro
   (version 20230121)
   (generator "laminarforge_lamp_rev_b_controller_capture")
   (uuid "{}")
-  (paper "A1")
+  (paper "A0")
   (title_block
     (title "LaminarForge LAMP Rev B Controller Carrier")
     (date "2026-07-01")
@@ -411,8 +414,8 @@ fn write_symbols_and_connectivity(
     for (index, component) in capture.iter().enumerate() {
         let column = index % COMPONENTS_PER_ROW;
         let row = index / COMPONENTS_PER_ROW;
-        let origin_x = 32.0 + column as f64 * COMPONENT_X_PITCH_MM;
-        let origin_y = 52.0 + row as f64 * COMPONENT_Y_PITCH_MM;
+        let origin_x = COMPONENT_ORIGIN_X_MM + column as f64 * COMPONENT_X_PITCH_MM;
+        let origin_y = COMPONENT_ORIGIN_Y_MM + row as f64 * COMPONENT_Y_PITCH_MM;
         let geometry = pin_geometry(&component.pins);
         let symbol_uuid = symbol_path_uuid(index);
 
@@ -464,9 +467,12 @@ fn write_symbols_and_connectivity(
 
         for pin in &geometry {
             let global_x = origin_x + pin.x_mm;
-            let global_y = origin_y + pin.y_mm;
+            // KiCad mirrors library-symbol Y coordinates when instantiating a
+            // symbol on the sheet. Emit connectivity at the transformed pin
+            // position, not at the raw library-local Y coordinate.
+            let global_y = origin_y - pin.y_mm;
             let label_x = origin_x + pin.label_x_mm;
-            let label_y = origin_y + pin.label_y_mm;
+            let label_y = origin_y - pin.label_y_mm;
             let Some(net) = component
                 .pins
                 .iter()

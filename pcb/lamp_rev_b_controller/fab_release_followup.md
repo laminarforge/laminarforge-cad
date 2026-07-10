@@ -1,11 +1,19 @@
 # Rev B Controller Fab Release Follow-Up
 
-This pass does not create an order-ready fab release because the captured schematic is ERC-clean, but the board is still not routed to zero real unconnected items.
+The canonical board is now at physical DRC `0` and active unconnected `0`. The package remains blocked because the corrected KiCad 10 ERC reader identifies two real electrical-source issues after separating generated-library annotation noise and one justified population exception.
+
+Reconciled in `T-C7BBBEA3`:
+
+- Corrected generated schematic pin attachment for KiCad's library-symbol Y transform. The previous generator could swap nets on multi-pin symbols and left six edge pins disconnected.
+- Snapped generated symbols and connectivity to KiCad's 1.27 mm grid, removing `503` endpoint-off-grid warnings and the six associated unconnected-wire findings.
+- Updated `lamp_rev_b_controller_erc_report` for KiCad 10's sheet-nested JSON schema and explicit, item-scoped reviewed exceptions.
+- Fresh ERC now reports `158` raw findings: `155` embedded `LF_CAPTURE` library annotations, one intentional pulled-up `LED_FAULT_N` singleton, and two blocking source findings: isolated `GND_EP` and source-less `HEATER_SUPPLY_SENSE`.
+- Replaced the obsolete zero-unconnected routing blocker with the two actual electrical blockers. No board copper or routing source was changed in this reconciliation.
 
 Completed through `T-49FD0ECC` and routing follow-up `T-3DFB93CC`:
 
 - Replaced the architecture-shell schematic with generated captured connectivity from `parts.toml`, `placement.toml`, `pin_nets.toml`, and placement test points.
-- Added an MCP-runnable ERC gate, `lamp_rev_b_controller_erc_report`; KiCad ERC reports `0` violations.
+- Added the original MCP-runnable ERC gate, `lamp_rev_b_controller_erc_report`; its pre-KiCad-10 flat-schema parser reported `0` before the `T-C7BBBEA3` reconciliation corrected that false-clean result.
 - Added deterministic local route seeding through `lamp_rev_b_controller_seed_routes_from_drc`; the accepted `routing_seed.toml` preserves physical DRC `0` but leaves `214` real unconnected items.
 - Added schema-v2 routing seed support with explicit reviewed vias and named routes; the current durable seed preserves physical DRC `0` and reduces the route-report blocker to `212` real unconnected items.
 
@@ -37,8 +45,7 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 
 Concrete follow-up to reach release:
 
-1. Complete the durable `routing_seed.toml` route for the selected P7805/AP63203/LDD-700H source package, including AP63203 switch/bootstrap routing, LDD input/output current paths, LED shunt Kelvin sense, DIM/fault/control signals, heater drive, USB, I2C/SPI, thermistor mux/ADC, and interlock nets.
-2. Continue adding reviewed fanout vias and channel routes through schema-v2 `routing_seed.toml`; do not hand-edit `.kicad_pcb` traces and do not replace FB1/R55/J24 with copper shorts.
-3. Complete route phases from `routing_plan.toml`, then run `lamp_rev_b_controller_route_report` until physical DRC is zero and real unconnected items are zero.
-4. Add `lamp_rev_b_controller_fab_release` by adapting the Rev A release binary only after ERC/DRC/unconnected gates are meaningful and green.
-5. Generate vendor Gerbers, drills, BOM, CPL, assembly notes, source snapshot, and review bundle, then attach the final release artifact to `T-49FD0ECC` or its routing follow-up ticket.
+1. Decide whether `U1` exposed pad 41 must join system `GND` directly or through a reviewed net-tie strategy, then update the electrical source and revalidate without hand-editing copper.
+2. Human review must either remove `HEATER_SUPPLY_SENSE` from the promised interface or approve a concrete sensing topology, selected parts, and ADC mapping before any board/net update.
+3. Re-run generated schematic/board validation, fresh KiCad ERC/DRC, BOM/CPL checks, and the MCP fab-readiness gate after those decisions land.
+4. Add `lamp_rev_b_controller_fab_release` only after those gates are meaningful and green, then generate vendor Gerbers, drills, BOM, CPL, assembly notes, source snapshot, and review bundle.

@@ -2,7 +2,7 @@
 
 Source-package ticket: `T-4C206871`
 
-Implementation tickets: `T-49FD0ECC`, `T-352986EA`
+Implementation tickets: `T-49FD0ECC`, `T-352986EA`, `T-C7BBBEA3`
 
 This package is the Rev B prototype controller carrier source package. It is not a final diagnostic-product board and not an external validation plan.
 
@@ -55,23 +55,22 @@ Run through the LaminarForge MCP build tool:
 
 ## Current Release State
 
-This implementation pass replaces the architecture-shell schematic with generated captured connectivity and keeps the Rev B regulator and excitation-driver selections represented, but it is still not an order-ready fab release.
+The canonical board is fully routed and physically DRC-clean, but this package is still not an order-ready fab release because two reviewed electrical-source issues remain.
 
 Current validation state:
 
-- KiCad ERC on the captured schematic: `0` violations.
+- Fresh KiCad ERC on the captured schematic: `158` raw findings: `155` generated embedded-symbol library annotations, `1` explicitly justified pulled-up `LED_FAULT_N` singleton, and `2` blocking electrical-source findings.
 - KiCad physical DRC on the materialized board: `0` violations.
-- Real unconnected items from `lamp_rev_b_controller_route_report`: `85`.
-- `routing_seed.toml` contains the deterministic DRC-clean local F.Cu segments accepted by `lamp_rev_b_controller_seed_routes_from_drc`, plus schema-v2 reviewed `[[vias]]` and named `[[routes]]` records.
+- Real unconnected items from `lamp_rev_b_controller_route_report`: `0` (`3` raw identical-self-zone entries are ignored by the established filter).
+- `routing_seed.toml` is the durable source for the canonical zero-active-unconnected route.
 - Source-boundary components are explicit in the Rev B source model: `FB1` sources `+3V3_ANA` from `+3V3`, `R55` sources `VDRV` from `VIN_PROTECTED` for the 12 V first article only, and `J24` carries the external high-current cutoff loop from `VIN_PROTECTED` to `VIN_HEATER`.
 
 Known release blockers:
 
-- The PCB is still a partial materialized route seed; it is not routed to zero real unconnected items.
-- The schema-v2 seed now includes `112` named routes and `68` explicit vias and can capture DRC-clean local top-layer routes, reviewed bottom-layer escapes, and named channel routes, but the remaining nets require deliberate fanout/channel routing, especially `GND` (`8`), `I2C_SCL` (`3`), `I2C_SDA` (`3`), `+3V3_ANA` (`1`), `ESP_GPIO0_BOOT` (`1`), thermistor mux/ADC, heater, camera/debug, USB, VIN/protected power, LED, and interlock nets.
-- The selected `P7805-2000-S`, `AP63203WU-7`, `74439346068`, `LDD-700H`, `SN74LVC1G08DBVR`, `INA180A1IDBVR`, and LED shunt path are represented, but the board is not routed to zero unconnected items.
+- `U1` pad 41 and its replicated exposed-pad lands are assigned to `GND_EP`, which is not electrically tied to system `GND`; that grounding intent must be corrected and revalidated before release.
+- `HEATER_SUPPLY_SENSE` currently terminates only at `TP_HEATER_SENSE`. Human review must either remove the unsupported firmware/contract interface or approve a concrete sensing circuit and ADC mapping; the present package must not imply working heater-supply telemetry.
 - `R55` is a 12 V first-article-only VDRV feed and must be DNP for any 24 V build unless an approved 12 V regulator path is added.
 - `J24` requires an external normally-closed thermal cutoff or rated jumper before heater dummy-load tests; do not bridge `VIN_PROTECTED` to `VIN_HEATER` in copper.
-- The optional embedded camera connector remains SPI/FIFO-module oriented and debug-populated until a camera module is selected.
+- The `LED_FAULT_N` ERC singleton is reviewed and intentional for this population: the selected LDD-700H has no native fault output, so R54 only reserves a pulled-up future-fault node.
 
-Do not send this package to a PCBA vendor as a fabrication release until `lamp_rev_b_controller_erc_report` and `lamp_rev_b_controller_route_report` both pass with ERC `0`, physical DRC `0`, and real unconnected items `0`, and manual/DNP/no-substitution assembly notes are reviewed against the selected vendor.
+Do not send this package to a PCBA vendor as a fabrication release until both blocking electrical-source findings are resolved, `lamp_rev_b_controller_erc_report` passes after reviewed exceptions, fresh physical DRC and real unconnected counts remain zero, the MCP fab-readiness gate passes, and manual/DNP/no-substitution assembly notes are reviewed against the selected vendor.
