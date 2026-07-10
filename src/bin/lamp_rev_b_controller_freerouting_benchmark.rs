@@ -28,6 +28,8 @@ struct Args {
     config: PathBuf,
     #[arg(long)]
     output_dir: PathBuf,
+    #[arg(long)]
+    pass_budget: u32,
     #[arg(long, default_value = "java")]
     java: OsString,
     #[arg(long, default_value = "kicad-cli")]
@@ -53,7 +55,6 @@ struct BenchmarkConfig {
     expected_freerouting_revision: String,
     expected_freerouting_jar_sha256: String,
     max_runtime_seconds: u64,
-    max_autorouter_passes: u32,
     autorouter_threads: u32,
     optimizer_enabled: bool,
     optimizer_threads: u32,
@@ -124,7 +125,7 @@ struct ToolIdentity {
 #[derive(Debug, Serialize)]
 struct EffectiveSettings {
     max_runtime_seconds: u64,
-    max_autorouter_passes: u32,
+    pass_budget: u32,
     autorouter_threads: u32,
     optimizer_enabled: bool,
     optimizer_threads: u32,
@@ -144,9 +145,26 @@ struct ExecutionResult {
     exit_code: i32,
     timed_out: bool,
     observed_autorouter_passes: u32,
+    pass_count_verification: PassCountVerification,
     stdout_log: String,
     stderr_log: String,
     ses_output_sha256: String,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+enum PassCountVerification {
+    ExactBudget,
+    CompletedBeforeBudget,
+}
+
+impl PassCountVerification {
+    fn label(&self) -> &'static str {
+        match self {
+            Self::ExactBudget => "exact_budget",
+            Self::CompletedBeforeBudget => "completed_before_budget",
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -417,6 +435,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let config_path = resolve(&root, &args.config);
     let config: ConfigFile = toml::from_str(&fs::read_to_string(&config_path)?)?;
     validate_config(&config.benchmark)?;
+    validate_pass_budget(args.pass_budget)?;
 
     let output_dir = resolve(&root, &args.output_dir);
     prepare_output_dir(&output_dir)?;
@@ -477,6 +496,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         &dsn_path,
         &ses_path,
         &config.benchmark,
+        args.pass_budget,
     );
     let process = run_bounded(
         &args.java,
@@ -518,13 +538,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let observed_autorouter_passes = observed_autorouter_passes(&stdout);
-    if observed_autorouter_passes > config.benchmark.max_autorouter_passes {
-        return Err(format!(
-            "Freerouting exceeded the configured pass bound: requested {}, observed {}",
-            config.benchmark.max_autorouter_passes, observed_autorouter_passes
-        )
-        .into());
-    }
     let freerouting_statistics = last_json_object(&stdout);
     let ses_sha256 = sha256_file(&ses_path)?;
     let ses = parse_ses(&ses_path);
@@ -533,6 +546,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         freerouting_statistics.as_ref(),
         before_counts.real_unconnected_count,
     );
+    let pass_count_verification = verify_observed_autorouter_passes(
+        args.pass_budget,
+        observed_autorouter_passes,
+        metrics.freerouting_unrouted_connection_count,
+    )?;
     let net_ids = board_net_ids(&parsed_board)?;
     let imported = import_ses(&board_text, &ses, &net_ids)?;
 
@@ -588,7 +606,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
         effective_settings: EffectiveSettings {
             max_runtime_seconds: config.benchmark.max_runtime_seconds,
-            max_autorouter_passes: config.benchmark.max_autorouter_passes,
+            pass_budget: args.pass_budget,
             autorouter_threads: config.benchmark.autorouter_threads,
             optimizer_enabled: config.benchmark.optimizer_enabled,
             optimizer_threads: config.benchmark.optimizer_threads,
@@ -608,6 +626,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             exit_code: process.exit_code,
             timed_out: process.timed_out,
             observed_autorouter_passes,
+            pass_count_verification,
             stdout_log: "freerouting.stdout.log".into(),
             stderr_log: "freerouting.stderr.log".into(),
             ses_output_sha256: ses_sha256,
@@ -634,11 +653,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn validate_config(config: &BenchmarkConfig) -> Result<(), Box<dyn Error>> {
-    if config.schema_version != 1 {
+    if config.schema_version != 2 {
         return Err(format!("unsupported benchmark schema {}", config.schema_version).into());
     }
     if config.max_runtime_seconds == 0
-        || config.max_autorouter_passes == 0
         || config.autorouter_threads == 0
         || config.optimizer_threads == 0
     {
@@ -649,6 +667,13 @@ fn validate_config(config: &BenchmarkConfig) -> Result<(), Box<dyn Error>> {
     }
     if config.board_update_strategy != "greedy" || config.item_selection_strategy != "sequential" {
         return Err("deterministic benchmark requires greedy/sequential exposed settings".into());
+    }
+    Ok(())
+}
+
+fn validate_pass_budget(pass_budget: u32) -> Result<(), Box<dyn Error>> {
+    if pass_budget == 0 {
+        return Err("pass budget must be positive".into());
     }
     Ok(())
 }
@@ -1395,6 +1420,7 @@ fn freerouting_arguments(
     dsn_path: &Path,
     ses_path: &Path,
     config: &BenchmarkConfig,
+    pass_budget: u32,
 ) -> Vec<OsString> {
     let mut args = vec![
         OsString::from("-Djava.awt.headless=true"),
@@ -1406,11 +1432,8 @@ fn freerouting_arguments(
         OsString::from("-do"),
         ses_path.as_os_str().to_os_string(),
         OsString::from("-mp"),
-        OsString::from(config.max_autorouter_passes.to_string()),
-        OsString::from(format!(
-            "--router.stop_pass_no={}",
-            config.max_autorouter_passes
-        )),
+        OsString::from(pass_budget.to_string()),
+        OsString::from(format!("--router.stop_pass_no={pass_budget}")),
         OsString::from(format!(
             "--router.max_threads={}",
             config.autorouter_threads
@@ -1525,6 +1548,31 @@ fn observed_autorouter_passes(log: &str) -> u32 {
         })
         .max()
         .unwrap_or(0)
+}
+
+fn verify_observed_autorouter_passes(
+    pass_budget: u32,
+    observed_passes: u32,
+    freerouting_unrouted_connections: Option<u64>,
+) -> Result<PassCountVerification, String> {
+    if observed_passes == 0 {
+        return Err("Freerouting log did not report an autorouter pass".into());
+    }
+    if observed_passes > pass_budget {
+        return Err(format!(
+            "Freerouting exceeded the explicit pass budget: requested {pass_budget}, observed {observed_passes}"
+        ));
+    }
+    if observed_passes == pass_budget {
+        return Ok(PassCountVerification::ExactBudget);
+    }
+    if freerouting_unrouted_connections == Some(0) {
+        return Ok(PassCountVerification::CompletedBeforeBudget);
+    }
+    Err(format!(
+        "Freerouting stopped before the explicit pass budget without completing routing: requested {pass_budget}, observed {observed_passes}, remaining {}",
+        display_optional(freerouting_unrouted_connections)
+    ))
 }
 
 fn ses_metrics(
@@ -1776,7 +1824,7 @@ fn render_summary(result: &BenchmarkResult) -> String {
 - Generated DSN SHA-256: `{}`\n\
 - Raw SES SHA-256: `{}`\n\
 - Runtime: `{}` ms (bound `{}` s)\n\
-- Autorouter passes: `{}` observed (bound `{}`)\n\
+- Autorouter passes: `{}` observed (explicit budget `{}`, verification `{}`)\n\
 - Freerouting routed/unrouted connections: `{}` / `{}`\n\
 - SES: `{}` nets, `{}` wires, `{}` segments, `{}` vias, `{:.6}` mm trace length\n\
 - KiCad before import: `{}` physical DRC (`{}` errors, `{}` warnings), `{}` real unconnected\n\
@@ -1793,7 +1841,8 @@ fn render_summary(result: &BenchmarkResult) -> String {
         result.execution.runtime_ms,
         result.effective_settings.max_runtime_seconds,
         result.execution.observed_autorouter_passes,
-        result.effective_settings.max_autorouter_passes,
+        result.effective_settings.pass_budget,
+        result.execution.pass_count_verification.label(),
         display_optional(result.metrics.freerouting_routed_connection_count),
         display_optional(result.metrics.freerouting_unrouted_connection_count),
         result.metrics.ses_net_count,
@@ -1839,7 +1888,7 @@ mod tests {
 
     fn test_config() -> BenchmarkConfig {
         BenchmarkConfig {
-            schema_version: 1,
+            schema_version: 2,
             fixture_name: "mini".into(),
             board_path: "mini.kicad_pcb".into(),
             project_path: "mini.kicad_pro".into(),
@@ -1849,7 +1898,6 @@ mod tests {
             expected_freerouting_revision: "revision".into(),
             expected_freerouting_jar_sha256: "hash".into(),
             max_runtime_seconds: 60,
-            max_autorouter_passes: 1,
             autorouter_threads: 1,
             optimizer_enabled: false,
             optimizer_threads: 1,
@@ -1919,5 +1967,20 @@ mod tests {
     fn extracts_highest_observed_autorouter_pass() {
         let log = "Auto-router pass #1 completed\nAuto-router pass #12 completed\n";
         assert_eq!(observed_autorouter_passes(log), 12);
+    }
+
+    #[test]
+    fn verifies_exact_or_clean_early_pass_completion() {
+        assert_eq!(
+            verify_observed_autorouter_passes(10, 10, Some(3)).unwrap(),
+            PassCountVerification::ExactBudget
+        );
+        assert_eq!(
+            verify_observed_autorouter_passes(50, 7, Some(0)).unwrap(),
+            PassCountVerification::CompletedBeforeBudget
+        );
+        assert!(verify_observed_autorouter_passes(10, 11, Some(2)).is_err());
+        assert!(verify_observed_autorouter_passes(10, 7, Some(2)).is_err());
+        assert!(verify_observed_autorouter_passes(10, 0, None).is_err());
     }
 }

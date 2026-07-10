@@ -1,5 +1,5 @@
 [benchmark]
-schema_version = 1
+schema_version = 2
 fixture_name = "lamp_rev_b_controller_current_route_closure"
 board_path = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pcb"
 project_path = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pro"
@@ -8,8 +8,7 @@ freerouting_jar_path = "tools/freerouting.jar"
 expected_freerouting_version = "2.1.0"
 expected_freerouting_revision = "1c1edc12bd20fbb328c2a52efbeb5f6a785849de"
 expected_freerouting_jar_sha256 = "2c07d58f75dac03782664081e7a58b41c25400d871a9fcf166a2ea6fe60d5def"
-max_runtime_seconds = 180
-max_autorouter_passes = 1
+max_runtime_seconds = 1200
 autorouter_threads = 1
 optimizer_enabled = false
 optimizer_threads = 1
