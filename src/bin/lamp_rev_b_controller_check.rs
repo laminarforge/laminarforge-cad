@@ -1000,6 +1000,12 @@ fn validate_pin_nets(
         .collect::<BTreeMap<_, _>>();
     require_pin_assignment(
         &assignments_by_ref,
+        "U1",
+        &[("1", "GND"), ("40", "GND"), ("41", "GND")],
+        errors,
+    );
+    require_pin_assignment(
+        &assignments_by_ref,
         "FB1",
         &[("1", "+3V3"), ("2", "+3V3_ANA")],
         errors,

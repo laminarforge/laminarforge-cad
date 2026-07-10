@@ -49,7 +49,7 @@ notes = "ESP32-S3-WROOM-1-N16 using verified-compatible N8 land pattern; boot/st
 "38" = "I2C_SCL"
 "39" = "I2C_SDA"
 "40" = "GND"
-"41" = "GND_EP"
+"41" = "GND"
 
 [[assignments]]
 reference = "J1"

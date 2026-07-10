@@ -1,14 +1,15 @@
 # Rev B Controller Fab Release Follow-Up
 
-The canonical board is now at physical DRC `0` and active unconnected `0`. The package remains blocked because the corrected KiCad 10 ERC reader identifies two real electrical-source issues after separating generated-library annotation noise and one justified population exception.
+The canonical board is now at physical DRC `0` and active unconnected `0`. The package remains blocked because the corrected KiCad 10 ERC reader identifies one real electrical-source issue after separating generated-library annotation noise and one justified population exception.
 
 Reconciled in `T-C7BBBEA3`:
 
 - Corrected generated schematic pin attachment for KiCad's library-symbol Y transform. The previous generator could swap nets on multi-pin symbols and left six edge pins disconnected.
 - Snapped generated symbols and connectivity to KiCad's 1.27 mm grid, removing `503` endpoint-off-grid warnings and the six associated unconnected-wire findings.
 - Updated `lamp_rev_b_controller_erc_report` for KiCad 10's sheet-nested JSON schema and explicit, item-scoped reviewed exceptions.
-- Fresh ERC now reports `158` raw findings: `155` embedded `LF_CAPTURE` library annotations, one intentional pulled-up `LED_FAULT_N` singleton, and two blocking source findings: isolated `GND_EP` and source-less `HEATER_SUPPLY_SENSE`.
-- Replaced the obsolete zero-unconnected routing blocker with the two actual electrical blockers. No board copper or routing source was changed in this reconciliation.
+- Assigned `U1` pad 41 and its nine replicated exposed-pad lands directly to system `GND`, retired the standalone `GND_EP` net from the deterministic contract and part manifest, and locked all three U1 ground pad numbers in `lamp_rev_b_controller_check`.
+- Reassigned the existing exposed-pad spoke records to `GND`, then used the stock Freerouting 10-pass workflow on the preserved canonical autoroute. It completed after two passes with one routed and zero remaining connections, adding only three segments and one via while preserving physical DRC `0` and active unconnected `0`.
+- Fresh ERC now reports `157` raw findings: `155` embedded `LF_CAPTURE` library annotations, one intentional pulled-up `LED_FAULT_N` singleton, and one blocking source finding: source-less `HEATER_SUPPLY_SENSE`.
 
 Completed through `T-49FD0ECC` and routing follow-up `T-3DFB93CC`:
 
@@ -45,7 +46,6 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 
 Concrete follow-up to reach release:
 
-1. Decide whether `U1` exposed pad 41 must join system `GND` directly or through a reviewed net-tie strategy, then update the electrical source and revalidate without hand-editing copper.
-2. Human review must either remove `HEATER_SUPPLY_SENSE` from the promised interface or approve a concrete sensing topology, selected parts, and ADC mapping before any board/net update.
-3. Re-run generated schematic/board validation, fresh KiCad ERC/DRC, BOM/CPL checks, and the MCP fab-readiness gate after those decisions land.
-4. Add `lamp_rev_b_controller_fab_release` only after those gates are meaningful and green, then generate vendor Gerbers, drills, BOM, CPL, assembly notes, source snapshot, and review bundle.
+1. Human review must either remove `HEATER_SUPPLY_SENSE` from the promised interface or approve a concrete sensing topology, selected parts, and ADC mapping before any board/net update.
+2. Re-run generated schematic/board validation, fresh KiCad ERC/DRC, BOM/CPL checks, and the MCP fab-readiness gate after that decision lands.
+3. Add `lamp_rev_b_controller_fab_release` only after those gates are meaningful and green, then generate vendor Gerbers, drills, BOM, CPL, assembly notes, source snapshot, and review bundle.

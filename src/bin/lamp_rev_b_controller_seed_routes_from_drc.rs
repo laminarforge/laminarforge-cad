@@ -289,7 +289,7 @@ fn active_unconnected_count(report: &DrcReport) -> usize {
 fn width_for_net(net: &str) -> f64 {
     match net {
         "VIN_12_24" | "VIN_PROTECTED" | "VIN_HEATER" | "VDRV" | "LED_SUPPLY" | "LED_DRV_PLUS"
-        | "LED_PLUS" | "LED_MINUS" | "HEATER0_LOW" | "HEATER1_LOW" | "GND" | "GND_EP" => 0.50,
+        | "LED_PLUS" | "LED_MINUS" | "HEATER0_LOW" | "HEATER1_LOW" | "GND" => 0.50,
         "+5V" | "+3V3" | "+3V3_ANA" | "VBUS" | "3V3_SW" => 0.35,
         "USB_DP" | "USB_DN" => 0.20,
         _ => 0.20,

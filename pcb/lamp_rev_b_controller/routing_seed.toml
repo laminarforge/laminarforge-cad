@@ -3609,7 +3609,7 @@ end_x_mm = 93.900
 end_y_mm = 50.570
 
 [[segments]]
-net = "GND_EP"
+net = "GND"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.500
@@ -3619,7 +3619,7 @@ end_x_mm = 59.500
 end_y_mm = 16.760
 
 [[segments]]
-net = "GND_EP"
+net = "GND"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.500
@@ -3629,7 +3629,7 @@ end_x_mm = 59.500
 end_y_mm = 18.160
 
 [[segments]]
-net = "GND_EP"
+net = "GND"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.500
@@ -3639,7 +3639,7 @@ end_x_mm = 59.500
 end_y_mm = 18.160
 
 [[segments]]
-net = "GND_EP"
+net = "GND"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.500
@@ -3649,7 +3649,7 @@ end_x_mm = 60.900
 end_y_mm = 16.760
 
 [[segments]]
-net = "GND_EP"
+net = "GND"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.500
@@ -3659,7 +3659,7 @@ end_x_mm = 60.900
 end_y_mm = 16.760
 
 [[segments]]
-net = "GND_EP"
+net = "GND"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.500
@@ -3669,7 +3669,7 @@ end_x_mm = 58.100
 end_y_mm = 16.760
 
 [[segments]]
-net = "GND_EP"
+net = "GND"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.500
@@ -3679,7 +3679,7 @@ end_x_mm = 59.500
 end_y_mm = 16.760
 
 [[segments]]
-net = "GND_EP"
+net = "GND"
 layer = "F.Cu"
 via_at_ends = false
 width_mm = 0.500

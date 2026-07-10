@@ -3,7 +3,7 @@ name = "lamp_rev_b_controller_fab_preview"
 ticket = "T-C7BBBEA3"
 revision = "Rev B prototype"
 source_stage = "routed_preview_pending_electrical_resolution"
-release_state = "blocked_on_reviewed_electrical_issues"
+release_state = "blocked_on_reviewed_electrical_issue"
 
 [toolchain]
 min_kicad_major = 10
@@ -85,6 +85,5 @@ dnp_alternates = [
 
 [release_blockers]
 items = [
-  "U1 exposed-pad net GND_EP is isolated from system GND; resolve the pad-41 grounding intent and revalidate the resulting board without bypassing DRC.",
   "HEATER_SUPPLY_SENSE terminates only at TP_HEATER_SENSE and has no populated source or ADC endpoint; human review must either remove this unsupported interface or approve a concrete sensing circuit and ADC mapping.",
 ]

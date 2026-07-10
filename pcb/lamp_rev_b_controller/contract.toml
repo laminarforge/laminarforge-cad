@@ -205,12 +205,6 @@ min_track_width_mm = 0.30
 must_have_testpoint = true
 
 [[nets]]
-name = "GND_EP"
-class = "Ground"
-min_track_width_mm = 0.30
-must_have_testpoint = false
-
-[[nets]]
 name = "VBUS"
 class = "Power"
 min_track_width_mm = 0.50
