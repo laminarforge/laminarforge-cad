@@ -61,4 +61,4 @@ Final release evidence on the promoted board:
 
 The deterministic Rev B controller package is ready for first-article fabrication. Any source or copper change invalidates this evidence and requires the same fresh gates before vendor release.
 
-The future vendor-release packaging command remains `lamp_rev_b_controller_fab_release`; it must consume this green evidence and vendor-reviewed assembly notes rather than recalculate or waive electrical readiness.
+The authoritative manufacturer-neutral packaging command is `lamp_rev_b_controller_fab_release`. It regenerates same-commit DRC and ERC outside the checkout, rechecks connectivity/BOM/CPL, exports the complete review tree twice, normalizes time metadata, and compares every byte. It must consume the green electrical evidence without recalculating or waiving order-profile and procurement decisions. It exits nonzero and withholds upload units and the outer handoff ZIP until every controlled external choice and portal-preview approval is recorded.

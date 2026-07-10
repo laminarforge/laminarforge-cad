@@ -1,16 +1,22 @@
 [package]
-name = "lamp_rev_b_controller_fab_preview"
-ticket = "T-C7BBBEA3"
-revision = "Rev B prototype"
-source_stage = "routed_release_candidate_afe_reconciled"
-release_state = "ready_for_first_article_fabrication_after_fresh_gates"
+name = "lamp_rev_b_controller_fab_release"
+ticket = "T-E36FA2C2"
+revision = "Rev B"
+variant = "rev_b_12v_first_article"
+minimum_source_commit = "9cd44a524f9804889fc87a89cfe2b9c1c56ab40f"
+electrical_evidence_artifact = "A-9F7C4851"
+electrical_evidence_sha256 = "115195d8b4461a74d18234f57c7f51d3dacb4eb2943bd202a2291956dc6957bc"
 
 [toolchain]
-min_kicad_major = 10
+required_kicad_version = "10.0.3"
+archive_timestamp = "1980-01-01T00:00:00Z"
+archive_unix_mode = "0644"
 
 [inputs]
 board = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pcb"
 schematic = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_sch"
+project = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pro"
+design_rules = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_dru"
 contract = "pcb/lamp_rev_b_controller/contract.toml"
 parts = "pcb/lamp_rev_b_controller/parts.toml"
 placement = "pcb/lamp_rev_b_controller/placement.toml"
@@ -18,14 +24,61 @@ pin_nets = "pcb/lamp_rev_b_controller/pin_nets.toml"
 firmware_handoff = "pcb/lamp_rev_b_controller/firmware_handoff.toml"
 electrical_validation = "pcb/lamp_rev_b_controller/electrical_validation.toml"
 routing_seed = "pcb/lamp_rev_b_controller/routing_seed.toml"
+assembly_notes = "pcb/lamp_rev_b_controller/assembly_notes.md"
+fabrication_notes = "pcb/lamp_rev_b_controller/fabrication_notes.md"
+manufacturing_bringup = "pcb/lamp_rev_b_controller/manufacturing_bringup.md"
+release_manifest = "pcb/lamp_rev_b_controller/release_manifest.toml"
+electrical_evidence = "pcb/lamp_rev_b_controller/electrical_release_evidence.md"
 
-[outputs]
-preview_dir = "pcb/lamp_rev_b_controller/fab"
-reports_dir = "pcb/lamp_rev_b_controller/reports"
-bom_file = "bom.csv"
-cpl_file = "cpl.csv"
-route_report = "drc.json"
-erc_report = "erc.json"
+[source_policy]
+canonical_remote_ref = "origin/main"
+require_clean_tracked_inputs = true
+require_head_equals_remote = true
+
+[variant]
+name = "rev_b_12v_first_article"
+input_voltage_v = 12.0
+machine_assembly_side = "top"
+first_article_quantity = 5
+bare_board_overbuild_quantity = "5-10 only after quote review"
+r55_population = "POPULATE: 0 ohm 0805 feed from VIN_PROTECTED to VDRV for this 12 V variant only"
+r25_r26_population = "MANDATORY DNP: never populate in this layout"
+j24_requirement = "Connect through an external normally-closed thermal cutoff or a correctly rated jumper before heater tests"
+panelization_owner = "fabricator"
+panelization_input = "validated single-up 118 x 94 mm board"
+panelization_approval = "No engineering-owned panel; any fabricator panelization and depanelization proposal requires portal-preview approval"
+
+[fabrication_order_profile]
+manufacturer = ""
+base_material = "FR-4"
+physical_stackup = ""
+finished_thickness_mm = 1.6
+finished_thickness_tolerance = ""
+outer_copper_oz = 1.0
+inner_copper_oz = 0.5
+surface_finish = ""
+surface_finish_thickness = ""
+soldermask_color = ""
+silkscreen_color = ""
+minimum_annular_ring = ""
+finished_hole_tolerance = ""
+acceptance_class = ""
+impedance_policy = ""
+
+[portal_gate]
+preview_approved = false
+approval_record = ""
+required_checks = [
+  "layer mapping and polarity",
+  "board outline and dimensions",
+  "PTH/NPTH drill registration",
+  "BOM mapping and exact part matches",
+  "CPL overlay, rotation, origin, and top-side assignment",
+  "R25/R26 DNP and R55 populated for the 12 V variant",
+  "manual/THT classification",
+  "substitution policy",
+  "fabricator-owned panelization",
+]
 
 [erc_review]
 [[erc_review.accepted_findings]]
@@ -43,7 +96,6 @@ item_description_exact = "Global Label 'LED_FAULT_N'"
 reason = "The selected LDD-700H has no native fault output; R54 intentionally reserves a pulled-up, currently undriven future-fault node."
 
 [assembly]
-machine_side = "top"
 manual_part_ids = [
   "dc_input_terminal",
   "five_v_buck_module",
@@ -62,29 +114,54 @@ manual_part_ids = [
   "i2c_exp_header",
   "analog_opt_header",
 ]
-dnp_part_ids = [
-  "heater_low_bypass_dnp",
-]
+dnp_part_ids = ["heater_low_bypass_dnp"]
 no_substitution_part_ids = [
+  "mcu_module",
+  "usb_c_connector",
+  "dc_input_terminal",
+  "input_ptc",
+  "input_tvs",
   "five_v_buck_module",
   "three_v_three_regulator",
   "three_v_three_inductor",
   "analog_3v3_filter_link",
+  "vin_buck_input_cap_50v",
   "vdrv_12v_feed_link",
+  "adc",
+  "thermistor_mux",
+  "heater_gate_driver",
+  "heater_mosfets",
+  "heater_output_terminals",
   "heater_cutoff_loop_terminal",
   "led_driver_module",
   "led_dim_and_gate",
-  "led_current_sense_amp",
   "led_current_shunt",
-]
-dnp_alternates = [
-  "Mean Well LDD-1000H C17529736 is a thermal-validation alternate only and is DNP for the first release population.",
-  "CUI P7812-500R C6351743 24 V VDRV regulator path is DNP unless a 24 V heater population is explicitly approved.",
-  "R55 direct VIN_PROTECTED-to-VDRV feed is populated only for the 12 V first article and is DNP for any 24 V build unless an approved 12 V regulator path is populated.",
-]
-dnp_hazards = [
-  "R25 and R26 are mandatory DNP in the current layout. Populating either footprint bridges its HEATERx_LOW node to GND in parallel with the MOSFET, can energize the heater whenever VIN_HEATER is present, and does not provide current sensing.",
+  "led_current_sense_amp",
+  "camera_spi_header",
 ]
 
-[release_blockers]
-items = []
+[procurement]
+unresolved_supplier_part_ids = [
+  "mcu_module",
+  "input_ptc",
+  "analog_3v3_filter_link",
+  "vin_buck_input_cap_50v",
+  "vdrv_12v_feed_link",
+  "thermistor_ref_resistors",
+  "thermistor_headers",
+  "heater_gate_driver",
+  "heater_mosfets",
+  "led_current_shunt",
+  "led_sense_header",
+  "opt_sync_header",
+  "camera_spi_header",
+  "interlock_header",
+  "fan_header",
+  "uart_prog_header",
+  "i2c_exp_header",
+  "analog_opt_header",
+]
+require_explicit_manufacturer = true
+require_explicit_manufacturer_part_number = true
+require_explicit_supplier = true
+require_explicit_supplier_part_number = true

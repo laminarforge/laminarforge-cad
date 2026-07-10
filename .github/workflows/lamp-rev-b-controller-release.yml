@@ -1,0 +1,69 @@
+name: LAMP Rev B controller manufacturer handoff
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Deterministic Rev B manufacturer handoff
+    runs-on: macos-latest
+    steps:
+      - name: Checkout canonical main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Install stable Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: lamp-rev-b-controller-handoff
+
+      - name: Install and pin KiCad CLI
+        shell: bash
+        run: |
+          kicad_cli="/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
+          if [ ! -x "$kicad_cli" ]; then
+            brew install --cask kicad
+          fi
+          test -x "$kicad_cli"
+          echo "$(dirname "$kicad_cli")" >> "$GITHUB_PATH"
+          test "$($kicad_cli --version)" = "10.0.3"
+
+      - name: Verify canonical source identity
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Test the release contract
+        run: cargo test --release --bin lamp_rev_b_controller_fab_release --test lamp_rev_b_controller_fab_release
+
+      - name: Generate twice, validate, and package
+        run: cargo run --release --bin lamp_rev_b_controller_fab_release
+
+      - name: Verify emitted archive and checksums
+        shell: bash
+        run: |
+          release_dir="$(find pcb/lamp_rev_b_controller/fab_release -mindepth 1 -maxdepth 1 -type d | head -1)"
+          archive="$(find pcb/lamp_rev_b_controller/fab_release -mindepth 1 -maxdepth 1 -type f -name '*_handoff.zip' | head -1)"
+          test -n "$release_dir"
+          test -n "$archive"
+          test -s "$release_dir/MANIFEST.json"
+          test -s "$release_dir/SHA256SUMS"
+          test -s "$archive"
+          (cd "$release_dir" && shasum -a 256 -c SHA256SUMS)
+
+      - name: Publish handoff archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: lamp-rev-b-controller-manufacturer-handoff
+          path: pcb/lamp_rev_b_controller/fab_release/*_handoff.zip
+          if-no-files-found: error
+          retention-days: 30

@@ -21,11 +21,14 @@ const FAB_CONFIG_PATH: &str = "pcb/lamp_rev_b_controller/fab_release.toml";
 const README_PATH: &str = "pcb/lamp_rev_b_controller/README.md";
 const BRINGUP_PATH: &str = "pcb/lamp_rev_b_controller/manufacturing_bringup.md";
 const FOLLOWUP_PATH: &str = "pcb/lamp_rev_b_controller/fab_release_followup.md";
+const ASSEMBLY_NOTES_PATH: &str = "pcb/lamp_rev_b_controller/assembly_notes.md";
+const FABRICATION_NOTES_PATH: &str = "pcb/lamp_rev_b_controller/fabrication_notes.md";
+const RELEASE_MANIFEST_PATH: &str = "pcb/lamp_rev_b_controller/release_manifest.toml";
+const ELECTRICAL_EVIDENCE_PATH: &str = "pcb/lamp_rev_b_controller/electrical_release_evidence.md";
 const SCH_PATH: &str = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_sch";
 const PCB_PATH: &str = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pcb";
 const PRO_PATH: &str = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_pro";
 const DRU_PATH: &str = "pcb/lamp_rev_b_controller/lamp_rev_b_controller.kicad_dru";
-const KIBOT_PATH: &str = "pcb/lamp_rev_b_controller/kibot.yaml";
 const SYM_LIB_TABLE_PATH: &str = "pcb/lamp_rev_b_controller/sym-lib-table";
 const FP_LIB_TABLE_PATH: &str = "pcb/lamp_rev_b_controller/fp-lib-table";
 const SYMBOL_LIBRARY_PATH: &str = "pcb/lib/lcsc.kicad_sym";
@@ -367,11 +370,14 @@ fn main() {
         README_PATH,
         BRINGUP_PATH,
         FOLLOWUP_PATH,
+        ASSEMBLY_NOTES_PATH,
+        FABRICATION_NOTES_PATH,
+        RELEASE_MANIFEST_PATH,
+        ELECTRICAL_EVIDENCE_PATH,
         SCH_PATH,
         PCB_PATH,
         PRO_PATH,
         DRU_PATH,
-        KIBOT_PATH,
         SYM_LIB_TABLE_PATH,
         FP_LIB_TABLE_PATH,
         SYMBOL_LIBRARY_PATH,
@@ -414,7 +420,7 @@ fn main() {
         println!("  routing seed vias: {}", routing_seed.vias.len());
         println!("  routing seed routes: {}", routing_seed.routes.len());
         println!(
-            "  fab-release blocking gaps: {}",
+            "  legacy part-selection fabrication gaps: {} (manufacturer-handoff blockers are enforced by lamp_rev_b_controller_fab_release)",
             parts
                 .selection_gaps
                 .iter()
@@ -1499,7 +1505,7 @@ fn same_route_coordinate(first: f64, second: f64) -> bool {
     (first - second).abs() < 0.001
 }
 
-fn validate_text_content(root: &Path, errors: &mut Vec<String>, warnings: &mut Vec<String>) {
+fn validate_text_content(root: &Path, errors: &mut Vec<String>, _warnings: &mut Vec<String>) {
     let package_text = fs::read_to_string(root.join(CONTRACT_PATH)).unwrap_or_default()
         + &fs::read_to_string(root.join(PARTS_PATH)).unwrap_or_default()
         + &fs::read_to_string(root.join(POWER_PATH)).unwrap_or_default()
@@ -1576,7 +1582,7 @@ fn validate_text_content(root: &Path, errors: &mut Vec<String>, warnings: &mut V
     );
     let followup = fs::read_to_string(root.join(FOLLOWUP_PATH)).unwrap_or_default();
     if !followup.contains("lamp_rev_b_controller_fab_release") {
-        warnings.push("fab_release follow-up does not name the future release binary".to_string());
+        errors.push("fab_release follow-up must name the authoritative release binary".to_string());
     }
 }
 

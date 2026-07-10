@@ -2,14 +2,16 @@
 
 Build target: 5 assembled prototype controller PCBAs, plus 5-10 bare boards if the incremental cost is low.
 
-Board class: 4-layer FR-4, 1.6 mm, ENIG preferred, top-side SMT first article. Use no blind/buried vias and no via-in-pad unless separately quoted and reviewed.
+Known board baseline: 4-layer FR-4, 1.6 mm nominal, 1 oz outer / 0.5 oz inner copper, top-side SMT first article. `ENIG preferred` is historical preference, not a released finish specification. The handoff generator must remain blocked until the selected order profile records the physical stackup, tolerances/class, final finish specification, colors, and impedance-policy decision.
+
+Panelization is fabricator-owned from the released 118 x 94 mm single-up board. Engineering does not release panel Gerbers. Any proposed rails, tooling, fiducials, coupons, or depanelization are accepted only through the portal-preview approval gate.
 
 ## Vendor Package Requirements
 
 - Schematic PDF with revision, date, power tree, connector pinouts, DNP/DNI marks, and net labels.
 - Gerber ZIP for copper, mask, paste, silkscreen, and Edge.Cuts layers.
 - Excellon drills and drill map/report.
-- BOM CSV with designator, value, package, footprint, manufacturer/source, supplier/catalog ID, assembly side, and DNP/DNI.
+- BOM CSV with quantity, designator, value, package, footprint, explicit manufacturer and MPN, explicit supplier and supplier part number, assembly side, variant, and DNP/DNI.
 - CPL CSV with designator, x, y, rotation, side, and footprint/package.
 - Assembly drawing or marked board plot showing polarity, pin 1, connector orientation, module antenna side, and DNP parts.
 - Assembly notes: no substitutions for ESP32 module, regulator, ADC, mux, LED driver path, MOSFET/gate driver, USB-C connector, camera connector, heater connectors, and safety parts without approval.
@@ -36,3 +38,7 @@ Board class: 4-layer FR-4, 1.6 mm, ENIG preferred, top-side SMT first article. U
 - 470-490 nm high-power excitation is a blue-light/eye hazard. Do not operate an exposed emitter outside a covered heatsunk optical head with interlocks and appropriate lab eyewear.
 - Cartridge wet path and final cartridge bay mechanics are off-board.
 - Header/connector family substitutions require schematic, BOM, CPL, and harness update before order release.
+
+## Order-release gate
+
+Do not upload or order unless the generated `MANIFEST.json` says `release_ready: true`, `SHA256SUMS` verifies, the two-build reproducibility gate passes, and the portal layer/drill/BOM/CPL/panel previews are approved and recorded. The provisional checklist in `A-D87AC12B` is not current vendor-cited evidence.

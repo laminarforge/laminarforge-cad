@@ -1090,14 +1090,14 @@ required_gates = [
   "lamp_rev_b_controller_materialize_board",
   "lamp_rev_b_controller_seed_routes_from_drc",
   "lamp_rev_b_controller_route_report",
-  "lamp_rev_b_controller_fab_preview",
+  "lamp_rev_b_controller_fab_release",
   "kicad-cli pcb drc before any fab release claim",
 ]
 autorouter_policy = "Use manual or KiCad-reviewed routing first. Freerouting is diagnostic only after zero physical pre-route DRC."
 simulation_policy = "Prototype source package only; heater and optical validation stay in bring-up documentation, not external validation plan."
 
 [manufacturing]
-target_vendor = "JLCPCB/PCBWay/Seeed/MacroFab prototype quote"
+target_vendor = "manufacturer-neutral until an approved order profile is recorded"
 assembly_side = "top"
 first_article_quantity = 5
 bare_board_overbuild_quantity = "5-10 if cheap"
@@ -1108,3 +1108,11 @@ requires_drills = true
 requires_drc_clean = true
 license_marking = "CERN-OHL-S v2"
 no_substitution_policy = "No substitutions for ESP32 module, regulator, ADC, mux, LED driver path, MOSFET/gate driver, USB-C connector, camera connector, heater connectors, or safety parts without approval."
+first_article_variant = "rev_b_12v_first_article"
+input_voltage_v = 12.0
+r25_r26_population = "mandatory DNP; populating either bypasses its heater MOSFET and can energize the heater whenever VIN_HEATER is present"
+r55_population = "populate for the 12 V first article; DNP for 24 V unless an approved regulated 12 V VDRV path is present"
+j24_requirement = "external normally-closed thermal cutoff or correctly rated jumper required before heater tests"
+panelization_owner = "fabricator"
+panelization_input = "released single-up 118 x 94 mm board only; no engineering panel Gerber"
+portal_preview_gate = "mandatory approval of layers, drills, BOM, CPL, substitutions, and panelization before order"

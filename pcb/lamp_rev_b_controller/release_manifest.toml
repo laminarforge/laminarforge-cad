@@ -1,0 +1,109 @@
+[manifest]
+schema_version = 1
+ticket = "T-E36FA2C2"
+release_prefix = "lamp_rev_b_controller_rev_b"
+archive_suffix = "handoff.zip"
+source_commit_file = "SOURCE_COMMIT.txt"
+checksum_file = "SHA256SUMS"
+manifest_file = "MANIFEST.json"
+blocker_file = "RELEASE_BLOCKERS.md"
+
+[counts]
+board_width_mm = 118.0
+board_height_mm = 94.0
+copper_layers = 4
+board_footprints = 153
+bom_designators = 94
+cpl_designators = 67
+manual_tht_designators = 25
+dnp_designators = 2
+virtual_designators = 59
+raw_unconnected = 3
+reviewed_self_zone_unconnected = 3
+active_unconnected = 0
+erc_findings = 154
+erc_blocking = 0
+
+[archive]
+member_order = "lexicographic"
+member_paths = "forward-slash relative paths"
+timestamp = "1980-01-01T00:00:00Z"
+unix_mode = "0644"
+compression = "deflate"
+extended_attributes = false
+
+[gerbers]
+layers = ["F.Cu", "In1.Cu", "In2.Cu", "B.Cu", "F.Mask", "B.Mask", "F.Silkscreen", "B.Silkscreen", "Edge.Cuts"]
+files = [
+  "fabrication/gerbers/lamp_rev_b_controller-F_Cu.gtl",
+  "fabrication/gerbers/lamp_rev_b_controller-In1_Cu.g1",
+  "fabrication/gerbers/lamp_rev_b_controller-In2_Cu.g2",
+  "fabrication/gerbers/lamp_rev_b_controller-B_Cu.gbl",
+  "fabrication/gerbers/lamp_rev_b_controller-F_Mask.gts",
+  "fabrication/gerbers/lamp_rev_b_controller-B_Mask.gbs",
+  "fabrication/gerbers/lamp_rev_b_controller-F_Silkscreen.gto",
+  "fabrication/gerbers/lamp_rev_b_controller-B_Silkscreen.gbo",
+  "fabrication/gerbers/lamp_rev_b_controller-Edge_Cuts.gm1",
+  "fabrication/gerbers/lamp_rev_b_controller-job.gbrjob",
+]
+
+[paste]
+files = [
+  "assembly/paste/lamp_rev_b_controller-F_Paste.gtp",
+  "assembly/paste/lamp_rev_b_controller-B_Paste.gbp",
+]
+
+[review_package]
+files = [
+  "README.md",
+  "SOURCE_COMMIT.txt",
+  "RELEASE_BLOCKERS.md",
+  "fabrication/drills/lamp_rev_b_controller-PTH.drl",
+  "fabrication/drills/lamp_rev_b_controller-NPTH.drl",
+  "fabrication/drills/lamp_rev_b_controller-PTH-drl_map.pdf",
+  "fabrication/drills/lamp_rev_b_controller-NPTH-drl_map.pdf",
+  "fabrication/drills/lamp_rev_b_controller-drill-report.rpt",
+  "fabrication/lamp_rev_b_controller-fabrication-drawing.pdf",
+  "fabrication/lamp_rev_b_controller-fabrication-notes.md",
+  "fabrication/lamp_rev_b_controller-board-stats.json",
+  "fabrication/lamp_rev_b_controller.ipc-d-356",
+  "assembly/lamp_rev_b_controller-bom.csv",
+  "assembly/lamp_rev_b_controller-cpl.csv",
+  "assembly/lamp_rev_b_controller-dnp.csv",
+  "assembly/lamp_rev_b_controller-no-substitution.csv",
+  "assembly/lamp_rev_b_controller-assembly-notes.md",
+  "assembly/lamp_rev_b_controller-assembly-top.pdf",
+  "assembly/lamp_rev_b_controller-assembly-bottom.pdf",
+  "documentation/lamp_rev_b_controller-schematic.pdf",
+  "documentation/lamp_rev_b_controller-board-top.png",
+  "documentation/lamp_rev_b_controller-board-bottom.png",
+  "documentation/lamp_rev_b_controller-board.step",
+  "documentation/manufacturing_bringup.md",
+  "documentation/firmware_handoff.toml",
+  "source/lamp_rev_b_controller.kicad_pcb",
+  "source/lamp_rev_b_controller.kicad_sch",
+  "source/lamp_rev_b_controller.kicad_pro",
+  "source/lamp_rev_b_controller.kicad_dru",
+  "source/contract.toml",
+  "source/parts.toml",
+  "source/placement.toml",
+  "source/pin_nets.toml",
+  "source/fab_release.toml",
+  "source/release_manifest.toml",
+  "source/fp-lib-table",
+  "source/sym-lib-table",
+  "evidence/drc.json",
+  "evidence/erc.json",
+  "evidence/validation-summary.json",
+  "evidence/A-9F7C4851.md",
+  "MANIFEST.json",
+  "SHA256SUMS",
+]
+
+[release_only]
+files = [
+  "upload/lamp_rev_b_controller-gerbers.zip",
+  "upload/lamp_rev_b_controller-bom.csv",
+  "upload/lamp_rev_b_controller-cpl.csv",
+  "upload/lamp_rev_b_controller-assembly-notes.md",
+]
