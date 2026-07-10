@@ -1062,10 +1062,9 @@ fn validate_pin_nets(
     require_pin_assignment(
         &assignments_by_ref,
         "J23",
-        &[("4", "AUX_ANALOG_IN")],
+        &[("3", "AUX_ANALOG_IN"), ("4", "AUX_ANALOG_IN")],
         errors,
     );
-    require_unassigned_pin(&assignments_by_ref, "J23", "3", errors);
     require_pin_assignment(
         &assignments_by_ref,
         "R25",

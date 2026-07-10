@@ -45,7 +45,7 @@ channel_map = ["AIN0=THERM_MUX_OUT", "AIN1=SPARE_NO_CONNECT", "AIN2=LED_CURRENT_
 ain0_source = "Eight 10 kohm thermistor dividers filtered at each mux channel; 0-3.3 V and about 2.5 kohm worst-case divider Thevenin impedance plus CD74HC4051 on-resistance."
 ain1_policy = "First-article spare is physically unassigned and must never be selected by firmware."
 ain2_source = "INA180A1 low-impedance output; about 1.4 V at the populated 0.7 A LED drive and about 2.0 V only for the DNP 1.0 A alternate."
-ain3_source = "External AUX_ANALOG_IN must remain within 0-3.3 V and use source impedance <=10 kohm; J23 pin 3 is reserved no-connect."
+ain3_source = "External AUX_ANALOG_IN must remain within 0-3.3 V and use source impedance <=10 kohm; J23 pins 3 and 4 are the same direct AIN3 node with no interposed conditioning."
 
 [[peripheral]]
 name = "LedChannel::Excitation"

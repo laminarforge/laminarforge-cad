@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 113
-expected_route_count = 164
+expected_via_count = 114
+expected_route_count = 165
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -779,6 +779,17 @@ layers = ["F.Cu", "B.Cu"]
 size_mm = 0.700
 drill_mm = 0.300
 intent = "Reviewed THERM_MUX_OUT / AIN0 return via below TP_ADS_AIN0, clear of the +3V3_ANA C5 branch."
+
+[[vias]]
+id = "v_therm_mux_out_adc_to_mux_detour"
+phase = "4_thermistor_analog"
+net = "THERM_MUX_OUT"
+x_mm = 25.960
+y_mm = 63.450
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Reviewed THERM_MUX_OUT ADC-to-mux detour return via west of U5. Stock Freerouting supplied the B.Cu corridor; the accepted local corner stays below J23 pad 1 and the +3V3_ANA header branch."
 
 [[vias]]
 id = "v_sd_cs_r43_bcu_escape"
@@ -2824,6 +2835,30 @@ points = [
   { x_mm = 38.000, y_mm = 36.000, layer = "B.Cu", via_id = "v_ads_ain0_tp_bcu_entry" },
   { x_mm = 38.000, y_mm = 36.000, layer = "F.Cu", via_id = "v_ads_ain0_tp_bcu_entry" },
   { x_mm = 38.000, y_mm = 38.000, layer = "F.Cu", anchor = "TP_ADS_AIN0:1" },
+]
+
+[[routes]]
+id = "therm_mux_out_adc_to_mux_bcu_detour"
+phase = "4_thermistor_analog"
+net = "THERM_MUX_OUT"
+width_mm = 0.200
+intent = "Reviewed stock-Freerouting corridor joining the U4 AIN0/TP branch to the real U5 THERM_MUX_OUT source. The final B.Cu corner is offset below J23 pad 1; scratch validation closed the last active open with physical DRC zero."
+points = [
+  { x_mm = 38.000, y_mm = 36.000, layer = "B.Cu", anchor = "existing ADS AIN0 branch" },
+  { x_mm = 38.000, y_mm = 29.145, layer = "B.Cu" },
+  { x_mm = 39.767, y_mm = 27.378, layer = "B.Cu" },
+  { x_mm = 40.270, y_mm = 27.378, layer = "B.Cu" },
+  { x_mm = 42.038, y_mm = 29.146, layer = "B.Cu" },
+  { x_mm = 42.038, y_mm = 29.531, layer = "B.Cu" },
+  { x_mm = 44.650, y_mm = 32.144, layer = "B.Cu" },
+  { x_mm = 44.650, y_mm = 80.478, layer = "B.Cu" },
+  { x_mm = 42.001, y_mm = 83.500, layer = "B.Cu" },
+  { x_mm = 32.000, y_mm = 83.500, layer = "B.Cu" },
+  { x_mm = 27.289, y_mm = 76.859, layer = "B.Cu" },
+  { x_mm = 27.289, y_mm = 64.779, layer = "B.Cu" },
+  { x_mm = 25.960, y_mm = 63.450, layer = "B.Cu", via_id = "v_therm_mux_out_adc_to_mux_detour" },
+  { x_mm = 25.960, y_mm = 63.450, layer = "F.Cu", via_id = "v_therm_mux_out_adc_to_mux_detour" },
+  { x_mm = 25.510, y_mm = 63.000, layer = "F.Cu", anchor = "existing U5 THERM_MUX_OUT branch" },
 ]
 
 [[routes]]

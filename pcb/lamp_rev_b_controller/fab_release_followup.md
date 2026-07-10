@@ -13,6 +13,8 @@ Reconciled in `T-C7BBBEA3`:
 - Retired the optional heater-supply telemetry contract/test point and firmware fault promise; ADS1115 AIN1 is now an explicit no-connect spare.
 - Replaced the unimplemented synthetic ADC boundaries with direct functional connectivity: `THERM_MUX_OUT -> AIN0`, `LED_CURRENT_SENSE -> AIN2`, and `AUX_ANALOG_IN -> AIN3`. Existing divider filters, the low-impedance INA180 output, and the bounded auxiliary source make additional bridge components unnecessary.
 - Kept R25/R26 mandatory DNP and corrected their source/assembly descriptions: each footprint bypasses its heater MOSFET if populated and cannot measure current.
+- Promoted the three functional ADC routes from the preserved 982-segment / 171-via board only after per-net and combined scratch validation. `AUX_ANALOG_IN` adds three segments, `LED_CURRENT_SENSE` adds four segments and one via, and the reviewed `THERM_MUX_OUT` B.Cu detour adds fourteen segments and one via. The final board is 1003 segments / 173 vias with the same 153 footprints, 22 layers, 74 parsed net-table entries, four zones, and 118 x 94 mm outline.
+- The stock Freerouting v2.1.0 runs were explicitly capped at 10 passes. Existing non-target copper was protected; two ADC candidates passed unchanged, while the thermistor candidate's only conflict at J23 pad 1 was corrected by moving its three-segment B.Cu corner below the pad pair. Final scratch validation `laminarforge_pcb_scratch_validate-1ff33130121f405a9231a5db848fa670` and structural diff `laminarforge_pcb_scratch_diff-2d8f4240ec8842998d8ef95707e0f575` report physical DRC `0`, active unconnected `0`, and a THERM_MUX_OUT open delta of `-1`.
 
 Completed through `T-49FD0ECC` and routing follow-up `T-3DFB93CC`:
 
@@ -47,8 +49,16 @@ Completed in routing/source-boundary follow-up `T-352986EA`:
 - Added a nineteenth DRC-clean schema-v2 route-reduction pass covering the `FRAME_TRIG_OUT` U1-to-TP/J17 bottom-layer tail. Physical DRC remains `0`; real unconnected items are reduced to `86`.
 - Added a twentieth DRC-clean schema-v2 route-reduction pass covering the `LED_EXC_PWM` U1-to-existing-U9/TP bottom-layer tail with a short F.Cu bridge over the `ESP_EN` programming-header branch. Physical DRC remains `0`; real unconnected items are reduced to `85`.
 
-Concrete follow-up to reach release:
+Final release evidence on the promoted board:
 
-1. Regenerate schematic/board outputs and close only the real functional-net opens with the reviewed stock Freerouting 10-pass scratch/import workflow.
-2. Require physical DRC `0`, active unconnected `0`, dangling route `0`, passing focused checks/build, reviewed ERC, clean BOM/CPL, and a green MCP fab-readiness gate before promotion.
-3. Add `lamp_rev_b_controller_fab_release` only after those gates are meaningful and green, then generate vendor Gerbers, drills, BOM, CPL, assembly notes, source snapshot, and review bundle.
+1. Fresh KiCad run `laminarforge_pcb_kicad_report_runner-6282ad5891594944a7202cd9c5c82483`: physical DRC `0`; raw unconnected `3`, all three reviewed identical-self-zone items; active unconnected `0`; ERC `154` raw.
+2. Item-scoped ERC review: `154` accepted (`153` embedded `LF_CAPTURE` annotations plus the intentional `LED_FAULT_N` singleton), blocking electrical findings `0`.
+3. Route report: DRC violations `0`, real unconnected `0`, dangling-route violations `0`, ignored self-zone items `3`.
+4. BOM/CPL/footprint run `laminarforge_pcb_bom_footprint_check-20260710T074630Z-999dd292d3f142f28b1944660588fcd4`: issue count `0`, missing BOM `0`, missing CPL `0`, footprint mismatches `0`, BOM exclusions `59`, CPL exclusions `86`.
+5. Constraint audit `pcb_constraints_1dcc0bb26ecc44bc901aed3560c5c451`: conflicts `0`, zone-rule mismatches `0`; the pre-existing advisory class/seed coverage findings remain non-release-blocking.
+6. Focused ERC/Freerouting tests: `7` passed. MCP LaminarForge release build: pass. Source contract check: `73` nets, `114` explicit vias, `165` named routes, fab-release blocking gaps `0`.
+7. Fresh fab-readiness run `laminarforge_pcb_fab_readiness_gate-20260710T075243Z-44f1872fe8714840a862b192d6c22626`: gate `pass`, ready for fab `true`, release blockers `0`.
+
+The deterministic Rev B controller package is ready for first-article fabrication. Any source or copper change invalidates this evidence and requires the same fresh gates before vendor release.
+
+The future vendor-release packaging command remains `lamp_rev_b_controller_fab_release`; it must consume this green evidence and vendor-reviewed assembly notes rather than recalculate or waive electrical readiness.

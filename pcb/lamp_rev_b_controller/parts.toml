@@ -619,7 +619,7 @@ symbol = "HEADER_1X06"
 footprint = "lcsc:PINHEADER_1X06_2.54MM"
 lcsc_part = "MANUAL"
 nets = ["+3V3_ANA", "GND", "AUX_ANALOG_IN", "I2C_SDA", "I2C_SCL"]
-verification = "External OPT101/TIA/light-leak diagnostic only. J23 pin 4 drives AUX_ANALOG_IN within 0-3.3 V from a <=10 kohm source; pin 3 is reserved no-connect on the first article."
+verification = "External OPT101/TIA/light-leak diagnostic only. J23 pins 3 and 4 are one direct AUX_ANALOG_IN node within 0-3.3 V from a <=10 kohm source; pin 3 preserves the routed ADC-side access and pin 4 is the external source contact."
 
 [[selected_parts]]
 id = "status_leds"

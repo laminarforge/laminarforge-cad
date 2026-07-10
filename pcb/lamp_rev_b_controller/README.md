@@ -55,7 +55,7 @@ Run through the LaminarForge MCP build tool:
 
 ## Current Release State
 
-The deterministic Rev B analog-front-end source is reconciled as a first-article release candidate. Fresh promoted-board ERC, DRC, connectivity, BOM/CPL, and fab-readiness results must remain green before ordering.
+The deterministic Rev B analog-front-end source and promoted copper are reconciled and pass the first-article fabrication gates. The fresh fab-readiness run `laminarforge_pcb_fab_readiness_gate-20260710T075243Z-44f1872fe8714840a862b192d6c22626` reports ready for fab with zero release blockers.
 
 Current validation state:
 
@@ -63,7 +63,7 @@ Current validation state:
 - ADS1115 AIN1 is an explicit schematic no-connect and un-netted board pad for the first article; firmware must never select it.
 - The unsupported heater-supply telemetry interface and its test point are retired. Rev B safety remains based on the physical `J24` cutoff loop, thermistor plausibility/over-temperature checks, and `AUX_IO0_THERMAL_CUTOFF_OK`.
 - `U1` pad 41 and all nine replicated exposed-pad lands are assigned directly to system `GND`; the existing exposed-pad spokes are also `GND`, and the preserved autoroute adds only the reviewed three-segment, one-via GND connection produced by the stock Freerouting workflow.
-- `routing_seed.toml` remains the durable generated-board seed; the canonical promoted board preserves the clean autorouted copper and its reviewed minimal U1 GND addition.
+- `routing_seed.toml` remains the durable generated-board seed at 114 explicit vias and 165 named routes. The canonical promoted board preserves the clean autorouted copper and reviewed U1 GND addition, then adds only the scratch-validated functional ADC closures for a final 1003 segments and 173 vias.
 - Source-boundary components are explicit in the Rev B source model: `FB1` sources `+3V3_ANA` from `+3V3`, `R55` sources `VDRV` from `VIN_PROTECTED` for the 12 V first article only, and `J24` carries the external high-current cutoff loop from `VIN_PROTECTED` to `VIN_HEATER`.
 
 Mandatory population and bring-up constraints:
@@ -73,4 +73,4 @@ Mandatory population and bring-up constraints:
 - `J24` requires an external normally-closed thermal cutoff or rated jumper before heater dummy-load tests; do not bridge `VIN_PROTECTED` to `VIN_HEATER` in copper.
 - The `LED_FAULT_N` ERC singleton is reviewed and intentional for this population: the selected LDD-700H has no native fault output, so R54 only reserves a pulled-up future-fault node.
 
-Do not send this package to a PCBA vendor until `lamp_rev_b_controller_erc_report` passes after item-scoped reviewed exceptions, fresh physical DRC and real unconnected counts remain zero, the MCP fab-readiness gate passes, and manual/DNP/no-substitution assembly notes are reviewed against the selected vendor.
+The electrical fabrication gate is green: physical DRC `0`, active unconnected `0`, dangling-route violations `0`, ERC blockers `0`, and BOM/CPL/footprint issues `0`. Before sending the package to a PCBA vendor, review the manual/DNP/no-substitution assembly notes against that vendor and rerun every gate if any source, placement, population, or copper changes.

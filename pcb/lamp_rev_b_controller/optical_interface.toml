@@ -51,7 +51,7 @@ population = "DNP or debug-populated until a camera module and firmware capture 
 [analog_optical_diagnostic]
 connector = "J_ANALOG_OPT"
 signals = ["+3V3_ANA", "GND", "AUX_ANALOG_IN", "I2C_SDA", "I2C_SCL"]
-notes = "Supports an external OPT101/photodiode/TIA or light-leak diagnostic without committing Rev B to photodiode readout. J23 pin 4 directly drives ADS1115 AIN3 and must stay within 0-3.3 V from a <=10 kohm source; J23 pin 3 is an explicit reserved no-connect."
+notes = "Supports an external OPT101/photodiode/TIA or light-leak diagnostic without committing Rev B to photodiode readout. J23 pins 3 and 4 are one direct AUX_ANALOG_IN node to ADS1115 AIN3 and must stay within 0-3.3 V from a <=10 kohm source; there is no conditioning boundary between them."
 
 [emc_layout]
 rules = [

@@ -549,10 +549,11 @@ notes = "Optional fan PWM/tach header."
 
 [[assignments]]
 reference = "J23"
-notes = "Analog optical diagnostic header. Pin 4 is the bounded 0-3.3 V, <=10 kohm AUX_ANALOG_IN source for ADS1115 AIN3. Pin 3 is an explicit unassigned no-connect spare on the first article."
+notes = "Analog optical diagnostic header. Pins 3 and 4 are the same bounded 0-3.3 V, <=10 kohm AUX_ANALOG_IN node: pin 3 preserves ADC-side manufacturing access and pin 4 is the external source contact for ADS1115 AIN3. No conditioning component or split net exists between them."
 [assignments.pins]
 "1" = "+3V3_ANA"
 "2" = "GND"
+"3" = "AUX_ANALOG_IN"
 "4" = "AUX_ANALOG_IN"
 "5" = "I2C_SDA"
 "6" = "I2C_SCL"
