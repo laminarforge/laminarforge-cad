@@ -7,8 +7,8 @@ schema_version = 2
 source_report = "pcb/lamp_rev_b_controller/reports/drc.json"
 max_local_top_route_mm = 4.0
 expected_segment_count = 25
-expected_via_count = 112
-expected_route_count = 163
+expected_via_count = 113
+expected_route_count = 165
 
 [[vias]]
 id = "v_gnd_therm_return_plane_1"
@@ -1242,6 +1242,17 @@ size_mm = 0.700
 drill_mm = 0.300
 intent = "Scratch-validated HEATER0_GATE In2 return west of R23 pad 1, avoiding the R21/R23 top-layer pad row."
 
+[[vias]]
+id = "v_heater0_gate_u6_in2_return"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+x_mm = 91.370
+y_mm = 44.430
+layers = ["F.Cu", "B.Cu"]
+size_mm = 0.700
+drill_mm = 0.300
+intent = "Scratch-validated HEATER0_GATE In2 perimeter return north of U6, closing the remaining gate-driver open without entering the obstructed F.Cu/VDRV corridor."
+
 [[routes]]
 id = "led_current_sense_u10_to_tp"
 phase = "5_optics_camera_interlocks"
@@ -1774,6 +1785,30 @@ intent = "Scratch-validated HEATER0_GATE F.Cu return stub from the west-side In2
 points = [
   { x_mm = 86.300, y_mm = 61.000, layer = "F.Cu", via_id = "v_heater0_gate_r23_in2_return" },
   { x_mm = 87.000, y_mm = 61.000, layer = "F.Cu", anchor = "R23:1" },
+]
+
+[[routes]]
+id = "heater0_gate_r20_to_u6_in2_perimeter_closure"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+width_mm = 0.300
+intent = "Scratch-validated In2.Cu perimeter dogleg from the accepted R20 entry via to the new U6 return via, bypassing the known F.Cu/VDRV collision."
+points = [
+  { x_mm = 96.000, y_mm = 54.700, layer = "In2.Cu", anchor = "v_heater0_gate_r20_in2_entry through-via" },
+  { x_mm = 100.000, y_mm = 54.700, layer = "In2.Cu" },
+  { x_mm = 100.000, y_mm = 44.430, layer = "In2.Cu" },
+  { x_mm = 91.370, y_mm = 44.430, layer = "In2.Cu", anchor = "v_heater0_gate_u6_in2_return through-via" },
+]
+
+[[routes]]
+id = "heater0_gate_u6_return_stub"
+phase = "3_heater_power"
+net = "HEATER0_GATE"
+width_mm = 0.300
+intent = "Scratch-validated F.Cu stub from the new In2 perimeter return via into U6 gate pad 7."
+points = [
+  { x_mm = 91.370, y_mm = 44.430, layer = "F.Cu", via_id = "v_heater0_gate_u6_in2_return" },
+  { x_mm = 91.370, y_mm = 45.430, layer = "F.Cu", anchor = "U6:7" },
 ]
 
 [[routes]]
