@@ -1,0 +1,140 @@
+[suite]
+schema_version = 1
+id = "LF-P0-CARTRIDGE-COUPONS"
+revision = "P0-R0"
+ticket = "T-A2021311"
+repository = "laminarforge-cad"
+source_artifacts = ["A-A1A77D11", "A-696CE730", "A-CE59D39F"]
+scope = "Dry, empty, nonsterile P0 engineering coupons and reusable fixture geometry only."
+design_status = "Proposed parametric CAD envelopes; not validated tolerances, manufacturing release values, assay conditions, or clinical claims."
+
+[generator]
+bin = "p0_cartridge_coupon_suite"
+verifier_bin = "p0_cartridge_coupon_verify"
+output_directory = "output/p0_cartridge_coupons"
+runtime_manifest = "output/p0_cartridge_coupons/manifest.json"
+default_stack_selection = "all"
+
+[shared_frame]
+length_mm = 86.0
+width_mm = 54.0
+key_notch_length_mm = 8.0
+key_notch_width_mm = 7.0
+registration_type = "round locating hole plus same-width relief slot"
+registration_hole_diameter_mm = 3.2
+registration_slot_width_mm = 3.2
+registration_slot_length_mm = 8.0
+datum_scheme = "3-2-1: three primary support pads, two secondary edge contacts, one tertiary end stop"
+fiducials = "three cross fiducials outside protected optical/fluidic fields"
+marking = "font-independent raised revision bar plus family-ID and stack-ID witness ladders"
+
+[proposed_geometry]
+minimum_seal_land_mm = 3.0
+channel_width_mm = 1.2
+paired_chamber_length_mm = 20.0
+paired_chamber_width_mm = 8.0
+nominal_meter_ul = 2.5
+notice = "These values size the P0 CAD and remain configurable. They are not universal positional or manufacturing tolerances and do not define assay conditions."
+
+[[material_stacks]]
+id = "coc_cop_target"
+role = "target-faithful COC/COP-centered engineering comparator"
+base_thickness_mm = 1.0
+spacer_thickness_mm = 0.14
+cover_thickness_mm = 0.20
+conditional = false
+selection_status = "material family only; exact grade and bond construction unresolved"
+
+[[material_stacks]]
+id = "pmma_control"
+role = "rapid-fabrication PMMA engineering control"
+base_thickness_mm = 1.5
+spacer_thickness_mm = 0.14
+cover_thickness_mm = 0.20
+conditional = false
+selection_status = "material family only; exact grade and bond construction unresolved"
+
+[[material_stacks]]
+id = "pet_comparator"
+role = "conditional all-film PET process comparator"
+base_thickness_mm = 0.25
+spacer_thickness_mm = 0.14
+cover_thickness_mm = 0.125
+conditional = true
+selection_status = "do not advance without traceable optical/diagnostic-grade evidence"
+
+[[families]]
+id = "material_contact"
+matrix_ids = ["M-02"]
+purpose = "Separate component and complete-stack contact wells for future non-biological compatibility screening."
+conditional = false
+
+[[families]]
+id = "optical_window"
+matrix_ids = ["M-01", "O-01"]
+purpose = "Paired optical ROIs, adhesive-edge witness, fiducials, and deliberate bubble/wrinkle failure-control geometry."
+conditional = false
+
+[[families]]
+id = "thermal_evaporation"
+matrix_ids = ["T-01"]
+purpose = "Paired 20-25 uL-class chamber geometry, fill bus, bubble witnesses, and heater/window registration."
+conditional = false
+
+[[families]]
+id = "bond_registration"
+matrix_ids = ["B-01", "R-01"]
+purpose = "Straight seams, corner, T-junction, narrow land, edge path, fiducials, and offset witness ladder."
+conditional = false
+
+[[families]]
+id = "metering_debris"
+matrix_ids = ["F-01", "F-02"]
+purpose = "Settling pocket, weir, barrier insert window, 2.5 uL nominal meter envelope, overflow, and delivery outlet."
+conditional = false
+
+[[families]]
+id = "vent_waste"
+matrix_ids = ["F-03"]
+purpose = "Captive headspace, splash baffles, membrane bond land/support, and empty-versus-absorbent waste comparator bay."
+conditional = false
+
+[[families]]
+id = "seal_backflow"
+matrix_ids = ["F-04"]
+purpose = "Pressure inlet, controlled-burst throat, collection chamber, reverse-flow labyrinth, and pressure port."
+conditional = false
+
+[[families]]
+id = "dual_lane_isolation"
+matrix_ids = ["F-05"]
+purpose = "Two physically isolated inlet, meter, 20-25 uL-class chamber, terminal waste, and vent paths."
+conditional = false
+
+[[families]]
+id = "swab_dock_retention"
+matrix_ids = ["H-01"]
+purpose = "Dry mechanical dock shell, shaft bore, hard stop, latch witnesses, tip pocket, and drainage proxy."
+conditional = false
+
+[[families]]
+id = "conditional_blister"
+matrix_ids = ["H-02"]
+purpose = "One conditional blister seal-land envelope, actuator target, captive puncture guard, outlet, and anti-rebound terminal."
+conditional = true
+
+[[families]]
+id = "sealed_containment"
+matrix_ids = ["C-01"]
+purpose = "Representative closed perimeter, fill closure, terminal vent capture, external witness moat, and tamper bridge."
+conditional = false
+
+[boundaries]
+no_wet_lab_chemistry = true
+no_pathogen_or_clinical_specimen = true
+no_vendor_sku_lock = true
+no_purchasing_authorization = true
+no_pcb_or_firmware_change = true
+no_clinical_manufacturing_or_shelf_life_validation_claim = true
+pet_is_conditional = true
+blister_is_conditional = true

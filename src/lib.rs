@@ -1,4 +1,5 @@
 pub mod lamp_rev_a_electrical;
+pub mod p0_cartridge_coupons;
 pub mod pcb;
 
 // Shared Dimensions for LAMP Device v1

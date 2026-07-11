@@ -33,6 +33,14 @@ path = "src/lib.rs"
 name = "diagnostic_cartridge"
 path = "src/bin/diagnostic_cartridge.rs"
 
+[[bin]]
+name = "p0_cartridge_coupon_suite"
+path = "src/bin/p0_cartridge_coupon_suite.rs"
+
+[[bin]]
+name = "p0_cartridge_coupon_verify"
+path = "src/bin/p0_cartridge_coupon_verify.rs"
+
 
 [[bin]]
 name = "enclosure"
