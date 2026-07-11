@@ -6,6 +6,18 @@ Electrical release evidence: `A-9F7C4851`
 
 This directory is the deterministic source for the Rev B controller carrier. The promoted copper/electrical design is fabrication-clean. Manufacturer-order readiness is a separate fail-closed state owned by `lamp_rev_b_controller_fab_release`.
 
+## Routing and release policy
+
+All routing and manufacturer-release work is governed by the mandatory [LaminarForge PCBA Routing and Release Standard](../../docs/pcba_routing_and_release_standard.md). The board-specific fixture and evidence are:
+
+- [`freerouting_benchmark.toml`](freerouting_benchmark.toml): pinned router/tool settings and the 1,200-second runtime cap;
+- [`freerouting_benchmark.md`](freerouting_benchmark.md): harness operation and determinism limitations;
+- [`benchmarks/freerouting_v2_1_0_pass_sweep.md`](benchmarks/freerouting_v2_1_0_pass_sweep.md) and its [JSON record](benchmarks/freerouting_v2_1_0_pass_sweep.json): exact 1→10→50 matrix evidence;
+- [`benchmarks/freerouting_v2_1_0_promotion.md`](benchmarks/freerouting_v2_1_0_promotion.md): first-clean promotion-attempt evidence; and
+- [`electrical_release_evidence.md`](electrical_release_evidence.md), [`fab_release.toml`](fab_release.toml), and [`release_manifest.toml`](release_manifest.toml): electrical, fabrication, and deterministic-package gates.
+
+These files specialize the general policy for Rev B; they do not replace it. Routing and SES validation remain scratch-only until every promotion gate passes.
+
 ## Locked first-article population
 
 - Variant: `rev_b_12v_first_article`; 5 assembled top-side PCBAs.
