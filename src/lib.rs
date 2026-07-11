@@ -1,6 +1,7 @@
 pub mod lamp_rev_a_electrical;
 pub mod p0_cartridge_coupons;
 pub mod pcb;
+pub mod swab_integrated_sealed_diagnostic_cartridge;
 
 // Shared Dimensions for LAMP Device v1
 //

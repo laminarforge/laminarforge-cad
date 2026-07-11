@@ -41,6 +41,14 @@ path = "src/bin/p0_cartridge_coupon_suite.rs"
 name = "p0_cartridge_coupon_verify"
 path = "src/bin/p0_cartridge_coupon_verify.rs"
 
+[[bin]]
+name = "swab_integrated_sealed_diagnostic_cartridge"
+path = "src/bin/swab_integrated_sealed_diagnostic_cartridge.rs"
+
+[[bin]]
+name = "swab_integrated_sealed_diagnostic_cartridge_verify"
+path = "src/bin/swab_integrated_sealed_diagnostic_cartridge_verify.rs"
+
 
 [[bin]]
 name = "enclosure"

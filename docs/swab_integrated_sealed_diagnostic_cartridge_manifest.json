@@ -1,0 +1,49 @@
+{
+  "schema_version": "1",
+  "publication_stem": "swab_integrated_sealed_diagnostic_cartridge",
+  "ticket": "T-588F689A",
+  "revision": "P1-INT-R0",
+  "source_artifacts": [
+    "A-A1A77D11",
+    "A-345211E9",
+    "A-696CE730",
+    "A-CE59D39F",
+    "A-BC05D7E3",
+    "A-EE7B1198",
+    "A-7C487534"
+  ],
+  "architecture_count": 1,
+  "architecture": "one irreversible two-plunger laminated-planar sealed disposable path",
+  "required_features": [
+    "permanently_closing_swab_entry",
+    "sealed_swab_elution_chamber",
+    "wash_pouch_cell",
+    "paired_reaction_fill_pouch_lobes",
+    "two_dry_reader_plungers",
+    "pressure_staged_one_way_planar_path",
+    "lysis_heater_region",
+    "two_dry_reagent_rehydration_regions",
+    "two_clear_amplification_optical_chambers",
+    "bubble_management_high_points",
+    "reader_thermal_optical_alignment_interfaces",
+    "terminal_one_way_waste_chamber",
+    "mechanically_confined_low_shedding_absorbent_pad",
+    "reserved_waste_headspace_and_splash_baffle",
+    "physically_separated_gas_only_hydrophobic_aerosol_barrier_vent"
+  ],
+  "excluded_features": [
+    "evaporation_or_desiccation_path",
+    "superabsorbent_gel",
+    "waste_heating",
+    "capture_wash_alternate",
+    "reusable_pump",
+    "reusable_wet_plumbing",
+    "alternate_flow_route"
+  ],
+  "output_contract": [
+    "output/swab_integrated_sealed_diagnostic_cartridge.stl",
+    "output/swab_integrated_sealed_diagnostic_cartridge.stp",
+    "output/swab_integrated_sealed_diagnostic_cartridge.usdz"
+  ],
+  "claim_boundary": "All dimensions, volumes, materials, and pressure values are proposed engineering envelopes and are not validated manufacturing, clinical, assay, shelf-life, disposal, or regulatory claims."
+}
