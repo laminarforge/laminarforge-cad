@@ -68,6 +68,7 @@ files = [
   "fabrication/lamp_rev_b_controller-board-stats.json",
   "fabrication/lamp_rev_b_controller.ipc-d-356",
   "assembly/lamp_rev_b_controller-bom.csv",
+  "assembly/lamp_rev_b_controller-seeed-bom.csv",
   "assembly/lamp_rev_b_controller-cpl.csv",
   "assembly/lamp_rev_b_controller-dnp.csv",
   "assembly/lamp_rev_b_controller-no-substitution.csv",

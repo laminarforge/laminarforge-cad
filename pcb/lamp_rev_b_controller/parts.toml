@@ -54,6 +54,8 @@ value = "ESP32-S3-WROOM-1-N16"
 symbol = "ESP32-S3-WROOM-1-N8"
 footprint = "lcsc:WIFIM-SMD_ESP32-S3-WROOM-1-N8"
 lcsc_part = "DigiKey 1965-ESP32-S3-WROOM-1-N16-ND"
+manufacturer = "Espressif Systems"
+manufacturer_part_number = "ESP32-S3-WROOM-1-N16"
 nets = ["+3V3", "GND", "USB_DP", "USB_DN", "ESP_EN", "ESP_GPIO0_BOOT", "UART0_TXD", "UART0_RXD", "I2C_SDA", "I2C_SCL", "SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N", "CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "SD_CS_N", "HEATER_ARM", "HEATER0_PWM", "HEATER1_PWM", "THERM_MUX_S0", "THERM_MUX_S1", "THERM_MUX_S2", "THERM_MUX_EN_N", "LED_EXC_PWM", "LED_EXC_EN", "LED_SYNC_OUT", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "LID_CLOSED_N", "CART_PRESENT_N", "AUX_IO0_THERMAL_CUTOFF_OK", "STATUS_RUN_LED", "STATUS_FAULT_LED", "SPARE_GPIO42"]
 verification = "Reuse the existing N8 land pattern only after padout is verified against ESP32-S3-WROOM-1-N16; value/MPN fields intentionally name N16."
 
@@ -99,9 +101,9 @@ module = "usb_programming_power"
 quantity = 2
 reference_prefix = "R"
 value = "100k/100k VBUS sense"
-symbol = "0805W8F1004T5E"
+symbol = "0805W8F1003T5E"
 footprint = "lcsc:R0805"
-lcsc_part = "C17514"
+lcsc_part = "C149504"
 nets = ["VBUS", "USB_VBUS_SENSE", "GND"]
 verification = "Scales VBUS into ESP32 GPIO/ADC-capable sense path; firmware uses only for mode detection."
 
@@ -137,7 +139,9 @@ reference_prefix = "D"
 value = "SMBJ18A footprint option"
 symbol = "SMBJ18A"
 footprint = "lcsc:SMB_L4.6-W3.6-LS5.3-RD"
-lcsc_part = "C149886"
+lcsc_part = "C151256"
+manufacturer = "Littelfuse"
+manufacturer_part_number = "SMBJ18A"
 nets = ["VIN_PROTECTED", "GND"]
 verification = "Select actual TVS voltage for 12 V or 24 V build before fab release."
 
@@ -186,6 +190,10 @@ value = "0805 ferrite bead / approved analog rail link from +3V3 to +3V3_ANA"
 symbol = "FB0805"
 footprint = "lcsc:R0805"
 lcsc_part = "select real 0805 ferrite before fab; 0R only as documented bring-up jumper"
+manufacturer = "Murata Electronics"
+manufacturer_part_number = "BLM21PG221SN1D"
+supplier = "LCSC"
+supplier_part_number = "C85840"
 nets = ["+3V3", "+3V3_ANA"]
 verification = "FB1 is the only physical source for +3V3_ANA. Route +3V3 to FB1 pin 1 and +3V3_ANA from FB1 pin 2; C5 remains on +3V3_ANA."
 
@@ -206,12 +214,14 @@ id = "vin_buck_input_cap_50v"
 module = "power_entry"
 quantity = 1
 reference_prefix = "C"
-value = "22uF 50V VIN buck input"
+value = "22uF 25V VIN buck input for locked 12V first article"
 symbol = "CL31A226KAHNNNE"
 footprint = "lcsc:C1206"
-lcsc_part = "source 50V X7R before 24V population"
+lcsc_part = "C5672"
+manufacturer = "Samsung Electro-Mechanics"
+manufacturer_part_number = "CL31A226KPHNNNE"
+verification = "The locked Rev B first article is 12 V, so the 25 V X5R part is acceptable here. Any future 24 V population requires a new footprint-qualified >=50 V input capacitor and fresh release gates."
 nets = ["VIN_PROTECTED", "GND"]
-verification = "Voltage rating must be >=50V for any 24V input population; existing 25V MLCC is not acceptable on VIN."
 
 [[selected_parts]]
 id = "five_v_buck_output_cap"
@@ -270,6 +280,10 @@ value = "0R VDRV feed link from VIN_PROTECTED, 12 V population only"
 symbol = "JUMPER_0805_0R"
 footprint = "lcsc:R0805"
 lcsc_part = "source real 0R 0805 before fab; DNP for any 24 V build"
+manufacturer = "UNI-ROYAL"
+manufacturer_part_number = "0805W8F0000T5E"
+supplier = "LCSC"
+supplier_part_number = "C17477"
 nets = ["VIN_PROTECTED", "VDRV"]
 verification = "R55 is populated only for the 12 V first-article build. 24 V builds require this link DNP and an approved VIN_PROTECTED-to-VDRV 12 V regulator path."
 
@@ -306,6 +320,10 @@ value = "10k 0.1%"
 symbol = "0805W8F1002T5E"
 footprint = "lcsc:R0805"
 lcsc_part = "DigiKey A105700-ND"
+manufacturer = "Yageo"
+manufacturer_part_number = "RT0805BRD0710KL"
+supplier = "LCSC"
+supplier_part_number = "C110775"
 nets = ["+3V3_ANA", "THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7"]
 verification = "Reference resistors for stocked 10K NTC dividers."
 
@@ -330,6 +348,8 @@ value = "2-pin NTC header"
 symbol = "HEADER_1X02"
 footprint = "lcsc:PINHEADER_1X02_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61300211121"
 nets = ["THERM_CH_0", "THERM_CH_1", "THERM_CH_2", "THERM_CH_3", "THERM_CH_4", "THERM_CH_5", "THERM_CH_6", "THERM_CH_7", "GND"]
 verification = "Individual prototype NTC connectors; key/lock family to be selected before release."
 
@@ -342,6 +362,10 @@ value = "TC4427ACOA/TC4427EPA"
 symbol = "TC4427ACOA"
 footprint = "lcsc:SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL"
 lcsc_part = "DigiKey TC4427EPA-ND or C636886 SMD alternate"
+manufacturer = "Microchip Technology"
+manufacturer_part_number = "TC4427ACOA"
+supplier = "LCSC"
+supplier_part_number = "C636886"
 nets = ["VDRV", "GND", "HEATER_ARM", "HEATER0_PWM", "HEATER1_PWM", "HEATER0_GATE", "HEATER1_GATE"]
 verification = "Dual gate-driver topology; Rev B first article may use SMD alternate or hand adapter for stocked DIP driver."
 
@@ -354,6 +378,8 @@ value = "IRLB3813PBF TO-220 12V prototype"
 symbol = "IRLB3813PBF"
 footprint = "lcsc:TO-220-3_VERTICAL"
 lcsc_part = "DigiKey IRLB3813PBF-ND"
+manufacturer = "Infineon Technologies"
+manufacturer_part_number = "IRLB3813PBF"
 nets = ["HEATER0_GATE", "HEATER1_GATE", "HEATER0_LOW", "HEATER1_LOW", "GND"]
 verification = "12 V bench heater only. Populate >=60 V MOSFET option before claiming 24 V robustness."
 
@@ -387,9 +413,11 @@ module = "heater_drive"
 quantity = 2
 reference_prefix = "R"
 value = "33R"
-symbol = "0805W8F1000T5E"
+symbol = "RC0805FR-0733RL"
 footprint = "lcsc:R0805"
-lcsc_part = "C17408"
+lcsc_part = "DigiKey 311-33.0CRCT-ND"
+manufacturer = "Yageo"
+manufacturer_part_number = "RC0805FR-0733RL"
 nets = ["HEATER0_GATE", "HEATER1_GATE"]
 verification = "Series resistors close to MOSFET gates."
 
@@ -423,9 +451,9 @@ module = "optics_control"
 quantity = 1
 reference_prefix = "R"
 value = "0R LED_SUPPLY feed link from VIN_PROTECTED"
-symbol = "0805W8F1000T5E"
+symbol = "0805W8F0000T5E"
 footprint = "lcsc:R0805"
-lcsc_part = "C17408"
+lcsc_part = "C17477"
 nets = ["VIN_PROTECTED", "LED_SUPPLY"]
 verification = "Population link for the LDD-H input rail; replace with rated protection if optical-head current or harness data require it."
 
@@ -471,9 +499,9 @@ module = "optics_control"
 quantity = 1
 reference_prefix = "R"
 value = "100k LED DIM pulldown"
-symbol = "0805W8F1004T5E"
+symbol = "0805W8F1003T5E"
 footprint = "lcsc:R0805"
-lcsc_part = "C17514"
+lcsc_part = "C149504"
 nets = ["LED_DIM_DRIVE", "GND"]
 verification = "Reset/default-off bias so LDD-H DIM is low unless explicitly driven."
 
@@ -486,6 +514,8 @@ value = "0.1R 1% >=1W LED current shunt"
 symbol = "WSL2512R1000FEA"
 footprint = "lcsc:R2512"
 lcsc_part = "manual or assembler-sourced 2512 0.1R >=1W"
+manufacturer = "Vishay Dale"
+manufacturer_part_number = "WSL2512R1000FEA"
 nets = ["LED_DRV_PLUS", "LED_PLUS"]
 verification = "Series high-side output shunt between LDD +Vout and external LED_PLUS; Kelvin routing required in final route."
 
@@ -534,6 +564,8 @@ value = "LED NTC/ID header"
 symbol = "HEADER_1X04"
 footprint = "lcsc:PINHEADER_1X04_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61300411121"
 nets = ["THERM_CH_5", "AUX_ANALOG_IN", "+3V3_ANA", "GND"]
 verification = "LED heatsink thermistor and optional module ID resistor."
 
@@ -546,6 +578,8 @@ value = "External camera sync header"
 symbol = "HEADER_1X06"
 footprint = "lcsc:PINHEADER_1X06_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61300611121"
 nets = ["GND", "+3V3", "FRAME_TRIG_OUT", "EXPOSURE_ACTIVE_IN", "LED_SYNC_OUT", "SPARE_GPIO42"]
 verification = "Camera-host sync/logging interface for the mandatory external USB/CSI camera path."
 
@@ -558,6 +592,8 @@ value = "SPI/FIFO camera module header"
 symbol = "HEADER_2X06"
 footprint = "lcsc:PINHEADER_2X06_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61301221121"
 nets = ["SPI_SCLK", "SPI_MOSI", "SPI_MISO", "CAM_CS_N", "CAM_FRAME_INT", "CAM_RESET_N", "CAM_PWDN_N", "I2C_SDA", "I2C_SCL", "+3V3", "GND"]
 verification = "Optional embedded camera path; no direct DVP on stocked non-PSRAM N16 module."
 
@@ -570,6 +606,8 @@ value = "Lid/cartridge/cutoff interlock header"
 symbol = "HEADER_1X06"
 footprint = "lcsc:PINHEADER_1X06_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61300611121"
 nets = ["LID_CLOSED_N", "CART_PRESENT_N", "LATCH_LOCKED_N", "AUX_IO0_THERMAL_CUTOFF_OK", "+3V3", "GND"]
 verification = "Switch harness remains connectorized."
 
@@ -582,6 +620,8 @@ value = "Fan PWM/tach header"
 symbol = "HEADER_1X04"
 footprint = "lcsc:PINHEADER_1X04_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61300411121"
 nets = ["FAN_PWM", "FAN_TACH", "+5V", "GND"]
 verification = "Optional fan interface for LED/dark-reader airflow."
 
@@ -594,6 +634,8 @@ value = "2x3 UART/programming header"
 symbol = "HEADER_2X03"
 footprint = "lcsc:PINHEADER_2X03_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61300621121"
 nets = ["GND", "+3V3", "UART0_TXD", "UART0_RXD", "ESP_EN", "ESP_GPIO0_BOOT"]
 verification = "+3V3 is sense only unless explicitly jumpered."
 
@@ -606,6 +648,8 @@ value = "I2C expansion header"
 symbol = "HEADER_1X04"
 footprint = "lcsc:PINHEADER_1X04_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61300411121"
 nets = ["I2C_SDA", "I2C_SCL", "+3V3", "GND"]
 verification = "RTC/FRAM/debug expansion; check I2C address conflicts."
 
@@ -618,6 +662,8 @@ value = "Analog optical diagnostic header"
 symbol = "HEADER_1X06"
 footprint = "lcsc:PINHEADER_1X06_2.54MM"
 lcsc_part = "MANUAL"
+manufacturer = "Wurth Elektronik"
+manufacturer_part_number = "61300611121"
 nets = ["+3V3_ANA", "GND", "AUX_ANALOG_IN", "I2C_SDA", "I2C_SCL"]
 verification = "External OPT101/TIA/light-leak diagnostic only. J23 pins 3 and 4 are one direct AUX_ANALOG_IN node within 0-3.3 V from a <=10 kohm source; pin 3 preserves the routed ADC-side access and pin 4 is the external source contact."
 

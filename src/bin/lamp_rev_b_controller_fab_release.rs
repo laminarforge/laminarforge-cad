@@ -217,6 +217,7 @@ struct SelectedPart {
     id: String,
     quantity: u32,
     value: String,
+    symbol: String,
     footprint: String,
     lcsc_part: String,
     verification: String,
@@ -741,6 +742,7 @@ fn build_review_tree(
     normalize_generated_files(stage)?;
     copy_release_sources(root, stage, release_config)?;
     write_bom_cpl(stage, parts, placement, release_config)?;
+    write_seeed_quote_bom(stage, parts, placement, release_config)?;
     let validation = validate_electrical_and_assembly(
         stage,
         source_commit,
@@ -1360,6 +1362,72 @@ fn write_bom_cpl(
         ])?;
     }
     no_sub.flush()?;
+    Ok(())
+}
+
+fn write_seeed_quote_bom(
+    stage: &Path,
+    parts: &PartsManifest,
+    placement: &PlacementPlan,
+    release: &ReleaseConfig,
+) -> Result<(), Box<dyn Error>> {
+    let mut by_part: BTreeMap<&str, Vec<&Placement>> = BTreeMap::new();
+    for item in &placement.placements {
+        by_part.entry(item.part_id.as_str()).or_default().push(item);
+    }
+    for placements in by_part.values_mut() {
+        placements.sort_by_key(|item| reference_order(&item.reference));
+    }
+
+    let path = stage.join("assembly/lamp_rev_b_controller-seeed-bom.csv");
+    let mut bom = csv::Writer::from_path(path)?;
+    bom.write_record([
+        "Designator",
+        "Manufacturer Part Number or Seeed SKU",
+        "Qty",
+        "Link",
+    ])?;
+    for part in &parts.selected_parts {
+        if release.assembly.dnp_part_ids.contains(&part.id) {
+            continue;
+        }
+        let placements = by_part
+            .get(part.id.as_str())
+            .ok_or_else(|| format!("part group {} has no placements", part.id))?;
+        let references = placements
+            .iter()
+            .map(|item| item.reference.as_str())
+            .collect::<Vec<_>>()
+            .join(",");
+        let mpn = if part.manufacturer_part_number.trim().is_empty() {
+            part.symbol.trim()
+        } else {
+            part.manufacturer_part_number.trim()
+        };
+        if mpn.is_empty()
+            || mpn.starts_with("HEADER_")
+            || matches!(mpn, "FB0805" | "JUMPER_0805_0R")
+        {
+            return Err(format!(
+                "Seeed quote BOM requires an exact MPN for populated part group {}",
+                part.id
+            )
+            .into());
+        }
+        let link = match supplier_fields(&part.lcsc_part) {
+            (supplier, supplier_part) if supplier == "LCSC" => {
+                format!("https://www.lcsc.com/product-detail/{supplier_part}.html")
+            }
+            _ => String::new(),
+        };
+        bom.write_record([
+            references,
+            mpn.to_string(),
+            placements.len().to_string(),
+            link,
+        ])?;
+    }
+    bom.flush()?;
     Ok(())
 }
 
