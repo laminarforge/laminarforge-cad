@@ -1381,12 +1381,7 @@ fn write_seeed_quote_bom(
 
     let path = stage.join("assembly/lamp_rev_b_controller-seeed-bom.csv");
     let mut bom = csv::Writer::from_path(path)?;
-    bom.write_record([
-        "Designator",
-        "Manufacturer Part Number or Seeed SKU",
-        "Qty",
-        "Link",
-    ])?;
+    bom.write_record(["Designator", "MPN", "Qty", "Link"])?;
     for part in &parts.selected_parts {
         if release.assembly.dnp_part_ids.contains(&part.id) {
             continue;
