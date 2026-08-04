@@ -14,7 +14,7 @@ A3 owns:
 - Gasket cross-section and locked nominal lid-groove dimensions.
 - Compression target, compression stops, and witness shims/coupons.
 - Gasket land surface finish, flatness, and cleaning-inspection assumptions.
-- No-cell leak, coupon burst, and repeated reconnection validation logic.
+- No-cell leak, coupon burst, and repeated gasket reassembly validation logic.
 - Gasket-specific open decisions for integrator, A2 lid/clamp, A4 DFM, and validation agents.
 
 A3 does not own carrier architecture, lid/clamp layout, disposable tubing route, port family, incubation control, or final CAD generator edits except where those features directly set gasket compression, retention, or test interfaces.
@@ -195,8 +195,8 @@ Minimum coupon set:
 | --- | --- | --- |
 | 20/25/30 squeeze ladder | Confirms visual and dimensional witness behavior | Measured compressed height agrees with shim labels. |
 | Leak coupon | Isolated small-volume liquid pressure check | No visible dye leak and stable pressure within the defined threshold. |
-| Burst coupon | Destructive margin test away from full cassette | Failure pressure recorded; failure mode is gasket extrusion, tear, or hardware lift, not ambiguous seepage. |
-| Reconnection coupon | Repeated assembly damage screen | Leak test passes at defined cycle counts with inspected gasket surface. |
+| Burst coupon | Destructive margin test away from full cassette | Target survival/lower bound recorded; failure pressure/mode only when a separately approved, fully rated ramp-to-failure is safely executed. |
+| Gasket reassembly coupon | Repeated closure/reassembly damage screen | Leak test passes at defined cycle counts with inspected gasket surface; this is not a fluid-connector cycle article. |
 | Soak coupon | Material and compression-set screen | Post-soak dimensions and visual condition recorded after planned incubation/cleaning exposure. |
 
 Witness coupons must be ticketed/artifacted with material lot, fastener torque-to-stop notes, photos/measurements, and test results. A passed CAD build alone is not gasket validation evidence.
@@ -224,7 +224,7 @@ Cleaning and handling:
 - Replace gaskets after visible cuts, compression cracking, permanent flattening outside supplier limits, contamination, or failed leak evidence.
 - Lubricant is not part of the baseline because culture-facing contamination risk is unresolved. If assembly damage requires lubricant, select a documented, biocompatibility-reviewed lubricant and repeat leak/coupon tests.
 
-## Leak, Burst, And Reconnection Test Logic
+## Leak, Burst, And Gasket Reassembly Test Logic
 
 All tests below are no-cell, nonhazardous-liquid validation gates. They do not certify sterility, AAV containment, or live-cell readiness.
 
@@ -233,10 +233,11 @@ All tests below are no-cell, nonhazardous-liquid validation gates. They do not c
 1. Dimensional inspection of groove depth, groove width, land finish, land/stop height, lid underside, and gasket free height.
 2. Dry closure to land/stop contact while reading dedicated witness coupons or cavities.
 3. Isolated leak-coupon test at nominal squeeze.
-4. Isolated per-slot loop leak tests on the cassette.
-5. Perimeter containment leak test without pressurizing the full cassette footprint.
-6. Coupon burst test.
-7. Reconnection cycle test.
+4. Coupon burst test on separate shielded hardware before the cassette is
+   hydraulically challenged.
+5. Isolated per-slot loop leak tests on the cassette.
+6. Perimeter containment leak test without pressurizing the full cassette footprint.
+7. Gasket closure/reassembly cycle test.
 8. Humid 37 C soak/conditioning followed by repeat leak test.
 
 ### Leak Test
@@ -269,16 +270,16 @@ Burst validation belongs on coupons or instrumented surrogate loops before the c
 Starting coupon burst target:
 
 - Pressurize a representative coupon loop in liquid to at least 3x the leak-test pressure or 100 kPa gauge (15 psi), whichever is greater.
-- Record failure pressure and failure mode.
-- Accept the first-article gasket direction only if failure occurs above the target without lid lift, fastener damage, or uncontrolled extrusion at the normal 25% squeeze stop.
+- Accept the first-article gasket direction only if the coupon reaches the target without leakage, uncontrolled extrusion, hardware damage, or relief/abort excursion at the normal 25% squeeze stop. Record survival as a lower bound of at least the target.
+- Continue to failure only under a separately approved method when the fully rated rig ceiling safely exceeds the anticipated failure. If executed, record failure pressure/mode; otherwise do not claim them and never exceed a fixture, instrument, relief, or abort limit merely to obtain failure.
 
 Do not use the full cassette perimeter loop as the first burst article. The clamp load from large-area pressure can dominate the result and damage the lid/carrier before the gasket failure mode is understood.
 
-### Reconnection Test
+### Gasket Reassembly Test
 
-Reconnection evidence is required because the cassette is reusable and organ-chip literature treats reversible assembly as a first-class interface risk.
+Gasket reassembly evidence is required because the cassette is reusable and organ-chip literature treats reversible assembly as a first-class interface risk.
 
-Starting reconnection plan:
+Starting gasket reassembly plan:
 
 | Cycle point | Action |
 | ---: | --- |
@@ -302,7 +303,7 @@ The 25-cycle first-article gate is a minimum. Escalate to 100 cycles if the cass
 | Surface finish | Resolve Ra 0.8 um liquid seal-land target and Ra 1.6 um hard maximum; Ra 0.4 um max if a gas/vacuum claim is added. | A4 drawing package/vendor. |
 | Leak-test pressure | Resolve two fail-closed liquid gates: isolated gasket qualification at max(35 kPa gauge, 1.5x maximum operating pressure), and installed-system proof at 1.5x maximum operating pressure below every installed component's qualified proof limit. | Validation agent to fixture and characterize compliance. |
 | Burst validation | Resolve to coupon/surrogate burst first; no full-cassette perimeter burst before structural review. | Validation agent/A2. |
-| Reconnection durability | Resolve 25-cycle first gate, escalate to 100 cycles when workflow or material uncertainty requires it. | Validation agent/integrator. |
+| Gasket reassembly durability | Resolve 25-cycle first gate, escalate to 100 cycles when workflow or material uncertainty requires it. | Validation agent/integrator. |
 | Wetted gasket use | Escalate: no gasket is approved as culture-fluid/AAV-contacting until material absorption, extractables, and cleaning compatibility are reviewed. | Integrator/fluid-path/biology owner. |
 | Lubrication | Escalate: baseline is dry assembly. Any lubricant requires compatibility review and repeated coupon tests. | A4/vendor/validation. |
 

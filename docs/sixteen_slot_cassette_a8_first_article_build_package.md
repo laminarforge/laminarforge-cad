@@ -36,6 +36,8 @@ any 16-slot first-article gate.
 | `src/bin/sixteen_slot_cassette_incubator_first_article.rs` | Active A5 integrated CAD generator and export source. |
 | `docs/sixteen_slot_cassette_a6_disposable_fluid_path_spec.md` | Controls disposable one-condition single-pass harness, G/M/W port roles, prime/debubble path, waste path, and run record. |
 | `docs/sixteen_slot_cassette_a7_no_cell_validation_fixture_spec.md` | Controls no-cell fixture architecture, test sequence, acceptance gates, and blockers before biology. |
+| `docs/sixteen_slot_cassette_no_cell_bench_validation_protocol.md` | Controls physical execution order, samples, equipment readiness, measurement decisions, acceptance, and failure response. |
+| `docs/sixteen_slot_cassette_no_cell_bench_validation_data_sheets.md` | Provides the controlled blank run record, raw-data tables, deviation form, and independent release matrix. |
 
 ## Locked Build Decisions
 

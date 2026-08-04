@@ -223,7 +223,7 @@ Required waste controls:
 
 Waste backflow/siphon testing is handed to A7 but must be physically possible from the A6 harness.
 
-## Dead-Volume And Dose-Recovery Model
+## Physical Hold-Up And Dose-Recovery Model
 
 Every disposable harness revision needs a volume ledger before biological use.
 
@@ -243,9 +243,12 @@ Record calculated and measured volume for:
 - Prime bypass.
 - Sample/QC loop if present.
 
-Initial engineering target: total unrecovered dead volume must be less than
-one chip dose or less than 10% of the formulated cassette condition volume,
-whichever is more conservative. Missing or failed recovery evidence blocks
+Initial engineering target: the one-sided upper bound on physical retained/
+hold-up volume, including recovery and measurement uncertainty, must be less
+than one chip dose or 10% of the formulated cassette condition volume,
+whichever is more conservative. Tracer mass non-closure is reported separately
+and cannot alone be relabeled hydraulic dead volume because adsorption and
+analytical loss are confounded. Missing or failed recovery evidence blocks
 expensive vector work; operator or integrator judgment cannot waive this gate.
 
 ## Flow Balance And Pressure Limits
@@ -259,7 +262,7 @@ Starting no-cell targets before live-cell planning:
 | Row flow balance | Row collected-volume CV <= 10% during no-cell multiplex flow. |
 | Slot flow balance | Slot collected-volume CV <=10% for the characterized nominal no-cell surrogate set. Actual-chip limits require a new evidence-backed gate after chip restriction data exists. |
 | Pressure drift | Stable within +/-5% after thermal and compliance stabilization. |
-| Pressure ceiling | Routine operation <=50% of the weakest validated leak/burst/connector limit. |
+| Pressure ceiling | Routine operation <=50% of the lowest credible temperature-derated failure/burst/connector limit after approved engineering margin, and no higher than any supplier-rated working pressure. The 1.5x installed proof checkpoint and a lone coupon result are not operating ratings. |
 | Installed-system leak test | No visible leak and <=5% pressure decay over 10 minutes at 1.5x selected maximum operating pressure, using liquid and remaining below every installed component's qualified proof-pressure limit. A selected component that cannot support the proof pressure fails selection. |
 | Isolated gasket qualification | A separate coupon or isolated gasket loop passes A3's max(35 kPa gauge, 1.5x maximum operating pressure) liquid gate. |
 | Bubble challenge | Introduced upstream bubble clears to waste without reaching a chip inlet witness during validated prime/debubble mode. Bubble volume and maximum clearing volume/time must be frozen in A7 before this gate is executable. |
