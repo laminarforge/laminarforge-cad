@@ -1,10 +1,12 @@
 # 16-Slot Cassette No-Cell Bench Validation Protocol
 
 Protocol ID: LF-CAS-A7-P001
-Revision: A0
+Revision: A1
 Ticket: T-D713D22E
 Digital baseline: fbb0006e9f5ad4fd02b2b0aecd88e4c043c54f6e
 Companion forms: docs/sixteen_slot_cassette_no_cell_bench_validation_data_sheets.md
+Readiness checklist: LF-CAS-A7-RC001 revision A0,
+docs/sixteen_slot_cassette_hp0_hp2_readiness_checklist.md
 
 ## Document Status
 
@@ -18,9 +20,10 @@ QMS-approved procedure and no physical execution is authorized yet. The current
 A7 CAD outputs are dry layout mockups: the surrogate and restriction pieces are
 solid, the bubble-station ports are not flow passages, and no quantitative
 dye/hold-up station exists. Full-cassette wet testing is blocked until hold
-points HP-0 through HP-2 are independently approved. HP-1 coupon and fixture
-qualification may begin only after HP-0 and the test-specific safety review are
-approved.
+points HP-0 through HP-2 are independently approved. Limited empty-bench
+commissioning may begin only after HP-0 and SAF-E01. HP-1 functional or gasket
+coupon wet qualification may begin only after the as-built checks close and
+SAF-E02 is independently approved.
 
 Core A7 execution uses only an approved nonhazardous, nonbiological liquid.
 Every fluid and cleaning agent requires an SDS, PPE/disposal review, and
@@ -113,11 +116,14 @@ independent cassette articles.
 | Metrology lead | Owns measurement methods, traceability, uncertainty budgets, and dimensional decision rules. |
 | Fluidics validation lead | Owns fixture commissioning, frozen stimuli, hydraulic execution, and raw data. |
 | Test operator | Executes the approved sequence without unapproved adjustment. |
-| Safety reviewer | Approves pressure containment, relief, shielding, spill capacity, and safe depressurization. |
-| Quality/release reviewer | Independently approves hold points, deviations, invalidations, retests, and final disposition. |
+| Safety reviewer | Independently approves pressure containment, relief, shielding, spill capacity, electrical separation, and safe depressurization; does not design, calculate, execute, or technically own the rig evidence being approved. |
+| Quality/release reviewer | Independently approves hold points, deviations, invalidations, retests, and final disposition; does not originate, calculate, execute, or technically own the evidence being approved. |
+| Records custodian | Owns the immutable executed-record location, access control, retention, native-file preservation, hashes, and manifest completeness. |
 
 The test operator may not self-approve a deviation, invalidation, acceptance
-limit change, or final release.
+limit change, or final release. The safety reviewer must be distinct from the
+pressure-rig designer and operator for the approved rig. The quality reviewer
+may own the gate decision, but not any technical input used to release it.
 
 ## 5. Test Articles And Minimum Sample Sizes
 
@@ -162,8 +168,14 @@ production chip-lot record.
 
 ## 6. Required Equipment And Measurement Capability
 
-Specific manufacturer and model selections belong in DS-02. Missing selection,
-range, calibration, or uncertainty is an HP-0 failure.
+Specific manufacturer/model downselection belongs in immutable DS-02A1. Final
+selected-equipment capability, ratings, calibration plan, and projected
+uncertainty belong in a new immutable DS-02A2; A2 cites but never mutates A1.
+Exact received serials, current certificates, as-found/as-left checks, and
+pre-SAF commissioning close in DS-02B. Post-SAF bubble/dye/evaporation method
+controls close later in DS-02C. Each stage cites its predecessor one way.
+Missing selection, range, calibration plan/state, or uncertainty is an HP-0
+failure.
 
 | Equipment class | Minimum quantity/capability | Release requirement |
 | --- | --- | --- |
@@ -195,10 +207,13 @@ met, use a tighter guard band or better method before execution.
 
 ### HP-0 — Controlled inputs frozen
 
-The quality reviewer must confirm every required value in DS-00 and DS-01
-before any article is wetted. Coupon/fixture qualification additionally needs
-the test-specific safety approval; full-cassette wet work additionally needs
-HP-1 and HP-2 approval:
+The quality reviewer must confirm every required value in DS-00 and DS-01 plus
+the immutable DS-02A1 downselection and DS-02A2 final-capability snapshots before HP-0 can
+pass. HP-0 itself authorizes no wet work. The controlled closure workflow and
+acquisition gaps are tracked in LF-CAS-A7-RC001 revision A0. SAF-E01 may then
+authorize only its exact bounded empty-bench commissioning scope. Functional or
+gasket coupons additionally require the as-built HP1-04 checks and SAF-E02;
+full-cassette wet work additionally needs HP-1 and HP-2 approval:
 
 - Released drawing set, STEP manifest, source commit, and calculation version.
 - Cassette, dock, lid, window, bulkhead, gasket, fastener, harness, surrogate,
@@ -274,7 +289,19 @@ HP-1 and HP-2 approval:
 An unset required value is not a deviation; it is an automatic NOT READY
 result.
 
+HP-0 must be closed in this order: define provisional performance and range
+requirements; downselect exact components and instruments; demonstrate selected
+ratings and measurement capability; then freeze final methods, limits,
+guard bands, calibration plans, and DS-01/DS-02A1/A2. A method cannot be called
+final before the selected hardware passes that cross-check.
+
 ### HP-1 — Functional bench and coupons qualified
+
+The actual gasket material lot and all production-intent HP-1 gasket coupons
+must first receive a limited independent incoming release against their
+controlled drawings, critical dimensions, finish, stop plane, materials, and
+traceability. This HP-1 article release does not replace HP-2 incoming
+inspection of the cassette set.
 
 - Functional flow-through nominal and fault coupons exist. The current solid
   CAD tokens do not qualify.
@@ -296,14 +323,15 @@ result.
   row-high-point, and chip-inlet witness positions demonstrates the frozen
   optical method's detection capability under representative lighting and
   pressure.
-- Pressure, balance, bubble, dye, temperature, torque, and dimensional
-  prechecks pass.
+- Pressure/safety, balance, temperature, clock, torque, and dimensional
+  prechecks pass in DS-02B before SAF-E02; bubble, dye, and evaporation method
+  controls pass separately in DS-02C after SAF-E02.
 - D7 closes at every required witness using the measured gasket lot.
 - Production-intent squeeze, isolated leak, and destructive burst coupons
   pass before the cassette is wetted.
 
-Execute the HP-1 coupon program in this order after HP-0 and the destructive-
-test safety approval:
+Execute the HP-1 coupon program in this order only after HP-0, SAF-E01 bounded
+empty-bench commissioning, the as-built HP1-04 safety checks, and SAF-E02:
 
 1. Measure the 20/25/30% squeeze-ladder references at every specified location
    and compare measured height/squeeze with the manufactured reference and D7
@@ -488,7 +516,8 @@ investigation before repetition and remains in the record.
 
 ### A7-1 — Incoming inspection
 
-1. Complete DS-00 through DS-04 and reconcile all serials, revisions, lots, and
+1. Reconcile DS-00/01, commissioned DS-02B, post-SAF DS-02C, HP-2 DS-03B, and immutable
+   DS-04A/DS-04B snapshots, including all serials, revisions, lots, and
    certificates.
 2. Inspect all seal, datum, optical, drain, connector, label, and handling
    regions under fixed lighting.
@@ -930,7 +959,7 @@ not incubator qualification.
   core HP-1.
 - Record per-position min/max/mean, temporal fluctuation, spatial range,
   overshoot, stabilization, recovery, condensate, and evaporation.
-- After exposure, repeat full DS-05 compression/closure, one installed proof
+- After exposure, repeat full DS-05B compression/closure, one installed proof
   hold, three nominal-flow intervals, label scan, window inspection, and
   corrosion/residue inspection.
 
@@ -963,7 +992,7 @@ revision.
 - A deliberately dirty control must produce its prospectively expected
   detectable/high response, and recovery controls must pass.
 - After the third cycle, repeat visual/dimensional inspection, label scan,
-  gasket inspection, full DS-05 compression/closure, one installed proof hold,
+  gasket inspection, full DS-05B compression/closure, one installed proof hold,
   three nominal-flow intervals, and one complete dye/hold-up trial using a
   newly identified clean disposable harness.
 

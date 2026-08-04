@@ -1,8 +1,10 @@
 # 16-Slot Cassette No-Cell Bench Validation Data Sheets
 
 Form set: LF-CAS-A7-P001-F
-Revision: A0
+Revision: A1
 Protocol: docs/sixteen_slot_cassette_no_cell_bench_validation_protocol.md
+Readiness checklist: LF-CAS-A7-RC001 revision A0,
+docs/sixteen_slot_cassette_hp0_hp2_readiness_checklist.md
 Ticket: T-D713D22E
 
 ## Use Instructions
@@ -32,6 +34,7 @@ closing a gate.
 | --- | --- |
 | Protocol ID/revision | |
 | Form-set revision | |
+| Readiness checklist ID/revision | LF-CAS-A7-RC001 revision A0 |
 | Run ID | |
 | Cassette serial/revision | |
 | Harness ID/revision, when applicable | |
@@ -49,6 +52,7 @@ closing a gate.
 | --- | --- |
 | Protocol ID/revision | |
 | Form-set revision | |
+| Readiness checklist ID/revision | LF-CAS-A7-RC001 revision A0 |
 | Ticket ID | |
 | Run ID | |
 | Claim level: FA-1 / DV-3 / manufacturing confirmation | |
@@ -242,9 +246,11 @@ not a sample cap.
 
 HP-0 disposition: __________
 Design authority/date: __________
+Fluidics validation lead/date: __________
 Metrology lead/date: __________
 Safety reviewer/date: __________
 Quality reviewer/date: __________
+Records custodian/date: __________
 
 ---
 
@@ -252,6 +258,34 @@ Quality reviewer/date: __________
 
 Duplicate equipment rows as needed; every instrument or safety function used by
 the run must have its own identity and disposition.
+
+Execute DS-02 as four separately signed immutable snapshots:
+
+- DS-02A1 records the exact downselection decision at HP0-15.
+- DS-02A2 cites A1 and records final selected-equipment capability, rating,
+  calibration plan, and uncertainty at HP0-15A.
+- DS-02B cites A2 and records exact received serials, current certificates,
+  as-found/as-left checks, and only the pre-SAF commissioning controls needed
+  before SAF-E02.
+- DS-02C cites B and SAF-E02 and records post-SAF bubble, dye, and evaporation
+  method controls before HP-1 release.
+
+Never append a later stage to, replace, or re-hash an earlier signed file. For
+DS-02A1/A2, mark as-found/as-left and both commissioning-control sections
+prospectively N/A with the stage basis. For DS-02B, mark the DS-02C control
+section prospectively N/A; sealed-blank/artificial-leak results belong only in
+DS-08. For DS-02C, copy the applicable exact equipment identities from B and
+mark unrelated rows prospectively N/A. Any blank required field is NOT READY.
+
+| Snapshot-control field | Entry |
+| --- | --- |
+| Stage: DS-02A1 downselection / DS-02A2 final capability / DS-02B pre-SAF commissioning / DS-02C post-SAF method controls | |
+| Snapshot record ID/revision | |
+| Configuration/P&ID/BOM identity | |
+| Immediate predecessor DS-02 record ID/revision/SHA-256; required for A2/B/C | |
+| SAF-E02 ID/revision/SHA-256; required only for DS-02C | |
+| Executed snapshot immutable location | |
+| Detached sidecar-manifest ID/location assigned before signing; sidecar records the final file hash after signing | |
 
 | Equipment ID | Function | Manufacturer/model/serial | Range/capacity | Resolution | Standard u / expanded U / k / coverage or budget link | Certificate/due date | Software/firmware | As-found check | As-left check | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -293,38 +327,107 @@ the run must have its own identity and disposition.
 | | E1 chamber reference/RH system, if applicable | | | | | | | | | |
 | | E1 sixteen-probe slot-plane set, if applicable | | | | | | | | | |
 
-### Control results
+### DS-02B pre-SAF commissioning controls
 
 | Control | Control/equipment ID and configuration | Required target/band | Before result | After result | u/U, k/coverage | Raw file/photo | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Pressure zero/span | | | | | | | |
 | Pressure-source isolation/no-active-makeup verification | | | | | | | |
-| Sealed-fixture matched blank | | | | | | | |
-| Artificial-leak positive control: calibrated rate/conductance | | | | | | | |
-| Artificial-leak expected response/signature | | | | | | | |
 | Relief/hard-cap/safe-vent functional check | | | | | | | |
 | Emergency-stop functional check | | | | | | | |
 | Burst-rig rating and shield check | | | | | | | |
 | Secondary-containment capacity and 110% calculation | | | | | | | |
 | Balance low/mid/high check | | | | | | | |
-| Evaporation-blank set readiness; simultaneous results in DS-09 | | | | | | | |
-| Bubble-volume check at reference pressure/temperature | | | | | | | |
-| Dye blank | | | | | | | |
-| Dye low/mid/high standards | | | | | | | |
-| Independent dye check | | | | | | | |
 | Temperature check | | | | | | | |
 | Clock/timestamp alignment | | | | | | | |
 | Spill/electrical-separation/PPE readiness | | | | | | | |
 
-HP-1 disposition: __________
+Sealed-blank and artificial-leak qualification are not DS-02 controls; execute
+and preserve them only in the dedicated DS-08 qualification records after
+SAF-E02.
+
+### DS-02C post-SAF method controls
+
+| Control | Control/equipment ID and configuration | Required target/band | Before result | After result | u/U, k/coverage | Raw file/photo | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Evaporation-blank set readiness; simultaneous campaign results remain in DS-09 | | | | | | | |
+| Bubble delivered-volume check at reference pressure/temperature | | | | | | | |
+| Dye blank | | | | | | | |
+| Dye low/mid/high standards and calibration fit/range | | | | | | | |
+| Independent dye check | | | | | | | |
+| Dye LOD/LOQ, recovery, and residual-method check | | | | | | | |
+
+### DS-02A1 HP-0 downselection disposition
+
+Required equipment downselected against provisional envelopes: __________
+HP0-E10 downselection package ID/revision: __________
+Sourcing/build lead/date: __________
+Metrology lead/date: __________
+Fluidics validation lead/date: __________
+Safety reviewer/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
+### DS-02A2 HP-0 final-capability disposition
+
+Predecessor DS-02A1 identity/hash verified unchanged: __________
+Selected equipment capability, ratings, calibration plan, and projected U demonstrated: __________
+HP0-E10 selection/capability package ID/revision: __________
+Metrology lead/date: __________
+Fluidics validation lead/date: __________
+Safety reviewer/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
+### DS-02B pre-SAF commissioning disposition
+
+Predecessor DS-02A2 identity/hash verified unchanged: __________
+SAF-E01 limited empty-bench authorization ID/revision/hash: __________
+DS-02B bounded commissioning disposition: __________
 Metrology lead/date: __________
 Fluidics lead/date: __________
 Safety reviewer/date: __________
-Quality reviewer/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
+SAF-E02 is a detached downstream authorization that may be issued only after
+the signed DS-02B snapshot and its sidecar hash exist. HP1-E09 is a later
+detached gate manifest and may reference DS-02B, DS-02C, and SAF-E02 one way;
+none is written back into DS-02B.
+
+### DS-02C post-SAF method-control disposition
+
+Predecessor DS-02B identity/hash verified unchanged: __________
+SAF-E02 as-built functional/gasket-coupon authorization ID/revision/hash: __________
+Bubble/dye/evaporation method-control disposition: __________
+Metrology lead/date: __________
+Fluidics validation lead/date: __________
+Safety reviewer/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
 
 ---
 
 ## DS-03 — Test Articles, Lots, And Pre-Inspection
+
+For each supplier-made custom part, identify the vendor FAI here and link the
+separate independent incoming/D8 record in the executed HP-2 manifest. Copying
+vendor results into an internal field does not create independent inspection.
+
+Execute DS-03A for the HP-1 functional articles, actual gasket lot, and
+production-intent coupon set. Execute a new DS-03B for HP-2 incoming parts and
+identity reconciliation. Each snapshot has its own signatures and detached
+sidecar hash; DS-03B may reference DS-03A but may not mutate it. Mark rows outside the selected stage
+with a prospectively approved N/A and basis rather than leaving them blank.
+
+| Snapshot-control field | Entry |
+| --- | --- |
+| Stage: DS-03A HP-1 article qualification or DS-03B HP-2 incoming | |
+| Snapshot record ID/revision | |
+| Configuration/article/lot scope | |
+| Predecessor DS-03A record ID/revision/SHA-256; required when applicable | |
+| Executed snapshot immutable location | |
+| Detached sidecar-manifest ID/location assigned before signing; sidecar records the final file hash after signing | |
 
 | Item ID | Class/function | Part/revision | Material/lot | Supplier | Characterization/FAI record | Assigned role/slot | Pre-inspection | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -360,9 +463,33 @@ Rev C spare count/measured/pass: __________
 Installed gasket assembly ID versus source-lot reconciliation: __________
 Multi-harness/single-use checkpoint manifest reconciliation: __________
 
+Snapshot disposition: __________
+Fluidics validation lead/date; required for DS-03A: __________
+Metrology lead/date: __________
+Supplier/build lead/date; required for DS-03B: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
 ---
 
 ## DS-04 — Incoming Inspection, Fit, Datum, Dock, And Visibility
+
+Execute three distinct immutable snapshots when applicable: DS-04A records
+HP-2 pre-hardware incoming condition; DS-04B records post-hardware incoming
+condition, fit, datum, dock, and visibility; DS-04C records the later HP-3
+assembled state. DS-04B must cite the DS-04A hash and DS-04C must cite DS-04B.
+Never add later measurements to, replace, or re-hash an earlier signed snapshot.
+Mark sections outside the selected snapshot with a prospectively approved N/A
+and basis rather than leaving required fields blank.
+
+| Snapshot-control field | Entry |
+| --- | --- |
+| Stage: DS-04A HP-2 pre-hardware / DS-04B HP-2 post-hardware and incoming fit / DS-04C HP-3 assembled state | |
+| Snapshot record ID/revision | |
+| Configuration and hardware-installation state | |
+| Predecessor DS-04 record ID/revision/SHA-256 | |
+| Executed snapshot immutable location | |
+| Detached sidecar-manifest ID/location assigned before signing; sidecar records the final file hash after signing | |
 
 ### Lane fit census
 
@@ -418,17 +545,54 @@ Multi-harness/single-use checkpoint manifest reconciliation: __________
 | Connector, label, handling, optical, gutter, and drain regions clear | | | | |
 | All identities/lots/certificates/calibration states reconciled | | | | |
 
-HP-2 disposition: __________
+### DS-04A pre-hardware disposition
+
+Pre-hardware incoming inspection disposition: __________
+Design authority/date: __________
 Metrology lead/date: __________
-Quality reviewer/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
+### DS-04B post-hardware/incoming-fit disposition
+
+Predecessor DS-04A identity/hash verified unchanged: __________
+Post-hardware/incoming-fit disposition: __________
+Design authority/date: __________
+Metrology lead/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
+HP2-E05 is a detached downstream gate manifest that may reference the signed
+DS-04A and DS-04B sidecar hashes one way; it is not written into either file.
+
+### DS-04C HP-3 assembled-state disposition
+
+Predecessor DS-04B identity/hash verified unchanged: __________
+HP-3 assembled-state disposition: __________
+Design authority/date: __________
+Metrology lead/date: __________
+Fluidics validation lead/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
 
 ---
 
 ## DS-05 — Closure, Fastener, Compression, And Settling
 
-The initial dry gate is closure/checkpoint 1; do not create a duplicate cycle-1
-record. Duplicate DS-05 only for checkpoints 5, 10, and 25 after the checkpoint-1
-record. Do not overwrite an earlier checkpoint.
+Execute DS-05A as a separate immutable HP-1 squeeze-ladder-only copy, marking
+the closure/HP-3 sections prospectively N/A. Execute DS-05B later for the HP-3
+closure/checkpoint-1 dry stack and cite DS-05A without modifying it. Duplicate
+DS-05B for checkpoints 5, 10, and 25; do not create a second cycle-1 record and
+never overwrite an earlier checkpoint.
+
+| Snapshot-control field | Entry |
+| --- | --- |
+| Stage: DS-05A HP-1 squeeze ladder or DS-05B HP-3/endurance closure | |
+| Snapshot record ID/revision | |
+| Gasket/closure/configuration identity | |
+| Predecessor DS-05A record ID/revision/SHA-256; required for DS-05B | |
+| Executed snapshot immutable location | |
+| Detached sidecar-manifest ID/location assigned before signing; sidecar records the final file hash after signing | |
 
 ### Gasket free-height lot map
 
@@ -510,12 +674,28 @@ Post-repeat-final window approval/time: __________
 
 | Reference | Article/material/lot | Target squeeze | Target compressed height | Measured height | U height | Calculated squeeze | U squeeze | k/coverage | Visual/functional result | Status |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
-| 20% | | 20% | | | | | | | | |
-| 25% | | 25% | | | | | | | | |
-| 30% | | 30% | | | | | | | | |
+| 20% | | 20% | 1.92 mm nominal | | | | | | | |
+| 25% | | 25% | 1.80 mm nominal | | | | | | | |
+| 30% | | 30% | 1.68 mm nominal | | | | | | | |
+
+### HP-1 squeeze-ladder subsection release
+
+This subsection, the linked D7 record, and its immutable attachments may close
+the squeeze-ladder part of HP-1 without completing the later HP-3 dry-stack
+fields on the separate DS-05B copy.
+
+DS-05A HP-1 squeeze-ladder snapshot ID/revision: __________
+Detached sidecar-manifest ID/location; sidecar records the final snapshot hash after signing: __________
+D7 actual-lot record ID/revision/SHA-256: __________
+HP-1 squeeze-ladder disposition: __________
+Design authority/date: __________
+Metrology lead/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
 
 Closure/dock/optical/drain status: __________
-HP-3 dry-stack disposition: __________
+DS-05B HP-3 dry-stack disposition: __________
+DS-05B detached sidecar-manifest ID/location: __________
 Operator/date: __________
 Independent verifier/date: __________
 Quality reviewer/date: __________
@@ -523,6 +703,20 @@ Quality reviewer/date: __________
 ---
 
 ## DS-06 — Harness Topology And Keepout Reconciliation
+
+Execute DS-06A as the immutable HP-1 functional-fixture/manifold topology
+snapshot. Execute DS-06B later as the immutable HP-3 cassette/harness topology
+snapshot. Each copy must identify its exact P&ID, BOM, port map, and predecessor;
+do not append HP-3 observations to DS-06A.
+
+| Snapshot-control field | Entry |
+| --- | --- |
+| Stage: DS-06A HP-1 fixture/manifold or DS-06B HP-3 cassette/harness | |
+| Snapshot record ID/revision | |
+| P&ID/BOM/port-map/configuration identity | |
+| Predecessor DS-06 record ID/revision/SHA-256, when applicable | |
+| Executed snapshot immutable location | |
+| Detached sidecar-manifest ID/location assigned before signing; sidecar records the final file hash after signing | |
 
 ### Common-source, sensing, safety, and containment topology
 
@@ -593,11 +787,27 @@ Quality reviewer/date: __________
 
 First verifier/date: __________
 Independent verifier/date: __________
-Topology disposition: __________
+Stage-specific topology disposition: __________
+Records custodian/date: __________
 
 ---
 
 ## DS-07 — Prime And Bubble Challenge
+
+Execute immutable DS-07A before P1 using only optical-method checks 1-3; mark
+the prime, bubble-trial, and checks 4-6 sections prospectively N/A with the stage
+basis. After DS-07A is signed and its detached sidecar hash exists, execute a
+new DS-07B for P1-P3 prime/bubble work and checks 4-6. DS-07B cites DS-07A but
+never copies results back into it.
+
+| Snapshot-control field | Entry |
+| --- | --- |
+| Stage: DS-07A pre-P1 optical method or DS-07B P1-P3/post-P3 campaign | |
+| Snapshot record ID/revision | |
+| Camera/lighting/optical/stimulus configuration identity | |
+| Predecessor DS-07A record ID/revision/SHA-256; required for DS-07B | |
+| Executed snapshot immutable location | |
+| Detached sidecar-manifest ID/location assigned before signing; sidecar records the final file hash after signing | |
 
 ### Prime record
 
@@ -681,7 +891,10 @@ verified stimulus under the frozen camera, lighting, and optical configuration.
 | 5 | After P3 | Row high point | | | | | | |
 | 6 | After P3 | Chip-inlet witness | | | | | | |
 
-Six-of-six optical method-check disposition/reviewer/date: __________
+DS-07A pre-P1 checks 1-3 three-of-three disposition/reviewer/date: __________
+DS-07A detached sidecar-manifest ID/location: __________
+DS-07B post-P3 checks 4-6 three-of-three disposition/reviewer/date: __________
+Combined six-of-six disposition from immutable DS-07A and DS-07B records/reviewer/date: __________
 
 Prime disposition: __________
 Bubble disposition: __________
@@ -1298,7 +1511,7 @@ Loaded map gate/reviewer/date: __________
 
 | Required repeat | Record reference | Result | Independent reviewer/date |
 | --- | --- | --- | --- |
-| Compression and post-repeat stability, DS-05 | | | |
+| Compression and post-repeat stability, DS-05B | | | |
 | Installed liquid integrity, DS-08A | | | |
 | Three-interval nominal flow, DS-09 | | | |
 | Label scan | | | |
@@ -1371,7 +1584,7 @@ Fresh-harness topology record/disposition: __________
 
 | Required repeat | Record reference | Result | Independent reviewer/date |
 | --- | --- | --- | --- |
-| Full closure/compression and post-repeat stability, DS-05 | | | |
+| Full closure/compression and post-repeat stability, DS-05B | | | |
 | Visual and dimensional inspection | | | |
 | Label scan | | | |
 | Declared gasket/land inspection | | | |
@@ -1394,18 +1607,18 @@ single-use full harness.
 
 Standalone gasket-reassembly-coupon ID / DS-08 checkpoint record: __________
 
-| Closure cycle | Gasket ID | Harness ID/role/connector class | Connector count | Open/inspect/reseat/close | Actual torque / driver / time | DS-05 pre/post-repeat stability | Damage/wear/label observation | Part changed? | Gasket-reassembly-coupon ref/result | Required checkpoint records | Status |
+| Closure cycle | Gasket ID | Harness ID/role/connector class | Connector count | Open/inspect/reseat/close | Actual torque / driver / time | DS-05B pre/post-repeat stability | Damage/wear/label observation | Part changed? | Gasket-reassembly-coupon ref/result | Required checkpoint records | Status |
 | ---: | --- | --- | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | | H1 full-core / | | | | | | | | DS-05/06/07/08/09 P1-P3 | |
+| 1 | | H1 full-core / | | | | | | | | DS-05B/06B/07B/08/09 P1-P3 | |
 | 2 | | | | | | | | | | | |
 | 3 | | | | | | | | | | | |
 | 4 | | | | | | | | | | | |
-| 5 | | H5 checkpoint-only or designated reconnect harness / | | | | | | | | DS-05/06/07/08/09 | |
+| 5 | | H5 checkpoint-only or designated reconnect harness / | | | | | | | | DS-05B/06B/07B/08/09 | |
 | 6 | | | | | | | | | | | |
 | 7 | | | | | | | | | | | |
 | 8 | | | | | | | | | | | |
 | 9 | | | | | | | | | | | |
-| 10 | | H10 checkpoint-only or designated reconnect harness / | | | | | | | | DS-05/06/07/08/09 | |
+| 10 | | H10 checkpoint-only or designated reconnect harness / | | | | | | | | DS-05B/06B/07B/08/09 | |
 | 11 | | | | | | | | | | | |
 | 12 | | | | | | | | | | | |
 | 13 | | | | | | | | | | | |
@@ -1420,7 +1633,7 @@ Standalone gasket-reassembly-coupon ID / DS-08 checkpoint record: __________
 | 22 | | | | | | | | | | | |
 | 23 | | | | | | | | | | | |
 | 24 | | | | | | | | | | | |
-| 25 | | H25 checkpoint-only or designated reconnect harness / | | | | | | | | DS-05/06/07/08/09 | |
+| 25 | | H25 checkpoint-only or designated reconnect harness / | | | | | | | | DS-05B/06B/07B/08/09 | |
 
 Any replacement and counter reset: __________
 HP-6 endurance disposition: __________
@@ -1472,10 +1685,12 @@ Quality approval/date: __________
 
 | Gate | Required evidence | Result | Deviation/retest links | Independent reviewer/date |
 | --- | --- | --- | --- | --- |
-| HP-0 controlled inputs | DS-00/01 | | | |
-| HP-1 functional bench/coupons/controls | DS-02/03/08 | | | |
-| HP-2 incoming metrology | DS-03/04 | | | |
-| HP-3 fit/compression/topology | DS-04/05/06 | | | |
+| HP-0 controlled inputs | DS-00/01, immutable DS-02A1 downselection and DS-02A2 final-capability snapshots, and exact HP0-E12 manifest with configuration ID, revision, and SHA-256 | | | |
+| SAF-E01 limited empty-bench commissioning authorization | HP0-E08/HP0-E12, exact as-designed P&ID/BOM/fluid/pressure boundary, authorized limits, expiry triggers, and independent SR/QR signatures | | | |
+| SAF-E02 as-built functional/gasket-coupon authorization | SAF-E01 plus DS-02B as-built dry inspection and bounded commissioning results; exact rig/configuration, permitted limits, expiry triggers, and independent SR/QR signatures | | | |
+| HP-1 functional bench/coupons/controls | HP0-E12 and SAF-E01/02; immutable DS-02B/DS-02C/DS-03A/DS-05A/DS-06A snapshots; immutable DS-07A pre-P1 checks 1-3 only; DS-08 sealed blank/artificial leak/isolated gasket/burst/reassembly qualification only; DS-10A/B characterization only; exact HP1-E09 manifest with predecessor IDs/hashes and configuration identity | | | |
+| HP-2 incoming metrology | HP0-E12; immutable DS-03B, DS-04A pre-hardware, and DS-04B post-hardware/incoming-fit snapshots; vendor FAI; independent D8 report; exact HP2-E05 manifest with predecessor IDs/hashes and configuration identity | | | |
+| HP-3 fit/compression/topology | Separate immutable DS-04C, DS-05B, and DS-06B snapshots linked to their HP-2/HP-1 predecessors | | | |
 | P1 local A7-4/5/6/7 approval before downstream work | DS-07/08/09/09C | | | |
 | P2 local A7-4/5/6/7 approval before downstream work | DS-07/08/09/09C | | | |
 | P3 local A7-4/5/6/7 approval before downstream work | DS-07/08/09/09C | | | |
@@ -1494,10 +1709,57 @@ Quality approval/date: __________
 | Correct claim level and limitations stated | Final report | | | |
 | HP-7 complete record, closed evidence, and final release | DS-16 | | | |
 
+### Detached prerequisite-gate manifests
+
+Duplicate exactly one subsection below into a separate executed gate-manifest
+page when that gate closes. Do not fill all three on one evolving DS-16 page.
+Each manifest references predecessor sidecar hashes one way and receives its
+own detached sidecar hash after signing. Signed source forms and gate manifests
+must not be reopened to add downstream hashes.
+
+#### HP0-E12
+
+Manifest ID/revision: __________
+Detached sidecar-manifest ID/location assigned before signing: __________
+Configuration identity and predecessor sidecar hashes reconciled: __________
+HP-0 disposition: __________
+Design authority/date: __________
+Fluidics validation lead/date: __________
+Metrology lead/date: __________
+Safety reviewer/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
+#### HP1-E09
+
+Manifest ID/revision: __________
+Detached sidecar-manifest ID/location assigned before signing: __________
+HP0-E12, SAF-E01/02, configuration identity, and scoped predecessor sidecar hashes reconciled: __________
+HP-1 disposition: __________
+Design authority/date: __________
+Fluidics validation lead/date: __________
+Metrology lead/date: __________
+Safety reviewer/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
+#### HP2-E05
+
+Manifest ID/revision: __________
+Detached sidecar-manifest ID/location assigned before signing: __________
+HP0-E12, configuration identity, vendor FAI, independent D8, and predecessor sidecar hashes reconciled: __________
+HP-2 disposition: __________
+Design authority/date: __________
+Metrology lead/date: __________
+Independent quality reviewer/date: __________
+Records custodian/date: __________
+
 ### Final record manifest
 
 Use one row per file or immutable record; never place multiple unhashed files in
-one aggregate cell. Duplicate rows until the manifest is complete.
+one aggregate cell. Duplicate rows until the manifest is complete. After DS-16
+is signed, create a detached final sidecar manifest that also records the hash
+of the signed DS-16 file; never reopen DS-16 to add its own hash.
 
 | Record class | Test/preparation/cycle linkage | File path or record ID | Capture/export timestamp | SHA-256 | Immutable storage ID | Reviewer/date |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -1514,7 +1776,7 @@ one aggregate cell. Duplicate rows until the manifest is complete.
 | | | | | | | |
 | | | | | | | |
 
-Manifest file path/ID and SHA-256: __________
+Detached final sidecar-manifest ID/location assigned before DS-16 signing: __________
 Manifest completeness reviewer/date: __________
 
 ### HP-7 final record review

@@ -38,6 +38,7 @@ any 16-slot first-article gate.
 | `docs/sixteen_slot_cassette_a7_no_cell_validation_fixture_spec.md` | Controls no-cell fixture architecture, test sequence, acceptance gates, and blockers before biology. |
 | `docs/sixteen_slot_cassette_no_cell_bench_validation_protocol.md` | Controls physical execution order, samples, equipment readiness, measurement decisions, acceptance, and failure response. |
 | `docs/sixteen_slot_cassette_no_cell_bench_validation_data_sheets.md` | Provides the controlled blank run record, raw-data tables, deviation form, and independent release matrix. |
+| `docs/sixteen_slot_cassette_hp0_hp2_readiness_checklist.md` | Assigns HP-0 through HP-2 owners, evidence packages, dependencies, acquisition gaps, and gate-closing actions. |
 
 ## Locked Build Decisions
 
@@ -226,7 +227,7 @@ A8 adopts the A7 acceptance gates as build-release gates:
 | Harness map | Every port, row, slot, and waste path traceable to the run record. |
 | Prime | 16/16 paths prime with no visible bubble at chip inlet witnesses. |
 | Bubble challenge | Calibrated, preapproved bubble stimulus clears to W1/W3 within the frozen clearing volume/time without reaching chip inlet witnesses; unset stimulus/limits fail. |
-| Leak | Installed system has no visible dye leak and <=5% pressure decay over 10 minutes at 1.5x maximum operating pressure; representative isolated gasket loop also passes A3 qualification. |
+| Leak | Installed system has no visible dye leak and guard-banded decay `100 x (P0 - P10) / P0 <= 5%` at 1.5x maximum operating pressure, using no active makeup, at least 661 s acquisition, P0 mean over t = 0-60 s, and P10 mean over t = 600-660 s; representative isolated gasket loop also passes A3 qualification. |
 | Flow balance | Row and slot CV are each <=10% for the characterized nominal surrogate set; pressure drift is within +/-5% after stabilization. |
 | Restriction detection | Independently characterized nominal, low, high, blocked, and bypass coupons remain in band and produce signatures separated by at least three combined standard uncertainties. |
 | Dead volume | Recovery reconciles within +/-10%; unrecovered volume is below the A6 target with no discretionary waiver. |

@@ -204,12 +204,15 @@ Acceptance:
 - Fill the isolated loop with dyed liquid or the selected leak-test fluid.
 - Stabilize the fixture for thermal and compliance effects.
 - Pressurize to the selected no-cell leak-test pressure.
-- Hold for 10 minutes while logging pressure and inspecting leak-witness regions.
+- After source isolation, acquire at least 661 seconds while inspecting
+  leak-witness regions. Use the protocol-defined mean differential-pressure
+  windows at t = 0-60 seconds and t = 600-660 seconds; their centers are exactly
+  10 minutes apart.
 
 Acceptance:
 
 - No visible dyed leak at chip interfaces, gasket perimeter, bulkhead, connector handoffs, waste handoff, or drain paths.
-- Pressure decay is <=5% over 10 minutes after stabilization.
+- Pressure decay calculated from the two protocol-defined window means is <=5%.
 - The installed system is tested at 1.5x selected maximum operating pressure using liquid and below every installed component's qualified proof-pressure limit. A selected part that cannot support that pressure fails selection.
 - A separate representative gasket coupon or isolated gasket loop passes A3's max(35 kPa gauge, 1.5x maximum operating pressure) qualification gate.
 - Routine planned operation must remain <=50% of the lowest credible temperature-derated failure/burst/connector limit after approved engineering margin and must not exceed a supplier-rated working pressure. The 1.5x installed proof checkpoint and a lone coupon result are margin evidence, not operating ratings.
@@ -295,7 +298,7 @@ The first-article cassette can move from A7 into media-only planning only when a
 | Harness map | Every port, row, slot, and waste path traceable to the run record. |
 | Prime | 16/16 paths prime with no visible bubble at chip inlet witnesses. |
 | Bubble challenge | Calibrated, preapproved bubble stimulus clears to W1/W3 within the frozen clearing volume/time without reaching chip inlet witnesses; unset stimulus/limits fail. |
-| Leak | Installed system has no visible dye leak and <=5% pressure decay over 10 minutes at 1.5x maximum operating pressure; representative isolated gasket loop also passes A3 qualification. |
+| Leak | Installed system has no visible dye leak and guard-banded decay `100 x (P0 - P10) / P0 <= 5%` at 1.5x maximum operating pressure, using no active makeup, at least 661 s acquisition, P0 mean over t = 0-60 s, and P10 mean over t = 600-660 s; representative isolated gasket loop also passes A3 qualification. |
 | Flow balance | Row and slot CV are each <=10%; every lane/row/mean/total and measured-input recovery stays within frozen bands; pressure drift passes its relative or near-zero absolute rule. |
 | Restriction detection | Independently characterized flowing coupons remain in finite bands, blocked coupons meet one-sided limits, and predictive signatures meet the frozen three-standard-uncertainty separation rule. |
 | Recovery/hold-up | Tracer recovery reconciles within +/-10%; the separate physical hold-up upper bound is below the A6 target with no discretionary waiver. |

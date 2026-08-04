@@ -251,8 +251,8 @@ Starting per-loop leak target:
 | Test medium | DI water with visible dye or equivalent nonhazardous tracer. |
 | Isolated gasket-interface qualification pressure | 35 kPa gauge (5 psi) or 1.5x the selected maximum expected cassette fluid-interface pressure, whichever is greater, only for an isolated small-volume gasket loop or representative coupon. |
 | Installed-system proof pressure | 1.5x the selected maximum operating pressure, using liquid and remaining below every installed component's qualified proof-pressure limit. A component that cannot support this proof pressure fails selection. |
-| Hold time | 10 minutes after pressure stabilization. |
-| Pressure-decay acceptance | <=5% decay after thermal stabilization, unless fixture compliance characterization sets a tighter threshold. |
+| Acquisition | After pressure and thermal stabilization, acquire at least 661 seconds. P0 is the mean over t = 0-60 s and P10 is the mean over t = 600-660 s. |
+| Pressure-decay acceptance | Guard-banded decay `100 x (P0 - P10) / P0 <= 5%`, with no active pressure makeup and the approved compliance/temperature controls. |
 | Visual acceptance | No visible dye in adjacent slot, optical window area, drain gutter, perimeter gutter, or underside witness paper. |
 | Documentation | Record loop ID, gasket lot, squeeze witness, start/end pressure, hold time, visible result, and operator. |
 
