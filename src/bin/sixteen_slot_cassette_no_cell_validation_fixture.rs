@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use laminarforge_cad::{REVC_CHIP_LENGTH, REVC_CHIP_WIDTH};
+use laminarforge_cad::{sixteen_slot_cassette_a0::*, REVC_CHIP_LENGTH, REVC_CHIP_WIDTH};
 use vcad::{centered_cube, centered_cylinder, Part};
 
 // A10 first-pass CAD for the 16-slot cassette no-cell validation fixture.
@@ -25,30 +25,9 @@ const OUTPUTS: [&str; 9] = [
     "output/no_cell_fixture/sixteen_slot_no_cell_validation_fixture_assembly.stl",
 ];
 
-const COLS: usize = 4;
-const ROWS: usize = 4;
-const SLOT_COUNT: usize = COLS * ROWS;
-
-const CHIP_GUTTER_X: f64 = 7.0;
-const CHIP_GUTTER_Y: f64 = 7.0;
-const SLOT_PITCH_X: f64 = REVC_CHIP_LENGTH + CHIP_GUTTER_X;
-const SLOT_PITCH_Y: f64 = REVC_CHIP_WIDTH + CHIP_GUTTER_Y;
-const SLOT_ARRAY_X: f64 = COLS as f64 * REVC_CHIP_LENGTH + (COLS as f64 - 1.0) * CHIP_GUTTER_X;
-const SLOT_ARRAY_Y: f64 = ROWS as f64 * REVC_CHIP_WIDTH + (ROWS as f64 - 1.0) * CHIP_GUTTER_Y;
-
-const CARRIER_MARGIN_X: f64 = 58.0;
-const CARRIER_MARGIN_Y: f64 = 52.0;
-const CARRIER_X: f64 = SLOT_ARRAY_X + CARRIER_MARGIN_X * 2.0;
-const CARRIER_Y: f64 = SLOT_ARRAY_Y + CARRIER_MARGIN_Y * 2.0;
-const CARRIER_Z: f64 = 24.0;
-const LID_Z: f64 = 10.0;
-const CASSETTE_STACK_Z: f64 = CARRIER_Z + LID_Z + 5.0;
-
 const DECK_X: f64 = CARRIER_X + 360.0;
 const DECK_Y: f64 = CARRIER_Y + 430.0;
 const DECK_Z: f64 = 18.0;
-const NEST_RAIL_W: f64 = 16.0;
-const NEST_RAIL_Z: f64 = 18.0;
 const FRONT_RETENTION_LIP_Z: f64 = 8.0;
 const COLLECTION_VIAL_DIA: f64 = 18.0;
 const COLLECTION_VIAL_DEPTH: f64 = 12.0;
@@ -61,6 +40,7 @@ const WASTE_LEVELS: usize = 3;
 const BUBBLE_WINDOWS: usize = 5;
 
 fn main() {
+    validate_contract().expect("invalid 16-slot A0 interface contract");
     assert_fixture_contract();
     fs::create_dir_all(OUTPUT_DIR).expect("failed to create output/no_cell_fixture");
 
@@ -106,7 +86,7 @@ fn main() {
     println!("  Output count:           {}", OUTPUTS.len());
     println!("  Slot map:               {COLS} x {ROWS} ({SLOT_COUNT} slots)");
     println!("  Deck envelope:          {DECK_X:.1} x {DECK_Y:.1} x {DECK_Z:.1} mm");
-    println!("  Cassette envelope ref:  {CARRIER_X:.1} x {CARRIER_Y:.1} x {CASSETTE_STACK_Z:.1} mm stack");
+    println!("  Cassette envelope ref:  {CARRIER_X:.1} x {CARRIER_Y:.1} x {CASSETTE_CLOSED_STACK_Z:.1} mm stack");
     println!("  Pressure points:        upstream, R1-R4 rows, and waste/backpressure");
     println!("  Collection positions:   {SLOT_COUNT} labeled S01-S16 vial nests");
     println!("  Restriction coupons:    nominal, low, high, blocked, bypass");
@@ -428,34 +408,34 @@ fn nest_reference_rails() -> Part {
     let rear = centered_cube(
         "sixteen_slot_no_cell_fixture_rear_datum_rail",
         CARRIER_X + 30.0,
-        NEST_RAIL_W,
-        NEST_RAIL_Z,
+        DOCK_RAIL_W,
+        DOCK_RAIL_Z,
     )
     .translate(
         0.0,
-        CARRIER_Y / 2.0 + NEST_RAIL_W / 2.0 + 8.0,
-        DECK_Z / 2.0 + NEST_RAIL_Z / 2.0,
+        DOCK_REAR_RAIL_CENTER_Y,
+        DECK_Z / 2.0 + DOCK_RAIL_Z / 2.0,
     );
     let left = centered_cube(
         "sixteen_slot_no_cell_fixture_left_datum_rail",
-        NEST_RAIL_W,
+        DOCK_RAIL_W,
         CARRIER_Y + 30.0,
-        NEST_RAIL_Z,
+        DOCK_RAIL_Z,
     )
     .translate(
-        -(CARRIER_X / 2.0 + NEST_RAIL_W / 2.0 + 8.0),
+        DOCK_LEFT_RAIL_CENTER_X,
         0.0,
-        DECK_Z / 2.0 + NEST_RAIL_Z / 2.0,
+        DECK_Z / 2.0 + DOCK_RAIL_Z / 2.0,
     );
     let front_lip = centered_cube(
         "sixteen_slot_no_cell_fixture_front_low_retention_lip",
         CARRIER_X + 30.0,
-        10.0,
+        DOCK_FRONT_LIP_W,
         FRONT_RETENTION_LIP_Z,
     )
     .translate(
         0.0,
-        -(CARRIER_Y / 2.0 + 20.0),
+        DOCK_FRONT_LIP_CENTER_Y,
         DECK_Z / 2.0 + FRONT_RETENTION_LIP_Z / 2.0,
     );
     rear + left + front_lip
@@ -798,22 +778,8 @@ fn rectangular_frame(name: &str, x: f64, y: f64, z: f64, wall: f64) -> Part {
     outer - inner
 }
 
-fn slot_center(row: usize, col: usize) -> (f64, f64) {
-    (
-        centered_index(col, COLS, SLOT_PITCH_X),
-        centered_index(row, ROWS, SLOT_PITCH_Y),
-    )
-}
-
-fn slot_number(row: usize, col: usize) -> usize {
-    row * COLS + col + 1
-}
-
-fn centered_index(index: usize, count: usize, pitch: f64) -> f64 {
-    (index as f64 - (count as f64 - 1.0) / 2.0) * pitch
-}
-
 fn assert_fixture_contract() {
+    validate_contract().expect("active 16-slot A0 interface contract must be valid");
     assert_eq!(SLOT_COUNT, 16);
     assert_eq!(OUTPUTS.len(), 9);
     assert_eq!(PRESSURE_SENSOR_COUNT, 6);
@@ -849,6 +815,32 @@ mod tests {
         assert_eq!(BUBBLE_WINDOWS, 5);
         assert_eq!(WASTE_LEVELS, 3);
         assert_eq!(RUN_RECORD_BARCODE_LANDS, 6);
+    }
+
+    #[test]
+    fn fixture_uses_shared_a0_dimensions_and_closed_stack() {
+        const TOLERANCE: f64 = 1e-9;
+
+        assert!((CHIP_GUTTER_X - 24.0).abs() < TOLERANCE);
+        assert!((CHIP_GUTTER_Y - 24.0).abs() < TOLERANCE);
+        assert!((SLOT_PITCH_X - 151.76).abs() < TOLERANCE);
+        assert!((SLOT_PITCH_Y - 109.48).abs() < TOLERANCE);
+        assert!((CARRIER_X - 699.04).abs() < TOLERANCE);
+        assert!((CARRIER_Y - 541.92).abs() < TOLERANCE);
+        assert!((CASSETTE_CLOSED_STACK_Z - 41.35).abs() < TOLERANCE);
+    }
+
+    #[test]
+    fn nest_rail_inner_faces_contact_the_carrier_envelope() {
+        const TOLERANCE: f64 = 1e-9;
+
+        let rear_inner_face = DOCK_REAR_RAIL_CENTER_Y - DOCK_RAIL_W / 2.0;
+        let left_inner_face = DOCK_LEFT_RAIL_CENTER_X + DOCK_RAIL_W / 2.0;
+        let front_inner_face = DOCK_FRONT_LIP_CENTER_Y + DOCK_FRONT_LIP_W / 2.0;
+
+        assert!((rear_inner_face - CARRIER_Y / 2.0).abs() < TOLERANCE);
+        assert!((left_inner_face + CARRIER_X / 2.0).abs() < TOLERANCE);
+        assert!((front_inner_face + CARRIER_Y / 2.0).abs() < TOLERANCE);
     }
 
     #[test]

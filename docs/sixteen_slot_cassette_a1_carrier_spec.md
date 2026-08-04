@@ -14,14 +14,17 @@ This is not a production drawing, sterile-barrier claim, live-cell release crite
 | Experimental unit | One cassette equals one AAV capsid/promoter/payload/dose/timing/media condition. Slots are readouts/replicates, not separate AAV candidates. |
 | Active CAD baseline | `sixteen_slot_cassette_incubator_first_article`. |
 | Carrier role | Reusable dry structural fixture. Wetted-path contact remains disposable commercial tubing/connectors or separately validated chip/fluid components. |
-| Carrier envelope | 648.04 x 466.92 x 24.00 mm. |
+| Carrier base body | 699.04 x 541.92 x 24.00 mm. |
+| Carrier true overall bounds | 699.04 x 541.92 x 31.35 mm, including the 7.35 mm closure-plane lands and stops above the 24.00 mm base body. |
 | Coordinate origin | Center of 16-slot array, per A0. |
-| Datum policy | Rear rail primary, left rail secondary, front low lip plus four datum bosses tertiary/assembly reference. |
+| Datum policy | Datum A is the carrier bottom plane seated directly on the dock support plane. The dock rear- and left-rail inner faces contact the nominal rear and left carrier edges, and the front lip contacts the nominal front edge. D1 is the functional round locator, D2 is the functional relieved locator, and D3/D4 are clearance/witness features. |
 | Material direction | CNC-machined 6061-T651 or 6061-T6 aluminum plate, clear anodized after DFM review; no sterile/wetted claim. |
 
 ## Slot And Pocket Geometry
 
 A1 preserves the A0 slot centers and row-major slot numbering. Slot centers are basic dimensions from the A0 interface contract and must not be changed by the carrier agent.
+
+The machine-readable A0 contract uses a 24.00 x 24.00 mm inter-chip gutter, 151.76 mm X pitch, 109.48 mm Y pitch, and a 583.04 x 413.92 mm centered array. The four X center coordinates are -227.64, -75.88, 75.88, and 227.64 mm; the four Y center coordinates are -164.22, -54.74, 54.74, and 164.22 mm.
 
 ### Pocket Function
 
@@ -63,39 +66,39 @@ The A1 carrier uses deterministic physical registration while avoiding overconst
 
 | Datum | Physical feature | A1 requirement |
 | --- | --- | --- |
-| A | Carrier bottom plane / dock support plane | Establish carrier Z seating and flatness reference. |
-| B | Carrier rear edge against dock rear rail | Primary in-plane datum; machined in same setup as pocket array when practical. |
-| C | Carrier left edge against dock left rail | Secondary in-plane datum; machined square to datum B. |
-| Tertiary | Front low retention lip | Prevents gross front lift/walkout without fighting B/C rails. |
-| Assembly references | Four corner datum bosses at A0 coordinates | Preserve boss locations; do not treat all four holes as simultaneous hard locators. |
+| A | Carrier bottom plane seated directly on dock support plane | Establish carrier Z seating and flatness reference; no intermediate spacer or recess offset is part of the active stack. |
+| B | Nominal carrier rear edge against dock rear-rail inner face | Primary in-plane datum; machined in same setup as pocket array when practical. |
+| C | Nominal carrier left edge against dock left-rail inner face | Secondary in-plane datum; machined square to datum B. |
+| Retention feature, not a datum | Nominal carrier front edge against front low retention lip | Prevents gross front lift/walkout without competing with the A/B/C datum scheme. |
+| Assembly references | Four corner datum bosses at A0 coordinates | Only D1 and D2 locate. D3/D4 remain clearance/witness features and must not create a four-pin constraint. |
 
 A0 datum boss centers remain locked:
 
 | Datum boss | X | Y | A1 role |
 | --- | ---: | ---: | --- |
-| D1 front-left | -289.02 | -198.46 | Primary precision round hole for lid/tooling alignment. |
-| D2 front-right | 289.02 | -198.46 | Secondary slotted/relieved locator or slip-clearance hole to avoid overconstraint. |
-| D3 rear-left | -289.02 | 198.46 | Clearance/witness hole for lid/dock presence and assembly check. |
-| D4 rear-right | 289.02 | 198.46 | Clearance/witness hole for lid/dock presence and assembly check. |
+| D1 front-left | -335.52 | -204.96 | Primary precision round hole for lid/tooling alignment. |
+| D2 front-right | 335.52 | -204.96 | Secondary relieved locator to avoid overconstraint. |
+| D3 rear-left | -335.52 | 204.96 | Clearance/witness hole for lid/dock presence and assembly check. |
+| D4 rear-right | 335.52 | 204.96 | Clearance/witness hole for lid/dock presence and assembly check. |
 
 ### Pin And Hole Implementation
 
 | Feature | A1 decision |
 | --- | --- |
-| Nominal dowel family | 6 mm stainless ground dowel pins. |
+| Nominal dowel family | Replaceable 6 mm stainless ground dowel pins carried by D1/D2 lid seats; the fit-check surrogate is 5.80 mm diameter. |
 | Boss diameter | 18.00 mm baseline preserved. |
 | Boss height | 6.00 mm above carrier top baseline preserved. |
 | Carrier bores | Reamed after rough drilling where they control alignment. |
-| Round locating hole | 6 mm H7 slip-fit style hole, verified after finish or masked during finish. |
-| Secondary locator | Slotted or diamond/relieved geometry around 6 mm pin preferred for the second locator. If the current round-bore CAD is retained for prototype STL, drawing notes must call out the intended relieved locator behavior. |
-| Remaining holes | Clearance/witness only; do not use all four as press-fit hard locators. |
-| Press fits | Avoid permanent press-fit pins in the carrier unless the integrator assigns a matched-lid or dock assembly strategy. Press-fit pins may live in replaceable mating tooling instead. |
+| Round locating hole | D1 uses a 6 mm H7 slip-fit style hole, verified after finish or masked during finish. |
+| Secondary locator | D2 uses the A0 10.00 x 6.00 X-oriented slot around the 6 mm pin. The drawing must preserve that functional relief. |
+| Remaining holes | D3/D4 use 9.00 mm clearance/witness bores; do not use all four as press-fit hard locators. |
+| Press fits | No permanent or integral carrier pins. D1/D2 pins are replaceable mating hardware seated 4.00 mm into the lid; the current surrogate extends 3.35 mm below the lid and engages the carrier boss by 2.00 mm. |
 
 Datum hole position, perpendicularity, and cylindricity should use GD&T in the drawing set. A1 starting targets for vendor discussion are:
 
 - D1 true position: 0.10 mm relative to datums A/B/C.
 - D2 true position/slot center: 0.15 mm relative to datums A/B/C and D1.
-- D3/D4 witness hole position: 0.30 mm unless later promoted to functional locators.
+- D3/D4 witness hole position: 0.30 mm; they remain non-locating clearance/witness features.
 - Pocket array true position: 0.25 mm relative to datums A/B/C.
 
 Final tolerances remain DFM/vendor-confirmed because carrier size, material stock, anodize thickness, and selected inspection method affect achievable cost.
@@ -106,13 +109,24 @@ The A1 carrier body remains a single reusable dry structural plate.
 
 | Feature | Requirement |
 | --- | --- |
-| Envelope | 648.04 x 466.92 x 24.00 mm. |
-| Slot array | 532.04 x 362.92 mm centered in carrier. |
-| Margins | 58.00 mm per side in X; 52.00 mm per side in Y. |
-| Perimeter mount pattern | Preserve A0 six-position carrier perimeter pattern unless integrator revises the dock/lid stack. |
-| Top features | Chip pockets, gasket lands, per-slot label lands, datum bosses, leak gutter, service relief lands. |
+| Base-body dimensions | 699.04 x 541.92 x 24.00 mm. |
+| True overall bounds | 699.04 x 541.92 x 31.35 mm. Do not call the 24.00 mm base thickness the overall Z bound. |
+| Slot array | 583.04 x 413.92 mm centered in carrier. |
+| Margins | 58.00 mm per side in X; 64.00 mm per side in Y. |
+| Lid fastener interface | Preserve the A0 16-position pattern outside the gutter: side X = +/-332.52 mm at the four slot-center Y values; front/rear Y = +/-247.96 mm at the four slot-center X values. Add matching 3.30 mm carrier-side M4 tap-drill/pilot receiver placeholders at all 16 centers. |
+| Top features | Chip pockets; sixteen independent, nonoverlapping per-slot gasket lands; perimeter gasket land; nine internal and distributed perimeter hard stops; label lands outside the leak gutter; datum bosses; leak gutter; and 7.00 mm-high service relief lands below closure. Service lands preserve an 11.00 mm-radius keepout at every datum, and D1-D4 bores are final subtraction features after all unions. |
 | Bottom features | Flat seating plane plus future handling/lift lands only; no hidden fluid channels. |
 | Structural policy | Carrier shall not be counted as a sterile wetted part. |
+
+Seal geometry on the carrier is no longer an open or overlapping prototype layout. Each of the sixteen loops has a 145.76 x 103.48 mm outer boundary, 129.76 x 87.48 mm inner boundary, 8.00 mm width, and 7.35 mm height, with 6.00 mm clear between adjacent outer edges. The perimeter land is 629.04 x 459.92 mm outer, 605.04 x 435.92 mm inner, 12.00 mm wide, and also 7.35 mm high. Both seal families meet the lid underside on the common 7.35 mm nominal closure/chip-top plane; the 2.40 mm gasket compresses to the 1.80 mm lid-groove depth rather than spanning a gap above a shorter land.
+
+The obsolete four-corner-stop pattern around every slot is replaced by nine
+4.00 mm-diameter internal hard stops at the 3 x 3 inter-slot gap intersections:
+X = -151.76, 0.00, 151.76 mm and Y = -109.48, 0.00, 109.48 mm. Distributed
+perimeter stops remain 4.00 mm wide and centered in the 5.00 mm
+seal-to-gutter web. Every stop tops out at 7.35 mm and no stop may intersect a
+seal. Final thread or insert hardware remains open, but the carrier must retain
+the locked 3.30 mm pilot-receiver geometry at each of the 16 lid fasteners.
 
 ### Material And Finish
 
@@ -134,8 +148,9 @@ A1 preserves leak capture as a visible witness and containment feature, not a va
 | Feature | A1 requirement |
 | --- | --- |
 | Perimeter leak gutter | Continuous rectangular gutter inside the carrier perimeter and outside the slot/gasket functional zones. |
-| Current gutter basis | A0 rectangular frame cut, 7.00 mm width, positioned inside carrier. |
-| Drain port | 8.00 mm diameter side-drilled feature near the front-right carrier corner. |
+| Gutter geometry | Rectangular frame with 651.04 x 481.92 mm outer bounds, 639.04 x 469.92 mm inner bounds, 6.00 mm width, and 3.00 mm depth. |
+| Separation from perimeter land | A 5.00 mm intact web separates the gutter inner edge from the 629.04 x 459.92 mm perimeter land outer edge. |
+| Drain port | 8.00 mm diameter, centered at X = 315.52, Y = -254.96, Z = 10.00 mm, with 40.00 mm length along Y. |
 | Drain role | Route visible drips/condensate/leak-test liquid to a collection witness point without contacting chips or labels. |
 | Drain interface | Keep accessible from the dock front/right service side and compatible with a removable collection tube or absorbent witness pad. |
 | Cleanability | No blind pockets that trap liquid outside visible inspection surfaces. |
@@ -164,10 +179,10 @@ Carrier identity must survive assembly handling and must link the physical casse
 
 | Surface | Requirement |
 | --- | --- |
-| Global cassette/condition label land | Add or reserve a front-left dry margin land outside gasket/leak features, minimum 90 x 24 mm, readable when docked. |
+| Global cassette/condition label lands | Preserve the 96.00 x 12.00 barcode land at (-271.52, -263.96) mm and the 118.00 x 10.00 text land at (-159.52, -263.96) mm in the front dry margin, entirely outside the leak gutter and clear of the front fastener/receiver row. |
 | Machine-readable code | Prefer 2D Data Matrix or QR on the global land; barcode format finalization remains build-package scope. |
 | Human-readable text | Reserve adjacent text area for cassette ID and short condition ID. |
-| Per-slot label lands | Preserve current 26.00 x 10.00 per-slot lands for slot number/witness marks, not full condition metadata. |
+| Per-slot label lands | Preserve the 26.00 x 10.00 per-slot lands in the rear dry margin outside the leak gutter for slot number/witness marks, not full condition metadata. |
 | Orientation mark | Add a visible front-left orientation mark tied to slot 1 and datum B/C. |
 | RFID | Optional only; reserve physical space if selected, but do not require RFID for A1 carrier release. |
 
@@ -182,7 +197,7 @@ The carrier must be movable without touching chip windows, gasket lands, tubing 
 - Reserve long-edge dry handling bands on the left/right carrier margins.
 - Add shallow finger reliefs or textured grip flats only in margin areas outside the leak gutter, datum bosses, and service reliefs.
 - Maintain a clear visual orientation cue at the front-left corner so slot 1 is unambiguous during manual load/unload.
-- Do not add handles that increase the A0 carrier envelope unless the cassette integrator revises the dock envelope.
+- Do not add handles that increase the A0 699.04 x 541.92 mm carrier XY bounds unless the cassette integrator revises the dock interface.
 
 ### Robot Handling
 
@@ -213,38 +228,42 @@ Research URLs:
 - https://pmc.ncbi.nlm.nih.gov/articles/PMC12914553/
 - https://pmc.ncbi.nlm.nih.gov/articles/PMC12834090/
 
-## A0 Decisions Resolved By A1
+## A1 Decisions Carried Downstream
 
-| A0 open decision | A1 resolution |
+| Carrier decision | A1 resolution |
 | --- | --- |
 | Chip pocket clearance | Keep 1.20 mm per side for current CAD/STL fit-check compatibility; set manufacturer-drawing target to measured chip max plus 0.80 mm per side, with 0.50 mm per side minimum accepted clearance. |
 | Final carrier material | Select CNC 6061-T651 or 6061-T6 aluminum, clear anodized, for the dry first-article carrier. |
 | Datum pin diameter and hole preparation | Select 6 mm stainless dowel family; ream functional carrier holes; avoid using all four bosses as hard locators. |
-| Datum implementation | Rear edge/rail is primary, left edge/rail secondary, front lip tertiary; D1/D2 are functional assembly references, D3/D4 are clearance/witness unless promoted by integrator. |
-| Carrier leak/drain geometry | Preserve continuous visible perimeter leak gutter and 8 mm front-right side drain as witness/collection features. |
-| Barcode/condition ID area | Reserve front-left global ID land plus per-slot 26 x 10 mm label lands; prefer 2D machine-readable code with human-readable cassette/condition ID. |
-| Carrier handling surfaces | Reserve dry long-edge manual handling bands and future underside/front-rear robot pickup lands without changing the A0 envelope. |
+| Datum implementation | A/B/C are bottom/rear/left. D1 is round, D2 is relieved, and only those two bosses locate; D3/D4 are clearance/witness features. |
+| Carrier leak/drain geometry | Preserve the 6 mm-wide, 3 mm-deep gutter, its 5 mm separating web, and the 8 mm drain at the locked A0 coordinates. |
+| Barcode/condition ID area | Preserve the global 96 x 12 mm code and 118 x 10 mm text lands at Y = -263.96 mm plus the per-slot 26 x 10 mm label lands outside the leak gutter; prefer a 2D machine-readable code with human-readable cassette/condition ID. |
+| Carrier handling surfaces | Reserve dry long-edge manual handling bands and future underside/front-rear robot pickup lands without changing the A0 XY bounds. |
 
-## A0 Decisions Escalated
+## Remaining Subsystem Decisions
 
-| A0 open decision | Escalation path |
+| Remaining decision | Escalation path |
 | --- | --- |
 | Final chip pocket drawing dimensions if chip lot data is missing | Integrator/DFM must measure Rev C chip lot or approve provisional 129.36 x 87.08 mm pocket target before manufacturer drawing release. |
-| Gasket material, cross-section, groove dimensions, compression stops, and seal-land finish | A3 gasket and A4 DFM agents. A1 only preserves carrier gasket-land interfaces. |
-| Fastener family, torque sequence, captive hardware, washers, inserts, and whether carrier holes are threaded/inserted/through-bolted | A2 lid/clamp and A4 DFM agents. A1 preserves the A0 mount/fastener interface locations. |
-| Connector family, tubing OD/ID, bend radius, valve/pump interface, port assignment, and sterile connection method | A6 fluid-path agent. Carrier remains dry structure. |
+| Gasket compound/vendor tolerance, groove-fill evidence, seal-land finish, and no-cell validation | A3 gasket and A4 DFM agents. A1 preserves the locked 2.40 mm cross-section, 1.80 x 3.20 mm lid groove, and carrier land/stop geometry. |
+| Fastener family, torque sequence, captive hardware, washers, and final thread/insert/nut-plate SKU | A2 lid/clamp and A4 DFM agents. A1 preserves the A0 fastener centers and all sixteen 3.30 mm carrier pilot receivers. |
+| Connector family/SKU, tubing OD/ID, bend radius, valve/pump interface, and sterile connection method | A6 fluid-path work. The G0-G3, M0-M6, and W0-W4 logical role map is already resolved and must be preserved; the carrier remains dry structure. |
 | Sensor connector family, logger model, TEER/impedance electrode interface, cable routing, and incubation-module quick-connect | Sensor/module agents. A1 preserves dry keepouts and identity linkage. |
 | Leak-test pressure, pressure-decay acceptance, dye/tracer method, and release criteria | A7 no-cell validation/build-package agents. |
 | Final large-plate flatness, anodize masking, inspection plan, internal radii, and vendor-specific tolerances | A4 DFM/vendor RFQ. A1 provides starting targets only. |
-| STEP/export pipeline and production drawing package | CAD integrator/build-package agent. A1 did not modify the final CAD generator. |
+| Production drawing package | The true B-rep STEP draft is implemented; D0-D9 drawings, inspection tables, and release review remain with A9/build-package work. |
 
 ## CAD Handoff Notes
 
-No CAD generator edit is required for this A1 spec. The current generator remains valid as the A0/A1 fit-check baseline, with these known documentation-to-CAD deltas for future drawing work:
+The STL fit-check and STEP draft generators now consume the shared machine-readable A0 contract. That integration corrected the earlier overlapping gasket-loop layout, unequal gasket-land elevation, undersized carrier margins, gutter/label conflicts, per-slot corner stops, and fasteners inside the gutter envelope. The remaining documentation-to-release items are narrower:
 
 - Current CAD pocket clearance remains 1.20 mm per side; A1 drawing target is tighter and chip-lot-driven.
-- Current CAD models all four datum boss bores as round 6 mm holes; A1 wants only D1/D2 to function as controlled locators and prefers a relieved/slotted D2.
-- Current CAD has per-slot label lands; A1 additionally reserves a global cassette/condition ID land.
+- D1 must remain the round functional locator and D2 the relieved functional locator; D3/D4 are non-locating clearance/witness features.
+- Global and per-slot label lands must remain outside the leak gutter.
+- The carrier must retain the 7.35 mm land/stop plane, nine internal stops,
+  perimeter web stops, 3.30 mm pilot receivers, and 7.00 mm service reliefs.
+- Datum A seats directly on the dock support plane; the rear/left rail inner
+  faces and front lip contact the corresponding nominal carrier edges.
 - Current CAD has dock robot lift lands; A1 reserves carrier handling/pickup lands for future robot handling detail.
 
-Any future CAD change must preserve A0 slot count, slot centers, one-condition semantics, dry structural carrier policy, imaging keepouts, and carrier envelope unless the cassette integrator revises the A0 contract.
+Any future CAD change must preserve A0 slot count, slot centers, one-condition semantics, dry structural carrier policy, imaging keepouts, base-body dimensions, and true overall bounds unless the cassette integrator revises the shared A0 contract.

@@ -23,11 +23,21 @@ Locked A0 interface values remain unchanged:
 | Active CAD baseline | `sixteen_slot_cassette_incubator_first_article` |
 | Structural wetted-path policy | Dry reusable structural parts only |
 | Fluid path | Bought disposable tubing/connectors unless separately validated |
-| Carrier envelope | 648.04 x 466.92 x 24.00 mm |
-| Lid/clamp envelope | 666.04 x 484.92 x 10.00 mm |
-| Dock plate envelope | 818.04 x 616.92 x 22.00 mm |
-| Service bulkhead envelope | 738.04 x 34.00 x 76.00 mm |
-| Slot pitch | 134.76 mm X, 92.48 mm Y |
+| Carrier base body / true overall | 699.04 x 541.92 x 24.00 mm / 699.04 x 541.92 x 31.35 mm |
+| Lid/clamp base body / true overall | 717.04 x 559.92 x 10.00 mm / 717.04 x 559.92 x 11.60 mm |
+| Lid construction | One machined part: 4.00 mm continuous underside sealing skin plus 6.00 mm upper frame; the 635.04 x 457.92 mm lightening relief is upper-frame-only. |
+| Window base panel / true overall | 667.04 x 489.92 x 3.00 mm / 667.04 x 489.92 x 4.80 mm |
+| Dock plate base body / true overall | 869.04 x 691.92 x 22.00 mm / 869.04 x 691.92 x 40.00 mm |
+| Service bulkhead base body / true overall | 789.04 x 34.00 x 76.00 mm / 789.04 x 60.00 x 76.00 mm |
+| Chip gutter / slot pitch | 24.00 x 24.00 mm / 151.76 mm X, 109.48 mm Y |
+| Slot array / centers | 583.04 x 413.92 mm; X = +/-227.64, +/-75.88 mm and Y = +/-164.22, +/-54.74 mm |
+| Seal interfaces | Sixteen independent 145.76 x 103.48 mm outer / 129.76 x 87.48 mm inner lands, 8.00 mm wide, with 6.00 mm inter-land clearance; 629.04 x 459.92 mm outer / 605.04 x 435.92 mm inner perimeter land, 12.00 mm wide. Both are 7.35 mm high and meet the lid underside at closure. |
+| Nominal closure plane | 7.35 mm above carrier top, matching nominal chip protrusion. |
+| Gasket grooves / hard stops | Lid grooves are 1.80 mm deep x 3.20 mm wide for a 2.40 mm gasket at 25% nominal squeeze. Nine internal stops are 4.00 mm diameter at the 3 x 3 inter-slot intersections; perimeter stops are 4.00 mm wide in the 5.00 mm seal-to-gutter web. All stops top out at 7.35 mm and clear every seal. |
+| Leak gutter / drain | 651.04 x 481.92 mm outer, 639.04 x 469.92 mm inner, 6.00 mm wide x 3.00 mm deep, with 5.00 mm web; drain diameter 8.00 mm at (315.52, -254.96, 10.00) mm, length 40.00 mm along Y. |
+| Fasteners / datum bosses | Side fasteners X = +/-332.52 mm at slot-center Y; front/rear fasteners Y = +/-247.96 mm at slot-center X. Matching carrier receivers are 3.30 mm M4 tap-drill/pilot placeholders; final thread/insert SKU remains open. D1-D4 centers use X = +/-335.52 mm, Y = +/-204.96 mm; only D1 round and D2 relieved locate. D1/D2 use replaceable pins seated in the lid; integral pins are prohibited. |
+| Labels / service cut | Global barcode land is 96.00 x 12.00 mm at (-271.52, -263.96) mm; adjacent text land is 118.00 x 10.00 mm at (-159.52, -263.96) mm. Global and per-slot labels stay outside the gutter and clear the front receiver row. Bulkhead sensor/backplane cut center X = 320.00 mm. |
+| Side service relief | 7.00 mm high above carrier top, below the 7.35 mm lid closure plane. |
 | Current pocket clearance | 1.20 mm per side |
 | Current gasket squeeze assumption | 20-30 percent guard band, 25 percent nominal witness target |
 
@@ -73,7 +83,7 @@ prototypes only unless the integrator opens a separate validation path.
 
 | Part class | Preferred first quote | Alternate quote | DFM notes |
 | --- | --- | --- | --- |
-| Lower carrier | 6061-T651 aluminum plate, CNC machined, clear Type II anodize with masked seal/datum bands as needed | 6061-T6 if vendor can demonstrate flatness; 316 stainless only if cleaning chemistry demands it | T651 is preferred for the 648 x 467 mm class plate because stress-relieved stock reduces warp risk. Aluminum is acceptable because the carrier is dry structural hardware. |
+| Lower carrier | 6061-T651 aluminum plate, CNC machined, clear Type II anodize with masked seal/datum bands as needed | 6061-T6 if vendor can demonstrate flatness; 316 stainless only if cleaning chemistry demands it | T651 is preferred for the 699 x 542 mm class base body because stress-relieved stock reduces warp risk. Aluminum is acceptable because the carrier is dry structural hardware. |
 | Lid/clamp | 6061-T651 or 6061-T6 aluminum, clear anodize, machined compression faces | 304/316 stainless for thinner clamp members if deflection is too high | Match material and finish to carrier when possible to reduce galvanic and thermal-expansion surprises. |
 | Dock plate | 6061-T651 aluminum, CNC machined, clear anodize or hardcoat only after fit review | 304 stainless where cleaning durability dominates | Dock is dry support and drain/witness hardware. Require flatness evidence over the cassette support area. |
 | Service bulkhead test block | 6061 aluminum or polycarbonate dry structure, CNC machined | 316 stainless if selected connectors require it | Do not custom-machine sterile/wetted connector geometry for the first article. Use bought connector cutouts. |
@@ -106,14 +116,22 @@ must ask whether the vendor recommends matched machining of the carrier and lid.
 
 Critical datum policy:
 
-- Primary physical registration remains dock rear rail to cassette/carrier rear
+- Datum A is the carrier bottom plane seated directly on the dock support plane;
+  no intermediate spacer or recess offset is part of the active stack.
+- Datum B is the dock rear-rail inner face contacting the nominal carrier rear
   edge.
-- Secondary physical registration remains dock left rail to cassette/carrier
-  left edge.
-- Tertiary registration remains front low retention lip and four carrier datum
-  pin bosses.
+- Datum C is the dock left-rail inner face contacting the nominal carrier left
+  edge.
+- The front low retention lip contacts the nominal carrier front edge and
+  prevents gross lift/walkout but is not a competing datum.
+- Only D1 at (-335.52, -204.96) is the round functional locator and D2 at
+  (335.52, -204.96) is the relieved functional locator. D3/D4 at the rear
+  coordinates are clearance/witness features, not hard locators.
 - Dowel/pin bores must be drilled undersize and reamed after the pin diameter is
   selected.
+- Machine 6.00 mm-diameter x 4.00 mm-deep replaceable-pin seats in the lid at
+  D1/D2 only. The 5.80 mm x 7.35 mm CAD pin is a fit-check surrogate, not a
+  production pin specification; D3/D4 receive no seats.
 - Do not accept as-machined interpolated holes as final precision datum holes
   unless the vendor inspection report proves the required positional tolerance.
 
@@ -125,7 +143,7 @@ the feature is explicitly called out as critical.
 | Feature class | Constraint |
 | --- | --- |
 | Chip pockets | Use vertical walls and flat floors where possible. Avoid undercuts, draft-dependent pockets, or toolpaths requiring deep slender cutters. |
-| Gasket lands/grooves | Keep groove walls accessible from the top face. Avoid dovetail grooves unless the gasket-retention need is proven and the vendor agrees to quote them. |
+| Gasket lands/grooves | Keep carrier land faces accessible from the carrier top setup and lid groove walls accessible from the lid underside setup. Avoid dovetail grooves unless the gasket-retention need is proven and the vendor agrees to quote them. |
 | Optical windows | Keep through-cuts large enough for standard end mills or sheet cutting. Protect view opening edges with chamfers or deburr notes. |
 | Drain/gutter features | Avoid blind horizontal side-drilled features unless the drawing clearly defines drill entry, deburr access, and cleaning inspection. |
 | Bulkhead cutouts | Dimension around selected bought connector panel geometry. Do not define custom sterile ports from placeholder diameters alone. |
@@ -163,20 +181,22 @@ Starting tolerance targets before vendor review:
 
 | Feature | Starting target | Reason |
 | --- | ---: | --- |
-| Slot pitch, local adjacent pockets | +/-0.10 mm | Preserves 4 x 4 slot repeatability without over-constraining the full 648 mm carrier. |
+| Slot pitch, local adjacent pockets | +/-0.10 mm | Preserves the 151.76 x 109.48 mm 4 x 4 pitch without over-constraining the full 699 mm carrier. |
 | Full-array pocket position relative to A/B datums | +/-0.25 mm | Keeps array compatible with dock/imaging references over the large plate. |
 | Chip pocket X/Y size | +0.20 / -0.00 mm from selected clearance target | Pocket should not undersize and bind chips. |
 | Pocket depth | +/-0.10 mm | Prevents chip seating and lid interference issues. |
 | Pocket floor parallelism to carrier bottom | 0.10 mm over each pocket | Supports repeatable chip height and imaging stackup. |
 | Optical through-window X/Y size | +/-0.20 mm | Preserve line of sight; avoid tight cosmetic tolerance. |
 | Lid view opening X/Y size | +/-0.20 mm | Preserve optical keepout and deburr. |
+| Lid chip-top relief | 130.16 x 87.88 mm, 0.50 mm deep, +/-0.05 mm depth starting target | Prevent chip/lid load while preserving 2.20 mm to the gasket-groove inner edge. |
 | Dowel/registration bores | Reamed H7 or vendor-equivalent after pin selection | Final diameter depends on dowel family. |
 | Dowel bore true position | 0.05-0.10 mm relative to datums | Critical for carrier-to-lid and dock repeatability. |
 | M4/M5 clearance holes | ISO 2768-m unless hardware demands tighter | Clearance holes should not drive cost. |
-| Threaded/inset features | Vendor standard class, inspected thread gauge | Final hardware strategy is not frozen. |
-| Gasket land width | +/-0.05 mm where compression-critical | Depends on final gasket cross-section. |
-| Gasket groove depth | +/-0.03 mm after gasket selection | Squeeze control is one of the highest-risk dimensions. |
-| Gasket compression stop height | +/-0.03 mm | Prevents overcompression and chip/lid load variation. |
+| Threaded/insert features | Preserve the 3.30 mm carrier pilot diameter and locked centers; vendor standard thread class and inspected thread gauge after final hardware selection. | Final thread/insert SKU is not frozen. |
+| Gasket land width | +/-0.05 mm where compression-critical | Supports the locked 2.40 mm cross-section and 3.20 mm groove; confirm against supplier tolerance and groove-fill review. |
+| Lid gasket groove depth | 1.80 mm nominal, +/-0.03 mm after finish | Squeeze control is one of the highest-risk dimensions. |
+| Lid groove floor | 2.20 mm nominal, 2.00 mm minimum after finish | The upper lightening relief must not penetrate the 4.00 mm seal skin. |
+| Gasket land and hard-stop height | 7.35 mm nominal, +/-0.03 mm | The land and stop faces meet the lid underside and prevent overcompression and chip/lid load variation. |
 | Service bulkhead placeholder holes | +/-0.20 mm until connector selected | Do not overtolerance placeholder geometry. |
 
 Vendor review may relax noncritical dimensions. Vendor review must not relax
@@ -193,7 +213,7 @@ Starting targets:
 | Surface | Starting target | Inspection note |
 | --- | ---: | --- |
 | Carrier bottom support face | 0.25 mm total flatness over full carrier | Vendor to state whether stress-relieved stock, rough/finish machining, or stress relief is needed. |
-| Carrier top gasket plane | 0.15 mm total flatness over full perimeter gasket plane | Must be measured after final coating/finish. |
+| Carrier 7.35 mm gasket/stop plane | 0.15 mm total flatness over full perimeter gasket plane | Must be measured after final coating/finish. |
 | Per-slot gasket land plane | 0.05 mm flatness over each slot land | Critical for local seal squeeze. |
 | Relative height between 16 slot gasket lands | 0.10 mm total | Prevents edge/center compression imbalance. |
 | Lid/clamp compression face | 0.15 mm total flatness over full clamp face | Pair with carrier measurement. |
@@ -211,7 +231,7 @@ Surface finish must be specified by function, not by whole-part cosmetic finish.
 
 | Area | Required first-article finish | Finish cautions |
 | --- | --- | --- |
-| Gasket seal bands and groove floors | Ra 0.8-1.6 um target, 1.6 um max unless gasket vendor approves rougher | Do not bead blast. Mask or post-machine after anodize if needed. |
+| Gasket seal bands and groove floors | Ra 0.8 um target; Ra 1.6 um hard maximum | A gasket vendor may require smoother, never rougher. Do not bead blast. Mask or post-machine after anodize if needed. |
 | Chip pocket floors and support lands | Ra 1.6-3.2 um | Avoid sharp burrs and high tool marks that change seating height. |
 | Datum edges and bores | Machined, deburred, no coating buildup that changes fit unless accounted for | Bore fit must be measured after finish if anodized. |
 | Optical window edges/openings | Deburred, no raised burrs or flakes | No cosmetic requirement unless imaging glare demands it. |
@@ -284,8 +304,9 @@ Recommended dry assembly order for fit checks:
 6. Install gasket or gasket witness coupons using the A3-defined process.
 7. Install retained window placeholder if applicable.
 8. Close lid/clamp in defined torque sequence using compression witnesses.
-9. Dock cassette on rear/left rails and confirm the dock does not twist the
-   carrier.
+9. Seat datum A directly on the dock support plane, contact the nominal rear,
+   left, and front carrier edges against the corresponding rail inner faces and
+   front lip, and confirm the dock does not twist the carrier.
 10. Run no-cell leak, dye, drain, and cleaning checks only after dry metrology
     passes.
 
@@ -326,7 +347,7 @@ Minimum RFQ deliverables:
 
 Vendor quote questions:
 
-1. Can you hold the requested flatness on a 648 x 467 x 24 mm class carrier
+1. Can you hold the requested flatness on a 699.04 x 541.92 x 24.00 mm base-body carrier
    after pocketing, gasket features, and anodize?
 2. Do you recommend 6061-T651, 6061-T6, 316 stainless, or another material for
    this large gasketed dry fixture?
@@ -373,7 +394,7 @@ gasket/hardware choices are known.
 - Break all noncritical sharp edges 0.25-0.50 mm.
 - Do not break, polish, or blend gasket compression stops beyond specified
   tolerance.
-- Seal bands: Ra 1.6 um max unless gasket vendor approves otherwise.
+- Seal bands: Ra 0.8 um target and Ra 1.6 um hard maximum; a gasket vendor may require smoother, never rougher.
 - General machined faces: Ra 3.2 um max unless otherwise specified.
 - No burrs, loose media, sharp chips, or embedded blasting residue.
 - Dimensions for gasket groove depth, compression stop height, precision bores,
@@ -387,8 +408,8 @@ gasket/hardware choices are known.
 The A4 manufacturing package is acceptable when all of these are true:
 
 - The 16-slot A0 interface geometry is preserved, including slot grid,
-  envelopes, datum intent, imaging keepouts, and reserved dry service
-  interfaces.
+  base-body dimensions, true overall bounds, datum intent, imaging keepouts,
+  corrected nonoverlapping seal geometry, and reserved dry service interfaces.
 - The drawing set identifies which dimensions are general tolerance and which
   are critical to gasket compression, chip fit, optical access, dock
   registration, or assembly repeatability.
@@ -413,12 +434,14 @@ The following remain unresolved and must be closed by subsystem owners or the
 cassette integrator before release drawings:
 
 - Final chip pocket clearance after measuring real Rev C chip lot tolerance.
-- Final dowel pin diameter, bore fit, bore positional tolerance, and reaming
-  process.
-- Final screw family, torque sequence, captive hardware, insert strategy, and
-  compression stop design.
-- Final gasket material, cross-section, groove width/depth, squeeze target, and
-  leak-test pressure.
+- Final pin SKU, bore fit, bore positional tolerance, and reaming process while
+  preserving the locked D1-round/D2-relieved locator roles.
+- Final screw family, torque sequence, captive hardware, and thread/insert SKU.
+  The 16 fastener centers, 3.30 mm carrier pilots, and hard-stop geometry are
+  fixed.
+- Final gasket compound/vendor and leak-test pressure; the shared A0/A3 draft
+  already fixes the 2.40 mm free height, 1.80 x 3.20 mm lid groove, 25%
+  squeeze target, 7.35 mm common land/stop height, and 7.35 mm closure plane.
 - Whether gasket seal bands are masked during anodize, post-machined, or left
   as-machined.
 - Final optical window material, thickness, retention method, and allowable

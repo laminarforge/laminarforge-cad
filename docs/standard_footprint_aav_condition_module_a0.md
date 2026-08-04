@@ -1,8 +1,11 @@
-# Standard-Footprint AAV Condition Module A0
+# Standard-Footprint AAV Condition Module Scale-Down Study
 
 Ticket: T-4380A1AA
 
-This document replaces the giant 16-slot cassette as the first physical architecture direction for LaminarForge AAV condition screening hardware.
+This document records a compact-module and local-coupon study that supports the
+active 16-slot, 4 x 4 first physical cassette. It does not replace or supersede
+`docs/sixteen_slot_cassette_a0_interface_spec.md`, and its mockups do not satisfy
+an integrated 16-slot first-article gate.
 
 The controlling rule is:
 
@@ -14,11 +17,13 @@ scale by repetition
 
 This is an architecture and mechanical interface decision record. It is not a biological protocol, sterile-barrier claim, live-cell release gate, AAV handling procedure, clinical plan, or vendor drawing.
 
-## Decision
+## Study Decision
 
-LaminarForge should not make a large custom precision carrier/dock plate the core dependency of the AAV condition screening platform.
+LaminarForge should use compact coupons and standard-footprint module studies to
+keep precision local and retire expensive interface risks before committing a
+full-size first-article carrier/dock plate.
 
-The first scalable architecture is a small standard-footprint condition module:
+The companion scale-down concept is a small standard-footprint condition module:
 
 - One physical module equals one AAV condition.
 - AAV conditions must not be mixed inside one module or one disposable wetted path.
@@ -26,11 +31,14 @@ The first scalable architecture is a small standard-footprint condition module:
 - Large trays, racks, hotels, or holders are cheap organizers only.
 - Scale comes from repeating validated modules, not from machining one huge high-precision plate.
 
-The prior 16-slot cassette remains useful as a reference for slot semantics, labels, validation questions, and future automation rack planning. It is no longer the first lab-dependency architecture.
+The 16-slot cassette remains the controlling first-build architecture. The
+compact module is a risk-reduction and possible future scale architecture whose
+lessons may be integrated only through an explicit A0 revision.
 
-## Why This Pivot Exists
+## Why This Study Exists
 
-The 16-slot cassette first article combined too many jobs in one large mechanical part:
+The 16-slot cassette first article combines many jobs in one large mechanical
+package:
 
 - chip pocket array,
 - imaging alignment,
@@ -41,13 +49,18 @@ The 16-slot cassette first article combined too many jobs in one large mechanica
 - service bulkhead,
 - condition identity.
 
-That creates an avoidable cost and adoption risk. A 648 x 467 mm class carrier and larger dock can become a large precision-machined fixture. That is the wrong dependency if downstream labs must be able to adopt, repeat, repair, and scale the system without a high-dollar custom plate.
+That creates cost and adoption risk if precision is allowed to spread across the
+active 699.04 x 541.92 mm carrier or 869.04 x 691.92 mm dock. Compact coupons let the team
+validate local interfaces first while retaining the active full-cassette
+contract.
 
-The better architecture follows the pattern used by many practical organ-chip systems: keep precision near the chip/module and let the outer holder be replaceable, inexpensive, and non-critical.
+The study therefore applies a pattern used by practical organ-chip systems:
+keep precision near the chip/module and make outer organization replaceable,
+inexpensive, and non-critical wherever the A0 cassette interfaces allow it.
 
 ## Experimental Semantics
 
-The old and new architectures preserve the same core experimental intent.
+The active cassette and compact study preserve the same core experimental intent.
 
 | Item | Requirement |
 | --- | --- |
@@ -59,10 +72,10 @@ The old and new architectures preserve the same core experimental intent.
 | Environment boundary | Incubator or chamber hardware controls bulk temperature, CO2, humidity, and gas recovery. The module proves local equivalence, fluid behavior, sealing, imaging, and traceability inside that bulk environment. |
 | Scale strategy | Validate one zone/module first, then scale the same local precision pattern toward 16 same-condition zones and repeated modules/trays. Do not enlarge one precision sealing plate as the default. |
 
-## First Geometry Direction
+## Compact Study Geometry Direction
 
-The first replacement A0 direction is a single-condition module using the
-SBS/SLAS microplate footprint:
+The compact study uses a single-condition module in the SBS/SLAS microplate
+footprint:
 
 ```text
 one AAV condition
@@ -84,7 +97,7 @@ Do not make the tray, rack, or adapter the precision sealing fixture. The SLAS
 footprint is the module envelope and handling standard; the actual precision is
 still local to the chip/seal/connector/readout zone.
 
-### Preferred Module Concept
+### Preferred Study Concept
 
 Start with a one-condition SLAS-footprint module:
 
@@ -115,12 +128,12 @@ unless the SLAS-footprint module proves too material-heavy or optically awkward.
 
 | Candidate | Use | Strength | Risk | A0 position |
 | --- | --- | --- | --- | --- |
-| Single SLAS-footprint condition module | One condition module in the 127.76 x 85.48 mm envelope | Lab-friendly handling, direct condition identity, avoids oversized custom carrier | Can become too material-heavy if precision spreads across the whole body | Preferred first geometry direction |
+| Single SLAS-footprint condition module | One condition module in the 127.76 x 85.48 mm envelope | Lab-friendly handling, direct condition identity, avoids oversized custom carrier | Can become too material-heavy if precision spreads across the whole body | Preferred compact study direction |
 | Slide-class cartridge | Imaging coupon and one-chip prototype | Cheap, small, stage-friendly, easier local precision | Needs external tray for high-throughput handling | Prototype/coupon path |
 | SBS/SLAS tray adapter | Holds repeated modules in a lab-friendly envelope | Compatible with common plate handling and labeling expectations | Must not become a precision sealing plate | Preferred support format |
 | 4-zone intermediate module | Intermediate same-condition readout density | Better within-condition replication while keeping validation manageable | More seal and flow complexity than a one-zone coupon | Second step after one-zone local stack |
 | 16-zone same-condition module | Useful target for broad cell/readout coverage under one AAV condition | Captures the desired cell/readout panel without mixing AAV candidates | Must avoid becoming a large precision monolith | Target architecture after local zones validate |
-| 16-chip monolithic cassette | Legacy high-density condition unit | Captures old readout count in one object | Large precision plate, high cost, poor downstream adoption | Reference only for now |
+| 16-chip 4 x 4 cassette | Active first physical condition unit | Preserves the committed readout count and integrated cassette interfaces | Large-plate cost and tolerance risk must be retired through coupons and DFM | Controlling first-build architecture |
 
 ## Local Precision Boundary
 
@@ -192,9 +205,9 @@ Cost-control rules:
 
 ### Red Flags
 
-Stop and redesign if the module direction starts to require:
+Stop and redesign the compact study if it starts to require:
 
-- a precision-machined 16-slot carrier,
+- tray-scale precision instead of local chip/seal/connector precision,
 - tray-required sealing,
 - a large multi-condition gasket,
 - a shared AAV manifold,
@@ -202,7 +215,7 @@ Stop and redesign if the module direction starts to require:
 - optical datum features on the rack instead of the module,
 - row/column-only condition identity,
 - a multi-condition tubing harness,
-- a first validation build that depends on a large high-tolerance custom plate.
+- a local validation coupon that depends on the full high-tolerance carrier.
 
 ## No-Cell Validation Gates
 
@@ -259,23 +272,40 @@ Minimum run record fields:
 - pass/fail status,
 - failure mode and disposition.
 
-## Relationship To The 16-Slot Work
+## Relationship To The Active 16-Slot Work
 
-Existing 16-slot docs and CAD remain useful, but their role changes.
+The 16-slot documents remain controlling. The compact study reuses their local
+interface questions without changing their role.
 
-| Existing work | New role |
+Any compact coupon that claims to represent the active cassette interface must
+use the shared A0 contract rather than stale local constants: the carrier base
+body is 699.04 x 541.92 x 24.00 mm with 31.35 mm true overall Z; chip
+protrusion, both seal-land families, all hard stops, and the lid underside
+closure plane are 7.35 mm above carrier top; lid grooves are 1.80 mm deep x
+3.20 mm wide for the 2.40 mm gasket at 25% nominal squeeze. The active stop
+pattern is nine 4.00 mm-diameter inter-slot stops plus 4.00 mm-wide perimeter
+web stops, with no seal intersection. The 16 fasteners sit outside the gutter
+at side X = +/-332.52 mm and front/rear Y = +/-247.96 mm, with matching 3.30 mm
+carrier pilot receivers. Side service reliefs are 7.00 mm high and below
+closure. Dock coupons seat the carrier directly on datum A and contact nominal
+rear, left, and front carrier edges with the rear/left rail inner faces and
+front lip. These values constrain cassette-representative coupons; they do not
+force a future compact module to inherit the full cassette envelope.
+
+| Existing work | Role in this study |
 | --- | --- |
-| `sixteen_slot_cassette_a0_interface_spec.md` | Legacy high-density reference and requirement source. Not the first physical architecture. |
-| `sixteen_slot_cassette_a1_carrier_spec.md` | Reference for datum, pocket, label, drain, and handling questions. Do not inherit large-plate assumptions. |
-| `sixteen_slot_cassette_a2_lid_clamp_spec.md` | Reference for compression and window questions. Convert to local clamp logic. |
-| `sixteen_slot_cassette_a3_gasket_spec.md` | Reference for gasket compression vocabulary. Convert to local gasket coupon. |
-| `sixteen_slot_cassette_a6_disposable_fluid_path_spec.md` | Reference for one-condition routing and port naming. Convert to local disposable path. |
-| `sixteen_slot_cassette_a7_no_cell_validation_fixture_spec.md` | Reference for bench validation gates. Convert to module-level gates. |
-| `sixteen_slot_cassette_print_coupon_plan.md` | Still useful for printer learning, but not proof that the giant cassette architecture should proceed. |
+| `sixteen_slot_cassette_a0_interface_spec.md` | Controlling first-build contract. Compact work may not change its locked interfaces. |
+| `sixteen_slot_cassette_a1_carrier_spec.md` | Source for datum, pocket, label, drain, and handling questions to validate locally. |
+| `sixteen_slot_cassette_a2_lid_clamp_spec.md` | Source for compression and window questions to exercise with local clamp logic. |
+| `sixteen_slot_cassette_a3_gasket_spec.md` | Source for gasket compression vocabulary and representative local coupons. |
+| `sixteen_slot_cassette_a6_disposable_fluid_path_spec.md` | Source for one-condition routing and port naming; compact paths remain disposable. |
+| `sixteen_slot_cassette_a7_no_cell_validation_fixture_spec.md` | Source for bench gates that compact coupons can retire before integrated testing. |
+| `sixteen_slot_cassette_print_coupon_plan.md` | Active printer-learning precursor for the 16-slot first article. |
 
 ## Open A0 Questions
 
-These questions should be resolved before new CAD replaces the 16-slot first article:
+These questions should be resolved before compact CAD can support a proposed
+future architecture revision or feed validated interface changes back into A0:
 
 - What is the smallest one-zone coupon that honestly validates the local precision island?
 - What geometry lets the first useful module scale to 16 same-condition zones without making the whole module a precision plate?
@@ -286,9 +316,9 @@ These questions should be resolved before new CAD replaces the 16-slot first art
 - What part, if any, must be CNC machined instead of printed for honest seal validation?
 - What is the minimum run record schema for condition ID, module ID, chip ID, and measurement traceability?
 
-## Immediate Next CAD Package
+## Companion CAD Package
 
-The replacement A0 CAD package should be small:
+The compact study package should stay small:
 
 - one-zone local module body coupon,
 - local lid/clamp coupon,
@@ -298,4 +328,6 @@ The replacement A0 CAD package should be small:
 - cheap multi-module SLAS tray/rack outline,
 - 16-zone same-condition layout study that proves scale-up without committing to a giant precision carrier.
 
-The first release should prove geometry and assembly logic only. It should not claim sterile use, live-cell readiness, AAV readiness, or biological validity.
+Any compact-study release should prove geometry and assembly logic only. It
+does not replace the integrated 16-slot first article and must not claim sterile
+use, live-cell readiness, AAV readiness, or biological validity.

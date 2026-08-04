@@ -2,8 +2,10 @@
 
 Tickets: T-AC301220, T-2BC7AA30
 
-This document describes the first printable visualization model for the new
-LaminarForge standard-footprint AAV condition module architecture.
+This document describes a printable compact-module visualization that supports
+local risk reduction for the active LaminarForge 16-slot, 4 x 4 first physical
+cassette. It is a supplemental study, not a replacement first-build
+architecture.
 
 This is a dry visualization and no-cell mechanical planning model. It is not a
 wetted path, sterile part, live-cell fixture, AAV-contact part, pressure-rated

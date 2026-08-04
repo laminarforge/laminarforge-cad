@@ -11,7 +11,7 @@ This is not a sterile-barrier claim, biological release criterion, or final prod
 A3 owns:
 
 - Per-slot and perimeter gasket material direction.
-- Gasket cross-section and provisional gland dimensions.
+- Gasket cross-section and locked nominal lid-groove dimensions.
 - Compression target, compression stops, and witness shims/coupons.
 - Gasket land surface finish, flatness, and cleaning-inspection assumptions.
 - No-cell leak, coupon burst, and repeated reconnection validation logic.
@@ -26,17 +26,25 @@ The gasket design uses these A0 locked inputs:
 | Interface | A0 value |
 | --- | ---: |
 | Cassette format | 16 slots, 4 x 4 |
+| Experimental unit | One cassette equals one AAV capsid/promoter/payload/dose/timing/media condition; seal loops do not authorize separate per-slot candidates. |
 | Active CAD baseline | `sixteen_slot_cassette_incubator_first_article` |
-| Per-slot gasket land outer | 141.76 x 99.48 mm |
+| Carrier base body / true overall | 699.04 x 541.92 x 24.00 mm / 699.04 x 541.92 x 31.35 mm |
+| Per-slot gasket land outer | 145.76 x 103.48 mm |
+| Per-slot gasket land inner | 129.76 x 87.48 mm |
 | Per-slot gasket land wall width | 8.00 mm |
-| Per-slot gasket land height | 3.00 mm above carrier top |
-| Perimeter gasket land outer | 604.04 x 428.92 mm |
+| Per-slot gasket land height | 7.35 mm above carrier top; land face meets lid underside at closure. |
+| Inter-land clearance | 6.00 mm between adjacent outer edges; all 16 loops are independent and nonoverlapping. |
+| Perimeter gasket land outer | 629.04 x 459.92 mm |
+| Perimeter gasket land inner | 605.04 x 435.92 mm |
 | Perimeter gasket land wall width | 12.00 mm |
-| Perimeter gasket land height | 4.00 mm above carrier top |
+| Perimeter gasket land height | 7.35 mm above carrier top; common with per-slot lands and hard stops. |
+| Nominal chip protrusion / closure plane | 7.35 mm above carrier top |
 | Nominal gasket thickness | 2.40 mm |
+| Lid groove cavity | 1.80 mm deep x 3.20 mm wide |
 | Target squeeze | 25% |
 | Squeeze guard band | 20-30% |
 | Witness steps | 20%, 25%, 30% |
+| Hard stops | Nine 4.00 mm-diameter internal stops at the 3 x 3 inter-slot intersections plus 4.00 mm-wide perimeter stops in the 5.00 mm seal-to-gutter web; all top at 7.35 mm and clear every seal. |
 
 First-article wetted-path policy remains unchanged: disposable commercial tubing/connectors are the culture-fluid boundary. Structural cassette parts and A3 gaskets are dry structural/environmental seals unless separately validated as wetted, cell-facing, and AAV-compatible interfaces.
 
@@ -44,7 +52,7 @@ First-article wetted-path policy remains unchanged: disposable commercial tubing
 
 Use controlled-compression axial face seals, not adhesive-only sealing.
 
-The first-article gasket should be a replaceable continuous elastomer seal seated in machined grooves on the lid/clamp compression side, compressed against the raised carrier gasket lands. This keeps the carrier land surfaces simple to inspect and lets the lid carry gasket retention features. If A2 chooses the opposite layout, the same compressed height, groove fill, corner radius, and witness requirements still apply.
+The first-article gasket is a replaceable continuous elastomer seal seated in machined grooves on the lid/clamp compression side and compressed against the raised carrier gasket lands. This keeps the carrier land surfaces simple to inspect and lets the lid carry gasket retention features. At closure, the 7.35 mm carrier land faces meet the lid underside and the 1.80 mm groove cavities contain the compressed gasket; the groove location is no longer an optional A2 inversion.
 
 Recommended first-article architecture:
 
@@ -88,24 +96,38 @@ First-article gland dimensions:
 | Gasket cross-section / free height | 2.40 mm nominal | Supplier tolerance target +/-0.08 mm or better. |
 | Target compressed height | 1.80 mm | 25% squeeze. |
 | Acceptable compressed-height band | 1.68-1.92 mm | 30-20% squeeze guard band. |
-| Groove depth | 1.82 mm | Starting value for 2.40 mm axial liquid face seal. Update if supplier cross-section tolerance differs. |
-| Groove width | 3.20 mm | Starting liquid-service width; leaves expansion volume and fits inside A0 land widths. |
+| Lid groove depth | 1.80 mm | Locked nominal cavity depth for 2.40 mm axial seal at 25% squeeze. Supplier tolerance and groove-fill evidence remain required. |
+| Lid groove width | 3.20 mm | Locked nominal width; leaves expansion volume and fits within the opposing A0 land widths. |
+| Lid groove floor | 2.20 mm minimum in active CAD | A 4.00 mm continuous underside seal skin minus the 1.80 mm groove; the 6.00 mm upper lightening relief may not penetrate this skin. |
+| Chip-relief-to-groove material | 2.20 mm per side in X and Y | The 130.16 x 87.88 mm chip-top relief must not break into the per-slot groove. |
 | Groove side finish | 1.6 um Ra max | Deburred; no tool marks that cut the seal. |
-| Seal land top/bottom finish | 0.8 um Ra max | Liquid/no-cell leak validation. Use 0.4 um Ra max if gas/vacuum retention becomes a requirement. |
+| Seal land top/bottom finish | Ra 0.8 um target; Ra 1.6 um hard maximum | Liquid/no-cell leak validation. A vendor may require a smoother finish. Use Ra 0.4 um max if gas/vacuum retention becomes a requirement. |
 | Groove entry radius / break | 0.20 mm min | No sharp edges at gasket entry. |
 | Seal-loop corner radius | 3.0 mm min centerline radius | Larger preferred; no square elastomer corners. Confirm with gasket vendor. |
 | Groove fill check | Vendor-calculated before drawings | Must leave expansion volume at temperature and after media/cleaning exposure. |
 
+The current STL and STEP drafts use square-cornered subtraction loops and do
+not model the 0.20 mm entry break. They are internal envelope/fit-check
+geometry only. D2/D4 manufacturing geometry must add the entry break and at
+least 3.0 mm groove-centerline corner radii before gasket coupon fabrication or
+vendor RFQ.
+
 Per-slot fit on the 8.00 mm A0 land:
 
-- 3.20 mm groove/seal width centered on the land.
+- 3.20 mm lid groove aligned to the center of the opposing carrier land.
 - Minimum 2.0 mm nominal machined land margin on each side after groove placement.
 - No groove overlap into optical keepout, chip pocket edge, label land, drain feature, or fastener clearance.
+- Preserve each 145.76 x 103.48 mm outer / 129.76 x 87.48 mm inner loop independently; the 6.00 mm gap between adjacent land outer edges is a hard keepout, not shared seal material.
+- Preserve 10.80 mm between adjacent groove outer edges. The per-slot groove
+  array retains 8.80 mm to the perimeter groove. These solid shoulders must be
+  probed along all four sides of every generated loop.
 
 Perimeter fit on the 12.00 mm A0 land:
 
 - Same 2.40 mm cross-section and 3.20 mm groove width unless vendor review recommends a larger perimeter seal.
 - Keep at least 3.0 mm nominal land margin on each side.
+- Preserve 48.40 mm X and 54.40 mm Y from the perimeter groove outer edge to the
+  lid edge in the active geometry.
 - Treat the perimeter loop as a containment/environmental seal; do not design validation around pressurizing the full cassette footprint.
 
 If A2/A4 choose a custom molded rectangular gasket instead of round cord, the substitute must preserve:
@@ -125,14 +147,27 @@ Required stop logic:
 
 | Stop item | Requirement |
 | --- | --- |
-| Nominal stop gap | 1.80 mm from gasket land sealing face to mating compression face for a 2.40 mm gasket. |
+| Nominal closure contact | Carrier land and hard-stop top faces meet the lid underside at 7.35 mm above carrier top; there is no plate-to-plate gasket gap. The lid groove cavity is 1.80 mm deep. |
 | Guard-band verification | Assembly must reject stop stacks that produce less than 1.68 mm or more than 1.92 mm compressed height at any measured witness location. |
-| Per-slot stops | At least four local stops or equivalent stiff clamp features around each slot loop, placed outside imaging keepouts. |
-| Perimeter stops | Distributed hard stops around the perimeter loop; spacing selected by A2/A4 after lid stiffness analysis. |
+| Internal stops | Exactly nine 4.00 mm-diameter stops at the 3 x 3 inter-slot gap intersections, X = -151.76, 0.00, 151.76 mm and Y = -109.48, 0.00, 109.48 mm. These replace per-slot corner stops. |
+| Perimeter stops | Existing distributed stops remain 4.00 mm wide and centered in the 5.00 mm seal-to-gutter web. |
 | Datum relation | Stop heights must reference the same machined setup as the gasket land/groove where possible. |
-| Shim access | Witness shim insertion/removal must be possible without disturbing the gasket or chip pocket. |
+| Seal clearance | No internal or perimeter stop may intersect a per-slot or perimeter seal. |
+| Witness access | Dedicated witness coupons or witness cavities must be readable without inserting a shim between mating land/stop faces or disturbing the gasket or chip pocket. |
 
-Because A0 has per-slot lands at 3.00 mm above carrier top and the perimeter land at 4.00 mm above carrier top, A2 must either use stepped lid compression faces or separate stop stacks for per-slot and perimeter loops. A3 does not allow a single flat lid underside to compress both seal elevations unless the integrator changes the land heights.
+The shared A0 contract places the sixteen per-slot lands, the perimeter land,
+and both stop families at 7.35 mm above the carrier top. All meet the lid
+underside on the common closure plane matching nominal chip protrusion. The
+2.40 mm gasket compresses to the 1.80 mm lid-groove cavity depth. The earlier
+3.00/4.00 mm unequal-height scheme, interim shorter-land gap stack, and per-slot
+corner stops were geometry defects and are obsolete.
+
+First-article settling criterion: after the initial final-torque pass, hold the
+assembly for at least 10 minutes at the test temperature. Recheck the four
+corner and center compression witnesses. Repeat the paired final-torque pass
+only after every measured witness changes by no more than 0.02 mm over a
+5-minute observation interval. If stability is not reached within 30 minutes,
+the gasket/closure setup fails and must not proceed to leak testing.
 
 ## Witness Shims And Coupons
 
@@ -148,11 +183,11 @@ Provide three go/no-go references tied to A0:
 | 25% | 1.80 mm | Nominal target |
 | 30% | 1.68 mm | Maximum acceptable squeeze |
 
-Use shims at the front-left, front-right, rear-left, rear-right, and center-zone witness locations for both the per-slot field and the perimeter loop. If access to all 16 slot loops is impractical, use a mapped sampling plan that includes all four corners, all four rows, all four columns, and at least four interior slots.
+Use dedicated witness cavities or coupons at the front-left, front-right, rear-left, rear-right, and center-zone locations for both the per-slot field and the perimeter loop. Do not insert these height references between the land/stop faces that must contact the lid underside. If access to all 16 slot loops is impractical, use a mapped sampling plan that includes all four corners, all four rows, all four columns, and at least four interior slots.
 
 ### Gasket Compression Coupons
 
-Create separate coupons using the same material, groove depth, groove width, land finish, stop gap, and fastener style as the cassette.
+Create separate coupons using the same material, 1.80 mm groove depth, 3.20 mm groove width, land finish, closure-plane stop geometry, and fastener style as the cassette.
 
 Minimum coupon set:
 
@@ -174,7 +209,7 @@ Starting drawing callouts:
 
 | Feature | First-article callout |
 | --- | --- |
-| Sealing land top/bottom | 0.8 um Ra max for liquid validation; 0.4 um Ra max if gas/vacuum retention is later required. |
+| Sealing land top/bottom | Ra 0.8 um target and Ra 1.6 um hard maximum for liquid validation; Ra 0.4 um max if gas/vacuum retention is later required. |
 | Groove sidewalls | 1.6 um Ra max. |
 | Local per-slot land flatness | 0.05 mm target across each seal loop after machining and deburr. |
 | Perimeter land flatness | 0.15 mm target around the full perimeter loop and 0.05 mm per 100 mm segment. |
@@ -195,8 +230,8 @@ All tests below are no-cell, nonhazardous-liquid validation gates. They do not c
 
 ### Test Order
 
-1. Dimensional inspection of groove depth, groove width, land finish, stop gap, and gasket free height.
-2. Dry closure to hard stops using witness shims.
+1. Dimensional inspection of groove depth, groove width, land finish, land/stop height, lid underside, and gasket free height.
+2. Dry closure to land/stop contact while reading dedicated witness coupons or cavities.
 3. Isolated leak-coupon test at nominal squeeze.
 4. Isolated per-slot loop leak tests on the cassette.
 5. Perimeter containment leak test without pressurizing the full cassette footprint.
@@ -213,13 +248,19 @@ Starting per-loop leak target:
 | Parameter | First-article target |
 | --- | --- |
 | Test medium | DI water with visible dye or equivalent nonhazardous tracer. |
-| Test pressure | 35 kPa gauge (5 psi) or 1.5x the selected maximum expected cassette fluid-interface pressure, whichever is greater, only for isolated small-volume loops. |
+| Isolated gasket-interface qualification pressure | 35 kPa gauge (5 psi) or 1.5x the selected maximum expected cassette fluid-interface pressure, whichever is greater, only for an isolated small-volume gasket loop or representative coupon. |
+| Installed-system proof pressure | 1.5x the selected maximum operating pressure, using liquid and remaining below every installed component's qualified proof-pressure limit. A component that cannot support this proof pressure fails selection. |
 | Hold time | 10 minutes after pressure stabilization. |
 | Pressure-decay acceptance | <=5% decay after thermal stabilization, unless fixture compliance characterization sets a tighter threshold. |
 | Visual acceptance | No visible dye in adjacent slot, optical window area, drain gutter, perimeter gutter, or underside witness paper. |
 | Documentation | Record loop ID, gasket lot, squeeze witness, start/end pressure, hold time, visible result, and operator. |
 
-If the fluid-path agent later selects a lower allowable pressure due to chip or tubing limits, use a separate gasket coupon to prove gasket margin and keep cassette loop tests below the weakest installed component limit.
+Do not weaken either gate to accommodate a selected part. Use a separate
+gasket coupon or isolated loop for the 35 kPa/minimum gasket-interface
+qualification, and use the installed-system proof pressure for the assembled
+chip/tubing/connector path. If any selected component cannot support 1.5x the
+maximum operating pressure, change the component or lower the declared
+operating pressure before testing.
 
 ### Burst Test
 
@@ -255,11 +296,11 @@ The 25-cycle first-article gate is a minimum. Escalate to 100 cycles if the cass
 | First gasket form | Resolve to replaceable continuous axial face seals, 2.40 mm nominal round cord/O-ring baseline. | A2/A4 to implement in drawings; vendor to review. |
 | First material baseline | Resolve to quote platinum-cured silicone first, high-purity EPDM alternate. | A4/vendor; validation coupons compare both if budget allows. |
 | Compression target | Keep A0 25% nominal with 20-30% allowed band. | A2 hard stops and A4 tolerance stack. |
-| Groove dimensions | Start with 1.82 mm depth, 3.20 mm width, 0.20 mm entry radius for 2.40 mm cross-section. | A4/vendor to confirm fill, tolerance, and corner radius before release drawing. |
-| Stop strategy | Resolve that hard stops are mandatory; torque alone is not acceptable. | A2 lid/clamp and A4 DFM. |
-| Land elevation mismatch | Escalate: A0 per-slot land height is 3.00 mm, perimeter is 4.00 mm. Compression faces/stops must be stepped or A0 must change. | Integrator/A2. |
-| Surface finish | Resolve 0.8 um Ra liquid seal-land target; 0.4 um Ra if gas/vacuum claim is added. | A4 drawing package/vendor. |
-| Leak-test pressure | Resolve first-article isolated-loop liquid target at 35 kPa gauge (5 psi) or 1.5x selected maximum expected pressure, whichever is greater. | Validation agent to fixture and characterize compliance. |
+| Groove dimensions | Locked nominal lid cavity: 1.80 mm depth, 3.20 mm width, 0.20 mm entry radius for 2.40 mm cross-section. | A4/vendor to confirm tolerance, fill, and corner radius before release drawing. |
+| Stop strategy | Resolve to nine 4.00 mm-diameter inter-slot stops plus 4.00 mm-wide perimeter web stops, all at 7.35 mm; torque alone is not acceptable. | A2 lid/clamp and A4 DFM. |
+| Common land elevation | Resolved by the shared A0 contract: both seal families and all stops are 7.35 mm above carrier top and meet the lid underside on the closure plane. The nominal compressed gasket occupies the 1.80 mm lid groove. | Integrator/A2/A4. |
+| Surface finish | Resolve Ra 0.8 um liquid seal-land target and Ra 1.6 um hard maximum; Ra 0.4 um max if a gas/vacuum claim is added. | A4 drawing package/vendor. |
+| Leak-test pressure | Resolve two fail-closed liquid gates: isolated gasket qualification at max(35 kPa gauge, 1.5x maximum operating pressure), and installed-system proof at 1.5x maximum operating pressure below every installed component's qualified proof limit. | Validation agent to fixture and characterize compliance. |
 | Burst validation | Resolve to coupon/surrogate burst first; no full-cassette perimeter burst before structural review. | Validation agent/A2. |
 | Reconnection durability | Resolve 25-cycle first gate, escalate to 100 cycles when workflow or material uncertainty requires it. | Validation agent/integrator. |
 | Wetted gasket use | Escalate: no gasket is approved as culture-fluid/AAV-contacting until material absorption, extractables, and cleaning compatibility are reviewed. | Integrator/fluid-path/biology owner. |
@@ -273,7 +314,7 @@ The A3 research pass was intentionally limited to face seals, elastomer selectio
 | --- | --- |
 | Apple Rubber, Seal Design Guide, https://www.applerubber.com/src/pdf/seal-design-guide.pdf | Seal design must be application-verified; material, gland, environment, and failure mode cannot be inferred from nominal gasket size alone. |
 | Sealing Devices, O-ring face seal guide, https://sealingdevices.com/blog/o-ring-face-seal-design-guide/ | Axial face seals depend on groove depth/width, plate gap, surface quality, flatness, tolerance stack, deburr/radius, torque pattern, and early pressure/media/temperature validation. |
-| Ace Seal static axial gland guide, https://www.aceseal.com/gland-design-static-axial-application | 2.40 mm static axial liquid face seal starting dimensions align with roughly 1.82 mm gland depth and 3.20 mm liquid groove width; liquid land finish target is 32 microinch / 0.8 um Ra and gas/vacuum is finer. |
+| Ace Seal static axial gland guide, https://www.aceseal.com/gland-design-static-axial-application | Static axial liquid-face-seal guidance informed the cavity sizing and 3.20 mm width; A0 fixes the nominal depth at the exact 1.80 mm compressed height. Liquid land finish target is 32 microinch / 0.8 um Ra and gas/vacuum is finer. |
 | KEF America medical elastomer tradeoff note, https://www.kef-america.com/material-tradeoffs-silicone-vs-fluoroelastomers-vs-epdm-for-medical-devices/ | Silicone, EPDM, and fluoroelastomers have different biocompatibility, chemical, permeability, and compression-force tradeoffs; compound-specific data matters. |
 | James Walker Elast-O-Pure EP75, https://www.jameswalker.biz/our-solutions/our-products/elastomers/materials-for-biopharmaceutical-applications/elast-o-pure-ep75 | High-purity USP Class VI EPDM-class materials exist for biopharmaceutical sealing and are credible alternates to silicone. |
 | Minahan et al., modular reusable perfusion-ready MPS cassette, https://pmc.ncbi.nlm.nih.gov/articles/PMC12914553/ | Reusable cassette hardware with elastomeric inserts and clamping can support reversible leak-tight organ-chip assembly while preserving imaging access. |

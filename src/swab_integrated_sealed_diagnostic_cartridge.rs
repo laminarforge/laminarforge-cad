@@ -1495,9 +1495,13 @@ mod tests {
     #[test]
     fn exact_dose_and_chamber_envelopes_are_deterministic() {
         let p = CartridgeParams::default();
-        assert_eq!(p.wash_pouch_nominal_ul(), 600.0);
-        assert_eq!(p.reaction_pouch_lobe_nominal_ul(), 22.4);
-        assert_eq!(p.amplification_chamber_nominal_ul(), 22.4);
+        for (actual, expected) in [
+            (p.wash_pouch_nominal_ul(), 600.0),
+            (p.reaction_pouch_lobe_nominal_ul(), 22.4),
+            (p.amplification_chamber_nominal_ul(), 22.4),
+        ] {
+            assert!((actual - expected).abs() < 1e-9, "{actual} != {expected}");
+        }
     }
 
     #[test]

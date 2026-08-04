@@ -2,17 +2,23 @@
 
 Ticket: T-5C29EBD8
 
-Architecture status: these coupons are now mechanical learning references for
-the legacy 16-slot cassette, not proof that the giant cassette is the first
-scalable architecture. The active architecture direction is the small
-standard-footprint AAV condition module in
-`docs/standard_footprint_aav_condition_module_a0.md`.
+Architecture status: active mechanical-learning precursors for the 16-slot,
+4 x 4 first physical cassette. These local coupons retire fit, gasket, datum,
+and connector risks before a full-size carrier is fabricated. They do not by
+themselves satisfy the integrated first-article or vendor-release gates.
 
 This document defines the first dry, desktop-printable validation coupons for the LaminarForge 16-slot cassette. These prints are for mechanical learning only. They are not sterile parts, live-cell parts, AAV-contact parts, or vendor-release geometry.
 
+The coupons do not change experimental semantics: one cassette remains one AAV
+capsid/promoter/payload/dose/timing/media condition, and the 16 slots are
+same-condition readouts rather than separate candidate lanes.
+
 ## Why Coupons First
 
-The full cassette/dock assembly is roughly 818 mm x 617 mm, so it is too large for normal desktop printers. Printing the whole thing would also hide the most important early questions. The first useful checks are local:
+The active carrier alone is 699.04 x 541.92 mm and the dock base is 869.04 x
+691.92 mm before the service bulkhead and separate coupon are included, so the
+integrated hardware is too large for normal desktop printers. Printing the
+whole thing would also hide the most important early questions. The first useful checks are local:
 
 - Does a Rev C chip physically seat in the pocket with the current 1.20 mm/side CAD clearance?
 - Can the gasket groove and hard-stop concept be printed and inspected?
@@ -21,16 +27,15 @@ The full cassette/dock assembly is roughly 818 mm x 617 mm, so it is too large f
 
 ## Generator
 
+`sixteen_slot_cassette_print_coupons` consumes the shared machine-readable A0
+contract for chip, seal, groove, stop, datum, and dock-interface values. Coupon
+envelopes and fixture-only offsets may remain local, but the generator must not
+duplicate or override cassette constants.
+
 Run:
 
 ```text
 mcp__agentic_mcp.laminarforge_build action=run repo=laminarforge-cad bin=sixteen_slot_cassette_print_coupons
-```
-
-Equivalent local command:
-
-```text
-cargo run --bin sixteen_slot_cassette_print_coupons
 ```
 
 Output directory:
@@ -43,9 +48,9 @@ output/print_coupons/
 
 | Output | Approx envelope | Checks |
 | --- | ---: | --- |
-| `sixteen_slot_chip_pocket_fit_coupon.stl` | 168 x 126 x 29 mm | Rev C chip seating, 1.20 mm/side CAD pocket clearance, pocket depth, optical through-window, gasket land, hard stops. Slot-label land is intentionally omitted because it confused the slicer preview and is not needed for pocket fit evidence. |
-| `sixteen_slot_gasket_compression_coupon.stl` | 190 x 88 x 14 mm | 3.20 mm groove width, 1.82 mm groove depth, 20/25/30% compression guard heights, printability of small gasket features. |
-| `sixteen_slot_dock_datum_rail_coupon.stl` | 198 x 178 x 40 mm | Rear primary datum rail, left secondary datum rail, front low retention lip, visible leak gutter, mounting holes. |
+| `sixteen_slot_chip_pocket_fit_coupon.stl` | 168 x 126 x approximately 31.35 mm | Rev C chip seating, 1.20 mm/side CAD pocket clearance, pocket depth, optical through-window, 7.35 mm gasket land, and representative portions of the shared 4.00 mm inter-slot hard-stop pattern without a seal intersection. These are coupon representations of array intersections, not a per-slot corner-stop definition. Slot-label land is intentionally omitted because it is not needed for pocket-fit evidence. |
+| `sixteen_slot_gasket_compression_coupon.stl` | 190 x 88 x 14 mm | 3.20 mm groove width, 1.80 mm groove depth, 20/25/30% compression guard heights, and printability of small gasket features. |
+| `sixteen_slot_dock_datum_rail_coupon.stl` | 198 x 178 x 40 mm | Direct datum-A carrier support, rear primary and left secondary rail inner-face contact, front low-lip contact at the nominal carrier edge, visible leak gutter, and mounting holes. |
 | `sixteen_slot_carrier_corner_surrogate.stl` | 156 x 132 x 39 mm | Mating corner piece for the dock datum rail coupon; checks registration and handling/orientation features. |
 | `sixteen_slot_bulkhead_connector_mockup.stl` | 232 x 76 x 76 mm | M0-M6 media port spacing, partial waste-port spacing, label strip, mounting access, and tubing comb ergonomics. |
 
@@ -71,12 +76,12 @@ Record these before changing the cassette baseline:
 | Check | Measurement |
 | --- | --- |
 | Pocket fit | Actual chip length/width, printed pocket length/width, subjective insertion force, rocking, visible binding, burr/contact points. |
-| Raised pocket features | Confirm the gasket land and four hard stops are fused to the base, not separate slicer islands. |
+| Raised pocket features | Confirm the 7.35 mm gasket land and representative 4.00 mm shared inter-slot stops are fused to the base, remain separate from the seal path, and are not interpreted as per-slot corner stops. |
 | Pocket depth | Printed pocket depth at four corners and center. |
 | Optical window | Whether the center opening leaves enough support and does not warp. |
 | Gasket groove | Printed groove width/depth, corner cleanup, whether gasket seats without twisting. |
 | Compression stops | Stop height at each squeeze lane and whether a straightedge rocks. |
-| Dock datums | Whether the carrier surrogate repeats against rear/left rails without wedging. |
+| Dock datums | Whether the carrier surrogate seats directly on datum A and repeats against the rear/left rail inner faces and front lip at its nominal edges without wedging. |
 | Bulkhead | Finger access, connector spacing, label visibility, tube bend/comb behavior. |
 
 ## Hard Boundaries
@@ -91,6 +96,7 @@ Record these before changing the cassette baseline:
 After the first prints, capture measured deviations and decide which CAD assumptions need revision:
 
 - Pocket clearance and corner/radius policy.
-- Gasket groove and hard-stop dimensions.
-- Datum rail clearances and front retention lip height.
+- The locked 1.80 x 3.20 mm gasket groove, 7.35 mm land/stop height, and absence
+  of seal/stop intersections.
+- Datum-A seating plus rear/left rail and front-lip nominal-contact fit and tolerance behavior.
 - Bulkhead connector spacing, label strip, and strain-relief comb geometry.

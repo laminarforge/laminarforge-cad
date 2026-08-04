@@ -3,8 +3,8 @@ use std::path::Path;
 
 use vcad::{centered_cube, centered_cylinder, Part};
 
-// First physical visualization for the post-16-slot LaminarForge AAV condition
-// module architecture.
+// Supplemental compact-module visualization for local risk reduction within
+// the active 16-slot LaminarForge AAV cassette program.
 //
 // This is a dry mechanical mockup. It is not a wetted path, sterile part,
 // live-cell fixture, AAV-contact part, pressure-rated part, or vendor drawing.
@@ -99,7 +99,7 @@ fn main() {
     println!(
         "  Rev A insert:           {CONNECTOR_INSERT_X:.1} x {CONNECTOR_INSERT_Y:.1} x {CONNECTOR_INSERT_Z:.1} mm, {CONNECTOR_PORT_SPACING:.1} mm port pitch"
     );
-    println!("  Scale target:           one zone first; 16 same-condition zones later");
+    println!("  Study scale target:     one-zone learning before future 16-zone exploration");
     println!(
         "  Print status:           dry visualization only; not sterile, wetted, or pressure-rated"
     );
@@ -645,6 +645,10 @@ fn assert_print_envelopes() {
     assert!(TRAY_Z < MODULE_SERVICE_Z);
     assert!(SLAS_X + 2.0 * (TRAY_CLEARANCE + TRAY_WALL) < PRINT_BED_TARGET);
     assert!(SLAS_Y + 2.0 * (TRAY_CLEARANCE + TRAY_WALL) < PRINT_BED_TARGET);
+    assert!(
+        CONNECTOR_COUPON_X + 2.0 * CONNECTOR_COUPON_MOUSE_EAR_R
+            <= CONNECTOR_COUPON_EFFECTIVE_BED_TARGET
+    );
 }
 
 #[cfg(test)]

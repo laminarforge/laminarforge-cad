@@ -19,6 +19,12 @@ This is not a biological protocol, sterile-barrier validation, AAV containment c
 | Recirculation | Deferred. Do not recirculate AAV/media in the first article until recovery, sterility, and carryover evidence justify it. |
 | Mixed-AAV routing | Blocked. Do not route multiple AAV candidates through one cassette or shared waste/manifold. |
 | Incubation control | Deferred to module work. A6 only reserves gas/vent/service interfaces. |
+| Active carrier | 699.04 x 541.92 x 24.00 mm base body; 699.04 x 541.92 x 31.35 mm true overall. |
+| Clamp keepout | 7.35 mm land/stop/lid closure plane; nine internal and distributed perimeter stops clear every seal; 16 fasteners and 3.30 mm carrier pilots remain outside the gutter at X = +/-332.52 mm or Y = +/-247.96 mm. |
+| Dock registration | Carrier bottom seats directly on datum A; rear/left rail inner faces and front lip contact nominal carrier edges. |
+| Service bulkhead base body / true overall | 789.04 x 34.00 x 76.00 mm / 789.04 x 60.00 x 76.00 mm. |
+| Sensor/backplane cut | Center X = 320.00 mm, center Z = 18.00 mm; preserve clearance from W4. |
+| Carrier routing relief | Left/right service relief bands are 7.00 mm high above carrier top and remain below the 7.35 mm lid underside closure plane. |
 
 ## System Boundary
 
@@ -77,7 +83,7 @@ If a future experiment needs different media recipes for different cell types, t
 
 ## Bulkhead Port Assignment
 
-The A5 CAD service bulkhead is a placeholder block with four gas ports, seven media ports, five waste ports, a sensor/backplane cut, and twelve tubing strain-relief comb teeth. A6 assigns first-article logical roles without freezing final connector geometry.
+The shared A0 contract implements a dry service bulkhead placeholder with four gas ports, seven media ports, five waste ports, a sensor/backplane cut centered at X = 320.00 mm, and twelve tubing strain-relief comb teeth. Its 789.04 x 34.00 x 76.00 mm base body has 789.04 x 60.00 x 76.00 mm true overall bounds after the added label/strain-relief features. A6 assigns the following first-article logical roles without freezing final connector geometry.
 
 ### Gas/Pressure Ports
 
@@ -138,14 +144,18 @@ Tubing, connectors, clips, filters, and labels must stay out of:
 
 - All 16 lid view openings.
 - Carrier optical through-windows.
-- Gasket lands, gasket grooves, hard compression stops, and witness shim access.
-- Datum bosses, rear/left dock rails, and front retention lip.
+- Gasket lands, lid grooves, the nine 4.00 mm-diameter internal hard stops, the
+  4.00 mm-wide perimeter web stops, and dedicated witness access. No route may
+  cross or load a seal or stop.
+- Datum bosses, the direct datum-A dock support, rear/left rail inner faces, and
+  front retention lip where they contact the nominal carrier edges.
 - Carrier global condition ID land and slot-1 orientation marker.
+- All global and per-slot label lands, which the shared A0 contract places outside the leak gutter.
 - Dock logger pockets unless assigned by the sensor/module agent.
 - Robot lift lands and carrier handling lands.
 - Leak gutter and visible drain/sump inspection paths.
 
-Preferred routing is from the rear service bulkhead into side service relief bands, then into controlled row/slot pigtails. Any tube crossing the top of a slot must be rejected unless the integrator explicitly updates the imaging strategy.
+Preferred routing is from the rear service bulkhead into the 7.00 mm-high side service relief bands, then into controlled row/slot pigtails. The reliefs remain below the 7.35 mm closure plane and cannot be used to prop the lid open. Any tube crossing the top of a slot must be rejected unless the integrator explicitly updates the imaging strategy.
 
 ## Bought Connector Strategy
 
@@ -233,7 +243,10 @@ Record calculated and measured volume for:
 - Prime bypass.
 - Sample/QC loop if present.
 
-Initial engineering target: total unrecovered dead volume should be less than one chip dose or less than 10% of the formulated cassette condition volume, whichever is more conservative, unless the integrator explicitly accepts the reagent loss. AAV condition recovery must be measured before expensive vector work.
+Initial engineering target: total unrecovered dead volume must be less than
+one chip dose or less than 10% of the formulated cassette condition volume,
+whichever is more conservative. Missing or failed recovery evidence blocks
+expensive vector work; operator or integrator judgment cannot waive this gate.
 
 ## Flow Balance And Pressure Limits
 
@@ -244,11 +257,12 @@ Starting no-cell targets before live-cell planning:
 | Metric | Initial target |
 | --- | --- |
 | Row flow balance | Row collected-volume CV <= 10% during no-cell multiplex flow. |
-| Slot flow balance | Slot collected-volume CV <= 10-15% until chip restriction data supports tighter limits. |
+| Slot flow balance | Slot collected-volume CV <=10% for the characterized nominal no-cell surrogate set. Actual-chip limits require a new evidence-backed gate after chip restriction data exists. |
 | Pressure drift | Stable within +/-5% after thermal and compliance stabilization. |
 | Pressure ceiling | Routine operation <=50% of the weakest validated leak/burst/connector limit. |
-| Leak test | No visible leak and <=5% pressure decay over 10 minutes at 2x selected operating pressure, or A3's 35 kPa isolated-loop target where that is more appropriate and below the weakest component limit. |
-| Bubble challenge | Introduced upstream bubble clears to waste without reaching chip inlet witness during validated prime/debubble mode. |
+| Installed-system leak test | No visible leak and <=5% pressure decay over 10 minutes at 1.5x selected maximum operating pressure, using liquid and remaining below every installed component's qualified proof-pressure limit. A selected component that cannot support the proof pressure fails selection. |
+| Isolated gasket qualification | A separate coupon or isolated gasket loop passes A3's max(35 kPa gauge, 1.5x maximum operating pressure) liquid gate. |
+| Bubble challenge | Introduced upstream bubble clears to waste without reaching a chip inlet witness during validated prime/debubble mode. Bubble volume and maximum clearing volume/time must be frozen in A7 before this gate is executable. |
 | Recovery | Dye or surrogate recovery reconciles input/output/waste within the A7-defined mass-balance tolerance. |
 
 A7 owns the final validation fixture and acceptance thresholds. A6 requires the physical ports and harness topology to support these measurements.
@@ -285,9 +299,9 @@ The A6 research pass was limited to organ-chip fluid interfaces, world-to-chip c
 | Sartorius Biowelder S product information, https://www.sartorius.com/en/products/fluid-management/aseptic-connectors/sterile-connection-device | Sterile tube welding is a bought-device workflow for compatible PVC/TPE tubing and can provide weld metadata; tubing material compatibility is central. |
 | STARTER modular OoC platform, https://pubs.rsc.org/en/content/articlehtml/2026/lc/d5lc00756a | Modular open OoC platforms use standardized footprints and swappable pumping/sensing/OoC modules; LaminarForge should preserve service interfaces for later modules. |
 
-## A0 Decisions Resolved By A6
+## A0 Interface Decisions Implemented By A6
 
-| A0 open decision | A6 resolution |
+| Interface decision | A6 resolution |
 | --- | --- |
 | Connector family | Do not freeze one final connector family. Use bought aseptic connectors or sterile tube welding for live-use planning; use low-dead-volume microfluidic connectors only for no-cell tests until validated. |
 | Tube OD/ID | Not frozen. Record OD/ID and quote weldable TPE/C-Flex-style and silicone/peristaltic options. |
@@ -312,7 +326,7 @@ The A6 research pass was limited to organ-chip fluid interfaces, world-to-chip c
 
 ## CAD Handoff Notes
 
-No CAD generator edit is required for A6. The existing A5 service bulkhead remains a placeholder for bought connector cutouts and strain relief. Future CAD changes should add:
+The STL and true B-rep STEP draft generators now consume the shared machine-readable A0 geometry contract. The geometric update corrected the earlier carrier/seal/gutter conflicts, moved the 16 clamp fasteners and their 3.30 mm carrier pilots outside the gutter, and locked the service relief below closure while preserving the A6 role map exactly: G0-G3, M0-M6, and W0-W4 retain the assignments above. The service bulkhead remains a placeholder for bought connector cutouts and strain relief. Future CAD changes should add:
 
 - Keyed connector nests based on selected connector datasheets.
 - A physical harness route map or tray.

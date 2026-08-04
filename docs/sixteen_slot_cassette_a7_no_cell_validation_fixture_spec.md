@@ -4,7 +4,15 @@ Ticket: T-1C88E651
 
 This A7 spec defines the no-cell validation fixture and bench acceptance plan for the first physical LaminarForge 16-slot AAV cassette build. It is subordinate to `docs/sixteen_slot_cassette_a0_interface_spec.md` and validates the A5 mechanical stack plus the A6 disposable fluid path before any cells, AAV, or sterile-use claims.
 
-This is not a biological protocol, live-cell release criterion, sterile-barrier validation, AAV containment claim, or final vendor drawing. It is the controlled bench gate that proves the cassette can be assembled, sealed, primed, flowed, challenged with bubbles, drained, and measured repeatably using water, dye, or media-equivalent non-biological fluids.
+This is not a biological protocol, live-cell release criterion, sterile-barrier validation, AAV containment claim, or final vendor drawing. It specifies the controlled bench gate that must eventually prove the cassette can be assembled, sealed, primed, flowed, challenged with bubbles, drained, and measured repeatably using water, dye, or media-equivalent non-biological fluids.
+
+Implementation status: the current Rust output is a dry layout/mockup package,
+not an executable hydraulic validation fixture. Its surrogate chips and
+restriction tokens are solid geometry, and it does not yet contain functional
+flow passages, characterized resistance coupons, or the required dead-volume
+dye station. Therefore it proves packaging and measurement-position intent
+only. It cannot pass A7, unblock media-only planning, or support live-cell/AAV
+claims.
 
 ## A7 Baseline
 
@@ -18,10 +26,14 @@ This is not a biological protocol, live-cell release criterion, sterile-barrier 
 | Recirculation | Not validated by A7. Any recirculating future design needs its own validation ticket. |
 | Mixed-AAV routing | Blocked. The fixture must not normalize using one cassette as a multi-AAV test article. |
 | Incubation control | Out of scope except for dry fit, condensation/drain observation, and module keepout preservation. |
+| Active mechanical contract | 699.04 x 541.92 x 24.00 mm carrier base body with 31.35 mm true overall Z; 151.76 x 109.48 mm slot pitch and 583.04 x 413.92 mm array. |
+| Seal/closure contract | Sixteen independent, nonoverlapping per-slot lands, the perimeter land, and all hard stops top out at 7.35 mm and meet the lid underside; the 2.40 mm gasket compresses in 1.80 x 3.20 mm lid grooves. |
 
-The active first-pass CAD source for this fixture is `src/bin/sixteen_slot_cassette_no_cell_validation_fixture.rs`. It exports the 4 x 4 cassette nest, surrogate/restriction coupon set, pressure sensor bar, flow collection deck, bubble challenge station, leak witness tray, waste/backflow station, run-record plate, and review assembly under `output/no_cell_fixture/`.
+The active first-pass layout source for this fixture is `src/bin/sixteen_slot_cassette_no_cell_validation_fixture.rs`. It consumes the shared machine-readable A0 contract for cassette dimensions and exports the 4 x 4 cassette nest, solid surrogate/restriction layout set, pressure-sensor placement bar, flow-collection layout deck, bubble-station envelope, leak-witness tray, waste/backflow envelope, run-record plate, and review assembly under `output/no_cell_fixture/`. Local fixture dimensions may describe the surrounding bench deck, but they must not duplicate or override cassette geometry constants. Functional passages, sourced hardware, calibration, and characterized challenge articles remain blocked work.
 
 The older `flow_pressure_validation_fixture`, `closed_chip_inlet_outlet_dead_volume_dye_recovery_station`, and related 20-position CAD generators are reference concepts only. They do not validate the 16-slot first article until explicitly ported to the 4 x 4 geometry, A5 datums, and A6 port map.
+
+The shared machine-readable A0 contract supersedes the earlier overlapping seal-loop and unequal-height geometry. A7 fixtures use the corrected 24.00 x 24.00 mm inter-chip gutter, 6.00 mm inter-land clearance, common 7.35 mm seal-land/stop elevation, and 651.04 x 481.92 mm outer / 639.04 x 469.92 mm inner leak gutter rather than reproducing the defective predecessor geometry. The gutter is 6.00 mm wide x 3.00 mm deep with a 5.00 mm separating web; its 8.00 mm drain is centered at (315.52, -254.96, 10.00) mm and runs 40.00 mm along Y. The fixture must also preserve the nine 4.00 mm-diameter inter-slot stops, the 4.00 mm-wide perimeter web stops, the outside-gutter fasteners at X = +/-332.52 mm or Y = +/-247.96 mm, their 3.30 mm carrier pilots, and the 7.00 mm service relief below closure.
 
 ## Validation Questions
 
@@ -45,7 +57,7 @@ Required fixture modules:
 
 | Module | Function | Requirement |
 | --- | --- | --- |
-| Cassette nest | Locates the A5 carrier/lid/gasket stack | Uses the A0 rear/left datum scheme, preserves drain visibility, and exposes slot labels. |
+| Cassette nest | Locates the A5 carrier/lid/gasket stack | Seats the carrier bottom directly on datum A; contacts nominal rear, left, and front carrier edges with the rear/left rail inner faces and front lip; checks the D1 round and D2 relieved functional locators without loading D3/D4; preserves drain visibility; and exposes labels outside the gutter. |
 | Surrogate-chip set | Replaces live chips for hydraulic tests | Sixteen footprint-matched coupons with known restriction and visible inlet/outlet witness regions. |
 | Restriction coupon set | Exercises pressure/flow detection | Nominal, low-resistance, high-resistance, blocked, and bypass coupons must produce a predictable pressure order. |
 | Pressure sensor bar | Measures system and branch pressure | At minimum: common upstream, four row branches, waste/backpressure point, and optional selected slot outlets. |
@@ -108,6 +120,13 @@ Run the sequence in order. A later pass does not override an earlier failure unl
 - Confirm cassette revision, carrier/lid/gasket revision, harness revision, surrogate-chip set revision, and fixture revision.
 - Confirm all sixteen surrogate chips fit their pockets without forcing.
 - Confirm slot labels, row labels, G/M/W port labels, and collection positions match the run record.
+- Confirm the global 96.00 x 12.00 mm barcode land and 118.00 x 10.00 mm text
+  land remain at Y = -263.96 mm outside the leak gutter and clear of the front
+  receiver row; confirm the bulkhead sensor/backplane cut remains centered at
+  X = 320.00 mm without conflicting with W4.
+- Confirm the 16 fastener centers clear the gutter, all 16 carrier receiver
+  placeholders measure 3.30 mm before final threading/inserts, and the nine
+  internal plus perimeter hard stops do not intersect a seal.
 - Confirm unused ports are capped and documented.
 
 Acceptance:
@@ -127,6 +146,10 @@ Acceptance:
 
 - Gasket witness height is within the A3 20-30% compression guard band, with the nominal target at 25%.
 - If measured directly from the 2.40 mm nominal gasket assumption, compressed height should be 1.68-1.92 mm.
+- The 7.35 mm per-slot lands, perimeter land, and hard stops contact the lid
+  underside on one closure plane matching nominal chip protrusion. The nominal
+  1.80 mm compressed gasket height is contained by the lid groove cavity; it is
+  not a gap above a shorter land.
 - No window, port, label, drain, or witness path is blocked by clamp hardware or tubing.
 
 ### 3. Harness Topology Check
@@ -138,7 +161,8 @@ Acceptance:
 Acceptance:
 
 - Every pigtail maps to the correct S01-S16 position.
-- No tube crosses imaging openings, gasket lands, hard stops, datum features, or drain inspection regions.
+- No tube crosses imaging openings, gasket lands, lid grooves, either hard-stop
+  family, datum features, or drain inspection regions.
 - Wrong-port ambiguity is grounds for fixture redesign, not operator training alone.
 
 ### 4. Prime-To-Waste Validation
@@ -157,7 +181,7 @@ Acceptance:
 
 ### 5. Bubble Challenge
 
-- Introduce a known upstream bubble or air slug using the bubble challenge station.
+- Introduce a calibrated upstream bubble or air slug using the bubble challenge station. Freeze its volume, injection uncertainty, location, flow condition, and photographic/optical evidence method in the approved run record before testing; an unset stimulus is an automatic gate failure.
 - Run prime/debubble mode to W1/W3.
 - Repeat by row if the harness has row-level high points.
 - Observe chip inlet witnesses and outlet/bubble sensors if installed.
@@ -166,7 +190,7 @@ Acceptance:
 
 - The introduced bubble clears to the prime/debubble waste path.
 - No bubble reaches a chip inlet witness during the validated prime/debubble mode.
-- No new trapped bubble remains at a row branch high point after the specified clearing volume.
+- No new trapped bubble remains at a row branch high point after the preapproved maximum clearing volume and time. An unset clearing limit is an automatic gate failure.
 - The clearing volume and time are recorded for the volume ledger.
 
 ### 6. Pressure Decay And Visible Leak Test
@@ -180,7 +204,8 @@ Acceptance:
 
 - No visible dyed leak at chip interfaces, gasket perimeter, bulkhead, connector handoffs, waste handoff, or drain paths.
 - Pressure decay is <=5% over 10 minutes after stabilization.
-- Test pressure is 2x selected operating pressure or A3's 35 kPa isolated-loop target, whichever is more appropriate and still below the weakest component limit.
+- The installed system is tested at 1.5x selected maximum operating pressure using liquid and below every installed component's qualified proof-pressure limit. A selected part that cannot support that pressure fails selection.
+- A separate representative gasket coupon or isolated gasket loop passes A3's max(35 kPa gauge, 1.5x maximum operating pressure) qualification gate.
 - Routine planned operation must remain <=50% of the weakest validated leak/burst/connector limit.
 
 If the fixture uses a known artificial leak to verify the detection method, that leak coupon must be physically isolated from release testing and clearly marked as a detector-verification tool.
@@ -195,7 +220,7 @@ If the fixture uses a known artificial leak to verify the detection method, that
 Acceptance:
 
 - Row collected-volume coefficient of variation is <=10%.
-- Slot collected-volume coefficient of variation is <=10-15% until actual chip restriction data supports a tighter limit.
+- Slot collected-volume coefficient of variation is <=10% for the characterized nominal no-cell surrogate set. Actual-chip limits require a separate evidence-backed gate.
 - Pressure drift is within +/-5% after stabilization.
 - Any systematic row or corner bias must be corrected or explicitly carried into the next design revision.
 
@@ -204,14 +229,14 @@ Gravimetric collection is the preferred early measurement because low-flow senso
 ### 8. Restriction, Occlusion, And Bypass Challenge
 
 - Replace selected nominal coupons with known low-resistance, high-resistance, blocked, and bypass coupons.
+- Characterize each functional coupon independently and freeze its resistance band, uncertainty, and expected pressure/flow signature before the cassette challenge. The current solid layout tokens do not satisfy this prerequisite.
 - Run the pressure/flow profile used for nominal testing.
 - Confirm the pressure sensor bar and collection deck detect the expected ordering.
 
 Acceptance:
 
-- Blocked coupon shows high upstream/row pressure and low/no collection at the expected slot.
-- Bypass or low-resistance coupon shows low local restriction and abnormal collection relative to nominal.
-- High-resistance coupon produces pressure and flow values between nominal and blocked states.
+- Each coupon remains within its preapproved resistance band during independent characterization.
+- Blocked, bypass/low-resistance, high-resistance, and nominal signatures are separated by at least three combined standard uncertainties at the selected flow condition.
 - The fixture identifies the affected row/slot without relying on visual inspection alone.
 
 ### 9. Dead-Volume And Dye-Recovery Test
@@ -224,14 +249,14 @@ Acceptance:
 Acceptance:
 
 - Input, slot output, waste output, and residual estimate reconcile within +/-10% for first article.
-- Total unrecovered dead volume remains less than one chip dose or less than 10% of the formulated cassette condition volume, whichever is more conservative, unless the integrator explicitly accepts the reagent loss.
+- Total unrecovered dead volume remains less than one chip dose or less than 10% of the formulated cassette condition volume, whichever is more conservative. This gate cannot be waived by operator or integrator judgment.
 - Persistent dye retention in connectors, filters, bubble elements, or dead legs blocks expensive vector work until the loss is understood.
 
 ### 10. Waste Backflow, Siphon, And Overflow Challenge
 
 - Run normal flow into the selected sealed waste bag or bottle.
 - Challenge waste placement below and above cassette height within the planned bench/module envelope.
-- Apply controlled reverse head or backpressure using the waste/backflow station.
+- Apply the preapproved high/low waste elevations and reverse head/backpressure using the waste/backflow station. The run record must state exact elevations, pressure, dwell, uncertainty, and secondary-containment capacity; unset challenge values are an automatic gate failure.
 - Trigger the overflow/relief path if W4 is installed.
 
 Acceptance:
@@ -262,11 +287,11 @@ The first-article cassette can move from A7 into media-only planning only when a
 | Compression | A3 witness target met, nominally 20-30% squeeze with 25% target. |
 | Harness map | Every port, row, slot, and waste path traceable to the run record. |
 | Prime | 16/16 paths prime with no visible bubble at chip inlet witnesses. |
-| Bubble challenge | Introduced bubble clears to W1/W3 without reaching chip inlet witnesses. |
-| Leak | No visible dye leak and <=5% pressure decay over 10 minutes at the selected no-cell test pressure. |
-| Flow balance | Row CV <=10%; slot CV <=10-15%; pressure drift within +/-5% after stabilization. |
-| Restriction detection | Nominal, low, high, blocked, and bypass coupons produce expected pressure/flow signatures. |
-| Dead volume | Recovery reconciles within +/-10%; unrecovered volume below A6 target or explicitly accepted. |
+| Bubble challenge | Calibrated, preapproved bubble stimulus clears to W1/W3 within the frozen clearing volume/time without reaching chip inlet witnesses; unset stimulus/limits fail. |
+| Leak | Installed system has no visible dye leak and <=5% pressure decay over 10 minutes at 1.5x maximum operating pressure; representative isolated gasket loop also passes A3 qualification. |
+| Flow balance | Row and slot CV are each <=10% for the characterized nominal surrogate set; pressure drift is within +/-5% after stabilization. |
+| Restriction detection | Independently characterized nominal, low, high, blocked, and bypass coupons remain in band and produce signatures separated by at least three combined standard uncertainties. |
+| Dead volume | Recovery reconciles within +/-10%; unrecovered volume is below the A6 target with no discretionary waiver. |
 | Waste safety | No backflow, siphon, or uncontrolled overflow into cassette or bench. |
 | Repeatability | Cycles 1, 5, 10, and 25 pass the same required gates. |
 
@@ -306,7 +331,7 @@ External sources checked for A7:
 
 Internal source anchors:
 
-- A0 freezes the 16-slot geometry, slot map, datums, condition semantics, and disposable wetted-path policy.
+- The machine-readable A0 contract freezes the corrected 16-slot geometry, slot map, A/B/C datum scheme, D1/D2 locator roles, condition semantics, and disposable wetted-path policy.
 - A3 provides the starting gasket compression guard band and leak/burst coupon targets.
 - A6 provides the disposable harness topology, port map, prime/debubble path, waste/backflow requirement, pressure/flow targets, and dead-volume ledger.
 - `docs/tissue_chip_reproducibility_controls.md` identifies no-cell flow, pressure mapping, leak-witness, and bubble challenge as required engineering gates before live cells.
@@ -315,7 +340,12 @@ Internal source anchors:
 
 A7 hands these decisions to the first-article build package:
 
-- Iterate the new `sixteen_slot_cassette_no_cell_validation_fixture` CAD outputs into either STEP/drawing release files or sourced bench fixture selections.
+- Iterate the shared-contract `sixteen_slot_cassette_no_cell_validation_fixture`
+  CAD outputs into either STEP/drawing release files or sourced bench fixture
+  selections without reintroducing local cassette constants.
+- Replace the solid layout tokens with functional flow-through surrogate and
+  restriction coupons, and add the missing dead-volume dye station before any
+  A7 execution claim.
 - Select actual pressure sensors, flow sensors if used, scales, gauges, fittings, tubing, connector SKUs, collection vials, dye, and leak-witness materials.
 - Define the final operating pressure and test pressure once pump, tubing, connector, surrogate-chip, and gasket coupon data are known.
 - Add drawing notes that the older 20-position fixture CAD is not the active first-build validation fixture.

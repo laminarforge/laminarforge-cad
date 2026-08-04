@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use laminarforge_cad::{REVC_CHIP_LENGTH, REVC_CHIP_WIDTH};
+use laminarforge_cad::{sixteen_slot_cassette_a0::*, REVC_CHIP_LENGTH, REVC_CHIP_WIDTH};
 use vcad::{centered_cube, centered_cylinder, Part};
 
 // Desktop-printable dry-fit coupons for the 16-slot first-article cassette.
@@ -20,30 +20,13 @@ const OUTPUTS: [&str; 5] = [
     "output/print_coupons/sixteen_slot_bulkhead_connector_mockup.stl",
 ];
 
-const CHIP_CLEARANCE: f64 = 1.20;
-const DRAWING_TARGET_CHIP_CLEARANCE: f64 = 0.80;
-const CHIP_POCKET_DEPTH: f64 = 7.0;
-const OPTICAL_WINDOW_MARGIN: f64 = 24.0;
-const CARRIER_Z: f64 = 24.0;
-
-const GASKET_FREE_HEIGHT: f64 = 2.40;
-const GASKET_TARGET_SQUEEZE: f64 = 0.25;
-const GASKET_COMPRESSED_HEIGHT: f64 = GASKET_FREE_HEIGHT * (1.0 - GASKET_TARGET_SQUEEZE);
-const GASKET_GUARD_MIN_SQUEEZE: f64 = 0.20;
-const GASKET_GUARD_MAX_SQUEEZE: f64 = 0.30;
-const GASKET_GUARD_MAX_COMPRESSED_HEIGHT: f64 =
-    GASKET_FREE_HEIGHT * (1.0 - GASKET_GUARD_MIN_SQUEEZE);
-const GASKET_GUARD_MIN_COMPRESSED_HEIGHT: f64 =
-    GASKET_FREE_HEIGHT * (1.0 - GASKET_GUARD_MAX_SQUEEZE);
-const GASKET_GROOVE_DEPTH: f64 = 1.82;
-const GASKET_GROOVE_W: f64 = 3.20;
-
-const DOCK_RAIL_W: f64 = 16.0;
-const DOCK_RAIL_Z: f64 = 18.0;
-const DOCK_Z: f64 = 22.0;
-
 const PRINT_BED_TARGET_XY: f64 = 256.0;
 const FEATURE_ANCHOR_OVERLAP: f64 = 0.40;
+const COUPON_STOP_CLEARANCE: f64 = 1.0;
+const CHIP_COUPON_STOP_OFFSET_X: f64 =
+    PER_SLOT_GASKET_OUTER_X / 2.0 + INTERNAL_STOP_DIAMETER / 2.0 + COUPON_STOP_CLEARANCE;
+const CHIP_COUPON_STOP_OFFSET_Y: f64 =
+    PER_SLOT_GASKET_OUTER_Y / 2.0 + INTERNAL_STOP_DIAMETER / 2.0 + COUPON_STOP_CLEARANCE;
 
 fn main() {
     assert_coupon_envelopes();
@@ -70,6 +53,16 @@ fn main() {
             "print coupon export did not create required output: {path}"
         );
     }
+    verify_binary_stl_size(
+        OUTPUTS[0],
+        [
+            CHIP_FIT_COUPON_X,
+            CHIP_FIT_COUPON_Y,
+            CHIP_FIT_COUPON_OVERALL_Z,
+        ],
+        0.05,
+    )
+    .expect("chip-fit coupon STL does not match the A0 envelope");
 
     println!();
     println!("16-slot cassette printable dry-fit coupons:");
@@ -103,18 +96,78 @@ fn export(path: &str, part: &Part) {
     println!("Exported: {path}");
 }
 
+fn verify_binary_stl_size(path: &str, expected: [f64; 3], tolerance: f64) -> Result<(), String> {
+    let bytes = fs::read(path).map_err(|error| format!("failed to read {path}: {error}"))?;
+    if bytes.len() < 84 {
+        return Err(format!("{path} is too small for binary STL"));
+    }
+    let triangle_count = u32::from_le_bytes(
+        bytes[80..84]
+            .try_into()
+            .map_err(|_| format!("{path} has an invalid triangle header"))?,
+    ) as usize;
+    let expected_length = 84usize
+        .checked_add(
+            triangle_count
+                .checked_mul(50)
+                .ok_or_else(|| format!("{path} triangle count overflows"))?,
+        )
+        .ok_or_else(|| format!("{path} length overflows"))?;
+    if triangle_count == 0 || bytes.len() != expected_length {
+        return Err(format!(
+            "{path} has invalid binary STL length {} for {triangle_count} triangles",
+            bytes.len()
+        ));
+    }
+
+    let mut min = [f64::INFINITY; 3];
+    let mut max = [f64::NEG_INFINITY; 3];
+    for triangle in 0..triangle_count {
+        let triangle_start = 84 + triangle * 50;
+        for vertex in 0..3 {
+            let vertex_start = triangle_start + 12 + vertex * 12;
+            for axis in 0..3 {
+                let coordinate_start = vertex_start + axis * 4;
+                let coordinate = f32::from_le_bytes(
+                    bytes[coordinate_start..coordinate_start + 4]
+                        .try_into()
+                        .map_err(|_| format!("{path} has a truncated vertex"))?,
+                ) as f64;
+                if !coordinate.is_finite() {
+                    return Err(format!("{path} contains a non-finite vertex"));
+                }
+                min[axis] = min[axis].min(coordinate);
+                max[axis] = max[axis].max(coordinate);
+            }
+        }
+    }
+    for axis in 0..3 {
+        let size = max[axis] - min[axis];
+        if (size - expected[axis]).abs() > tolerance {
+            return Err(format!(
+                "{path} axis {axis} size {size:.4}mm does not match A0 {:.4}mm",
+                expected[axis]
+            ));
+        }
+    }
+    Ok(())
+}
+
 fn chip_pocket_fit_coupon() -> Part {
-    let coupon_x = 168.0;
-    let coupon_y = 126.0;
-    let body = centered_cube("chip_pocket_coupon_body", coupon_x, coupon_y, CARRIER_Z);
+    let body = centered_cube(
+        "chip_pocket_coupon_body",
+        CHIP_FIT_COUPON_X,
+        CHIP_FIT_COUPON_Y,
+        CARRIER_Z,
+    );
 
     let pocket = centered_cube(
         "chip_pocket_coupon_rev_c_clearance_pocket",
         REVC_CHIP_LENGTH + CHIP_CLEARANCE * 2.0,
         REVC_CHIP_WIDTH + CHIP_CLEARANCE * 2.0,
-        CHIP_POCKET_DEPTH,
+        top_face_cut_height(CHIP_POCKET_DEPTH),
     )
-    .translate(0.0, 0.0, CARRIER_Z / 2.0 - CHIP_POCKET_DEPTH / 2.0 + 0.2);
+    .translate(0.0, 0.0, top_face_cut_z(CARRIER_Z, CHIP_POCKET_DEPTH));
 
     let optical_window = centered_cube(
         "chip_pocket_coupon_optical_window_cut",
@@ -125,37 +178,40 @@ fn chip_pocket_fit_coupon() -> Part {
 
     let gasket_land = rectangular_frame(
         "chip_pocket_coupon_gasket_land",
-        REVC_CHIP_LENGTH + 14.0,
-        REVC_CHIP_WIDTH + 14.0,
-        3.0,
-        8.0,
+        PER_SLOT_GASKET_OUTER_X,
+        PER_SLOT_GASKET_OUTER_Y,
+        GASKET_LAND_Z + FEATURE_ANCHOR_OVERLAP,
+        GASKET_LAND_W,
     )
     .translate(
         0.0,
         0.0,
-        CARRIER_Z / 2.0 + 1.5 - FEATURE_ANCHOR_OVERLAP / 2.0,
+        CARRIER_Z / 2.0 + GASKET_LAND_Z / 2.0 - FEATURE_ANCHOR_OVERLAP / 2.0,
     );
 
-    let stop_z = 3.0 + GASKET_COMPRESSED_HEIGHT;
-    let stop_offset_x = REVC_CHIP_LENGTH / 2.0 + 3.0;
-    let stop_offset_y = REVC_CHIP_WIDTH / 2.0 + 3.0;
+    let stop_z = CLOSURE_PLANE_ABOVE_CARRIER;
     let mut stops = Part::empty("chip_pocket_coupon_25pct_hard_stops");
     for (i, (x, y)) in [
-        (-stop_offset_x, -stop_offset_y),
-        (stop_offset_x, -stop_offset_y),
-        (-stop_offset_x, stop_offset_y),
-        (stop_offset_x, stop_offset_y),
+        (-CHIP_COUPON_STOP_OFFSET_X, -CHIP_COUPON_STOP_OFFSET_Y),
+        (CHIP_COUPON_STOP_OFFSET_X, -CHIP_COUPON_STOP_OFFSET_Y),
+        (-CHIP_COUPON_STOP_OFFSET_X, CHIP_COUPON_STOP_OFFSET_Y),
+        (CHIP_COUPON_STOP_OFFSET_X, CHIP_COUPON_STOP_OFFSET_Y),
     ]
     .into_iter()
     .enumerate()
     {
         stops = stops
-            + centered_cylinder(format!("chip_pocket_coupon_hard_stop_{i}"), 2.5, stop_z, 24)
-                .translate(
-                    x,
-                    y,
-                    CARRIER_Z / 2.0 + stop_z / 2.0 - FEATURE_ANCHOR_OVERLAP / 2.0,
-                );
+            + centered_cylinder(
+                format!("chip_pocket_coupon_hard_stop_{i}"),
+                INTERNAL_STOP_DIAMETER / 2.0,
+                stop_z + FEATURE_ANCHOR_OVERLAP,
+                24,
+            )
+            .translate(
+                x,
+                y,
+                CARRIER_Z / 2.0 + stop_z / 2.0 - FEATURE_ANCHOR_OVERLAP / 2.0,
+            );
     }
 
     body - pocket - optical_window + gasket_land + stops
@@ -192,9 +248,9 @@ fn gasket_compression_coupon() -> Part {
             format!("gasket_compression_coupon_{name}_groove_cut"),
             138.0,
             GASKET_GROOVE_W,
-            GASKET_GROOVE_DEPTH + 0.4,
+            GASKET_GROOVE_CUT_HEIGHT,
         )
-        .translate(0.0, y, coupon_z / 2.0 - GASKET_GROOVE_DEPTH / 2.0 + 0.2);
+        .translate(0.0, y, top_face_gasket_groove_cut_z(coupon_z));
 
         let left_stop = centered_cube(
             format!("gasket_compression_coupon_{name}_left_stop"),
@@ -422,10 +478,6 @@ fn rectangular_frame(name: &str, x: f64, y: f64, z: f64, wall: f64) -> Part {
     outer - inner
 }
 
-fn centered_index(index: usize, count: usize, pitch: f64) -> f64 {
-    (index as f64 - (count as f64 - 1.0) / 2.0) * pitch
-}
-
 fn assert_coupon_envelopes() {
     assert!(REVC_CHIP_LENGTH + CHIP_CLEARANCE * 2.0 < PRINT_BED_TARGET_XY);
     assert!(REVC_CHIP_WIDTH + CHIP_CLEARANCE * 2.0 < PRINT_BED_TARGET_XY);
@@ -461,8 +513,19 @@ mod tests {
         assert!((DRAWING_TARGET_CHIP_CLEARANCE - 0.80).abs() < TOL);
         assert!((GASKET_FREE_HEIGHT - 2.40).abs() < TOL);
         assert!((GASKET_COMPRESSED_HEIGHT - 1.80).abs() < TOL);
-        assert!((GASKET_GROOVE_DEPTH - 1.82).abs() < TOL);
+        assert!((GASKET_GROOVE_DEPTH - 1.80).abs() < TOL);
         assert!((GASKET_GROOVE_W - 3.20).abs() < TOL);
+        assert!(PER_SLOT_GASKET_INNER_X > REVC_CHIP_LENGTH);
+        assert!(PER_SLOT_GASKET_INNER_Y > REVC_CHIP_WIDTH);
+        assert!(
+            CHIP_COUPON_STOP_OFFSET_X - INTERNAL_STOP_DIAMETER / 2.0
+                > PER_SLOT_GASKET_OUTER_X / 2.0
+        );
+        assert!(
+            CHIP_COUPON_STOP_OFFSET_Y - INTERNAL_STOP_DIAMETER / 2.0
+                > PER_SLOT_GASKET_OUTER_Y / 2.0
+        );
+        assert!((CLOSURE_PLANE_ABOVE_CARRIER - GASKET_LAND_Z).abs() < TOL);
         assert_eq!(DOCK_RAIL_W, 16.0);
         assert_eq!(DOCK_RAIL_Z, 18.0);
         assert_eq!(FEATURE_ANCHOR_OVERLAP, 0.40);
@@ -470,8 +533,38 @@ mod tests {
 
     #[test]
     fn primary_print_envelopes_fit_common_bambu_bed() {
-        assert!(168.0 <= PRINT_BED_TARGET_XY);
+        assert!(CHIP_FIT_COUPON_X <= PRINT_BED_TARGET_XY);
+        assert!(CHIP_FIT_COUPON_Y <= PRINT_BED_TARGET_XY);
         assert!(190.0 <= PRINT_BED_TARGET_XY);
         assert!(232.0 <= PRINT_BED_TARGET_XY);
+    }
+
+    #[test]
+    fn chip_fit_coupon_features_reach_the_shared_closure_plane() {
+        const TOL: f64 = 1e-9;
+        let land_primitive_height = GASKET_LAND_Z + FEATURE_ANCHOR_OVERLAP;
+        let land_center_z = CARRIER_Z / 2.0 + GASKET_LAND_Z / 2.0 - FEATURE_ANCHOR_OVERLAP / 2.0;
+        let stop_primitive_height = CLOSURE_PLANE_ABOVE_CARRIER + FEATURE_ANCHOR_OVERLAP;
+        let stop_center_z =
+            CARRIER_Z / 2.0 + CLOSURE_PLANE_ABOVE_CARRIER / 2.0 - FEATURE_ANCHOR_OVERLAP / 2.0;
+        let closure_z = CARRIER_Z / 2.0 + CLOSURE_PLANE_ABOVE_CARRIER;
+
+        assert!((land_center_z + land_primitive_height / 2.0 - closure_z).abs() < TOL);
+        assert!((stop_center_z + stop_primitive_height / 2.0 - closure_z).abs() < TOL);
+        assert!(
+            (land_center_z
+                - land_primitive_height / 2.0
+                - (CARRIER_Z / 2.0 - FEATURE_ANCHOR_OVERLAP))
+                .abs()
+                < TOL
+        );
+        assert!(
+            (stop_center_z
+                - stop_primitive_height / 2.0
+                - (CARRIER_Z / 2.0 - FEATURE_ANCHOR_OVERLAP))
+                .abs()
+                < TOL
+        );
+        assert!((CHIP_FIT_COUPON_OVERALL_Z - (closure_z + CARRIER_Z / 2.0)).abs() < TOL);
     }
 }
