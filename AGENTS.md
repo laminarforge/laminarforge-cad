@@ -10,6 +10,8 @@
 
 ## Build
 
+AWS, GitHub Actions and Namespace build processing are retired. GitHub is source control only. Use local MCP execution; do not restore or dispatch cloud build workflows.
+
 Use `mcp__agentic-mcp__laminarforge_build` for CAD/build work in this repository.
 
 ## PCBA Routing And Release
