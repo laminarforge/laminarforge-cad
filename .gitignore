@@ -90,7 +90,6 @@ terraform.rc
 
 # Rust
 /target
-Cargo.lock
 
 # CAD output
 /output

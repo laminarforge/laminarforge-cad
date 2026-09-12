@@ -44,6 +44,8 @@ jobs:
     timeout-minutes: 30
     env:
       CARGO_BUILD_JOBS: '2'
+      CMAKE_BUILD_PARALLEL_LEVEL: '2'
+      CMAKE_POLICY_VERSION_MINIMUM: '3.5'
       CARGO_TERM_COLOR: never
       CAD_ACTION: ${{ inputs.action || 'benchmark' }}
       CAD_BIN: ${{ inputs.bin || 'chip_priming_tubing_fixture' }}
@@ -68,12 +70,16 @@ jobs:
           shared-key: cad-iteration-${{ inputs.profile || 'dev' }}
           cache-all-crates: true
       - name: Measure selected model and verify data-only iteration
+        env:
+          CARGO_INCREMENTAL: ${{ inputs.profile == 'release' && '0' || '1' }}
         run: |
           set -euo pipefail
           rustc --edition=2021 tools/cad-iteration.rs -o "$RUNNER_TEMP/cad-iteration"
           "$RUNNER_TEMP/cad-iteration"
       - name: Validate runtime model contract
         if: env.CAD_BIN == 'chip_priming_tubing_fixture'
+        env:
+          CARGO_INCREMENTAL: ${{ inputs.profile == 'release' && '0' || '1' }}
         run: cargo test --locked --bin chip_priming_tubing_fixture --profile "$CAD_PROFILE" --jobs=2
       - name: Retain timing, peak RSS, source identity and generated fixture
         if: always()
