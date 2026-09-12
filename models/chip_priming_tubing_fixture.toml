@@ -1,0 +1,8 @@
+# Millimeters. Loaded at runtime, never embedded in the executable.
+chip_length_mm = 127.76
+chip_width_mm = 85.48
+margin_x_mm = 24.0
+margin_y_mm = 34.0
+base_height_mm = 12.0
+pocket_clearance_mm = 0.25
+pocket_depth_mm = 4.0

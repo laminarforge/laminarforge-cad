@@ -1,0 +1,87 @@
+name: CAD iteration
+run-name: cad-${{ inputs.job_id || github.sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        required: true
+        type: string
+      source_sha:
+        required: true
+        type: string
+      action:
+        type: choice
+        options: [check, build, run, benchmark]
+        default: check
+      bin:
+        required: true
+        type: string
+        default: chip_priming_tubing_fixture
+      profile:
+        type: choice
+        options: [dev, release]
+        default: dev
+      features:
+        type: string
+        default: ''
+      model_config:
+        type: string
+        default: ''
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/cad-iteration.yml
+      - tools/cad-iteration.rs
+      - models/chip_priming_tubing_fixture.toml
+      - src/bin/chip_priming_tubing_fixture.rs
+      - Cargo.toml
+      - Cargo.lock
+permissions:
+  contents: read
+jobs:
+  selected-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_TERM_COLOR: never
+      CAD_ACTION: ${{ inputs.action || 'benchmark' }}
+      CAD_BIN: ${{ inputs.bin || 'chip_priming_tubing_fixture' }}
+      CAD_PROFILE: ${{ inputs.profile || 'dev' }}
+      CAD_FEATURES: ${{ inputs.features || '' }}
+      CAD_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+      CAD_MODEL_CONFIG: ${{ inputs.model_config || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Require canonical main source
+        run: |
+          set -euo pipefail
+          [[ "$CAD_SOURCE_SHA" =~ ^[a-fA-F0-9]{40}$ ]]
+          git merge-base --is-ancestor "$CAD_SOURCE_SHA" origin/main
+      - uses: dtolnay/rust-toolchain@1.94.1
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: cad-iteration-${{ inputs.profile || 'dev' }}
+          cache-all-crates: true
+      - name: Measure selected model and verify data-only iteration
+        run: |
+          set -euo pipefail
+          rustc --edition=2021 tools/cad-iteration.rs -o "$RUNNER_TEMP/cad-iteration"
+          "$RUNNER_TEMP/cad-iteration"
+      - name: Validate runtime model contract
+        if: env.CAD_BIN == 'chip_priming_tubing_fixture'
+        run: cargo test --locked --bin chip_priming_tubing_fixture --profile "$CAD_PROFILE" --jobs=2
+      - name: Retain timing, peak RSS, source identity and generated fixture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cad-${{ inputs.job_id || github.sha }}
+          path: |
+            artifacts/
+            target/cargo-timings/
+          if-no-files-found: error
+          retention-days: 14
