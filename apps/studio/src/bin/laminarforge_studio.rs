@@ -56,10 +56,15 @@ impl Studio {
         style.visuals.panel_fill = Color32::from_rgb(22, 29, 36);
         style.visuals.selection.bg_fill = Color32::from_rgb(26, 89, 95);
         cc.egui_ctx.set_style(style);
-        let preferences: Preferences = cc
-            .storage
-            .and_then(|s| eframe::get_value(s, "library"))
-            .unwrap_or_default();
+        let preferences: Preferences = if cfg!(feature = "app-store") {
+            // Sandbox file-panel grants are session-scoped. Do not reopen persisted
+            // paths without a security-scoped bookmark: the user selects a folder.
+            Preferences::default()
+        } else {
+            cc.storage
+                .and_then(|s| eframe::get_value(s, "library"))
+                .unwrap_or_default()
+        };
         let startup = initial
             .or_else(|| preferences.folder.clone())
             .or_else(|| preferences.recent.clone());

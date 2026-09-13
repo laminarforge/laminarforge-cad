@@ -16,7 +16,9 @@ It requires macOS 12 or later. Build on the target Mac architecture.
 - **Export PNG…** saves only the render viewport at its current pixel size.
 - **Refresh library** rescans disk; **Reload design** reloads changed geometry.
 
-The most recent library and design persist locally. There is no network service,
+The local development app remembers its library and design. The sandboxed
+TestFlight app starts with an empty library each launch; select a folder or file
+with the Open controls to grant access for that session. There is no network service,
 cloud processing, or account requirement. Diagnostics use structured tracing on
 stderr. An optional first CLI argument opens a file or folder at launch.
 
@@ -61,6 +63,21 @@ viewport PNG plus `FRESH_OUTPUT.workspace.png`, and exits. A missing PNG is an
 error. Inspect the capture as well as the exact background job status. Use a
 fresh output filename for every check. UI automation and full interaction tests
 remain separate from the framebuffer check.
+
+## TestFlight
+
+The macOS target in `project.yml` packages the Rust executable for Apple Silicon.
+Build `laminarforge_studio` with the local CAD MCP and `features: ["app-store"]`.
+Stage that build receipt's executable as `dist/laminarforge_studio` and generate
+`dist/laminarforge_studio.sha256` using `shasum -a 256 laminarforge_studio` from
+`dist`. Xcode verifies the checksum before installing the executable into its
+app bundle, then signs with the Studio Mac App Store provisioning profile.
+The profile and signing credentials are machine configuration, never repository
+files. `ExportOptions.plist` selects App Store Connect distribution.
+
+Submit with `macos_deploy`, app `laminarforge-studio-macos`. The Mac-local
+pipeline allocates the build number, generates the Xcode project, archives,
+exports the signed installer and uploads to TestFlight. No cloud build is used.
 
 The initial verification used the heated-cassette V0 design library (20 files)
 and closed/open assemblies. The closed assembly rendered 11,866 triangles.

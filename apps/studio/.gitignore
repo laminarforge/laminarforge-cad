@@ -1,2 +1,5 @@
 /target/
 /dist/
+/LaminarForgeStudio.xcodeproj/
+/build-archive/
+/build
