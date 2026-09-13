@@ -83,3 +83,13 @@ Ticket creation returned `missing_milestone`; workspace startup returned an
 unregistered-repository error. Existing git MCP tools supplied isolated worktrees
 without inventing backlog hierarchy. The durable completion artifact records the
 canonical source commits and installed local MCP verification.
+
+Final local delivery: CAD implementation `4ea653d`; installed MCP `df86a423`.
+The MCP release `local-mcp-ebcbde013ce0454ca39f2e6ee5b71503` succeeded and passed
+strict code-signature verification. It took 163.90 seconds and reported peak RSS
+2,872,295,424 bytes (about 2.7 GiB). All six runtime model families then generated
+and verified from canonical main through the installed MCP. Installed-tool probes
+rejected run_all, missing runtime flags and a temporarily changed frozen source
+before compilation; the probe source was restored exactly. Model execution errors
+retain their stderr alongside build output. No service/client process was restarted;
+existing client-owned MCP sessions load the installed version on reconnect.
