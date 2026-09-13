@@ -1,0 +1,23 @@
+[package]
+name = "laminarforge-studio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+eframe = { version = "0.31.1", default-features = false, features = ["default_fonts", "glow", "persistence"] }
+glam = "0.30"
+rfd = "0.15"
+stl_io = "0.8"
+bytemuck = "1"
+image = { version = "0.25", default-features = false, features = ["png"] }
+serde = { version = "1", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[[bin]]
+name = "laminarforge_studio"
+path = "src/bin/laminarforge_studio.rs"
+
+[[bin]]
+name = "studio_bundle"
+path = "src/bin/studio_bundle.rs"
