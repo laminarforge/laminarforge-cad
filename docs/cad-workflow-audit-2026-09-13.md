@@ -1,5 +1,7 @@
 # CAD iteration and Codex capability audit — September 13, 2026
 
+Implementation update: see [the completed safeguards and heating-platen conversion](cad-safeguards-2026-09-13.md). The findings below describe the audit before those changes.
+
 ## Recommendation
 
 Keep Rust and the current subscription-backed Codex runtime. Finish separating frequently changed model parameters from construction code, and strengthen output verification. A persistent geometry service is not yet justified: the converted fixture generated outputs in 10–13 ms with an existing executable. Measure heavier models before adding a service.
