@@ -665,6 +665,6 @@ fn main() {
         "output/chip_stack_rack_handle.stl",
         "output/chip_stack_rack_assembly.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 }

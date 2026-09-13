@@ -1615,3 +1615,7 @@ path = "src/bin/closed_perfusion_sample_fraction_evaporation_carryover_archive_s
 [[bin]]
 name = "closed_seed_density_inline_mix_uniformity_validation_station"
 path = "src/bin/closed_seed_density_inline_mix_uniformity_validation_station.rs"
+
+[[bin]]
+name = "heating_block_verify"
+path = "src/bin/heating_block_verify.rs"

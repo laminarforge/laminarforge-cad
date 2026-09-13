@@ -594,8 +594,8 @@ fn main() {
     println!("  {glass_stl}");
 
     // STEP exports (no-op if stltostp isn't installed)
-    laminarforge_cad::stl_to_step(pmma_stl);
-    laminarforge_cad::stl_to_step(glass_stl);
+    laminarforge_cad::stl_to_step(pmma_stl).expect("required STEP export failed");
+    laminarforge_cad::stl_to_step(glass_stl).expect("required STEP export failed");
 
     println!();
     println!("  PART 1: PMMA Plate");

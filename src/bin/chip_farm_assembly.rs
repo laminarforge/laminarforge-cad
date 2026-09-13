@@ -882,6 +882,6 @@ fn main() {
         "output/chip_farm_assembly_tilted.stl",
         "output/chip_farm_assembly_exploded.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 }

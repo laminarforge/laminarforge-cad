@@ -1065,7 +1065,8 @@ fn main() {
     println!("Exported: output/chip_farm_v2_assembly.stl");
 
     // STEP export for the full assembly only
-    laminarforge_cad::stl_to_step("output/chip_farm_v2_assembly.stl");
+    laminarforge_cad::stl_to_step("output/chip_farm_v2_assembly.stl")
+        .expect("required STEP export failed");
 
     // ══════════════════════════════════════════════════════════════
     // INTERFERENCE CHECKS

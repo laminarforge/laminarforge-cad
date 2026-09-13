@@ -671,6 +671,6 @@ fn main() {
         "output/rack_rocker_nut_block.stl",
         "output/rack_rocker_assembly.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 }

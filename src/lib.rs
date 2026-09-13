@@ -1,3 +1,4 @@
+pub mod heating_platen;
 pub mod lamp_rev_a_electrical;
 pub mod p0_cartridge_coupons;
 pub mod pcb;
@@ -791,44 +792,5 @@ pub fn fcb16_outlet_y(row_center_y: f64) -> f64 {
 //   println!("Exported: output/foo.stl");
 //   laminarforge_cad::stl_to_step("output/foo.stl");
 
-/// Convert an STL file to a STEP file (.stp) next to it using stltostp.
-/// Silent no-op if stltostp isn't installed or conversion fails; prints a
-/// note on success. Path conventions: `output/foo.stl` -> `output/foo.stp`.
-pub fn stl_to_step(stl_path: &str) {
-    let stltostp = std::path::Path::new(env!("HOME")).join(".local/bin/stltostp");
-    if !stltostp.exists() {
-        static mut WARNED: bool = false;
-        // Safety: single-threaded bin output; worst case is a duplicate note.
-        unsafe {
-            if !WARNED {
-                WARNED = true;
-                eprintln!(
-                    "NOTE: stltostp not found at ~/.local/bin/stltostp — skipping STEP export"
-                );
-            }
-        }
-        return;
-    }
-    let step_path = stl_path
-        .strip_suffix(".stl")
-        .map(|s| format!("{}.stp", s))
-        .unwrap_or_else(|| format!("{}.stp", stl_path));
-    match std::process::Command::new(&stltostp)
-        .arg(stl_path)
-        .arg(&step_path)
-        .output()
-    {
-        Ok(out) if out.status.success() => {
-            println!("Exported: {}", step_path);
-        }
-        Ok(out) => {
-            eprintln!(
-                "WARNING: stltostp failed for {stl_path}: {}",
-                String::from_utf8_lossy(&out.stderr)
-            );
-        }
-        Err(e) => {
-            eprintln!("WARNING: failed to spawn stltostp for {stl_path}: {e}");
-        }
-    }
-}
+pub use step_export::stl_to_step;
+mod step_export;

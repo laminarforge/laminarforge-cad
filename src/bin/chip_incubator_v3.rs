@@ -845,6 +845,6 @@ fn main() {
         "output/chip_incubator_v3_frame_post.stl",
         "output/chip_incubator_v3_assembly.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 }

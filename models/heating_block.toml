@@ -1,0 +1,6 @@
+# Mechanical prototype parameters; fixed cartridge/assembly interface remains in Rust.
+block_height_mm = 16.0
+pocket_depth_mm = 1.2
+clearance_x_mm = 0.8
+clearance_y_mm = 0.6
+heater_bore_diameter_mm = 6.1

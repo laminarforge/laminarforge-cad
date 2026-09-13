@@ -27,8 +27,9 @@ After editing only its TOML, reuse the executable:
 
 Use a separate output directory for each candidate. Check expected dimensions
 and component outputs before promoting a candidate. The tool's `execute` action
-does not check whether the binary matches current Rust sources: use targeted
-`run` after changing source, dependencies, features or the toolchain. `check`
+requires a matching executable receipt. Use targeted `run` after changing
+source, dependencies, features or the toolchain. After a background run, use
+one targeted `build` to register its receipt before execute-only iteration. `check`
 does not refresh the executable. Do not reuse preview evidence as final release
 evidence after changing the configuration.
 
@@ -49,3 +50,25 @@ Exa research verified against primary sources:
 sccache does not cache final-linked Rust binaries and requires incremental
 compilation disabled. Do not disable incremental development merely to enable
 a global wrapper. Preserve repository-lock safeguards.
+
+## Heating platen and export checks
+
+`heating_block` and `heating_block_verify` both accept `--config` and
+`--output-dir`. Their default configuration is `models/heating_block.toml`.
+Build each target once, then execute the generator and verifier with the same
+configuration and output directory. The five exposed parameters control body
+height, registration pocket depth, X/Y clearance and heater bore diameter.
+Other cartridge/assembly dimensions remain fixed; these files are mechanical
+prototypes and do not establish thermal or manufacturing qualification.
+
+The generator writes `heating_block.stl`, an orthographic `heating_block.preview.svg`, and a manifest with configuration and
+executable hashes, parameter values, mesh hash, triangle count and bounds.
+The verifier checks the input identity, mesh dimensions, file hash, preview and
+byte-identical regenerated geometry. A manifest from another configuration is
+rejected. These checks do not establish watertightness or manufacturing fitness.
+
+Required STEP conversion now fails on a missing converter, nonzero exit or
+incomplete STEP output. `STLTOSTEP_BIN` can specify the installed converter;
+otherwise its required location is the current user's `~/.local/bin/stltostp`.
+Failed conversion removes any old same-stem STEP publication. Mesh-to-STEP
+conversion produces faceted geometry, not analytic solid modeling.

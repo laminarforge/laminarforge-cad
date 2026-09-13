@@ -1113,7 +1113,7 @@ fn main() {
         "output/controller_enclosure_ssr_heatsink.stl",
         "output/controller_enclosure_assembly.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 
     println!();

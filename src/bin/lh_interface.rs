@@ -648,6 +648,6 @@ fn main() {
         "output/lh_interface_fiducial_frame.stl",
         "output/lh_interface_assembly.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 }

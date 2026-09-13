@@ -42,7 +42,7 @@ fn main() {
     require_nonempty(&stl_path);
 
     let stl_text = stl_path.to_string_lossy();
-    stl_to_step(stl_text.as_ref());
+    stl_to_step(stl_text.as_ref()).expect("required STEP export failed");
     require_nonempty(&stp_path);
 
     let runtime = RuntimePublicationManifest {

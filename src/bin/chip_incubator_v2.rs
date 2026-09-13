@@ -717,6 +717,6 @@ fn main() {
         "output/chip_incubator_v2_water_tray.stl",
         "output/chip_incubator_v2_rail.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 }

@@ -637,6 +637,6 @@ fn main() {
         "output/imaging_gantry_ceiling_mount.stl",
         "output/imaging_gantry_assembly.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 }

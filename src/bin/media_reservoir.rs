@@ -739,6 +739,6 @@ fn main() {
         "output/media_reservoir_drip_tray.stl",
         "output/media_reservoir_waste_bottle.stl",
     ] {
-        laminarforge_cad::stl_to_step(stl);
+        laminarforge_cad::stl_to_step(stl).expect("required STEP export failed");
     }
 }

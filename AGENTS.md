@@ -17,8 +17,9 @@ Use `mcp__agentic-mcp__laminarforge_build` for CAD/build work in this repository
 - Read `docs/cad-iteration.md`. Select one binary; use `check` for Rust validation,
   `run` with profile `dev` when changed Rust needs execution, and `execute` for
   runtime configuration changes after building the intended source once.
-- `execute` does not prove binary freshness. After Rust, dependencies, features,
-  or toolchain changes, build the target again before executing it.
+- `execute` requires a valid build receipt. After Rust, dependencies, features,
+  or toolchain changes, build the target again before executing it. After a
+  background build/run, register its receipt with one targeted `build`.
 - Do not run package-wide release builds/tests or `run_all` for a single-model edit.
   Select tests for the affected geometry and contracts. Final optimization is explicit.
 - New adjustable models must take validated runtime parameters and an explicit

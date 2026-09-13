@@ -679,20 +679,22 @@ fn main() {
         let part = ctor();
         part.write_stl(path).unwrap();
         println!("Exported: {}", path);
-        laminarforge_cad::stl_to_step(path);
+        laminarforge_cad::stl_to_step(path).expect("required STEP export failed");
     }
 
     let asm = assembly_zero();
     asm.write_stl("output/rack_rocker_2axis_assembly.stl")
         .unwrap();
     println!("Exported: output/rack_rocker_2axis_assembly.stl");
-    laminarforge_cad::stl_to_step("output/rack_rocker_2axis_assembly.stl");
+    laminarforge_cad::stl_to_step("output/rack_rocker_2axis_assembly.stl")
+        .expect("required STEP export failed");
 
     let env = envelope_at_extremes();
     env.write_stl("output/rack_rocker_2axis_envelope.stl")
         .unwrap();
     println!("Exported: output/rack_rocker_2axis_envelope.stl");
-    laminarforge_cad::stl_to_step("output/rack_rocker_2axis_envelope.stl");
+    laminarforge_cad::stl_to_step("output/rack_rocker_2axis_envelope.stl")
+        .expect("required STEP export failed");
 
     // ── 2. Interference check ──
     // Check the 60-chip rack envelope at extreme gimbal angles against the

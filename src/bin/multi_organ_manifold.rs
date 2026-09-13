@@ -806,7 +806,7 @@ fn main() {
     for (path, part) in exports {
         part.write_stl(path).unwrap();
         println!("Exported: {path}");
-        laminarforge_cad::stl_to_step(path);
+        laminarforge_cad::stl_to_step(path).expect("required STEP export failed");
     }
 
     // ── Drawing file ──
