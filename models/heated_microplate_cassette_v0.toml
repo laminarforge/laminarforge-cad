@@ -1,23 +1,23 @@
-# Concept geometry, millimeters; NOT released for machining.
-# Plate height is a deliberate surrogate, not a vendor specification.
+# Rev A water-test fabrication geometry, millimeters; physical commissioning required.
+# Plate/lid height is a conservative reservation, not a vendor assembled-height specification.
 plate_x = 127.76
 plate_y = 85.48
-surrogate_plate_z = 20.0
+surrogate_plate_z = 26.0
 plate_clearance = 0.75
-nest_wall = 3.0
+nest_wall = 4.5
 nest_height = 2.0
 nest_side_margin = 2.0
 front_margin = 6.0
 top_clearance = 8.0
-side_wall = 12.0
+side_wall = 12.25
 roof_thickness = 6.0
 drawer_thickness = 6.0
 guide_overlap = 5.0
 guide_inreach = 6.0
 guide_rail_thickness = 6.0
-shoe_thickness = 1.0
-guide_clearance = 0.30
-lateral_clearance = 0.25
+shoe_thickness = 1.225
+guide_clearance = 0.50
+lateral_clearance = 0.375
 rear_retention = 45.0
 access_margin = 5.0
 rear_clearance = 4.0
@@ -25,18 +25,29 @@ rear_thickness = 6.0
 bezel_thickness = 6.0
 flange_thickness = 8.0
 bezel_side_extension = 9.0
-bezel_bottom_extension = 4.0
-bezel_top_extension = 6.0
+bezel_bottom_extension = 15.0
+bezel_top_extension = 7.0
 opening_clearance = 0.5
 gasket_land = 2.0
 gasket_width = 3.0
-gasket_free_thickness = 2.0
-gasket_groove_depth = 1.5
+gasket_free_thickness = 2.38
+gasket_groove_depth = 2.5
+gasket_backing_thickness = 0.74
 gasket_outer_radius = 6.0
-heater_x = 110.0
-heater_y = 65.0
-heater_recess_depth = 0.6
+heater_x = 100.0
+heater_y = 100.0
+heater_recess_depth = 0.0
 stop_pin_diameter = 3.0
 stop_slot_width = 3.4
 stop_y = 16.0
 mesh_segments = 32
+
+# Reduced sheet-model sensitivity inputs, not a fluid-temperature simulation.
+[thermal]
+conductivity_w_mk = [150.0, 160.0, 175.0]
+effective_face_loss_w_m2k = [5.0, 12.0, 20.0]
+ambient_c = 22.0
+metal_sensor_setpoint_c = 37.0
+density_kg_m3 = 2700.0
+specific_heat_j_kgk = 930.0
+grid_cells = 40

@@ -1,4 +1,4 @@
-//! Parametric design-review geometry; no machining or biological release claim.
+//! Rev A water-test prototype: analytic fabrication solids, assembly sheets and sizing evidence.
 use base64::Engine;
 use clap::Parser;
 use serde::{Deserialize, Serialize};
@@ -10,7 +10,16 @@ use std::{
     path::{Path, PathBuf},
     process::Command,
 };
-use vcad::{centered_cube, centered_cylinder, Part};
+use vcad::{centered_cube, centered_cylinder};
+#[path = "../cassette/drawings.rs"]
+mod drawings;
+#[path = "../cassette/package.rs"]
+mod package;
+#[path = "../cassette/solid.rs"]
+mod solid;
+#[path = "../cassette/thermal.rs"]
+mod thermal;
+use solid::Part;
 
 #[derive(Parser)]
 struct Args {
@@ -58,6 +67,7 @@ struct Config {
     gasket_width: f64,
     gasket_free_thickness: f64,
     gasket_groove_depth: f64,
+    gasket_backing_thickness: f64,
     gasket_outer_radius: f64,
     heater_x: f64,
     heater_y: f64,
@@ -66,6 +76,7 @@ struct Config {
     stop_slot_width: f64,
     stop_y: f64,
     mesh_segments: u32,
+    thermal: thermal::Parameters,
 }
 
 #[derive(Debug, Serialize)]
@@ -120,7 +131,8 @@ impl Config {
         let rear_y = drawer_y + self.rear_clearance;
         let roof_bottom = drawer_top + self.surrogate_plate_z + self.top_clearance;
         let roof_top = roof_bottom + self.roof_thickness;
-        let opening_min_z = drawer_bottom - self.opening_clearance;
+        // Opening encloses the moving heater guard and screw heads as well as plate.
+        let opening_min_z = drawer_bottom - 14.0;
         let opening_max_z = roof_bottom;
         let opening_x = drawer_x + 2.0 * self.opening_clearance;
         Layout {
@@ -160,16 +172,19 @@ impl Config {
     fn validate(&self) -> Result<Layout, String> {
         let values = serde_json::to_value(self).map_err(|e| e.to_string())?;
         for (k, v) in values.as_object().ok_or("configuration is not an object")? {
-            if k == "mesh_segments" {
+            if k == "mesh_segments" || k == "thermal" {
                 continue;
             }
             let n = v.as_f64().ok_or_else(|| format!("{k}: must be finite"))?;
-            if !n.is_finite() || n <= 0.0 {
+            if !n.is_finite() || n < 0.0 || (n == 0.0 && k != "heater_recess_depth") {
                 return Err(format!("{k}: must be positive and finite"));
             }
         }
         let d = self.layout();
-        let squeeze = 1.0 - self.gasket_groove_depth / self.gasket_free_thickness;
+        thermal::validate(&self.thermal)?;
+        let squeeze = 1.0
+            - (self.gasket_groove_depth - self.gasket_backing_thickness)
+                / self.gasket_free_thickness;
         let conditions = [
             (
                 self.mesh_segments >= 16 && self.mesh_segments <= 128,
@@ -222,7 +237,7 @@ impl Config {
                 "insufficient extension retention or access clearance",
             ),
             (
-                self.heater_x <= self.plate_x - 8.0 && self.heater_y <= self.plate_y - 8.0,
+                self.heater_x <= d.cavity_x - 12.0 && self.heater_y <= d.drawer_y - 20.0,
                 "heater intersects guide/nest reservations",
             ),
             (
@@ -279,19 +294,36 @@ impl Config {
 }
 
 fn block(name: &str, min: [f64; 3], max: [f64; 3]) -> Part {
-    centered_cube(name, max[0] - min[0], max[1] - min[1], max[2] - min[2]).translate(
-        (min[0] + max[0]) / 2.0,
-        (min[1] + max[1]) / 2.0,
-        (min[2] + max[2]) / 2.0,
+    Part::primitive(
+        centered_cube(name, max[0] - min[0], max[1] - min[1], max[2] - min[2]).translate(
+            (min[0] + max[0]) / 2.0,
+            (min[1] + max[1]) / 2.0,
+            (min[2] + max[2]) / 2.0,
+        ),
+        solid::Primitive::Box(min, max),
     )
 }
 fn cy(name: &str, x: f64, y: f64, z: f64, diameter: f64, length: f64, n: u32) -> Part {
-    centered_cylinder(name, diameter / 2.0, length, n)
-        .rotate(90.0, 0.0, 0.0)
-        .translate(x, y, z)
+    Part::primitive(
+        centered_cylinder(name, diameter / 2.0, length, n)
+            .rotate(90.0, 0.0, 0.0)
+            .translate(x, y, z),
+        solid::Primitive::Cylinder([x, y, z], diameter / 2.0, length, 1),
+    )
+}
+fn cx(name: &str, x: f64, y: f64, z: f64, diameter: f64, length: f64, n: u32) -> Part {
+    Part::primitive(
+        centered_cylinder(name, diameter / 2.0, length, n)
+            .rotate(0.0, 90.0, 0.0)
+            .translate(x, y, z),
+        solid::Primitive::Cylinder([x, y, z], diameter / 2.0, length, 0),
+    )
 }
 fn cz(name: &str, x: f64, y: f64, z: f64, diameter: f64, length: f64, n: u32) -> Part {
-    centered_cylinder(name, diameter / 2.0, length, n).translate(x, y, z)
+    Part::primitive(
+        centered_cylinder(name, diameter / 2.0, length, n).translate(x, y, z),
+        solid::Primitive::Cylinder([x, y, z], diameter / 2.0, length, 2),
+    )
 }
 fn rounded_face(w: f64, h: f64, r: f64, z: f64, ymin: f64, ymax: f64, n: u32) -> Part {
     let mut s = block(
@@ -355,6 +387,34 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
         [-d.guide_width / 2.0, p.bezel_thickness - 1.0, -1.0],
         [d.guide_width / 2.0, d.rear_y + 1.0, d.guide_ceiling],
     );
+    // Surface-bonded pads: no recess weakens the 6 mm spreaders.
+    // Four guard holes per zone, outside the heater and plate envelope.
+    let guard_y = [p.bezel_thickness + 6.0, d.drawer_y - 6.0];
+    for x in [-61.0, 61.0] {
+        for y in guard_y {
+            housing = housing
+                - cz(
+                    "guard_M3_tap",
+                    x,
+                    y,
+                    (d.roof_bottom + d.roof_top) / 2.0,
+                    2.5,
+                    p.roof_thickness + 2.0,
+                    n,
+                );
+        }
+    }
+    // Two dedicated thermostat mounting holes; sensor carrier bonds beside them.
+    housing = housing
+        - cz(
+            "cutoff_M3_tap",
+            25.0,
+            d.drawer_y - 22.0,
+            (d.roof_bottom + d.roof_top) / 2.0,
+            2.5,
+            p.roof_thickness + 2.0,
+            n,
+        );
     housing = housing
         - block(
             "top_heater_recess",
@@ -404,9 +464,9 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
             "stop_receiver",
             d.stop_x,
             p.stop_y,
-            d.guide_ceiling + 4.0,
-            2.5,
-            10.0,
+            d.guide_ceiling + 3.5,
+            1.6,
+            9.0,
             n,
         );
     let mut bezel = block(
@@ -435,17 +495,17 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
         }
     }
     let groove = rounded_face(
-        d.gasket_outer_x,
-        d.gasket_outer_z,
-        p.gasket_outer_radius,
+        d.gasket_outer_x + 0.5,
+        d.gasket_outer_z + 0.5,
+        p.gasket_outer_radius + 0.25,
         d.gasket_center_z,
         -0.1,
         p.gasket_groove_depth,
         n,
     ) - rounded_face(
-        d.gasket_outer_x - 2.0 * p.gasket_width,
-        d.gasket_outer_z - 2.0 * p.gasket_width,
-        p.gasket_outer_radius - p.gasket_width,
+        d.gasket_outer_x - 2.0 * p.gasket_width - 0.5,
+        d.gasket_outer_z - 2.0 * p.gasket_width - 0.5,
+        p.gasket_outer_radius - p.gasket_width - 0.25,
         d.gasket_center_z,
         -1.0,
         p.gasket_groove_depth + 1.0,
@@ -457,8 +517,90 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
         [-d.bezel_x / 2.0, -p.flange_thickness, d.bezel_min_z],
         [d.bezel_x / 2.0, 0.0, d.bezel_max_z],
     );
+    // Temporary water-probe cable feedthrough; moves with the plate during access.
+    flange = flange
+        - cy(
+            "validation_M5_port",
+            0.0,
+            -p.flange_thickness / 2.0,
+            25.0,
+            4.2,
+            p.flange_thickness + 2.0,
+            n,
+        );
+    // One-piece replaceable shim frame; PSA is on ring only, not retention ears.
+    let shim_top = d.gasket_center_z + d.gasket_outer_z / 2.0;
+    let metal_shim = p.gasket_backing_thickness - 0.14;
+    let shim_front = p.gasket_groove_depth - metal_shim;
+    let mut shim = rounded_face(
+        d.gasket_outer_x,
+        d.gasket_outer_z,
+        p.gasket_outer_radius,
+        d.gasket_center_z,
+        shim_front,
+        p.gasket_groove_depth,
+        n,
+    ) - rounded_face(
+        d.gasket_outer_x - 2.0 * p.gasket_width,
+        d.gasket_outer_z - 2.0 * p.gasket_width,
+        p.gasket_outer_radius - p.gasket_width,
+        d.gasket_center_z,
+        shim_front - 1.0,
+        p.gasket_groove_depth + 1.0,
+        n,
+    );
+    for x in [-50.0, 50.0] {
+        let z = shim_top + 3.5;
+        shim = shim
+            + rounded_face(
+                6.0,
+                7.0,
+                1.0,
+                shim_top + 3.0,
+                shim_front,
+                p.gasket_groove_depth,
+                n,
+            )
+            .translate(x, 0.0, 0.0);
+        shim = shim - cy("shim_M2_clearance", x, 2.0, z, 2.2, 4.0, n);
+        bezel = bezel
+            - rounded_face(
+                6.4,
+                7.4,
+                1.0,
+                shim_top + 3.0,
+                -0.1,
+                p.gasket_groove_depth,
+                n,
+            )
+            .translate(x, 0.0, 0.0)
+            - cy("shim_M2_tap", x, 3.0, z, 1.6, 8.0, n);
+        flange = flange - cy("shim_head_relief", x, -0.25, z, 4.6, 2.5, n);
+    }
+    out.push(item(
+        "13_gasket_shim_nominal_0p60",
+        shim,
+        false,
+        false,
+        [200, 200, 180],
+    ));
     let closure_x = (d.bezel_x + d.gasket_outer_x) / 4.0;
     for x in [-closure_x, closure_x] {
+        out.push(item(
+            &format!("REF_closure_knob_{x:.2}"),
+            cy(
+                "knob",
+                x,
+                -p.flange_thickness - 5.75,
+                d.gasket_center_z,
+                12.0,
+                11.5,
+                n,
+            ),
+            true,
+            true,
+            dark,
+        ));
         bezel = bezel
             - cy(
                 "closure_M4_tap",
@@ -475,7 +617,7 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
                 x,
                 -p.flange_thickness / 2.0,
                 d.gasket_center_z,
-                4.5,
+                6.0,
                 p.flange_thickness + 2.0,
                 n,
             );
@@ -485,6 +627,9 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
         [-d.outer_x / 2.0, d.rear_y, 0.0],
         [d.outer_x / 2.0, d.rear_y + p.rear_thickness, d.roof_top],
     );
+    for x in [28.0, 42.0] {
+        rear = rear - cz("fixed_harness_M3_tap", x, d.rear_y + 3.0, 4.0, 2.5, 10.0, n);
+    }
     for (x, z) in mount_points {
         rear = rear
             - cy(
@@ -522,6 +667,43 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
             d.drawer_bottom + p.heater_recess_depth,
         ],
     );
+    for x in [-61.0, 61.0] {
+        for y in guard_y {
+            drawer = drawer
+                - cz(
+                    "guard_M3_tap",
+                    x,
+                    y,
+                    (d.drawer_bottom + d.drawer_top) / 2.0,
+                    2.5,
+                    p.drawer_thickness + 2.0,
+                    n,
+                );
+        }
+    }
+    drawer = drawer
+        - cz(
+            "cutoff_M3_tap",
+            25.0,
+            d.drawer_y - 22.0,
+            (d.drawer_bottom + d.drawer_top) / 2.0,
+            2.5,
+            p.drawer_thickness + 2.0,
+            n,
+        );
+    // Moving cable anchor: two M3 holes outside the test-plate footprint.
+    for x in [-42.0, -28.0] {
+        drawer = drawer
+            - cz(
+                "harness_anchor_M3",
+                x,
+                d.drawer_y - 12.0,
+                (d.drawer_bottom + d.drawer_top) / 2.0,
+                2.5,
+                p.drawer_thickness + 2.0,
+                n,
+            );
+    }
     let slot = block(
         "stop_slot",
         [
@@ -554,6 +736,13 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
     drawer = drawer - slot;
     for x in [-p.plate_x * 0.36, 0.0, p.plate_x * 0.36] {
         let z = (d.drawer_bottom + d.drawer_top) / 2.0;
+        out.push(item(
+            &format!("REF_flange_M3_head_{x:.2}"),
+            cy("head", x, -p.flange_thickness - 1.5, z, 5.5, 3.0, n),
+            true,
+            true,
+            dark,
+        ));
         drawer = drawer - cy("flange_M3_tap", x, 5.0, z, 2.5, 12.0, n);
         flange = flange
             - cy(
@@ -591,22 +780,60 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
             d.drawer_top + p.nest_height + 1.0,
         ],
     );
-    // Two M2 fixing screws in front/rear nest webs, outside the plate footprint.
+    // End-mill relief at the four inner corners; no hand-filing a plate to fit.
+    for x in [
+        -p.plate_x / 2.0 - p.plate_clearance,
+        p.plate_x / 2.0 + p.plate_clearance,
+    ] {
+        for y in [
+            d.plate_center_y - p.plate_y / 2.0 - p.plate_clearance,
+            d.plate_center_y + p.plate_y / 2.0 + p.plate_clearance,
+        ] {
+            nest = nest
+                - cz(
+                    "nest_corner_relief",
+                    x,
+                    y,
+                    d.drawer_top + p.nest_height / 2.0,
+                    2.0,
+                    p.nest_height + 2.0,
+                    n,
+                );
+        }
+    }
+    // Four M2 screws in reinforced front/rear nest webs.
     for y in [
         d.plate_center_y - d.nest_y / 2.0 + p.nest_wall / 2.0,
         d.plate_center_y + d.nest_y / 2.0 - p.nest_wall / 2.0,
     ] {
-        nest = nest
-            - cz(
-                "nest_M2_clearance",
-                0.0,
-                y,
-                d.drawer_top + p.nest_height / 2.0,
-                2.2,
-                p.nest_height + 2.0,
-                n,
-            );
-        drawer = drawer - cz("nest_M2_tap", 0.0, y, d.drawer_top - 2.0, 1.6, 5.0, n);
+        for x in [-45.0, 45.0] {
+            out.push(item(
+                &format!("REF_nest_M2_head_{x:.0}_{y:.2}"),
+                cz(
+                    "head",
+                    x,
+                    y,
+                    d.drawer_top + p.nest_height + 1.0,
+                    3.8,
+                    2.0,
+                    n,
+                ),
+                true,
+                true,
+                dark,
+            ));
+            nest = nest
+                - cz(
+                    "nest_M2_clearance",
+                    x,
+                    y,
+                    d.drawer_top + p.nest_height / 2.0,
+                    2.2,
+                    p.nest_height + 2.0,
+                    n,
+                );
+            drawer = drawer - cz("nest_M2_tap", x, y, d.drawer_top - 2.0, 1.6, 5.0, n);
+        }
     }
     out.push(item("04_heated_drawer", drawer, true, false, alum));
     out.push(item("05_drawer_front_flange", flange, true, false, dark));
@@ -657,6 +884,25 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
             false,
             dark,
         ));
+        // Bench risers provide a protected 30 mm underbody harness space.
+        let x = sign * d.rail_screw_x;
+        let mut foot = block(
+            "riser",
+            [x - 5.0, p.bezel_thickness, -30.0],
+            [x + 5.0, d.rear_y, 0.0],
+        );
+        for y in rail_positions {
+            foot = foot
+                - cz("riser_M3_clearance", x, y, -15.0, 3.4, 32.0, n)
+                - cz("riser_head_counterbore", x, y, -28.9, 6.0, 4.2, n);
+        }
+        out.push(item(
+            &format!("10_bench_riser_{label}"),
+            foot,
+            false,
+            false,
+            dark,
+        ));
         let shoes = [
             (
                 "lower",
@@ -682,12 +928,15 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
                 [d.guide_width / 2.0, d.rear_y, d.guide_ceiling],
             ),
         ];
-        for (location, min, max) in shoes {
+        for (location, mut min, max) in shoes {
+            if sign < 0.0 && location == "upper" {
+                min[1] = p.stop_y + 6.0;
+            }
             let mut shoe = block("shoe", min, max);
             if sign < 0.0 {
                 shoe = shoe.mirror_x();
             }
-            if sign < 0.0 && location != "side" {
+            if sign < 0.0 && location == "lower" {
                 shoe = shoe
                     - cz(
                         "stop_access",
@@ -714,7 +963,7 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
         p.gasket_outer_radius,
         d.gasket_center_z,
         0.0,
-        p.gasket_groove_depth,
+        p.gasket_groove_depth - p.gasket_backing_thickness,
         n,
     ) - rounded_face(
         d.gasket_outer_x - 2.0 * p.gasket_width,
@@ -769,8 +1018,8 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
         [109, 172, 202],
     ));
     for (name, bottom, moving) in [
-        ("REF_top_heater", d.roof_top - p.heater_recess_depth, false),
-        ("REF_drawer_heater", d.drawer_bottom, true),
+        ("REF_top_heater", d.roof_top, false),
+        ("REF_drawer_heater", d.drawer_bottom - 1.5, true),
     ] {
         out.push(item(
             name,
@@ -784,7 +1033,7 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
                 [
                     p.heater_x / 2.0,
                     d.plate_center_y + p.heater_y / 2.0,
-                    bottom + p.heater_recess_depth,
+                    bottom + 1.5,
                 ],
             ),
             moving,
@@ -807,6 +1056,132 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
         true,
         [220, 193, 98],
     ));
+    for (zone, surface, moving, sign) in [
+        ("roof", d.roof_top, false, 1.0),
+        ("drawer", d.drawer_bottom, true, -1.0),
+    ] {
+        let z0 = surface + sign * 8.0;
+        let z1 = surface + sign * 9.0;
+        let mut guard = block(
+            "heater_guard",
+            [-66.0, 0.0, z0.min(z1)],
+            [66.0, d.drawer_y, z0.max(z1)],
+        );
+        for x in [-61.0, 61.0] {
+            for y in guard_y {
+                guard = guard - cz("guard_clearance", x, y, (z0 + z1) / 2.0, 3.4, 3.0, n);
+                let spacer = cz("spacer", x, y, surface + sign * 4.0, 6.0, 8.0, n)
+                    - cz("spacer_bore", x, y, surface + sign * 4.0, 3.4, 10.0, n);
+                out.push(item(
+                    &format!("11_{zone}_spacer_{x:.0}_{y:.2}"),
+                    spacer,
+                    moving,
+                    false,
+                    alum,
+                ));
+                out.push(item(
+                    &format!("REF_{zone}_guard_screw_head_{x:.0}_{y:.2}"),
+                    cz("M3_head", x, y, surface + sign * 10.5, 5.5, 3.0, n),
+                    moving,
+                    true,
+                    dark,
+                ));
+            }
+        }
+        // Rear-edge lead exit; 20 x 6 mm opening permits routing without pinching.
+        guard = guard
+            - block(
+                "lead_exit",
+                [-48.0, d.drawer_y - 22.0, z0.min(z1) - 1.0],
+                [-22.0, d.drawer_y + 1.0, z0.max(z1) + 1.0],
+            );
+        out.push(item(
+            &format!("12_{zone}_heater_guard"),
+            guard,
+            moving,
+            false,
+            alum,
+        ));
+        out.push(item(
+            &format!("REF_{zone}_RTD_land"),
+            block(
+                "rtd",
+                [
+                    -20.0,
+                    d.drawer_y - 42.0,
+                    (surface + sign * 2.0).min(surface),
+                ],
+                [10.0, d.drawer_y - 17.0, (surface + sign * 2.0).max(surface)],
+            ),
+            moving,
+            true,
+            [149, 102, 174],
+        ));
+    }
+    let a = d.drawer_y - 12.0;
+    for (zone, c, moving) in [("moving", -35.0, true), ("fixed", 35.0, false)] {
+        let mut base = block(
+            "clamp_base",
+            [c - 8.0, a - 10.0, -24.0],
+            [c, a + 10.0, -3.0],
+        );
+        let mut cap = block("clamp_cap", [c, a - 10.0, -24.0], [c + 8.0, a + 10.0, -3.0]);
+        if moving {
+            base =
+                base + block(
+                    "bracket_web",
+                    [-47.0, a - 5.0, -24.0],
+                    [-39.0, a + 5.0, d.drawer_bottom - 4.0],
+                ) + block(
+                    "bracket_mount",
+                    [-47.0, a - 5.0, d.drawer_bottom - 4.0],
+                    [-23.0, a + 5.0, d.drawer_bottom],
+                );
+            for x in [-42.0, -28.0] {
+                base = base - cz("mount_clearance", x, a, d.drawer_bottom - 2.0, 3.4, 6.0, n);
+            }
+        } else {
+            base =
+                base + block(
+                    "rear_mount",
+                    [23.0, d.rear_y, -4.0],
+                    [47.0, d.rear_y + 6.0, 0.0],
+                ) + block(
+                    "rear_web",
+                    [23.0, d.rear_y, -8.0],
+                    [31.0, d.rear_y + 6.0, 0.0],
+                ) + block(
+                    "cantilever",
+                    [23.0, a - 5.0, -8.0],
+                    [29.0, d.rear_y + 6.0, -4.0],
+                );
+            for x in [28.0, 42.0] {
+                base = base - cz("mount_clearance", x, d.rear_y + 3.0, -2.0, 3.4, 6.0, n);
+            }
+        }
+        for (z, diam) in [(-18.0, 5.8), (-9.0, 5.3)] {
+            base = base - cy("jacket_groove", c, a, z, diam, 22.0, n);
+            cap = cap - cy("jacket_groove", c, a, z, diam, 22.0, n);
+        }
+        for y in [a - 6.0, a + 6.0] {
+            base = base - cx("jaw_M2_tap", c - 3.0, y, -13.5, 1.6, 8.0, n);
+            cap = cap - cx("jaw_M2_clearance", c + 4.0, y, -13.5, 2.2, 10.0, n);
+        }
+        out.push(item(
+            &format!("14_{zone}_harness_bracket"),
+            base,
+            moving,
+            false,
+            alum,
+        ));
+        out.push(item(
+            &format!("15_{zone}_harness_jaw"),
+            cap,
+            moving,
+            false,
+            alum,
+        ));
+    }
     out
 }
 
@@ -832,11 +1207,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("{}", serde_json::to_string_pretty(&d)?);
         return Ok(());
     }
+    if !cfg!(feature = "step") {
+        return Err("fabrication export requires the step Cargo feature".into());
+    }
     if args.output_dir.exists() && fs::read_dir(&args.output_dir)?.next().is_some() {
         return Err("output directory must be empty; preserve each candidate's evidence".into());
     }
     let parts = model(&p, &d);
     let mut checks = Vec::new();
+    for (index, a) in parts.iter().enumerate().filter(|(_, i)| !i.reference) {
+        for b in parts
+            .iter()
+            .skip(index + 1)
+            .filter(|i| !i.reference && i.moving == a.moving)
+        {
+            let volume = a.part.intersection(&b.part).volume();
+            if volume > 0.03 {
+                return Err(format!(
+                    "assembled rigid-part overlap: {} / {}: {volume:.6}",
+                    a.name, b.name
+                )
+                .into());
+            }
+        }
+    }
     // Continuous, axis-aligned travel: sweep each moving part's solid by samples.
     // This is a sampled collision check, not certified continuous swept volume.
     for fraction in [0.0, 0.25, 0.5, 0.75, 1.0] {
@@ -878,6 +1272,42 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let path = args.output_dir.join(format!("{}.stl", i.name));
         i.part.write_stl(&path)?;
+        #[cfg(feature = "step")]
+        if !i.reference {
+            let path = args.output_dir.join(format!("{}.step", i.name));
+            let shape = i.part.analytic();
+            shape.write_step(&path)?;
+            let recovered = opencascade::primitives::Shape::read_step(&path)?;
+            let mesh = recovered.mesh();
+            let mut volume = 0.0f64;
+            let mut min = [f64::INFINITY; 3];
+            let mut max = [f64::NEG_INFINITY; 3];
+            for v in &mesh.vertices {
+                for k in 0..3 {
+                    min[k] = min[k].min(v[k]);
+                    max[k] = max[k].max(v[k]);
+                }
+            }
+            for t in mesh.indices.chunks_exact(3) {
+                volume +=
+                    mesh.vertices[t[0]].dot(mesh.vertices[t[1]].cross(mesh.vertices[t[2]])) / 6.0;
+            }
+            let text = fs::read_to_string(&path)?;
+            let solids = text.matches("MANIFOLD_SOLID_BREP(").count();
+            let relative_volume_error = (volume.abs() - i.part.volume()).abs() / i.part.volume();
+            let (mesh_min, mesh_max) = i.part.bounding_box();
+            let bounds_error = (0..3)
+                .flat_map(|k| [(min[k] - mesh_min[k]).abs(), (max[k] - mesh_max[k]).abs()])
+                .fold(0.0, f64::max);
+            if solids != 1
+                || relative_volume_error > 0.015
+                || bounds_error > 0.03
+                || recovered.faces().count() == 0
+            {
+                return Err(format!("STEP round-trip failed: {} solids={solids} volume_error={relative_volume_error}",i.name).into());
+            }
+            reports.push(json!({"analytic_step":i.name,"sha256":sha(text.as_bytes()),"manifold_solid_brep_count":solids,"reimport_faces":recovered.faces().count(),"reimport_volume_mm3":volume.abs(),"relative_volume_error_vs_review_mesh":relative_volume_error,"bounds_error_mm":bounds_error,"bounds_min_mm":min,"bounds_max_mm":max}));
+        }
         reports.push(json!({"part":i.name,"moving":i.moving,"reference_only":i.reference,"volume_mm3":i.part.volume(),"bounds_mm":i.part.bounding_box(),"triangles":i.part.num_triangles(),"closed_mesh_edges":true,"sha256":sha(&fs::read(path)?)}));
     }
     for (name, travel) in [("assembly_closed", 0.0), ("assembly_open", d.stroke)] {
@@ -890,15 +1320,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         assembly.write_stl(args.output_dir.join(format!("{name}.stl")))?;
     }
     render(&args.output_dir.join("design-review.svg"), &parts, &p, &d)?;
+    drawings::sheets(&args.output_dir.join("drawing-pages"), &parts, &p, &d)?;
+    thermal::run(&args.output_dir, &p, &d, &parts)?;
+    package::templates(&args.output_dir, &p, &d)?;
+    package::handbook(&args.output_dir)?;
     let source = fs::read("src/bin/heated_microplate_cassette_v0.rs")?;
-    let report = json!({"status":"DESIGN_REVIEW_ONLY_NOT_FOR_MACHINING","configuration_sha256":sha(raw.as_bytes()),"source_sha256":sha(&source),"git_head":git(&["rev-parse","HEAD"])? ,"git_status":git(&["status","--porcelain"])? ,"binary_sha256":sha(&fs::read(std::env::current_exe()?)?),"config":p,"layout":d,"parts":reports,"travel_checks":checks,"limitations":["Provisional surrogate plate dimensions; not commercial plate clearance approval","No thermal simulation, media measurements, load or tolerance-stack validation","Sampled moving-versus-fixed collisions; hardware, flexible leads and gasket deformation not included","Threads represented by pilot/clearance bores; fasteners and retention shoulder hardware require detail design","STLs are tessellated review geometry, not machining STEP files","Guide clearances remain thermal leakage paths; front seal does not establish airtight culture atmosphere"]});
+    let mut dependencies = BTreeMap::new();
+    for path in [
+        "src/bin/heated_microplate_cassette_v0.rs",
+        "src/cassette/solid.rs",
+        "src/cassette/drawings.rs",
+        "src/cassette/thermal.rs",
+        "src/cassette/package.rs",
+        "Cargo.toml",
+        "Cargo.lock",
+    ] {
+        dependencies.insert(path, sha(&fs::read(path)?));
+    }
+    let report = json!({"status":"V0_WATER_TEST_PROTOTYPE_FABRICATION_PACKAGE","configuration_sha256":sha(raw.as_bytes()),"source_sha256":sha(&source),"source_dependencies_sha256":dependencies,"git_head":git(&["rev-parse","HEAD"])? ,"git_status":git(&["status","--porcelain"])? ,"binary_sha256":sha(&fs::read(std::env::current_exe()?)?),"config":p,"layout":d,"parts":reports,"rigid_parts_assembled_interference_check":"pass","travel_checks":checks,"limitations":["Greiner water-test surrogate; future tissue plate compatibility unqualified","Reduced aluminum sheet model only; no media-temperature or physical performance validation","Sampled rigid travel; some hardware simplified; flexible cable geometry requires assembly inspection","Threads represented by pilot bores: drawings specify thread and depth","Guide clearances remain draft paths; no hermetic or pressure rating","Electrical startup/fault response, cable retention and thermal maps require commissioning"]});
     fs::write(
         args.output_dir.join("verification.json"),
         serde_json::to_vec_pretty(&report)?,
     )?;
     println!(
         "{}",
-        json!({"status":"design_review_generated","output_dir":args.output_dir,"parts":parts.len(),"stroke_mm":d.stroke,"envelope_mm":[d.bezel_x,d.overall_y,d.bezel_max_z-d.bezel_min_z],"travel_checks":5})
+        json!({"status":"water_test_fabrication_package_generated","output_dir":args.output_dir,"parts":parts.len(),"stroke_mm":d.stroke,"housing_envelope_mm":[d.bezel_x,d.overall_y,d.bezel_max_z-d.bezel_min_z],"travel_checks":5})
     );
     Ok(())
 }
@@ -910,7 +1356,7 @@ fn render(
     d: &Layout,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1600\" height=\"1100\" viewBox=\"0 0 1600 1100\"><rect width=\"1600\" height=\"1100\" fill=\"#eef2f5\"/><style>text{font-family:Helvetica,Arial,sans-serif;fill:#162b3b}.title{font-size:34px;font-weight:bold}.sub{font-size:18px;fill:#425d70}.label{font-size:22px;font-weight:bold}.note{font-size:17px}</style>");
-    svg.push_str("<text x=\"45\" y=\"55\" class=\"title\">LaminarForge / heated microplate cassette V0</text><text x=\"45\" y=\"87\" class=\"sub\">Parametric bench concept • manual drawer • water-filled surrogate • 6061 aluminum</text>");
+    svg.push_str("<text x=\"45\" y=\"55\" class=\"title\">LaminarForge / heated microplate cassette V0</text><text x=\"45\" y=\"87\" class=\"sub\">Rev A water-test prototype / manual drawer / 6061 aluminum / two heater zones</text>");
     let panels = [
         ("01  CLOSED", 0.0, false, 40.0, 115.0),
         ("02  FULL ACCESS", d.stroke, false, 820.0, 115.0),
@@ -921,15 +1367,10 @@ fn render(
             40.0,
             565.0,
         ),
-        (
-            "04  EXTENDED / HOUSING HIDDEN",
-            d.stroke,
-            true,
-            820.0,
-            565.0,
-        ),
+        ("04  UNDERSIDE / GUARDS HIDDEN", 0.0, false, 820.0, 565.0),
     ];
     for (title, travel, cutaway, px, py) in panels {
+        let underside = title.starts_with("04");
         svg.push_str(&format!("<rect x=\"{px}\" y=\"{py}\" width=\"740\" height=\"420\" rx=\"12\" fill=\"white\"/><text x=\"{}\" y=\"{}\" class=\"label\">{title}</text>",px+22.0,py+33.0));
         let mut tris: Vec<([[f64; 3]; 3], [u8; 3])> = Vec::new();
         let mut bounds = [
@@ -942,7 +1383,15 @@ fn render(
             if cutaway
                 && (i.name == "01_fixed_U_housing"
                     || i.name == "03_rear_cover"
-                    || i.name == "REF_top_heater")
+                    || i.name == "REF_top_heater"
+                    || i.name.starts_with("11_roof")
+                    || i.name.starts_with("12_roof")
+                    || i.name.starts_with("REF_roof"))
+            {
+                continue;
+            }
+            if underside
+                && (i.name.starts_with("12_") || i.name.starts_with("REF_drawer_guard_screw"))
             {
                 continue;
             }
@@ -957,6 +1406,7 @@ fn render(
                     let y = verts[k + 1] as f64 - if i.moving { travel } else { 0.0 };
                     let z = verts[k + 2] as f64;
                     xyz[j] = [x, y, z];
+                    let z = if underside { -z } else { z };
                     points[j] = [
                         0.85 * x + 0.5 * y,
                         0.25 * x - 0.425 * y - 0.85 * z,
@@ -1075,7 +1525,7 @@ fn render(
             py + 399.0
         ));
     }
-    svg.push_str("<text x=\"45\" y=\"1025\" class=\"note\">Blue: surrogate plate   Green: removable nest   Orange: heaters   Yellow: front gasket / stop reference</text><text x=\"45\" y=\"1060\" class=\"sub\">DESIGN REVIEW ONLY • Dimensions provisional • No thermal or manufacturing validation • Leads and fasteners omitted</text></svg>");
+    svg.push_str("<text x=\"45\" y=\"1025\" class=\"note\">Blue: plate envelope / Green: removable nest / Orange: heaters / Yellow: face gasket</text><text x=\"45\" y=\"1060\" class=\"sub\">Assembly illustration / Some hardware simplified / See separate cable routing / Water validation required</text></svg>");
     fs::write(path, svg)?;
     Ok(())
 }

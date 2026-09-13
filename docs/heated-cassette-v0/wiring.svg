@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 1600 1131">
+<rect width="1600" height="1131" fill="white"/>
+<style>text{font-family:Arial,sans-serif;fill:#153141;font-size:22px}.title{font-size:32px;font-weight:bold}.small{font-size:19px}.box{fill:#eef3f5;stroke:#345368;stroke-width:2}.wire{fill:none;stroke:#345368;stroke-width:3}</style>
+<text x="45" y="60" class="title">LF-CAS-V0 / Rev A / electrical connection overview</text>
+<text x="45" y="99">Repeat zone circuit for i=1 roof and i=2 drawer. Terminal schedule controls every physical connection.</text>
+<text x="45" y="156" font-weight="bold">24 V heater power path - each zone</text>
+<path class="wire" d="M60 235 H1510"/>
+<rect class="box" x="60" y="195" width="190" height="80"/><text x="76" y="224">J0 measured +24</text><text x="76" y="253" class="small">F0 7.5 A upstream</text>
+<rect class="box" x="320" y="195" width="130" height="80"/><text x="338" y="240">Fi 4 A</text>
+<rect class="box" x="530" y="195" width="210" height="80"/><text x="548" y="225">Ki power contact</text><text x="548" y="253">11 COM - 14 NO</text>
+<rect class="box" x="825" y="195" width="180" height="80"/><text x="843" y="225">Hi heater</text><text x="843" y="253">24 V / 60 W</text>
+<rect class="box" x="1090" y="195" width="235" height="80"/><text x="1108" y="225">Qi DC SSR load</text><text x="1108" y="253">1 (+) in - 2 (-) out</text>
+<text x="1370" y="225">X0 return</text><text x="1370" y="254" class="small">Measured negative</text>
+<text x="45" y="329" font-weight="bold">24 V relay coil latch - each zone; RESET must be released after pressing</text>
+<path class="wire" d="M60 415 H700 M700 415 V365 H1040 V415 H1510 M700 415 V475 H1040 V415"/>
+<rect class="box" x="60" y="380" width="175" height="70"/><text x="76" y="410">F3 control 1 A</text><text x="76" y="437" class="small">From fused +24</text>
+<rect class="box" x="285" y="380" width="140" height="70"/><text x="300" y="410">STOP NC</text><text x="300" y="437">21 - 22</text>
+<rect class="box" x="475" y="380" width="175" height="70"/><text x="490" y="410">THi 67L050</text><text x="490" y="437">NC cutoff</text>
+<rect class="box" x="750" y="335" width="240" height="60"/><text x="767" y="373">RESETi NO 13 - 14</text>
+<rect class="box" x="750" y="445" width="240" height="60"/><text x="767" y="484">Ki latch NO 21 - 24</text>
+<rect class="box" x="1100" y="380" width="235" height="70"/><text x="1117" y="410">Ki coil / diode inside</text><text x="1117" y="437">A1 (+) - A2 (-)</text>
+<text x="1390" y="404">X0 return</text>
+<circle cx="700" cy="415" r="5" fill="#345368"/><circle cx="1040" cy="415" r="5" fill="#345368"/>
+<text x="45" y="565" font-weight="bold">PID supply, sensor and SSR command - separate from the heater power path</text>
+<rect class="box" x="60" y="615" width="400" height="175"/>
+<text x="80" y="650">DDR-15G-12 converter</text><text x="80" y="686">4 +Vin from F3 / 3 -Vin to X0</text><text x="80" y="722">1 +Vout adjusted to 13.0 V</text><text x="80" y="757">2 -Vout = XC0, separate return</text>
+<path class="wire" d="M460 715 H630"/>
+<rect class="box" x="630" y="615" width="345" height="175"/>
+<text x="650" y="650">Ci Auber SYL-2L52</text><text x="650" y="686">Power 9 (+13 V), 10 (XC0)</text><text x="650" y="722">RTD 3/4 same end, 5 other</text><text x="650" y="757">SSR command 7 (+), 8 (-)</text>
+<path class="wire" d="M975 740 H1100"/>
+<rect class="box" x="1100" y="690" width="410" height="100"/>
+<text x="1120" y="726">Qi command input</text><text x="1120" y="764">3/A1 (+) from Ci7; 4/A2 (-) from Ci8</text>
+<text x="45" y="851" class="small">JP power connector: cavity 1 heater feed from Ki14; cavity 2 heater return to Qi load1.</text>
+<text x="45" y="885" class="small">JS signal connector: 1/2 RTD same end, 3 opposite end, 4/5 thermostat loop, 6 unpopulated.</text>
+<text x="45" y="933" class="small">J0 jack and brick plug use different pin numbers. Verify all four isolated jack tails before joining polarity pairs.</text>
+<text x="45" y="967" class="small">Only the external enclosed brick contains mains. Do not connect the PIDs directly to nominal 24 V.</text>
+<text x="45" y="1015" class="small">A thermostat opening drops its power relay even if its SSR remains commanded on. Cooling does not reset the latch.</text>
+<text x="45" y="1049" class="small">Held RESET permits restart; welded contacts are not monitored. This is a supervised prototype, not a certified safety system.</text>
+<text x="45" y="1090" class="small">Read electrical-assembly.md for exact parts, wire gauges, unused terminals, mounting torques and commissioning tests.</text>
+</svg>
