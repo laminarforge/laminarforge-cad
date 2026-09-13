@@ -1,0 +1,5 @@
+body_height_mm = 7.0
+swab_port_diameter_mm = 12.8
+channel_width_mm = 1.2
+channel_depth_mm = 0.7
+alignment_hole_diameter_mm = 2.3

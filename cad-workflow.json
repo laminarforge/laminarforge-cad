@@ -1,0 +1,1746 @@
+{
+  "schema": 1,
+  "targets": {
+    "arm_hole_grommet": {
+      "mode": "frozen",
+      "source_sha256": "c5e4c6a83af09b0c4174ac2a05bc36fe7af65761133c1faac6afcae596de3868"
+    },
+    "aseptic_transfer_hatch": {
+      "mode": "frozen",
+      "source_sha256": "c3e02cd110144fc87571c188926bfa34485b78464be7654f7d62b84955fa0da9"
+    },
+    "aseptic_tubing_weld_seal_station": {
+      "mode": "frozen",
+      "source_sha256": "45c6422beff4d519bb15f4317def5176f699d3fc2f4eb0770352c3a8f61d873a"
+    },
+    "aspirator_waste_trap_holder": {
+      "mode": "frozen",
+      "source_sha256": "de1d210b46650f48b6bdf1574532865b7289f7d99646e38e59fd448ac34cccc1"
+    },
+    "assembly": {
+      "mode": "frozen",
+      "source_sha256": "35ac0078ae78e464af2c104c42df4c838f1a16aaf55762e7a941907630bec38d"
+    },
+    "automated_cell_seeding_distribution_manifold": {
+      "mode": "frozen",
+      "source_sha256": "2b1b008c611c9e494e3187ca97de5fb8889ee8e072c7a8878c1d0290baf6a998"
+    },
+    "automated_culture_imaging_module": {
+      "mode": "frozen",
+      "source_sha256": "b5a425f689e9f6a7e20df75c392256a2b99b4c91756dc54c7e6f4949826a86b6"
+    },
+    "automated_ecm_coating_qc_station": {
+      "mode": "frozen",
+      "source_sha256": "aa3b4d901547ce56956c5ccaf7c1014fcc166233236614ec47b973a368ad0876"
+    },
+    "automated_media_exchange_cassette": {
+      "mode": "frozen",
+      "source_sha256": "da7017d51d155fd4c5bbde7a089e4c5d60ec4e4508d71c80f037b09e2aa37c46"
+    },
+    "automated_seeding_coating_station": {
+      "mode": "frozen",
+      "source_sha256": "925288f4d8f960d603c29f9eb40ee27b03a8b82e914d674e2cadfa3d020fffe4"
+    },
+    "bioreactor_feed_harvest_bag_hotel": {
+      "mode": "frozen",
+      "source_sha256": "91b1fd3c9a74ea1112987c1029df8410ddcbf1112480e578c10b6f0ce06e5fb2"
+    },
+    "cassette_bench_nest": {
+      "mode": "frozen",
+      "source_sha256": "f525585b1c4d38bad83e6fc179c2adbe4d247e94c1afd631d4080949881c5db4"
+    },
+    "cassette_deviation_quarantine_station": {
+      "mode": "frozen",
+      "source_sha256": "e75209177cf40c4c75f0bc1a4cf0637b41907f9f569d3924ed27aae1d5ceff51"
+    },
+    "cassette_sensor_backplane": {
+      "mode": "frozen",
+      "source_sha256": "bf840ea9ae09756c1a73f863dd0c28843ea48965fa28ca15358425b4fa882cf8"
+    },
+    "cassette_storage_recovery_incubator_rack": {
+      "mode": "frozen",
+      "source_sha256": "39a93b270447c4a2484d126b177a3fa1b5fd1e44c99e361fa48c7e22ab12ec29"
+    },
+    "cell_culture_equipment_manifest": {
+      "mode": "frozen",
+      "source_sha256": "ae39fad35ee8deda9b87bde448ef0ba8acca8f646216ce4f1ef114808c466944"
+    },
+    "cell_culture_equipment_verify": {
+      "mode": "frozen",
+      "source_sha256": "f2a48571f07cddf7335c93c6b285862cf1ed302c7b840f28c3fcb6a46f803e1b"
+    },
+    "cell_culture_logger_enclosure": {
+      "mode": "frozen",
+      "source_sha256": "7c50f7f54035fbfd979be8343efb76c6d2500fa504bb6d60b90d8a3b1771c976"
+    },
+    "cell_lot_release_qc_panel": {
+      "mode": "frozen",
+      "source_sha256": "bdbc6b09f3cd95c880deb837f95a1e9e96ef6eed726216d1b964e7f552f2f9d9"
+    },
+    "cell_suspension_prep_qc_module": {
+      "mode": "frozen",
+      "source_sha256": "5498bf97facb5f899a8606954118fb2141312997e5cf083c1978f33128cb4144"
+    },
+    "centrifuge_adapter": {
+      "mode": "frozen",
+      "source_sha256": "4d79ab12e69130c1fd93cc48b949bbc9e15e667125a4e427d20b9527cce759bf"
+    },
+    "chip_adapter_plate": {
+      "mode": "frozen",
+      "source_sha256": "f480919858ba49e50a2ebb17fc3b5d4c02b1252513bf6b79ccd9d044ca1c122f"
+    },
+    "chip_cassette_position_randomization_tray": {
+      "mode": "frozen",
+      "source_sha256": "58ab079d6bf17198c3cb77950b99ab277341496200984c5d5ff0f21df9f99eec"
+    },
+    "chip_farm_assembly": {
+      "mode": "frozen",
+      "source_sha256": "88c24287b18736315123b5db00b580e2d089e810fcbbdf97d69a504765b3429b"
+    },
+    "chip_farm_assembly_v2": {
+      "mode": "frozen",
+      "source_sha256": "ec16f74d0af2828d123eb10a414739860d5dae7070921b072077e22f9112efbd"
+    },
+    "chip_incubator_v2": {
+      "mode": "frozen",
+      "source_sha256": "f153638a1730eccdf22d1127a394a1665771abea632b72d2ef516fb79ef4b782"
+    },
+    "chip_incubator_v3": {
+      "mode": "frozen",
+      "source_sha256": "34acb42a04563979830c0a704ddda1587526193cc537eaa1ec9c9a703a209bc5"
+    },
+    "chip_priming_tubing_fixture": {
+      "mode": "runtime",
+      "config": "models/chip_priming_tubing_fixture.toml",
+      "verifier": "chip_priming_tubing_fixture"
+    },
+    "chip_stack_rack": {
+      "mode": "frozen",
+      "source_sha256": "a9b867fb68f7cfc9c5eba33b1f117d73d553f32ed4ad454646c499076d6ee4a8"
+    },
+    "clean_support_pod_shell": {
+      "mode": "frozen",
+      "source_sha256": "410cf20d99484517f9b94a807f89b07503139fc4242cd7d647951e48734e5714"
+    },
+    "closed_airlock_gasket_compression_leak_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "01522339dc1129282dea1ec8b22b2c61817307dcca94b2cde41146a5748b0d14"
+    },
+    "closed_airlock_material_debag_static_particle_burst_station": {
+      "mode": "frozen",
+      "source_sha256": "2bf0d03e199adad90f0da473925e27c6dafb251646fb21f0f6a1c4be12ce01cd"
+    },
+    "closed_airlock_material_transfer_bagout_integrity_station": {
+      "mode": "frozen",
+      "source_sha256": "6c72138894ff9390c8d701be164210ec2767adba62c6b889dc1d392144a66405"
+    },
+    "closed_airlock_pressure_decay_interlock_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "cafd3ee4aee6569f73dc9a2b8ea0224b1c065486252b82fb4c9472ab96aa0b4a"
+    },
+    "closed_airlock_transfer_cart_cassette_orientation_error_station": {
+      "mode": "frozen",
+      "source_sha256": "0aeb6bb4ee3e83d656fd1ba84bc43107b808533d256ee5c9a62dca5bd4ba5a71"
+    },
+    "closed_airlock_vhp_residue_aeration_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "b7f3855b572dbe9cbe7305d0983420b2116de8e982acf0910c18b1ab3e105c85"
+    },
+    "closed_alarm_escalation_run_hold_release_decision_station": {
+      "mode": "frozen",
+      "source_sha256": "4254244aed0f88bf317742c16b27b02e66368711c3e3541a2e8ecc61083bc5b5"
+    },
+    "closed_alarm_response_false_positive_fault_injection_station": {
+      "mode": "frozen",
+      "source_sha256": "228ee1db9d661667f02de3051f108752907ab44bb1ea6f07ee1c056f9cadba3e"
+    },
+    "closed_aseptic_tool_surface_bioburden_sampling_station": {
+      "mode": "frozen",
+      "source_sha256": "e6ca4bfa924a1ff5e02f72338304c442f48b2aecdc5ec78cf82e6b14bcb6a7cb"
+    },
+    "closed_barcode_rfid_plate_fogging_condensation_readability_station": {
+      "mode": "frozen",
+      "source_sha256": "5af5c99cf8975846d69f6c9bc165f0d77357d5087ba3ba7f731210ce1b500b4e"
+    },
+    "closed_bubble_trap_degas_pressure_pulse_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "bef4464096dfc3e07584e405bf0eaad7ba701a004f97662cd1dff5f95204a396"
+    },
+    "closed_calibration_standard_custody_gate": {
+      "mode": "frozen",
+      "source_sha256": "12f90132e0979f744ec36b7fc25de0b30d6e039e2f9cbccaf1a042f63426e1f4"
+    },
+    "closed_cassette_barcode_image_focus_occlusion_station": {
+      "mode": "frozen",
+      "source_sha256": "8c572903e3a985915a0184fa5ff331704eb93f98e631a4cf8b7c49afe2ee347f"
+    },
+    "closed_cassette_barcode_rfid_mismatch_reconciliation_station": {
+      "mode": "frozen",
+      "source_sha256": "3ce193e81654f54990c40f5eaf27e9fc8ce64a43e95e0d3d9012b5f35800139f"
+    },
+    "closed_cassette_barrier_breach_dye_trace_quarantine_station": {
+      "mode": "frozen",
+      "source_sha256": "53c9177cace5ccd7fd2157f3f24abe49ebbf5b61e5323250d29150e4c6f98893"
+    },
+    "closed_cassette_cell_attachment_settle_uniformity_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "a9ff2b05209d242131b3ce12f605624bfdecd45819f5731d5fa10d37c02f5abb"
+    },
+    "closed_cassette_evaporation_edge_guard_media_overlay_station": {
+      "mode": "frozen",
+      "source_sha256": "fe5de6f6d530e3a93888c02100ca3b92c7ea6094aae3085c4ce9d391346ab824"
+    },
+    "closed_cassette_evaporation_mass_loss_mapping_station": {
+      "mode": "frozen",
+      "source_sha256": "78e0c0a9a144ba21d779399b8ab6113e2029df48365e81a0962a4760951f117b"
+    },
+    "closed_cassette_evaporation_osmotic_drift_sentinel_station": {
+      "mode": "frozen",
+      "source_sha256": "c498b8399d082d86002232e215c4810ed1630fcecbcf672444202befb4983a6c"
+    },
+    "closed_cassette_flow_path_pre_run_air_slug_displacement_station": {
+      "mode": "frozen",
+      "source_sha256": "a4901e51998a5c5583a8240b778dbbacfc41edb3101b8f4282069f83fe06e732"
+    },
+    "closed_cassette_gasket_compression_set_aging_station": {
+      "mode": "frozen",
+      "source_sha256": "041d9b3e82d8966720414d846711df73cd084cf7dfaac5070f6a89252f85582b"
+    },
+    "closed_cassette_gasket_install_torque_compression_station": {
+      "mode": "frozen",
+      "source_sha256": "865dda48596c10a79083117bf17765ad398f84205a812ccb70a3c8f30e510807"
+    },
+    "closed_cassette_humidity_edge_evaporation_balance_station": {
+      "mode": "frozen",
+      "source_sha256": "431975ae610159a9f1bed68b925d2ea432cdbee6029f5a0e25067f9e4a641054"
+    },
+    "closed_cassette_lane_airflow_shadow_smoke_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "d9426158d062126671203691c8ce921bba31bc69e74aa3e1c611ef0a218bed62"
+    },
+    "closed_cassette_media_exchange_residual_fraction_washout_station": {
+      "mode": "frozen",
+      "source_sha256": "f6543fa28f88d7430bb11c4ef1b9eb856098fffa5f3019663ae4cd726c3b70e0"
+    },
+    "closed_cassette_module_barrier_pressure_equalization_station": {
+      "mode": "frozen",
+      "source_sha256": "c6f88c80d555a06f388854b4fbc3252fa07512195bcfbc638488a1a77e6bd8c4"
+    },
+    "closed_cassette_perfusion_startup_shear_ramp_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "061dbb0972f5377224fc10d3b9430e32d259de5dc5c87dad36e4b4979c92b71c"
+    },
+    "closed_cassette_position_edge_center_effects_rebalance_station": {
+      "mode": "frozen",
+      "source_sha256": "8df257562cf3d37c7d4eac3975ad7654001b0afcd2016d63853b1e3553011c5d"
+    },
+    "closed_cassette_position_environmental_equivalence_station": {
+      "mode": "frozen",
+      "source_sha256": "2ccbf287b18f08589673a4cacbb52e204b184de8c75d9ef854c6a54d600e7004"
+    },
+    "closed_cassette_position_randomization_audit_reconciliation_station": {
+      "mode": "frozen",
+      "source_sha256": "1af74e2e5ab2be13a2e72cadf3b793b98bb7a81e8aa789ee378a6c81733996d9"
+    },
+    "closed_cassette_post_run_fixation_rinse_custody_station": {
+      "mode": "frozen",
+      "source_sha256": "5baca11f3078dd1d059b3dae04a51a0646fd8cd358b5ef339a260bd9f25d6fed"
+    },
+    "closed_cassette_preseed_air_bubble_optical_quarantine_station": {
+      "mode": "frozen",
+      "source_sha256": "b260a9f81af3f28835c13a531a360a076b47f54c5db7aa4abb30b8ced7f50213"
+    },
+    "closed_cassette_seed_density_gradient_settle_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "01ca99f9fee93eb6b395500f1a94bb3d4db6a8b21d70fb7668cdcfe42183c28f"
+    },
+    "closed_cassette_seed_distribution_fluorescent_uniformity_station": {
+      "mode": "frozen",
+      "source_sha256": "17f2813b683e67df8761e08c075c8f4a237ae17f1eff0a5cfe69e2ff5d325e46"
+    },
+    "closed_cassette_serpentine_channel_uniformity_dye_front_station": {
+      "mode": "frozen",
+      "source_sha256": "dd837445234bc3db0346aa6d35d2619449caf81df6cf0102a75af8e032720f86"
+    },
+    "closed_cassette_shipping_vibration_logger_dock_station": {
+      "mode": "frozen",
+      "source_sha256": "7e525df90d7e6f96b9af40420eeedff8661d976084e2350caed4f795ee2b7475"
+    },
+    "closed_cassette_transport_drop_shock_inspection_station": {
+      "mode": "frozen",
+      "source_sha256": "7c4ac4b5dbc3fbc8ccbd81a8b9445d461e86132b58e2c164d6d4b552aed530ca"
+    },
+    "closed_cassette_transport_temperature_shock_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "1fa52063a777a5b767b011c5744b69dad0410e7ebe23ca551b40e58015752075"
+    },
+    "closed_cassette_waste_port_misroute_colorimetric_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "a67765b3f74d77cceb9b2da901895754f8702d043b0baaf51924b9717c562d31"
+    },
+    "closed_cell_bank_recovery_thaw_station": {
+      "mode": "frozen",
+      "source_sha256": "679edf1418922ac0b5832acabba5c32a14d1b3fd6010b9562a394d5cac4b8bc4"
+    },
+    "closed_cell_culture_run_abort_safe_state_station": {
+      "mode": "frozen",
+      "source_sha256": "3a05734a9009034f9f4aa043ec7b6a3039c271df9d0de0cda16804f017e7bb50"
+    },
+    "closed_cell_density_viability_sampling_station": {
+      "mode": "frozen",
+      "source_sha256": "3bdbeb59bb017acafc2be1f3396718480854e5895e8c132e24ed96849a92d1a0"
+    },
+    "closed_cell_harvest_enzyme_neutralization_timing_station": {
+      "mode": "frozen",
+      "source_sha256": "150a7242204b019b654a2f7ccaacd9eec68d3ff255d02c8efd2fb7eeb6932244"
+    },
+    "closed_cell_harvest_passaging_module": {
+      "mode": "frozen",
+      "source_sha256": "f413365f4924b93aa110b49752b5bf4b25e3afe80a7669cabbda390fb93fcdad"
+    },
+    "closed_cell_lot_hold_time_viability_decay_tracer_station": {
+      "mode": "frozen",
+      "source_sha256": "626629525757cffa2e75a647c5aebd7eab31e21394b78eecdf9c89c52199d0b6"
+    },
+    "closed_cell_lot_split_pooling_identity_balance_station": {
+      "mode": "frozen",
+      "source_sha256": "a74354dad37f121b35f48e4613772945c2561b096f61e4e139baa2c96bf164e4"
+    },
+    "closed_cell_seeding_nozzle_wetout_shear_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "a7f9c453d6f7ee0a495e9880f357b92658ee2d9f4b743192885344fbd96bfa2a"
+    },
+    "closed_cell_seeding_suspension_homogeneity_recirculation_station": {
+      "mode": "frozen",
+      "source_sha256": "4688b312e1aced4a7dd124a40997b794863d89a1c1b4c9ce5dca86b913d080d4"
+    },
+    "closed_cell_settling_time_mixing_hold_station": {
+      "mode": "frozen",
+      "source_sha256": "21267d8c70e5f4757558845755b5a967b0741b98380082ec5971ec0884d08253"
+    },
+    "closed_cell_source_bag_agitation_shear_threshold_station": {
+      "mode": "frozen",
+      "source_sha256": "1c159d283b542d6cd61957f383e80c6f849637d3510445a27d9a3dab46d8e8db"
+    },
+    "closed_cell_source_thaw_to_seed_timing_identity_handoff_station": {
+      "mode": "frozen",
+      "source_sha256": "68f104b37fcdeb403142fc3d1bf8b6988f62ba52e5c77fc255b7df5ce79ed713"
+    },
+    "closed_cell_source_transport_shock_preseed_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "549fd0c05d122414d8efe740fd8eab86955597bcee548c92b4ebc786c6adace2"
+    },
+    "closed_cell_source_vial_thaw_timing_stagger_station": {
+      "mode": "frozen",
+      "source_sha256": "fd0f3f1219d3fd78ff5e5f1755fe94c37ed42d11915af913d4f64a518655d01b"
+    },
+    "closed_cell_suspension_clump_filter_viability_loss_sentinel_station": {
+      "mode": "frozen",
+      "source_sha256": "9c5503522637663f7120b1f45bdfb4a7f1264c1eec20e2dc9e68b86d528de23b"
+    },
+    "closed_cell_suspension_optical_density_counter_crosscheck_station": {
+      "mode": "frozen",
+      "source_sha256": "bcb860580beca053f5174ffae4be48fa07ee53e61ec2000295dd5c48115282a6"
+    },
+    "closed_cell_viability_inline_fluorescence_live_dead_crosscheck_station": {
+      "mode": "frozen",
+      "source_sha256": "b144ae0a6067806e76b7fde5bca1e94d2f68f5564c270f57a72be7acb1120167"
+    },
+    "closed_cell_wash_concentrate_interface_volume_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "ba02a67825644224bbde5da3e80294c01b03dcc4b4cf2d765a7f0ca1a9d54cdf"
+    },
+    "closed_chain_of_custody_sample_tote_station": {
+      "mode": "frozen",
+      "source_sha256": "eace74bfe7f5699a304f48c0a2b37e139d6252eb285e50fb1a16969c3b2aee8e"
+    },
+    "closed_chip_cassette_condensate_ingress_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "b76e824d8b8e3d4b62b9584aa97b62f7ddca252a600800e496bde6570b388487"
+    },
+    "closed_chip_cassette_static_charge_particle_attraction_station": {
+      "mode": "frozen",
+      "source_sha256": "fe0e99300b7d7f2c0a4bf5124fad1da23eb89c3a29b60e4269f64c03af191ee7"
+    },
+    "closed_chip_cassette_thermal_contact_preload_uniformity_station": {
+      "mode": "frozen",
+      "source_sha256": "aec27992cbd32542d93cac3841dd4df21a491b5623cf0277f7e3277624887c6a"
+    },
+    "closed_chip_inlet_outlet_dead_volume_dye_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "f6b66cbe126521fd623b982c92e71b7268144732305153bd4bb9ef3eadb7fcc3"
+    },
+    "closed_chip_lane_pressure_relief_burst_guard_station": {
+      "mode": "frozen",
+      "source_sha256": "4078aa3076aca59c1af1befb23cb5e9835784ca034f0b152c908a30d80ef948e"
+    },
+    "closed_chip_position_edge_center_environment_mapping_station": {
+      "mode": "frozen",
+      "source_sha256": "505dff36ad91e68162ae01b44628e2d4ec8191fad7763979a3095479ef766fdc"
+    },
+    "closed_clean_zone_personnel_material_flow_interlock_station": {
+      "mode": "frozen",
+      "source_sha256": "698c6b8aaaa280d7fe1b61502c0e7af51f06883a274912c4f302c1229667f6ce"
+    },
+    "closed_cleaning_residual_toc_conductivity_release_station": {
+      "mode": "frozen",
+      "source_sha256": "278c4551e504673ad635ae8e0c4891ad5d9ad869b982aa03207a33a0eec0d5ef"
+    },
+    "closed_cleaning_sanitization_validation_cart": {
+      "mode": "frozen",
+      "source_sha256": "f91a2160d8ba587af3db19c0094f85330cb4224fc0c71af8d7c1115f193cb939"
+    },
+    "closed_cleanroom_airflow_smoke_pattern_quantification_station": {
+      "mode": "frozen",
+      "source_sha256": "5cad6dc01e4e9d290d2bdc8129410660db4344732b14df14a4fcdd90a6ab422b"
+    },
+    "closed_cleanroom_gowning_material_shedding_surrogate_station": {
+      "mode": "frozen",
+      "source_sha256": "69c57504e3a5cb17023830a81078da4e82253f9b9c667a2d756f6bc86c51ee92"
+    },
+    "closed_cleanroom_pressure_cascade_smoke_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "10247afc99deca22d060226c8fdb2ea6acffd8dde2430c4b7fc0a14fd4a6b1f3"
+    },
+    "closed_cleanroom_recovery_particle_count_settle_plate_station": {
+      "mode": "frozen",
+      "source_sha256": "b2c36ae7ca4163f89ae8530040714b71b80157e9e8faa60651588e5601f4c30f"
+    },
+    "closed_co2_o2_gas_cylinder_empty_changeover_fault_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "a392ca231c228385b736f10646e78bb1166fc48084e14999f397d62961afbcb4"
+    },
+    "closed_co2_supply_regulator_drift_changeover_station": {
+      "mode": "frozen",
+      "source_sha256": "d45e12b38e1bd44643d6b0d25d89080eecc52149307fa8f2056e3fceef3682f2"
+    },
+    "closed_condensate_drain_trap_biofilm_cleanability_station": {
+      "mode": "frozen",
+      "source_sha256": "8d83318758d60db3283773e74d2ac97f0b5ea1831a35162f52f913c063e4c15e"
+    },
+    "closed_connector_cap_loss_open_port_exposure_prevention_station": {
+      "mode": "frozen",
+      "source_sha256": "baf966c42cace67da8e51e9dddf6200935339cd3f6ccffcde32aab54feeccfdb"
+    },
+    "closed_consumable_pre_use_inspection_station": {
+      "mode": "frozen",
+      "source_sha256": "19f440ffd3490e404f3e6d5621d7faeba01c6a8114fa605f44de5d0d4d731fd6"
+    },
+    "closed_cryostorage_inventory_transfer_fixture": {
+      "mode": "frozen",
+      "source_sha256": "5e8e685babde108abc095a6f21be2e616147bfa52650a26a4d3318a8955f9e25"
+    },
+    "closed_culture_media_sampling_bag_deadleg_flush_station": {
+      "mode": "frozen",
+      "source_sha256": "b2e45845a5388cd1d209f70df049aea79309028229803c4fe4fed96e3c04f54e"
+    },
+    "closed_culture_module_power_data_quickconnect_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "a76e2adc61a9c5420abfad6923e41c7141d05e6929c1cad855e9eb31765d1887"
+    },
+    "closed_culture_module_service_line_kink_occlusion_station": {
+      "mode": "frozen",
+      "source_sha256": "85aaf24d7f32eac2ba2d78692ff09c7a7ad27289654fcbe6061baf67b82e1344"
+    },
+    "closed_decon_residue_sensor_false_clearance_station": {
+      "mode": "frozen",
+      "source_sha256": "783199c7afb78ec53006723759c16aeec7b8cfc2d45b9bc0d4239035f7eb0142"
+    },
+    "closed_deviation_sample_triage_station": {
+      "mode": "frozen",
+      "source_sha256": "8066feb560460b5aa12e6814a35d6d0c04b6f5e8fdd652a1ca0b6b053d769461"
+    },
+    "closed_ecm_coating_incubation_dwell_gelation_window_station": {
+      "mode": "frozen",
+      "source_sha256": "4f78d10b6a8deee63e962765336b6e472ee67c4fe3f0f38b339fca3193eef232"
+    },
+    "closed_ecm_coating_reagent_thaw_dwell_uniformity_station": {
+      "mode": "frozen",
+      "source_sha256": "9d086fa5b3803e2466d8f0fbee9bc3a1beb9efafe89a78111477048967f4a7ee"
+    },
+    "closed_ecm_coating_thickness_uniformity_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "7511e96ef2708930cf8b12e22cb749a94632bb9e73791453bf48ba055cbca0dd"
+    },
+    "closed_ecm_coating_uniformity_witness_coupon_station": {
+      "mode": "frozen",
+      "source_sha256": "8ed209a8e5fd6a67a7f5c2ff64e1f7489c1fe7a56313346ed72933f5fb80429a"
+    },
+    "closed_ecm_lot_viscosity_temperature_dispense_window_station": {
+      "mode": "frozen",
+      "source_sha256": "d5a015100eb9a01f4533e37eaaabe2db8619a85ddf89656f9d883f908b309bc5"
+    },
+    "closed_effluent_neutralization_qc_station": {
+      "mode": "frozen",
+      "source_sha256": "5df154a3c6c44b4e4963f94b81a702951667129e02b132a99e48390e624b875c"
+    },
+    "closed_environmental_excursion_response_station": {
+      "mode": "frozen",
+      "source_sha256": "e04036e2e33f2527a0c4a542169498ed8811540b4201aa57c44dedd046f878c3"
+    },
+    "closed_environmental_monitoring_plate_coupon_station": {
+      "mode": "frozen",
+      "source_sha256": "ae88eb652bf53fa50968909d37a123c2bd86c7d7ff752b05733465bbcf816e66"
+    },
+    "closed_environmental_particle_counter_probe_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "7e65b5ed6f03ce139c917111a8c300ee6e1b25ecd98416273ad6e426ea8244aa"
+    },
+    "closed_environmental_probe_placement_shadow_strain_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "91d508a986e57dbea2193def078d66c66f7fd9653e3e96ce1be06d30b4b72497"
+    },
+    "closed_environmental_sensor_cross_sensitivity_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "9d6a6837423644c3a948c86217755a2c40d01981adb18f845c867947214b5172"
+    },
+    "closed_excursion_root_cause_evidence_board": {
+      "mode": "frozen",
+      "source_sha256": "75a063e7ec72c927c1dc9278e4aa2bebce9d4c6ff198f4b198d43ba54ac2b23a"
+    },
+    "closed_feed_harvest_line_reversal_prevention_station": {
+      "mode": "frozen",
+      "source_sha256": "0630a1db819ad7bc1e4a6512b746e273fe4593b9f25ff3660fb914bc1c11cd8e"
+    },
+    "closed_fluid_path_packaging_kitting_station": {
+      "mode": "frozen",
+      "source_sha256": "cdc223b28e70000a318bfdc1a82380623663a6ff80fdb8d73f7de3a479ec3b2a"
+    },
+    "closed_gas_filter_integrity_leak_test_station": {
+      "mode": "frozen",
+      "source_sha256": "f6c30c7e6e5ac40251424c4d4469b258b3dc5d6d7fda1958f2f95df750542c30"
+    },
+    "closed_gas_mfc_zero_span_crosscheck_station": {
+      "mode": "frozen",
+      "source_sha256": "5621bb94292208ed31723e13ff3e9d743596243414790f4bc71c92333b487506"
+    },
+    "closed_gasket_lot_incoming_inspection_station": {
+      "mode": "frozen",
+      "source_sha256": "f0d0cac30ce6ed4433af2d97c9813a0db5a8cd70542e7a0d7398ad779beb8309"
+    },
+    "closed_growth_factor_cytokine_addition_qc_station": {
+      "mode": "frozen",
+      "source_sha256": "50856a740935ec97f507b62d94789f7043820aedcded86de455c357803ba6efe"
+    },
+    "closed_hepa_filter_scan_adapter_fixture": {
+      "mode": "frozen",
+      "source_sha256": "a3dface833989eaabb4f95cd03aa258503d265e824842619f937aa8f07b89b47"
+    },
+    "closed_humidity_condensate_material_compatibility_station": {
+      "mode": "frozen",
+      "source_sha256": "a8fb2e1edffaa489218c422d3c9b97b176d8cf55412462d613af4084a1cc900b"
+    },
+    "closed_humidity_dewpoint_reference_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "2be530a8b2633c5f8ead7b3ac1a4c72086ac281590e7f1e0b377d4503449add0"
+    },
+    "closed_humidity_reservoir_fill_level_slosh_response_station": {
+      "mode": "frozen",
+      "source_sha256": "b2f124c0b74fad6a80b4ca89364bc48a7ee1a79452715c2c483a33f3c083c989"
+    },
+    "closed_humidity_water_reservoir_biofilm_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "9795693196330285d09fade0c0faa82d67dd176a2eec20662984ce41c9e8354a"
+    },
+    "closed_incubation_slot_map_verification_station": {
+      "mode": "frozen",
+      "source_sha256": "778e1a628cc5a84cb01d0095121686e561eda73b60abaf9373b57380a009f9b8"
+    },
+    "closed_incubator_airflow_filter_loading_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "ce31b44d3cb284277f456fd0b0ac91603ff8c4bbca3f7610f037aec4b75ff299"
+    },
+    "closed_incubator_airlock_gasket_wear_particle_shedding_station": {
+      "mode": "frozen",
+      "source_sha256": "99bdcbf6b92b1f85a392a9ffe19adadacb3f1999f6084bba601eab492494697f"
+    },
+    "closed_incubator_co2_sensor_zero_span_drift_quarantine_station": {
+      "mode": "frozen",
+      "source_sha256": "a2f1d2eb8f80d3a3a95f8ffff841a8ecfc25dd34af2034d637fbb40df4790164"
+    },
+    "closed_incubator_condensate_cross_contamination_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "fab8ecb75d4e7747042f7c00b2429545df7c574a94874a2ae7154e477b027343"
+    },
+    "closed_incubator_condensate_drain_alarm_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "6aea2c34f7520fae3b48c1fcadd0b91c71f933d9352bc181e84dcb17ee2edca9"
+    },
+    "closed_incubator_condensate_drain_validation_fixture": {
+      "mode": "frozen",
+      "source_sha256": "51b72e2e699e04d9f2e9de02b4543273440261efd16b526929bec80b7f063cdf"
+    },
+    "closed_incubator_dewpoint_condensation_boundary_map_station": {
+      "mode": "frozen",
+      "source_sha256": "a6e0bb9a1453b3b22a2f9d4a443f24d37a16d7e99a392994008e55085e6d1562"
+    },
+    "closed_incubator_door_recovery_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "9cbc9b32ab9f1d119faf12090419f55c09267b2390ff6c09b1e6661b30d94e5d"
+    },
+    "closed_incubator_evaporation_media_level_sensor_crosscheck_station": {
+      "mode": "frozen",
+      "source_sha256": "943049d6341d7012360cc7a88acbd3584d28a6055d3946137c62481b5d1aeed6"
+    },
+    "closed_incubator_fan_flow_shadowing_mapping_station": {
+      "mode": "frozen",
+      "source_sha256": "4a4da81c5592ad8b7a1a627d97f73681ad0079d225a18b826547f81717ec1a84"
+    },
+    "closed_incubator_gas_recovery_after_service_port_opening_station": {
+      "mode": "frozen",
+      "source_sha256": "25c47978e090317dda3623b612ad9414b84f18953a92a63b73f67961067f04c8"
+    },
+    "closed_incubator_gas_sampling_line_condensate_trap_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "63435a23106d8d88df6171faa907c7ceb3abbc15717592fedb97798d1519916f"
+    },
+    "closed_incubator_humidity_condensate_drain_clog_overflow_fault_station": {
+      "mode": "frozen",
+      "source_sha256": "490b8e3a49f858b97f6ebcee0c4f05e4fed3c48a5f46ed7540ff1884fed2e36d"
+    },
+    "closed_incubator_humidity_recovery_load_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "09be21912a35a5aa40c035996280b0132b6f8f2e5909e0223db9e532260f7d9f"
+    },
+    "closed_incubator_humidity_water_quality_biofilm_sentinel_station": {
+      "mode": "frozen",
+      "source_sha256": "a2ee2fc1192b99531ac2027126c320c504d9b4d8d6d345ab58654c13043bc554"
+    },
+    "closed_incubator_internal_surface_cleanability_coupon_station": {
+      "mode": "frozen",
+      "source_sha256": "bbe5782286c96bfb791120775fdef22a9287d556153e5fd2917286f03bc94929"
+    },
+    "closed_incubator_microplate_footprint_module_adapter_station": {
+      "mode": "frozen",
+      "source_sha256": "bd942b409424e7b4326d3af772c29c2b9ec89855d6b1e8586205f1a44ab3dc80"
+    },
+    "closed_incubator_o2_co2_stratification_mapping_station": {
+      "mode": "frozen",
+      "source_sha256": "5dfef7f9592f9ec366aab04f8065e6c3888bae5bb538ad6827aad87b081088aa"
+    },
+    "closed_incubator_power_failure_holdover_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "69bff83dbace1f8ed765779ae0f3c1065161b2256d635c92941ad8fac149fa96"
+    },
+    "closed_incubator_rack_door_sweep_clearance_collision_station": {
+      "mode": "frozen",
+      "source_sha256": "0af6b44d9c72334abb985e8d8c8b4ebbf511e1501017be1c990f9a848c2bb615"
+    },
+    "closed_incubator_rack_slot_identity_load_history_station": {
+      "mode": "frozen",
+      "source_sha256": "6b1c6944c9ea329979a68a58b4e92ec4f55d58780772f35ee4575d895b0a31b7"
+    },
+    "closed_incubator_rack_vibration_tilt_mapping_station": {
+      "mode": "frozen",
+      "source_sha256": "7beb0e65d6182ece5f5632ff837bb71f407afabfe44f9e1908ac15c36eb5dfea"
+    },
+    "closed_incubator_shelf_leveling_load_distribution_station": {
+      "mode": "frozen",
+      "source_sha256": "f19034f3afa79efc78dcf0240fe6da3e9286e11ab2b58c61421e0736ec387592"
+    },
+    "closed_incubator_slot_reassignment_after_excursion_balance_station": {
+      "mode": "frozen",
+      "source_sha256": "cf924d0b691369fc0d7323790ed09d303e9ac42e5795c5c40319afbbc876bff3"
+    },
+    "closed_incubator_slot_to_slot_media_evaporation_balance_station": {
+      "mode": "frozen",
+      "source_sha256": "4540cde9e6849f88eccc942b8553908f2da9f2766fea6191abddea1a3de9e874"
+    },
+    "closed_incubator_water_pan_refill_overflow_decon_station": {
+      "mode": "frozen",
+      "source_sha256": "911ed21da08786a90014990080ad9d1a0256cd3e94eeae005bf991f170936adb"
+    },
+    "closed_inline_bubble_sensor_false_positive_negative_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "557a344e0fc7c1b2a7274426481626daec108678ac3330e6a83137a3453c7f62"
+    },
+    "closed_inline_filter_preuse_integrity_test_station": {
+      "mode": "frozen",
+      "source_sha256": "c0ba9f79c7ca5813f0a1e92e743adb90812f26642ca8b81185a077928e3943cd"
+    },
+    "closed_inline_media_ph_osmolality_co2_lag_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "02450a5973542ec67ad2ffae6cf16291d038c224a38681ac74ca0241b5671d94"
+    },
+    "closed_inline_metabolite_sampling_timing_aliasing_station": {
+      "mode": "frozen",
+      "source_sha256": "f02109004f1c5afb40e0bc48464f3550e65eeb3015841cabf86a6ebaee05b853"
+    },
+    "closed_inline_sensor_calibration_drift_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "d84e978e1b5442f272b56d187153218d9b89da817bfc76862608a1791dd0ac76"
+    },
+    "closed_inline_sensor_response_lag_flow_step_station": {
+      "mode": "frozen",
+      "source_sha256": "89b7808399c5c1cb965199c6939ded220653db06d2bbe0e7f53061cecdc5a1e9"
+    },
+    "closed_ipsc_differentiation_media_change_recipe_verification_station": {
+      "mode": "frozen",
+      "source_sha256": "684b7627cff2d3af66f57042018b97fa4c0319e5c45b711bfcff88382a059f53"
+    },
+    "closed_isolator_workcell": {
+      "mode": "frozen",
+      "source_sha256": "a59871f7c360ea87b713f0999178ab3b253f3f6eea65989d392aff5933742108"
+    },
+    "closed_liquid_waste_aerosol_trap_integrity_station": {
+      "mode": "frozen",
+      "source_sha256": "18313e2aee52241219f686ce0b2d3fb4ba9fc16a725f4db934d42cc178f397a9"
+    },
+    "closed_low_volume_dose_accuracy_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "aa570bd174d222f438b74197ddd27c6dc1609079c207c99be2878dcb0ec9b8d7"
+    },
+    "closed_material_passthrough_debagging_station": {
+      "mode": "frozen",
+      "source_sha256": "5557a49f632604382e7d3accf08c23c58840ce1ece502c4d6addfbdfbb1c05cf"
+    },
+    "closed_media_additive_light_exposure_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "ae3b4b03594d712072d4274189001b17cc6f557850b0bef1b30c2d6d46fbc0ee"
+    },
+    "closed_media_additive_microdose_recovery_gravimetric_station": {
+      "mode": "frozen",
+      "source_sha256": "ed13b54296151e605376eebc632f7b0bc186a6b419ad2b19b10514ef1e4efcb8"
+    },
+    "closed_media_additive_precipitation_filter_blockage_station": {
+      "mode": "frozen",
+      "source_sha256": "e88a6a7fc5f7b6cef68ebf0729183b98455f79baf47a2b74138b461ecd9e908a"
+    },
+    "closed_media_analyte_panel_calibration_custody_station": {
+      "mode": "frozen",
+      "source_sha256": "7de780bd4dee2462dc9c7e23198d937a94808a3b3cf89ef826be4b6cf4c09691"
+    },
+    "closed_media_analyte_sensor_calibration_carryover_station": {
+      "mode": "frozen",
+      "source_sha256": "39954742bd2a4ebf19c84a0f2ae2f5461ee3f8882bd267a6a8baf5630806ed8a"
+    },
+    "closed_media_bag_connector_wetness_capillary_holdover_station": {
+      "mode": "frozen",
+      "source_sha256": "7116de180300f6843a7e41910faec9755a8a8da33f4bd85d48d14f6c46b20b6a"
+    },
+    "closed_media_bag_load_cell_drift_reference_station": {
+      "mode": "frozen",
+      "source_sha256": "dc771df4cb33b42398abe62c35b6cfaa9c6aa32e618c1aa84c5fb6124355b99e"
+    },
+    "closed_media_bag_lot_thaw_pooling_order_interlock_station": {
+      "mode": "frozen",
+      "source_sha256": "c4bc1d709ae0575108eabd19d797dd007e557a1f25f0a6ddd80e3e191a685717"
+    },
+    "closed_media_bag_rocking_mixing_shear_surrogate_station": {
+      "mode": "frozen",
+      "source_sha256": "743e4383bb54fe7f7b2e0fbc767a3ffc10eb1c80df49d14d44ccfa3bcf99b6cf"
+    },
+    "closed_media_bag_scale_bubble_foam_false_mass_sentinel_station": {
+      "mode": "frozen",
+      "source_sha256": "d2114c60fb3112cbaa79aed69a2c1f914a010a694e3d94c879d64b4af745db01"
+    },
+    "closed_media_bag_scale_drift_bubble_false_mass_station": {
+      "mode": "frozen",
+      "source_sha256": "bf95b523fd7d9e5dd4b94aa650bf605c331bdaf86140a24e87378389753b315c"
+    },
+    "closed_media_bag_spike_port_swab_residue_station": {
+      "mode": "frozen",
+      "source_sha256": "109ea21c50ff606fdb617d6749b6adda91f87315c0fbab259abb661d5fce14e6"
+    },
+    "closed_media_bag_temp_ramp_thaw_equilibration_fault_station": {
+      "mode": "frozen",
+      "source_sha256": "66740f7ac8a55eaa5184265c751db63ba95fea4287e2015475bd04f8b0a80832"
+    },
+    "closed_media_bottle_decap_recap_septum_station": {
+      "mode": "frozen",
+      "source_sha256": "6230f2d8782531a29406a3d6f6ca7d46f9fce60befa01bced6ba0d999d4bbe7e"
+    },
+    "closed_media_buffer_hold_time_stability_station": {
+      "mode": "frozen",
+      "source_sha256": "872c5b8d1bde4406212a0af3895f4a2487400793503813f4dc4b7a115ac03096"
+    },
+    "closed_media_conditioning_degas_membrane_wetout_leak_station": {
+      "mode": "frozen",
+      "source_sha256": "7847aacf863baf48ec6809ca41d17e2a4e6e3295f0ecac966b00ea608f2baa0a"
+    },
+    "closed_media_conditioning_gas_equilibration_hold_loop_station": {
+      "mode": "frozen",
+      "source_sha256": "9e517acdbb524776995aa0942b28ecb97c53ff61411da044ed6f8ca708821f4f"
+    },
+    "closed_media_conditioning_ph_osmolality_release_gate_station": {
+      "mode": "frozen",
+      "source_sha256": "c189c5032c510ba56dad7851c82cf34d82a504960384a27b45a976a8f8c9bbd7"
+    },
+    "closed_media_conditioning_recirculation_dead_zone_tracer_station": {
+      "mode": "frozen",
+      "source_sha256": "5177fb28b5a63f52ac72e1a030380a1c82ecf8746acb6d5902328731c07488f0"
+    },
+    "closed_media_degassing_bubble_trap_priming_station": {
+      "mode": "frozen",
+      "source_sha256": "723e42a1a9e15e88449a96b110d239d382dca47244c36eb9d4b5245395863361"
+    },
+    "closed_media_exchange_osmotic_shock_ramp_station": {
+      "mode": "frozen",
+      "source_sha256": "42039f549abeb256009dc97e6c96c820bae70c2255593d260ba73f7901fae888"
+    },
+    "closed_media_exchange_shear_pulse_carryover_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "c8fe9a1873fe97f6e50c65fdebabcdef61e6363d7d1928794d6728df0e425209"
+    },
+    "closed_media_feed_harvest_bag_lot_mixup_prevention_station": {
+      "mode": "frozen",
+      "source_sha256": "c0f5b11d6318f31720ea96a103259d4972ee215691ef8a8b016e8a83fb8ae5ff"
+    },
+    "closed_media_fill_run_simulation_fixture": {
+      "mode": "frozen",
+      "source_sha256": "6dedd143fd26446615c7ed16c6b69dc5e191a0b971cfdc6751321358005f1c4d"
+    },
+    "closed_media_formulation_mixing_station": {
+      "mode": "frozen",
+      "source_sha256": "9a72d4161adddeb80a12106c5b4e6d1ec4ef345541a24c642644e2069a0abda7"
+    },
+    "closed_media_hold_loop_residence_time_distribution_tracer_station": {
+      "mode": "frozen",
+      "source_sha256": "39a802e30eafb6410958a62455d8920cb19c1dee011b471f5f91dd7e0127d3ce"
+    },
+    "closed_media_line_dissolved_gas_bubble_nucleation_station": {
+      "mode": "frozen",
+      "source_sha256": "a5592fd6e33ee46e690da670ed8799aa4280ff753a9fe8d68a475055bf9d4759"
+    },
+    "closed_media_osmolality_conductivity_qc_station": {
+      "mode": "frozen",
+      "source_sha256": "bc6711e038a3fb20ef4ce9b2a604b33784a3c9743efccc18164db59eab3eaf12"
+    },
+    "closed_media_osmolality_evaporation_correlation_station": {
+      "mode": "frozen",
+      "source_sha256": "ff01fed8a5fe0af195789c363362b791d68b8ee7ebe935567f71e0b9786c2830"
+    },
+    "closed_media_reagent_cold_chain_excursion_unpack_station": {
+      "mode": "frozen",
+      "source_sha256": "660b34e46eca4349790f40307899c1d7b8bfc6893a2bf135684dccbd39fa880b"
+    },
+    "closed_media_reservoir_mixing_homogeneity_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "a4e422a472f689ec8552e30403348178b2450dc24e9ccb613c92d86cad33a2cc"
+    },
+    "closed_media_reservoir_temperature_stratification_recirculation_station": {
+      "mode": "frozen",
+      "source_sha256": "b99b838eb22b78d6a41d4cd9e6f3dafb7d61109eefbb79d3cb500bf5574ef3d2"
+    },
+    "closed_microfluidic_chip_lot_dimensional_metrology_fit_station": {
+      "mode": "frozen",
+      "source_sha256": "d943def3180a43655cfae3f3d925cab36635b7c9b945a425edfb91fbfd28649a"
+    },
+    "closed_microfluidic_chip_preflush_debubble_station": {
+      "mode": "frozen",
+      "source_sha256": "9d07a5797335e340d208052d66c3977729e9d9c00f3576f8100b4c9ca455455a"
+    },
+    "closed_microfluidic_lane_occlusion_recovery_pressure_signature_station": {
+      "mode": "frozen",
+      "source_sha256": "3fbb3287a68978d76dfe0de4cf11c461d5f56b986638f0560b4779e0b355bc2a"
+    },
+    "closed_module_cip_sip_service_station": {
+      "mode": "frozen",
+      "source_sha256": "629e09089f00478c025940edc6075b0ffb6139df611f321c0f818c5cea2ddb01"
+    },
+    "closed_module_external_surface_disinfectant_contact_time_station": {
+      "mode": "frozen",
+      "source_sha256": "1d6a34f24e25efefc3b145c9c1fca99ed512231c9c399b4405ed87c14ccc9fc4"
+    },
+    "closed_module_gasket_seal_validation_fixture": {
+      "mode": "frozen",
+      "source_sha256": "48796133581133df822cf7f0cb5eb78ef4f0b6c878ab5924eabb61bd49665d4e"
+    },
+    "closed_module_latch_force_alignment_verification_station": {
+      "mode": "frozen",
+      "source_sha256": "835ad50323d2c16604fa61e1a8ad74df3c934a4d6fd649eceb681e25b1783225"
+    },
+    "closed_module_luer_lock_misassembly_prevention_station": {
+      "mode": "frozen",
+      "source_sha256": "83cb77b5cf25c70ae33e111dfd46f429dfcd01f373033c243ba9765eaa020c77"
+    },
+    "closed_module_oxygen_tension_gradient_mapping_station": {
+      "mode": "frozen",
+      "source_sha256": "5a279a7fa91ff5acf883ffa73934fb903b7af09f7811f7da3c9e9e7b14013472"
+    },
+    "closed_module_port_dry_break_cycle_life_station": {
+      "mode": "frozen",
+      "source_sha256": "f03ab1584f6467d74c8b5f6986ad7743dbd38a9eb9c97a6dceb26e948d809168"
+    },
+    "closed_module_residual_rinse_sampling_station": {
+      "mode": "frozen",
+      "source_sha256": "e974e16e8b92d54c4175dcfddbce60544ba4786ac7522f2b1adea32bf9d3be7a"
+    },
+    "closed_module_sterile_air_purge_duration_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "b86ce4d565b1d14ed750c8ae484fabebe8b7748699c2fe17e4762dbbcace9d0d"
+    },
+    "closed_module_thermal_contact_resistance_mapping_station": {
+      "mode": "frozen",
+      "source_sha256": "baf78c0abdd2bd6765805896825d20b81f5db36abdf9f4f7d2a6ac0ef5408d40"
+    },
+    "closed_module_thermal_runaway_fault_injection_station": {
+      "mode": "frozen",
+      "source_sha256": "c4f0b2f7e4ff1e4add28745a8e0fba6843b585303ca5a0e28d3536a5d4e17aa3"
+    },
+    "closed_multichannel_pressure_decay_leak_reference_station": {
+      "mode": "frozen",
+      "source_sha256": "f600bcd8bf4c7568b5531aca36cbdfc5d4a72a7047e4f1b55128c0db703193a8"
+    },
+    "closed_myco_sterility_sample_custody_split_station": {
+      "mode": "frozen",
+      "source_sha256": "406bc8270f0b760cd2ef5211ed518ab454ece60088f4f10bf5c6eb168427adbb"
+    },
+    "closed_optical_focus_drift_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "ef34413b50933c108f060e8d9274d33d7facf69bc6603b0577cb499851f04fc3"
+    },
+    "closed_oxygen_supply_mfc_blend_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "b373a7e6aa8137a870f6fccf165068e59833c390ce61f68a10d1092ddc203946"
+    },
+    "closed_pass_through_tote_pressure_equalization_flow_balance_station": {
+      "mode": "frozen",
+      "source_sha256": "a9c943575ea56f6294a7d1c23c3695a882a6ab13885f1e425be5bebcd869e2ce"
+    },
+    "closed_passage_number_lot_chain_identity_station": {
+      "mode": "frozen",
+      "source_sha256": "a0777625ba634643872ec9d07886760eef5761d0a71b1de9b5bcd79005e27e0e"
+    },
+    "closed_perfusion_alarm_response_quarantine_diverter_station": {
+      "mode": "frozen",
+      "source_sha256": "42b84d806d48552e7c9b80768109cd56fee7d427c2485cc675c0359d41385e29"
+    },
+    "closed_perfusion_alarm_root_cause_evidence_bundle_station": {
+      "mode": "frozen",
+      "source_sha256": "024200627a757054598f73d13e5c5c84dbaab831e9d0d7f6d4904c6836298014"
+    },
+    "closed_perfusion_backpressure_waveform_signature_station": {
+      "mode": "frozen",
+      "source_sha256": "4b601a38d9449d56f938e7966f7b58cd95e43bdfb465330ca54e70940b5dc878"
+    },
+    "closed_perfusion_bubble_trap_capacity_exhaustion_alarm_station": {
+      "mode": "frozen",
+      "source_sha256": "3be89fdd582e4277906c544538c1d19da958f43b9d47ce0178301324840c369e"
+    },
+    "closed_perfusion_bypass_valve_fail_position_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "27e482bf40e380358d64dfdb4b204904fbba895ea5dc94f11b56f1fcae3cdcf9"
+    },
+    "closed_perfusion_dissolved_oxygen_response_lag_mapping_station": {
+      "mode": "frozen",
+      "source_sha256": "91aa3b32bba568e192a4db2edbfd71e2c05481ad34faba9ca231ca7dcae7176a"
+    },
+    "closed_perfusion_filter_bypass_relief_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "2cd7e41a38472b5926393dc043eb0a36f3e5203d0e55d931d3f5498abb20535e"
+    },
+    "closed_perfusion_flow_sensor_drift_redundancy_voting_station": {
+      "mode": "frozen",
+      "source_sha256": "7675c00c9e5a0f41e625172c9e40a94ebcd3b7e481ed22360e53942124f965e3"
+    },
+    "closed_perfusion_lane_flow_split_symmetry_station": {
+      "mode": "frozen",
+      "source_sha256": "f23f55618448c980bc8d9a3de0014b9e40e105dbb95bce3e1ce9ba86ff62eadf"
+    },
+    "closed_perfusion_line_air_ingress_microleak_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "fc3f03942c53b96e03a3b904905db2ff193883cb0227b5b4cf147d3d15d3e125"
+    },
+    "closed_perfusion_manifold_dead_volume_dye_clearance_station": {
+      "mode": "frozen",
+      "source_sha256": "d2b77f9ad5966d7072dc7cd81cdc3feb753b5f0843dea0ab8ee6b7881d3230a3"
+    },
+    "closed_perfusion_manifold_residual_volume_drainability_station": {
+      "mode": "frozen",
+      "source_sha256": "f1b819f8efa222a5fb56553835d7dbffccda1127ebaa0c63a0ff067a1b961650"
+    },
+    "closed_perfusion_media_temperature_step_response_station": {
+      "mode": "frozen",
+      "source_sha256": "49073dde2e204282336e2b17e1534786184777f90dde0275edd8836048cd550c"
+    },
+    "closed_perfusion_media_viscosity_shift_pressure_alarm_station": {
+      "mode": "frozen",
+      "source_sha256": "249bbbd3498a8b87e17732b4faa4530e15aef71759e82e819c13b7d11c8857b0"
+    },
+    "closed_perfusion_pressure_sensor_bubble_wetness_crosstalk_station": {
+      "mode": "frozen",
+      "source_sha256": "1fafa970364e85470c7639baf276eb75e3cffd02807a5b0319f9e7039ccc8d42"
+    },
+    "closed_perfusion_pump_cross_channel_crosstalk_station": {
+      "mode": "frozen",
+      "source_sha256": "5379557241fc3c518c95dbf2ce5c020660ec180a7861eacc3536454b4fc043e3"
+    },
+    "closed_perfusion_reagent_temperature_mismatch_interlock_station": {
+      "mode": "frozen",
+      "source_sha256": "057630aa4d5283c7d8719eb3314dfa6e39219a6b23741cfb9ccb1c0de8f189f0"
+    },
+    "closed_perfusion_sample_fraction_evaporation_carryover_archive_station": {
+      "mode": "frozen",
+      "source_sha256": "7e54643025ddb94fed70111e243fab9041f0257fdb456868aea0083eaf60590c"
+    },
+    "closed_perfusion_shear_stress_calibration_lane_station": {
+      "mode": "frozen",
+      "source_sha256": "bad1f12ce7b45e03e07b525e685835d3cbbaf4e5c85c7c1b82e8d366194955d9"
+    },
+    "closed_perfusion_shear_stress_surrogate_chip_station": {
+      "mode": "frozen",
+      "source_sha256": "c60ffce44010a77a4ec8484aa03b16dae6951092676245b8333cfbd4d24b0add"
+    },
+    "closed_perfusion_waste_backpressure_alarm_trip_station": {
+      "mode": "frozen",
+      "source_sha256": "491523c6145a296b2381f6248a57ee6a7db78e58ae15308dfb23050a5ea297f7"
+    },
+    "closed_positive_pressure_gowning_exit_reentry_station": {
+      "mode": "frozen",
+      "source_sha256": "125241d0d19cdb3b9094ce4e1f9aa6e24a251b8dffcc3ed97c105bae7f48009e"
+    },
+    "closed_post_run_cassette_unload_custody_station": {
+      "mode": "frozen",
+      "source_sha256": "a7770f3f8e444e068c5eb3021eef9fd6862ea092fcff0c5b6322faa7c52dd211"
+    },
+    "closed_pump_flow_pulsation_shear_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "73d115260f0edce82ec8c320a73a378f1234524e7294e636ba689be5abcaa376"
+    },
+    "closed_pump_tubing_occlusion_endurance_station": {
+      "mode": "frozen",
+      "source_sha256": "343768691d798278495f830f9e8608e1db2f15e9c33116414b70dcc393f8172b"
+    },
+    "closed_pump_valve_manifold_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "42cff606c2fad3157474ce50663eac3fcac73129523921859b815af25ddc995b"
+    },
+    "closed_reagent_addition_order_mixing_witness_station": {
+      "mode": "frozen",
+      "source_sha256": "0d4acc6d82f897733f037d0576f7176a3b5fbd8cfe80366891ba891c318ee240"
+    },
+    "closed_reagent_additive_trace_dispense_verification_station": {
+      "mode": "frozen",
+      "source_sha256": "b7d0ad414d64e74ed0beb461e80803fb303dc977b9367d20976c06fa97b04b16"
+    },
+    "closed_reagent_additive_weigh_dispense_verification_station": {
+      "mode": "frozen",
+      "source_sha256": "752ef180443fc9f4fc604f95244b6d64e4ddda1fbca54bb4513518754670372f"
+    },
+    "closed_reagent_bag_pressure_hold_creep_station": {
+      "mode": "frozen",
+      "source_sha256": "ee3a1e15c2bd180edbe45afea0fe478040613e3c7afe00284d9b20d6d22a7c92"
+    },
+    "closed_reagent_cold_chain_unload_warmup_excursion_station": {
+      "mode": "frozen",
+      "source_sha256": "800fc36729a84b05dc8a975c1cc5e7c7a02bd79be8a10ec4fecd14d8f814d6b4"
+    },
+    "closed_reagent_lot_barcode_reconcile_scale_station": {
+      "mode": "frozen",
+      "source_sha256": "abd3ce59ee1396cd587412e71c4e046d0e90606cb52a1062898dbc3d4c9f2e6b"
+    },
+    "closed_reagent_lot_quarantine_temperature_excursion_station": {
+      "mode": "frozen",
+      "source_sha256": "cf6f9969256426e60bd17265b83084d5addbd0ecfe24bebc906385b26cf9d98a"
+    },
+    "closed_reagent_thaw_bubble_ingress_connector_wetness_station": {
+      "mode": "frozen",
+      "source_sha256": "ab5a2cba888cdb68bc96452a0f626453793facb97ee5ca0bd1eae95525fa2542"
+    },
+    "closed_reagent_thaw_equilibration_station": {
+      "mode": "frozen",
+      "source_sha256": "ce351c2159d4e1804be67addf24d64bfd3fa3aff8f2de618cf40aa03054aab93"
+    },
+    "closed_reference_particle_flow_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "90825d2107ec66c7a6e577e26e0bc80fb70455081caaa91f6f5d77d72e387035"
+    },
+    "closed_reference_viscosity_media_rheology_station": {
+      "mode": "frozen",
+      "source_sha256": "82911b181e5e7ce837f18dc09b1bb74e7bc2b82a1437ffc7f5d8375a972986dd"
+    },
+    "closed_reservoir_cap_septum_puncture_leak_life_station": {
+      "mode": "frozen",
+      "source_sha256": "b57dbadeb64b28f85cfc0af03bf5abe9acbc728474a2bd7d25fb785fd32bde32"
+    },
+    "closed_robot_collision_force_limit_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "f02310d8e53db999010673ecdfd1af547b48a044a1963fc3969866ed6b22e5c8"
+    },
+    "closed_robot_end_effector_sterility_parking_station": {
+      "mode": "frozen",
+      "source_sha256": "2f2bc22e7f0473a3d9d4135e47b659aca351df038b64b54b3d610a1ffb47773d"
+    },
+    "closed_robot_gripper_pad_wear_particle_shedding_station": {
+      "mode": "frozen",
+      "source_sha256": "57d776b2c8ca07abc02f7662cc561b7e4f2443243f7717d4b55b629bbe702359"
+    },
+    "closed_robot_pass_through_handoff_repeatability_station": {
+      "mode": "frozen",
+      "source_sha256": "8e9bd772982023e56e3489a5ae4f122d19794ad27cc45c39e109c0b660fe80c3"
+    },
+    "closed_robot_tool_tip_runout_repeatability_station": {
+      "mode": "frozen",
+      "source_sha256": "259595f576e222dda84d6be4946853efe4db2fc628a2ca95358de8be33574526"
+    },
+    "closed_robotic_cap_torque_and_seal_integrity_station": {
+      "mode": "frozen",
+      "source_sha256": "2fa865be8fad3c15c1a0b2ca2391fd23bed11008c54ce72a0a11ef5e71943d30"
+    },
+    "closed_robotic_cassette_quarantine_lid_lockout_station": {
+      "mode": "frozen",
+      "source_sha256": "d8ff51ce63013f9e120d0d1b1388088881858a4ac12ef4c38acdc365b563e5b8"
+    },
+    "closed_robotic_cassette_seeding_angle_and_dwell_station": {
+      "mode": "frozen",
+      "source_sha256": "6bdb22d8498b59284ebc575768a307c7e379f741107f146a4936b9cea3725aa7"
+    },
+    "closed_robotic_connector_cap_drop_recovery_quarantine_station": {
+      "mode": "frozen",
+      "source_sha256": "de5b90c4b8f06dff944036048b4105bcfd446dc29027ca8da3cf992a0d725158"
+    },
+    "closed_robotic_connector_mate_demate_force_trace_station": {
+      "mode": "frozen",
+      "source_sha256": "f548d477965be62c6a8c2fb80f1c6ce865280dfcbd36925552d0924e12a5b4b4"
+    },
+    "closed_robotic_end_effector_autoclave_cycle_count_custody_station": {
+      "mode": "frozen",
+      "source_sha256": "9dc509b52278a3c562a0a44cf1d8ce48b809852655c220381366b123e8c345ab"
+    },
+    "closed_robotic_fluid_connector_wet_mate_dry_mate_station": {
+      "mode": "frozen",
+      "source_sha256": "0558f836877fffcb09f14b5c43f1b8ec6c3bde7e4e0eb3b45b27df8e25116fbc"
+    },
+    "closed_robotic_gripper_decon_residue_swab_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "445811b6535b39e703d5e19c7db1b04150701fea967f371440ba3a490960d451"
+    },
+    "closed_robotic_lid_peel_seal_reseat_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "39795d631d8b1cea6ae119bab20142f6c5b2f8299a1ed2c3efee8742d7a4266f"
+    },
+    "closed_robotic_media_bag_spike_and_prime_sequence_station": {
+      "mode": "frozen",
+      "source_sha256": "d8b43d99d205f899586c3261c22b863c6f00f9f9b98bfd55b1ee41f79c0bf9f6"
+    },
+    "closed_robotic_probe_clean_storage_rehydration_station": {
+      "mode": "frozen",
+      "source_sha256": "f3eeb619b9d7d3f7f57c07577eca352d5c18706b8907c70722343113c19f8829"
+    },
+    "closed_robotic_seeding_nozzle_clog_uniformity_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "2020f78b269b576a5a57a8c2a9d172a026c669f57c33b3d01e2218072df827be"
+    },
+    "closed_run_start_readiness_gate_station": {
+      "mode": "frozen",
+      "source_sha256": "1584f067b38240c2e5b3c0a8153f5e74ede9d87c5b5f4796e4254032bb263512"
+    },
+    "closed_sample_archive_freeze_thaw_chain_of_custody_station": {
+      "mode": "frozen",
+      "source_sha256": "86f4f2b63b6344a7c771fce56f77a2441d33ab7248eb59538cd1e6d083394097"
+    },
+    "closed_sample_fraction_archive_module": {
+      "mode": "frozen",
+      "source_sha256": "8bcf43e49e8ebeb60f22e77e381637e559a0c5b610609bbf84fcd47a24313a08"
+    },
+    "closed_sample_label_print_apply_verify_station": {
+      "mode": "frozen",
+      "source_sha256": "0785697f9fc08334ba0280a081dec0afa965915d6269a3f05c09762a65f41b56"
+    },
+    "closed_sampling_carryover_flush_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "5e72ade3a82c134567ecae2e129b837d4d2bb1dd65616a0a2f64026ba8af08f9"
+    },
+    "closed_sampling_valve_carryover_deadleg_station": {
+      "mode": "frozen",
+      "source_sha256": "b8b61a4331e64b4f76e737c28274f1162a49c5ca15f91d3384845c016b63de16"
+    },
+    "closed_seed_density_inline_mix_uniformity_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "4d601b8d36ea96020033e015a17c5bc5b159dadd8eb155c3065f43bdbdcc46ec"
+    },
+    "closed_sensor_cable_feedthrough_leak_test_station": {
+      "mode": "frozen",
+      "source_sha256": "8061f5d7bd4c560d7c107057284ed250c5db4d913cd4eed563902a6c0afa5b49"
+    },
+    "closed_sensor_clock_drift_resync_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "f3adcc7c33dbc366bd99e3e4c9df06a719834f62e69a01cc34e14950eb676d61"
+    },
+    "closed_sensor_data_timestamp_alignment_station": {
+      "mode": "frozen",
+      "source_sha256": "efc982069837d70f45be4b3ce7cfb5fc5188ea6b0d5ef0134cdd6118624e7d74"
+    },
+    "closed_sensor_network_packet_loss_buffering_challenge_station": {
+      "mode": "frozen",
+      "source_sha256": "3862dd4f055f5c40efa748b546edd13060fdbf5926f2e7466f1a58d3e24c1efa"
+    },
+    "closed_sensor_probe_cleanability_residue_station": {
+      "mode": "frozen",
+      "source_sha256": "35ec88c3376d6b11ef27c49766d0d5c3ff605f0b44df2b6399b5d3d5b7ede7e9"
+    },
+    "closed_sensor_probe_storage_hydration_drift_station": {
+      "mode": "frozen",
+      "source_sha256": "7e1ffedad5b41700920a935435066c8ff584e190a71e2d6013830c14babd78b0"
+    },
+    "closed_sensor_stream_replay_audit_trail_station": {
+      "mode": "frozen",
+      "source_sha256": "5a7df5d431833dacf8619e04e83c3e6c25043abfe5e22e7ba2ee59c4b9c78237"
+    },
+    "closed_service_bulkhead_misconnection_gauge_station": {
+      "mode": "frozen",
+      "source_sha256": "8cf82f99a3bdf5ed95df3db94e76a96fef455da58855f6ddaf4a64a3436f3597"
+    },
+    "closed_single_use_fluid_path_lot_release_pressure_flow_station": {
+      "mode": "frozen",
+      "source_sha256": "bf424548c813b366ad8194113ed319d54a0cf03b852cb1a36a40dabc049dc6a6"
+    },
+    "closed_single_use_harness_disposal_deactivation_station": {
+      "mode": "frozen",
+      "source_sha256": "a39f54e7b1651754af2ea300f486230ac57bb97ca43cb91640c32766e76276d5"
+    },
+    "closed_sterile_connector_actuation_force_life_station": {
+      "mode": "frozen",
+      "source_sha256": "29d1288836951d18a2fdb71b74c88de8cc3d3a9e2bb3d72db88a967d31052e55"
+    },
+    "closed_sterile_connector_lot_inspection_station": {
+      "mode": "frozen",
+      "source_sha256": "e91e6534f4f3c33d114825904f7ffb816cbc5be2ca0206b80fa164d9073e7ee7"
+    },
+    "closed_sterile_filter_vent_integrity_station": {
+      "mode": "frozen",
+      "source_sha256": "2c5ef96b743196cc20517a5ac350427daa029110590791072286d05c48bcb355"
+    },
+    "closed_supply_cylinder_lot_changeover_custody_station": {
+      "mode": "frozen",
+      "source_sha256": "3df2e1b364c5563a81ffea55a8931952b7c88ebd5b9a7129d5261377744305dc"
+    },
+    "closed_teer_electrode_fouling_cleaning_recovery_station": {
+      "mode": "frozen",
+      "source_sha256": "7311b27e3756697d051121d1ad4ba88e127289ac7542e5a050697c674fe15356"
+    },
+    "closed_teer_impedance_phantom_verification_station": {
+      "mode": "frozen",
+      "source_sha256": "4c624027b4b759fba01f33964c2818c35e30763326c9fc524831edf181459974"
+    },
+    "closed_tubing_set_barcode_length_route_verification_station": {
+      "mode": "frozen",
+      "source_sha256": "9c6c00750a540535b79b68884b1802d0e9676ba14b5bb9901de3f02883bb532b"
+    },
+    "closed_uv_h2o2_decon_shadow_mapping_coupon_station": {
+      "mode": "frozen",
+      "source_sha256": "c04cda849c36ddc66ad76f2daaff5bf7813cd714156b5d9934ad075373cf3362"
+    },
+    "closed_waste_bag_custody_weigh_seal_station": {
+      "mode": "frozen",
+      "source_sha256": "e1d7e01dc064c82eddfdafe2cc59f712b1816971b77751b9e567c15570150ac1"
+    },
+    "closed_waste_container_neutralization_contact_time_station": {
+      "mode": "frozen",
+      "source_sha256": "9d600200aab80490529c6c623c14e039c5edb7aea0cac04b1a21f867c6c132c4"
+    },
+    "closed_waste_container_vent_filter_condensate_breakthrough_station": {
+      "mode": "frozen",
+      "source_sha256": "6e8a06cd92718dabb239391f8747c84e74780b6241b69a954b5517e6211d4883"
+    },
+    "closed_waste_line_backflow_siphon_validation_station": {
+      "mode": "frozen",
+      "source_sha256": "5e6f20c44098720190cd07de1a5916a948071d8cd3c3a4c52f9b2c9833f3eeb1"
+    },
+    "closed_waste_line_backpressure_contamination_sentinel_station": {
+      "mode": "frozen",
+      "source_sha256": "c98068462c24ac2d38c1b32bad996205eb0585893a9c840b2331173fde7fc5af"
+    },
+    "closed_waste_line_backpressure_overfill_interlock_station": {
+      "mode": "frozen",
+      "source_sha256": "4300d84213c545d2a266f6488c154c1e9d40043860411bc7ff070dbffec1fabe"
+    },
+    "closed_waste_quarantine_sample_retain_split_verification_station": {
+      "mode": "frozen",
+      "source_sha256": "a964bd41a323ccb34b9f87e025b4ef54fd30a2eb9f25c233a93227c70eda832a"
+    },
+    "closed_waste_retain_sample_temperature_chain_custody_station": {
+      "mode": "frozen",
+      "source_sha256": "ad107401fd5d2d749a7846a68d6fab925cdbfdd04d24196fa9c8d315007324af"
+    },
+    "co2_incubator": {
+      "mode": "frozen",
+      "source_sha256": "a7143bdd95edaa6336cdf7587679275ecd4e0bc3d195c7254824ca6ce7dfc68f"
+    },
+    "co2_incubator_sim": {
+      "mode": "frozen",
+      "source_sha256": "410fb1868a91b7192668eea8857ee154bf0c9cf2c54e41ee6fcbaf300ce7b3ab"
+    },
+    "co2_incubator_verify": {
+      "mode": "frozen",
+      "source_sha256": "999ae9baa18bea9912a5d93ea2a2f6d4e30a44a916a055aec664aec2fb8433d7"
+    },
+    "co2_sensor_service_module": {
+      "mode": "frozen",
+      "source_sha256": "7f8b82156f53379a2dd70619430083893ebccb7f99acdea63d7462f157f8a15c"
+    },
+    "cogs_model": {
+      "mode": "frozen",
+      "source_sha256": "e055c96da4daefbb08e468834558b4bf2943d60dff1c1ed4c8bf3197e0758c4e"
+    },
+    "column_rack": {
+      "mode": "frozen",
+      "source_sha256": "c0074fcec89ab041f53406ce7ade84221ffa8a187d03ae0bf2cbe22dd8110dad"
+    },
+    "connector_topology_scan_station": {
+      "mode": "frozen",
+      "source_sha256": "0a016d04c3794bf7f587400add5a511cde01698abc35ab913db4829f73dc91f3"
+    },
+    "controller_enclosure": {
+      "mode": "frozen",
+      "source_sha256": "10804e29b917deb484e241d4c9cbfe1438c3aa8dbe4a23c837c08a21d1f0029d"
+    },
+    "controller_pcb": {
+      "mode": "frozen",
+      "source_sha256": "5f7d79932664d97d60201200b3d4e8c9c8ee3b8c66e0003cae11246c5c9acb0f"
+    },
+    "culture_module_service_skid": {
+      "mode": "frozen",
+      "source_sha256": "9e3124b1e248d633a851c7e47d8c6af95dc951d9641869de59d6b716328dac82"
+    },
+    "diagnostic_cartridge": {
+      "mode": "runtime",
+      "config": "models/diagnostic_cartridge.toml",
+      "verifier": "diagnostic_cartridge"
+    },
+    "diagnostic_cartridge_fit_test": {
+      "mode": "frozen",
+      "source_sha256": "ae77dfe288b2d66513014dc1174f4de73dec44ff4d1bb3a2605cffceccfcd0b0"
+    },
+    "doe_plan": {
+      "mode": "frozen",
+      "source_sha256": "f1df052a78bbdae6b1e80442d2a2114df0f92304062776e478dda00a42102869"
+    },
+    "enclosure": {
+      "mode": "frozen",
+      "source_sha256": "19d3ac66a2c240b1199ade2acb2511918fad7f79d7f7d4b5d04780b7015e74cc"
+    },
+    "environmental_mapping_cassette_surrogate": {
+      "mode": "frozen",
+      "source_sha256": "543f3dad17a757a851f7ff72337db616a85a626a6a365480fdd450aec61a6ed8"
+    },
+    "environmental_sensor_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "40dd914715aefdacc1505054b0ee2d5f1bf68ef73522ee8482fe61aa07b91810"
+    },
+    "environmental_utility_skid": {
+      "mode": "frozen",
+      "source_sha256": "ac0404410486732baffc88a18fe5afd8310651698be6afe5c97f15b80bd8fe1d"
+    },
+    "fcb_board": {
+      "mode": "frozen",
+      "source_sha256": "a145176a55a8d61823f06219c282c826166c85233198b56428633a87146a9132"
+    },
+    "flow_pressure_validation_fixture": {
+      "mode": "frozen",
+      "source_sha256": "6890f4a82ec5c960c7194e44941b027a2e7b94383cf791448e3353be4ab81526"
+    },
+    "gantry_brackets": {
+      "mode": "frozen",
+      "source_sha256": "e6e689ce4506e25a5e7adefa4ce14b4538341ada18d93ba2bb1faf334ae74820"
+    },
+    "gas_humidity_service_panel": {
+      "mode": "frozen",
+      "source_sha256": "e2ff92c1ee42df8df84c5486d098fde0b3f21c8fbb3bb6a8e9d8f8082ffe17b4"
+    },
+    "heated_lid": {
+      "mode": "frozen",
+      "source_sha256": "f8018bce2e8e189e70c9d632a9f04478ac9762b252fbad8b43f2e293cd5a62a0"
+    },
+    "heated_microplate_cassette_v0": {
+      "mode": "frozen",
+      "source_sha256": "27d0cea7dbed9c9fb19efca088ca055e94c39fe716761df17739817dd6053ebf"
+    },
+    "heating_block": {
+      "mode": "runtime",
+      "config": "models/heating_block.toml",
+      "verifier": "heating_block_verify"
+    },
+    "heating_block_verify": {
+      "mode": "runtime",
+      "config": "models/heating_block.toml",
+      "verifier": "heating_block_verify"
+    },
+    "hil_harness": {
+      "mode": "frozen",
+      "source_sha256": "8533ae66c5c60be4b6c0ead582df75f09815d5ebe5fef2448673b3598094b693"
+    },
+    "imaging_gantry": {
+      "mode": "frozen",
+      "source_sha256": "ae0aa89684139dc517afd8f3472c276fd3eb71eaa4478ede874947704f1095b3"
+    },
+    "incubator_cassette_shuttle_airlock": {
+      "mode": "frozen",
+      "source_sha256": "597b5835d791a982e0f8ca217d3b7b605a088c90b529f595dd1f1cad328a6b8e"
+    },
+    "inline_media_conditioning_qc_module": {
+      "mode": "frozen",
+      "source_sha256": "cebd05cb5aaec62e87c2ae95b1007a2515e9aa1bb43058b65fb340d7d5a89600"
+    },
+    "inline_sensor_cartridge_hydration_calibration_station": {
+      "mode": "frozen",
+      "source_sha256": "8c3ea375eb7b3a72bfee1a0f4310982533acfd8e391a8f8f5a85e6ada0795beb"
+    },
+    "inline_sensor_service_module": {
+      "mode": "frozen",
+      "source_sha256": "bc7b47dafa53418f98e67eca85ae93f96130c91837e37902597a301074f3d771"
+    },
+    "isolator_glove_sleeve_service_validation_fixture": {
+      "mode": "frozen",
+      "source_sha256": "f029e81e148f9508e015767087cefec26b971bfd5d3dc410384a116cc5706ecf"
+    },
+    "lamp_pcba_check": {
+      "mode": "frozen",
+      "source_sha256": "8f8f8e66fd81f52131a24db9368ed2f85f086ec7040bc3eda5bb46dc02b09282"
+    },
+    "lamp_rev_a_electrical_validate": {
+      "mode": "frozen",
+      "source_sha256": "359de2131bbe8583b963ff992b529c73ebe6ddc164262f700dc5a2a88d884ef8"
+    },
+    "lamp_rev_a_fab_preview": {
+      "mode": "frozen",
+      "source_sha256": "7bff19c34e46832afea66c4182d25ec3e7998c17a265cbacc618b470436a9016"
+    },
+    "lamp_rev_a_fab_release": {
+      "mode": "frozen",
+      "source_sha256": "afe04ff1bcb41bc9ab888237f9887ca67d24d727e1ab43c02398c07aa0bbdbba"
+    },
+    "lamp_rev_a_materialize_board": {
+      "mode": "frozen",
+      "source_sha256": "b45c64a60ab35e8fddeb117404fcdd8aa5626e4e9993589383521bd5cea0be23"
+    },
+    "lamp_rev_a_route_greedy": {
+      "mode": "frozen",
+      "source_sha256": "221dea44a1287865f49a20f4137a10fc5dccac2dbceceef0883f99c92dc9d8d4"
+    },
+    "lamp_rev_a_route_report": {
+      "mode": "frozen",
+      "source_sha256": "8fc58f2a2b44cae9c50b3fd44c60923b172e20b2e96b7308989d3b21a665a64b"
+    },
+    "lamp_rev_a_seed_routes_from_drc": {
+      "mode": "frozen",
+      "source_sha256": "f83d43754c56c3da5879354ea25258ba8526105f8469bd87d0e2fc7dc64e7af0"
+    },
+    "lamp_rev_a_spice_check": {
+      "mode": "frozen",
+      "source_sha256": "7a796ecdc0c02d0c8e72cb2111312ea9a1dad579f7e0643024f0ff5be07d5fb5"
+    },
+    "lamp_rev_b_controller_check": {
+      "mode": "frozen",
+      "source_sha256": "7cf55f6025378024a363bda9106b2892038e5acb3ebbbf1f78a69bf45a29ccb6"
+    },
+    "lamp_rev_b_controller_erc_report": {
+      "mode": "frozen",
+      "source_sha256": "5b8d0cc00fa0508154a68230f266b183b0d4293063cd6763811c3f74c619a673"
+    },
+    "lamp_rev_b_controller_fab_release": {
+      "mode": "frozen",
+      "source_sha256": "9126b553729492f8530768cf82e3a5662f6bb88ff505e5185d14b5c82ceb4b07"
+    },
+    "lamp_rev_b_controller_freerouting_benchmark": {
+      "mode": "frozen",
+      "source_sha256": "bfb93c9598ecfb04a04b46a6be386d0f841d1b3260cd4c096b584b750627fa3d"
+    },
+    "lamp_rev_b_controller_materialize_board": {
+      "mode": "frozen",
+      "source_sha256": "1f7a1ecae049b8bb89708ecf26c03d85218493fdf9ce6e0954c1dba6888f61e3"
+    },
+    "lamp_rev_b_controller_materialize_schematic": {
+      "mode": "frozen",
+      "source_sha256": "8ee81d8d05e4b9cf6ce22ad50d55be3a6a263ee8d0e38e8d9a7e1d6484463200"
+    },
+    "lamp_rev_b_controller_route_report": {
+      "mode": "frozen",
+      "source_sha256": "9c07d2358a881fff1e4e6d07f494b96d57da73583756244a8234dc6dcb1e7c0f"
+    },
+    "lamp_rev_b_controller_seed_routes_from_drc": {
+      "mode": "frozen",
+      "source_sha256": "a5acf3322f956f8245305bd448c609858046487d04552f59bab4ec7f755a4337"
+    },
+    "lh_interface": {
+      "mode": "frozen",
+      "source_sha256": "3f3603cfdefdfbbbffae690db3ac1d7d39f0bb2ed6e7ce9215e433d44e563cbf"
+    },
+    "lid": {
+      "mode": "frozen",
+      "source_sha256": "c6b13ba6d8b906879536ba13d1cdcec47b034e7c281f394a5f5653e33ee3646a"
+    },
+    "magnetic_stirrer": {
+      "mode": "frozen",
+      "source_sha256": "59ffa23d3bfca671ea1c8cea32e8ff924b106e76b2b72bda25c52a8588eb3359"
+    },
+    "media_conditioning_perfusion_rack": {
+      "mode": "frozen",
+      "source_sha256": "4afe76dfba919c86c263aec784a7dde4b5e97614e8869356fe7ae65cbff6c711"
+    },
+    "media_reagent_quarantine_pod": {
+      "mode": "frozen",
+      "source_sha256": "0ceed42e40e0b86c0cc65f605211dcc62836f6c3f4fca98557f748bd440554ef"
+    },
+    "media_reservoir": {
+      "mode": "frozen",
+      "source_sha256": "eb481c10026e7ad16240d3467e0561b2c2382ea3828886c7c90e07212c773730"
+    },
+    "media_sampling_analyzer_interface": {
+      "mode": "frozen",
+      "source_sha256": "a0eadefff79121cad94c456c4dc7ec2bf9c95e9337b1361887b72bf48a66541b"
+    },
+    "microfluidic_chip": {
+      "mode": "frozen",
+      "source_sha256": "c083e24ce9e945ba44349c9df8a6f8ba018f16827ee4dbb2899a25b74c697b8a"
+    },
+    "microfluidic_chip_cnc": {
+      "mode": "frozen",
+      "source_sha256": "f155c10d493692086c15319583c96927507251b5f4be5ec4d57848a127012c50"
+    },
+    "microfluidic_chip_cnc_revc": {
+      "mode": "frozen",
+      "source_sha256": "7fe17762e08e994dc2ee4d276c89a5f6257e1e44d9eb56e362ac0ff02c815174"
+    },
+    "microfluidic_chip_cnc_step": {
+      "mode": "frozen",
+      "source_sha256": "c6884130c7cbe10fde718fe6d572634d1a0269a22969cf09c75c7a2938a06758"
+    },
+    "microfluidic_chip_revc_print_sample": {
+      "mode": "frozen",
+      "source_sha256": "d38fa3976a48ae2f65df1e426589ab178591f46a661799806efe86b44e0d7b70"
+    },
+    "microfluidic_chip_revd": {
+      "mode": "frozen",
+      "source_sha256": "f6880d0c6ff5601ed771e1870256c765920236560c1204d1f40f5423a7897f81"
+    },
+    "microlattice_swab": {
+      "mode": "frozen",
+      "source_sha256": "0158c977249362adfbf7fe19be8e6b8c579676af531a65aba8f3d7c32b88a021"
+    },
+    "monolithic_board": {
+      "mode": "frozen",
+      "source_sha256": "a7acf8958b1c8a00f2de75adffb283598490d5e24173c5c81202b1bd16e00fbd"
+    },
+    "multi_organ_manifold": {
+      "mode": "frozen",
+      "source_sha256": "ba4cbac800c2a634410b562cfe140de8038e1f78d774c58091b322e67c5af3cd"
+    },
+    "optical_mount": {
+      "mode": "frozen",
+      "source_sha256": "3a465ab63f17df3f03b77db0c234c9cced28eb9046fe4771ba354172b089fc8e"
+    },
+    "orbital_shaker": {
+      "mode": "frozen",
+      "source_sha256": "0f56c2f7e430f4ebd77851c6f0fc7eb36e6cd28d6f36ea6fbcbe563e6d2b992b"
+    },
+    "p0_cartridge_coupon_suite": {
+      "mode": "runtime",
+      "config": "models/p0_cartridge_coupons.toml",
+      "verifier": "p0_cartridge_coupon_verify"
+    },
+    "p0_cartridge_coupon_verify": {
+      "mode": "runtime",
+      "config": "models/p0_cartridge_coupons.toml",
+      "verifier": "p0_cartridge_coupon_verify"
+    },
+    "pad_positions": {
+      "mode": "frozen",
+      "source_sha256": "e59cc956cdd68cc50287449f3880d50406a225ab98cbb0928960f6866f983bbb"
+    },
+    "pbmc_flow_cell_mount": {
+      "mode": "frozen",
+      "source_sha256": "71ab9c1b722acaa5d73be8aeb096ae1952d05f8e4fd791d9ab51b74740bd8832"
+    },
+    "pcb_layout": {
+      "mode": "frozen",
+      "source_sha256": "4834b0b05b2591c07aced5165cb0feed0507a7da0693ee166b53675efb6e36d0"
+    },
+    "peltier_reservoir_block": {
+      "mode": "frozen",
+      "source_sha256": "094be4d53d02d280de4f2e0af6b50d7b274d797b3fcae849ca8a98463d2f5580"
+    },
+    "perfusion_bubble_management_module": {
+      "mode": "frozen",
+      "source_sha256": "b685893dfa940438990fb3cc8ff3fe44b8a8efbd89a7a095337eb1be628ab172"
+    },
+    "pipette_tip_organizer": {
+      "mode": "frozen",
+      "source_sha256": "94bd144d7995871020c8bafd6fb4f0141d2cc7a5ee3be159876cdd021d54dc56"
+    },
+    "pressure_driven_perfusion_panel": {
+      "mode": "frozen",
+      "source_sha256": "8f38cf8dd5d1dc9f9dee275a53dad14ed27b9940285526c86f7bd71c16ee4136"
+    },
+    "rack_rocker": {
+      "mode": "frozen",
+      "source_sha256": "bf80973a2e4fb121adb84aacaf788f03f250c68c18f2daa4bf7a6c4addfa7606"
+    },
+    "rack_rocker_2axis": {
+      "mode": "frozen",
+      "source_sha256": "cb1730eb8b124e480ab890302fe3041574d9157c5aa0dcc625bd4ae8e4c09132"
+    },
+    "retractable_swab_collector": {
+      "mode": "frozen",
+      "source_sha256": "260f3aac8fde380fcf9372d0dd18c7e3864e091445639d420c44febb8f6ee045"
+    },
+    "robot_tool_change_and_end_effector_rack": {
+      "mode": "frozen",
+      "source_sha256": "c5125e61ec68f12368747ab47eb9b061f2d34e755c256107dfb8a9597f653783"
+    },
+    "robotic_cassette_gripper_end_effector": {
+      "mode": "frozen",
+      "source_sha256": "8cd48cef99e86b97ec65fdc633642549c0fde3f5ca872c0c1f39bab3ea5b00b5"
+    },
+    "robotic_spill_response_decon_kit_station": {
+      "mode": "frozen",
+      "source_sha256": "e3065483fe735b712fb921b849e229f03f8ffbff7b2285a31b9fd32dc65d4350"
+    },
+    "run_record_material_scan_station": {
+      "mode": "frozen",
+      "source_sha256": "22f5ff9477c9afe3d6f951e3362ab643cdbf2b4c91e8a47e206fc2bdac8cba70"
+    },
+    "sample_cold_block": {
+      "mode": "frozen",
+      "source_sha256": "7b8650b2c5d5b01016e70213b580382a4e00c4f3875ba37720398156e86b67b2"
+    },
+    "sealed_culture_module": {
+      "mode": "frozen",
+      "source_sha256": "1a4de4a57734e7be733231cf588d707b5f0447404c773879110016b08dee4be3"
+    },
+    "sealed_microfluidic_cartridge_coupons": {
+      "mode": "frozen",
+      "source_sha256": "dd96c2d68b0721bf87a0dfe299098f4eb9d6d2a006ef5119fb837967dc48a00d"
+    },
+    "sealed_module_docking_bay": {
+      "mode": "frozen",
+      "source_sha256": "969cc38b91be01a00cdd4341bb1bb4b12e13c1d91083f81c2b1d8f6ef3a2fbf6"
+    },
+    "single_aav_condition_module_mockup": {
+      "mode": "frozen",
+      "source_sha256": "e498e6833bb64906434834912f5f5b5fc8a92eaeb4f806500511057f19f84ca6"
+    },
+    "sixteen_slot_cassette_a0_verify": {
+      "mode": "frozen",
+      "source_sha256": "c13fa1b22c404f55e9207a2dc73649590c0043e81537da379b50f9c85ecff888"
+    },
+    "sixteen_slot_cassette_first_article_step": {
+      "mode": "frozen",
+      "source_sha256": "b7689610b48223cee282ab368dae9d0bd154d51ca3d1da0718e7798402925bef"
+    },
+    "sixteen_slot_cassette_incubator_first_article": {
+      "mode": "frozen",
+      "source_sha256": "173815ede6bcad24a807a37f515d59615d0b79c0419a3312b1920bad3ba42efa"
+    },
+    "sixteen_slot_cassette_no_cell_validation_fixture": {
+      "mode": "frozen",
+      "source_sha256": "612a9b98c3082d3895b8169d237fe6a86c8f4565ad4819b0b2366a260a560927"
+    },
+    "sixteen_slot_cassette_print_coupons": {
+      "mode": "runtime",
+      "config": "models/sixteen_slot_cassette_print_coupons.toml",
+      "verifier": "sixteen_slot_cassette_print_coupons"
+    },
+    "sixteen_slot_cassette_step_verify": {
+      "mode": "frozen",
+      "source_sha256": "03a6e94d912a4a4d2d4d7d1fd23ada2a5392b43b210635039733ab037ae1ca3a"
+    },
+    "sterile_connector_cap_plug_reconciliation_station": {
+      "mode": "frozen",
+      "source_sha256": "3818caa38205e541ba2203ecd9f3d930664f744f444888dda7d20faef083d456"
+    },
+    "sterile_consumable_cartridge_hotel": {
+      "mode": "frozen",
+      "source_sha256": "2b3035ac7926d97e409792efdd2a6cac33074c8369dfbfc8cd457acdc497715c"
+    },
+    "sterile_fluid_path_integrity_tester": {
+      "mode": "frozen",
+      "source_sha256": "b608a694a3412a511c89aa58ee63b4d858892157e8e1e28d548f495a9ca2ede7"
+    },
+    "sterile_gas_changeover_regulator_qualification_panel": {
+      "mode": "frozen",
+      "source_sha256": "e916bb32618f356c24b1f8b0523ad47856fe926cb3d2fbf404760ee8459f9d50"
+    },
+    "sterile_tote_docking_and_transfer_station": {
+      "mode": "frozen",
+      "source_sha256": "e30ab0a891e374a508c114355be64c5a1ef3f740a96d6cc6d50195f1ca047324"
+    },
+    "sterile_tubing_harness": {
+      "mode": "frozen",
+      "source_sha256": "912269cb7975b25802c1b3fdd6eefaadd2bb0d2215ea3746fba1abc2b063246d"
+    },
+    "sterile_tubing_weld_seal_coupon_test_station": {
+      "mode": "frozen",
+      "source_sha256": "05f8c6d49592b0033be65d301f7189c93454fe4b33587bdc02d66d001d097748"
+    },
+    "sterility_validation_challenge_rack": {
+      "mode": "frozen",
+      "source_sha256": "d1607342b3aeb8e73fb9a039f24df7c2f106bffd8600514557d8b3f5cd7fe4cc"
+    },
+    "still_air_box_accessories": {
+      "mode": "frozen",
+      "source_sha256": "5a2d5d7329086b1e8f1dac3d5cc6269b001e6ccb47486c8ec1ca634f692cbfc6"
+    },
+    "still_air_box_corner": {
+      "mode": "frozen",
+      "source_sha256": "3e2c978e1f5798650c74d0e45ebc9b17ce7e6bedb788387c1ad5829ccfbf4e6d"
+    },
+    "still_air_box_rail": {
+      "mode": "frozen",
+      "source_sha256": "f31f0ab649e2a06311ca2d035023386d9b1bf00df063974228e1ae9fdb8ed196"
+    },
+    "swab_docking_port": {
+      "mode": "frozen",
+      "source_sha256": "935ea1e4bf321c743da73c9d2aa3b03e1422dc3c5a59822c81b7117e6c30ec20"
+    },
+    "swab_integrated_sealed_diagnostic_cartridge": {
+      "mode": "runtime",
+      "config": "models/swab_integrated_sealed_diagnostic_cartridge.toml",
+      "verifier": "swab_integrated_sealed_diagnostic_cartridge_verify"
+    },
+    "swab_integrated_sealed_diagnostic_cartridge_verify": {
+      "mode": "runtime",
+      "config": "models/swab_integrated_sealed_diagnostic_cartridge.toml",
+      "verifier": "swab_integrated_sealed_diagnostic_cartridge_verify"
+    },
+    "syringe_pump_standalone": {
+      "mode": "frozen",
+      "source_sha256": "11882e0feb5ea84f14e26f77b71a89c83b76da9e71e9b231ed4d779481d687a9"
+    },
+    "teer_readout_pcb": {
+      "mode": "frozen",
+      "source_sha256": "b1b6b265c773f7275ac2c67bacae081203dde99a99577603671908357e81e15a"
+    },
+    "test_cube": {
+      "mode": "frozen",
+      "source_sha256": "d7079ce99171f6725fc6a89af2e8d5ac7bba926f853120d3b420838d678ca49b"
+    },
+    "tier3_chamber": {
+      "mode": "frozen",
+      "source_sha256": "48df8939d9c63f530985c70762a949681ff194d735ec25691a2944bb57336585"
+    },
+    "wash_station": {
+      "mode": "frozen",
+      "source_sha256": "a76f3fd1d63f1f677897589488ca6d32fe64a60893fef13ce6d946db00593ad4"
+    },
+    "waste_decon_service_pod": {
+      "mode": "frozen",
+      "source_sha256": "5feb43281c751829c0b5bb97c0bba7297e6f7ca73dd6335c2cec1dd7579236ca"
+    },
+    "water_bath": {
+      "mode": "frozen",
+      "source_sha256": "41475b5985595f75bbb5963f0cc5d2b4e109362f908931e59dd8a9b0a9519cac"
+    },
+    "water_bath_safety_kit": {
+      "mode": "frozen",
+      "source_sha256": "3a4dc6ba56b64b1a28fa14f4ab10402528d2456730691a30b360689db476fc26"
+    },
+    "workbench": {
+      "mode": "frozen",
+      "source_sha256": "9da869cfaa1480ad7acd01ee58157c50088d42dc98053eb231fd66e297aaad09"
+    },
+    "workcell_calibration_drawer": {
+      "mode": "frozen",
+      "source_sha256": "206d536b66e01a123dd27fcd5ed2b0d269209fc909e69f1c51793aecaf4a6ecb"
+    },
+    "workstation_enclosure": {
+      "mode": "frozen",
+      "source_sha256": "7f4c5e03940e6d24b158b7983a2f35a9266a8ec1cabb92cc2332fb80ca638713"
+    },
+    "xy_carriage": {
+      "mode": "frozen",
+      "source_sha256": "1ff1e4f02f28b7d29c8d5876781e99722e94e447a785484485bbcbbef73324c3"
+    }
+  }
+}

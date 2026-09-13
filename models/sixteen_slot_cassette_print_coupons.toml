@@ -1,0 +1,5 @@
+# Coupon fit experiments; fixed A0 assembly dimensions remain unchanged.
+chip_clearance_mm = 1.20
+gasket_groove_width_mm = 3.20
+feature_anchor_overlap_mm = 0.40
+stop_clearance_mm = 1.0

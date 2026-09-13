@@ -1,0 +1,27 @@
+# Runtime publication contract. Only body length/width are adjustable for this fixed internal architecture.
+body_length_mm = 150.0
+body_width_mm = 86.0
+rigid_base_thickness_mm = 2.0
+represented_spacer_thickness_mm = 0.14
+optical_cover_film_thickness_mm = 0.20
+minimum_perimeter_seal_land_mm = 3.0
+liquid_channel_width_mm = 1.2
+liquid_channel_depth_mm = 0.14
+swab_cup_inside_diameter_mm = 13.0
+swab_cup_wetted_height_mm = 20.0
+wash_pouch_length_mm = 30.0
+wash_pouch_width_mm = 20.0
+wash_pouch_internal_height_mm = 1.0
+reaction_pouch_lobe_length_mm = 20.0
+reaction_pouch_lobe_width_mm = 8.0
+reaction_pouch_lobe_internal_height_mm = 0.14
+amplification_length_mm = 20.0
+amplification_width_mm = 8.0
+amplification_internal_height_mm = 0.14
+waste_internal_length_mm = 36.0
+waste_internal_width_mm = 30.0
+waste_internal_height_mm = 2.4
+waste_reserved_headspace_height_mm = 0.8
+proposed_pad_retained_capacity_ul = 1350.0
+plunger_count = 2
+optical_chamber_count = 2

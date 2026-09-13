@@ -1,7 +1,6 @@
 use clap::Parser;
 use laminarforge_cad::p0_cartridge_coupons::{
-    build_alignment_nest, build_coupon, descriptors, MaterialStack, MATERIAL_STACKS, REVISION,
-    SOURCE_ARTIFACTS, SUITE_ID, TICKET_ID,
+    descriptors, MaterialStack, Parameters, REVISION, SOURCE_ARTIFACTS, SUITE_ID, TICKET_ID,
 };
 use serde::Serialize;
 use sha2::{Digest, Sha256};
@@ -17,6 +16,8 @@ const DEFAULT_OUTPUT_DIR: &str = "output/p0_cartridge_coupons";
     about = "Generate dry parametric P0 cartridge engineering coupons"
 )]
 struct Args {
+    #[arg(long, default_value = "models/p0_cartridge_coupons.toml")]
+    config: PathBuf,
     /// Material stack slug or `all`.
     #[arg(long, default_value = "all")]
     stack: String,
@@ -28,6 +29,10 @@ struct Args {
 
 #[derive(Debug, Serialize)]
 struct RuntimeManifest<'a> {
+    generator_sha256: String,
+    parameters: &'a Parameters,
+    config_sha256: String,
+    stack_selection: &'a str,
     schema_version: &'static str,
     suite_id: &'static str,
     revision: &'static str,
@@ -43,6 +48,8 @@ struct RuntimeManifest<'a> {
 
 #[derive(Debug, Serialize)]
 struct OutputRecord {
+    mesh: serde_json::Value,
+    preview_sha256: String,
     kind: &'static str,
     family: Option<String>,
     stack: Option<String>,
@@ -53,7 +60,11 @@ struct OutputRecord {
 
 fn main() {
     let args = Args::parse();
-    let selected_stacks = select_stacks(&args.stack);
+    let (parameters, config_sha256) =
+        Parameters::load(&args.config).expect("invalid P0 runtime configuration");
+    let selected_stacks = parameters
+        .select_stacks(&args.stack)
+        .expect("invalid stack selection");
     fs::create_dir_all(&args.output_dir).unwrap_or_else(|error| {
         panic!(
             "failed to create P0 cartridge coupon output directory {}: {error}",
@@ -61,12 +72,18 @@ fn main() {
         )
     });
 
+    let manifest_path = args.output_dir.join("manifest.json");
+    match fs::remove_file(&manifest_path) {
+        Ok(()) => {}
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+        Err(e) => panic!("cannot invalidate old manifest: {e}"),
+    }
     let mut outputs = Vec::new();
     for stack in &selected_stacks {
         for descriptor in descriptors() {
             let filename = format!("{}_{}.stl", descriptor.family.slug(), stack.slug);
             let path = args.output_dir.join(filename);
-            let part = build_coupon(descriptor.family, *stack);
+            let part = parameters.build_coupon(descriptor.family, *stack);
             export_and_record(
                 &part,
                 &path,
@@ -80,7 +97,7 @@ fn main() {
 
     let nest_path = args.output_dir.join("shared_3_2_1_alignment_nest.stl");
     export_and_record(
-        &build_alignment_nest(),
+        &parameters.build_alignment_nest(),
         &nest_path,
         "reusable_fixture",
         None,
@@ -89,7 +106,13 @@ fn main() {
     );
 
     let runtime_manifest = RuntimeManifest {
-        schema_version: "1",
+        generator_sha256: laminarforge_cad::runtime_cad::hash(
+            &fs::read(std::env::current_exe().expect("executable path")).expect("executable bytes"),
+        ),
+        parameters: &parameters,
+        config_sha256,
+        stack_selection: &args.stack,
+        schema_version: "2",
         suite_id: SUITE_ID,
         revision: REVISION,
         ticket: TICKET_ID,
@@ -105,11 +128,10 @@ fn main() {
             "asymmetric keyed corner notch",
             "three cross fiducials outside protected optical/fluidic fields",
             "font-independent geometric revision, family-ID, and stack-ID witness bars",
-            "common 86 x 54 mm coupon frame",
+            "runtime-configured common coupon frame; see parameters",
         ],
         outputs: &outputs,
     };
-    let manifest_path = args.output_dir.join("manifest.json");
     let mut json = serde_json::to_vec_pretty(&runtime_manifest)
         .expect("runtime P0 coupon manifest serialization must succeed");
     json.push(b'\n');
@@ -134,31 +156,6 @@ fn main() {
     println!("  Validation status:   none claimed");
 }
 
-fn select_stacks(requested: &str) -> Vec<MaterialStack> {
-    if requested == "all" {
-        return MATERIAL_STACKS.to_vec();
-    }
-    MATERIAL_STACKS
-        .into_iter()
-        .filter(|stack| stack.slug == requested)
-        .collect::<Vec<_>>()
-        .tap_assert_nonempty(requested)
-}
-
-trait StackSelectionExt {
-    fn tap_assert_nonempty(self, requested: &str) -> Self;
-}
-
-impl StackSelectionExt for Vec<MaterialStack> {
-    fn tap_assert_nonempty(self, requested: &str) -> Self {
-        assert!(
-            !self.is_empty(),
-            "unknown stack `{requested}`; expected all, coc_cop_target, pmma_control, or pet_comparator"
-        );
-        self
-    }
-}
-
 fn export_and_record(
     part: &Part,
     path: &Path,
@@ -173,7 +170,12 @@ fn export_and_record(
     let bytes = fs::read(path)
         .unwrap_or_else(|error| panic!("failed to read generated {}: {error}", path.display()));
     let sha256 = format!("{:x}", Sha256::digest(&bytes));
+    let mesh = laminarforge_cad::runtime_cad::mesh(&bytes).expect("invalid mesh");
+    let preview = laminarforge_cad::runtime_cad::preview(&bytes).expect("preview failed");
+    fs::write(path.with_extension("preview.svg"), &preview).expect("write preview");
     outputs.push(OutputRecord {
+        mesh,
+        preview_sha256: laminarforge_cad::runtime_cad::hash(preview.as_bytes()),
         kind,
         family: family.map(str::to_owned),
         stack: stack.map(str::to_owned),
@@ -182,27 +184,4 @@ fn export_and_record(
         sha256,
     });
     println!("Exported: {}", path.display());
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn default_selection_is_all_three_stacks() {
-        assert_eq!(select_stacks("all").len(), 3);
-    }
-
-    #[test]
-    fn exact_stack_selection_is_supported() {
-        let selected = select_stacks("pmma_control");
-        assert_eq!(selected.len(), 1);
-        assert_eq!(selected[0].slug, "pmma_control");
-    }
-
-    #[test]
-    #[should_panic(expected = "unknown stack")]
-    fn unknown_stack_fails_immediately() {
-        let _ = select_stacks("generic_plastic");
-    }
 }

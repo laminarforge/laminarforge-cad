@@ -1,3 +1,4 @@
+use clap::Parser;
 use laminarforge_cad::stl_to_step;
 use laminarforge_cad::swab_integrated_sealed_diagnostic_cartridge::{
     build_publication_components, composite_stl_bytes, design_manifest, verify_design,
@@ -10,6 +11,10 @@ use std::path::{Path, PathBuf};
 
 #[derive(Debug, Serialize)]
 struct RuntimePublicationManifest {
+    config_sha256: String,
+    generator_sha256: String,
+    mesh: serde_json::Value,
+    preview_sha256: String,
     design: laminarforge_cad::swab_integrated_sealed_diagnostic_cartridge::DesignManifest,
     outputs: Vec<OutputEvidence>,
     verification: [&'static str; 7],
@@ -22,14 +27,29 @@ struct OutputEvidence {
     sha256: String,
 }
 
-fn main() {
-    let params = CartridgeParams::default();
-    verify_design(params).expect("integrated cartridge architecture verification failed");
-    fs::create_dir_all("output").expect("failed to create root output directory");
+#[derive(Parser)]
+struct Args {
+    #[arg(
+        long,
+        default_value = "models/swab_integrated_sealed_diagnostic_cartridge.toml"
+    )]
+    config: PathBuf,
+    #[arg(long, default_value = "output")]
+    output_dir: PathBuf,
+}
 
-    let stl_path = PathBuf::from(format!("output/{PUBLICATION_STEM}.stl"));
-    let stp_path = PathBuf::from(format!("output/{PUBLICATION_STEM}.stp"));
-    let manifest_path = PathBuf::from(format!("output/{PUBLICATION_STEM}.manifest.json"));
+fn main() {
+    let args = Args::parse();
+    let (params, config_sha256) =
+        CartridgeParams::load(&args.config).expect("invalid runtime configuration");
+    verify_design(params).expect("integrated cartridge architecture verification failed");
+    fs::create_dir_all(&args.output_dir).expect("failed to create root output directory");
+
+    let stl_path = args.output_dir.join(format!("{PUBLICATION_STEM}.stl"));
+    let stp_path = args.output_dir.join(format!("{PUBLICATION_STEM}.stp"));
+    let manifest_path = args
+        .output_dir
+        .join(format!("{PUBLICATION_STEM}.manifest.json"));
     remove_stale(&stl_path);
     remove_stale(&stp_path);
     remove_stale(&manifest_path);
@@ -37,6 +57,9 @@ fn main() {
     let components = build_publication_components(params);
     let stl = composite_stl_bytes(&components)
         .unwrap_or_else(|error| panic!("failed to encode integrated STL: {error}"));
+    let mesh = laminarforge_cad::runtime_cad::mesh(&stl).expect("invalid STL");
+    let preview = laminarforge_cad::runtime_cad::preview(&stl).expect("preview failed");
+    fs::write(stl_path.with_extension("preview.svg"), &preview).expect("write preview");
     fs::write(&stl_path, stl)
         .unwrap_or_else(|error| panic!("failed to write {}: {error}", stl_path.display()));
     require_nonempty(&stl_path);
@@ -46,6 +69,10 @@ fn main() {
     require_nonempty(&stp_path);
 
     let runtime = RuntimePublicationManifest {
+        config_sha256,
+        generator_sha256: laminarforge_cad::runtime_cad::hash(&fs::read(std::env::current_exe().expect("executable path")).expect("executable bytes")),
+        mesh,
+        preview_sha256: laminarforge_cad::runtime_cad::hash(preview.as_bytes()),
         design: design_manifest(params),
         outputs: vec![evidence(&stl_path), evidence(&stp_path)],
         verification: [

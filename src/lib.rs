@@ -794,3 +794,7 @@ pub fn fcb16_outlet_y(row_center_y: f64) -> f64 {
 
 pub use step_export::stl_to_step;
 mod step_export;
+
+pub mod cassette_print_coupons;
+pub mod runtime_cad;
+pub mod diagnostic_cartridge_model;

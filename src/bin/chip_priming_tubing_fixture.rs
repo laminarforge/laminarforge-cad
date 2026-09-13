@@ -1,18 +1,9 @@
 use clap::Parser;
-use serde::Deserialize;
-use std::path::PathBuf;
+use serde::{Deserialize, Serialize};
 use vcad::{centered_cube, centered_cylinder, Part};
 
-#[derive(Parser)]
-struct Args {
-    /// Runtime model definition; editing this file never requires compilation.
-    #[arg(long, default_value = "models/chip_priming_tubing_fixture.toml")]
-    config: PathBuf,
-    #[arg(long, default_value = "output")]
-    output_dir: PathBuf,
-}
-
-#[derive(Debug, Deserialize)]
+use laminarforge_cad::runtime_cad::{run, Args};
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct Parameters {
     chip_length_mm: f64,
@@ -68,10 +59,20 @@ impl Parameters {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
-    let source = std::fs::read_to_string(&args.config)?;
-    let parameters: Parameters = toml::from_str(&source)?;
+    run::<Parameters>(
+        &args,
+        "chip_priming_tubing_fixture",
+        &[
+            "chip_priming_fixture_base.stl",
+            "chip_priming_fixture_tubing_comb.stl",
+            "chip_priming_fixture_luer_clip.stl",
+            "chip_priming_fixture_assembly.stl",
+        ],
+        |p, i| build(p, i),
+    )
+}
+fn build(parameters: &Parameters, index: usize) -> Result<Part, String> {
     parameters.validate()?;
-    std::fs::create_dir_all(&args.output_dir)?;
     let chip_length = parameters.chip_length_mm;
     let chip_width = parameters.chip_width_mm;
     let base_x = chip_length + parameters.margin_x_mm * 2.0;
@@ -121,32 +122,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let base = base_body - chip_pocket - bubble_window - prime_trough - mount_holes - dowel_holes;
-    base.write_stl(
-        args.output_dir
-            .join("chip_priming_fixture_base.stl")
-            .to_str()
-            .ok_or("output path must be UTF-8")?,
-    )?;
+    if index == 0 {
+        return Ok(base);
+    }
 
     let inlet_comb = tubing_comb("inlet").translate(0.0, base_y / 2.0 + 12.0, base_z / 2.0 + 6.0);
     let outlet_comb =
         tubing_comb("outlet").translate(0.0, -(base_y / 2.0 + 12.0), base_z / 2.0 + 6.0);
     let combs = inlet_comb + outlet_comb;
-    combs.write_stl(
-        args.output_dir
-            .join("chip_priming_fixture_tubing_comb.stl")
-            .to_str()
-            .ok_or("output path must be UTF-8")?,
-    )?;
+    if index == 1 {
+        return Ok(combs);
+    }
 
     let luer_clip = luer_clip();
-    luer_clip.write_stl(
-        args.output_dir
-            .join("chip_priming_fixture_luer_clip.stl")
-            .to_str()
-            .ok_or("output path must be UTF-8")?,
-    )?;
+    if index == 2 {
+        return Ok(luer_clip);
+    }
 
+    // Match component export evaluation before assembling the same solids.
+    base.to_mesh();
+    combs.to_mesh();
+    luer_clip.to_mesh();
     let assembly = base
         + combs
         + luer_clip.translate(
@@ -159,16 +155,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             -(base_y / 2.0 + 12.0),
             base_z / 2.0 + 8.0,
         );
-    assembly.write_stl(
-        args.output_dir
-            .join("chip_priming_fixture_assembly.stl")
-            .to_str()
-            .ok_or("output path must be UTF-8")?,
-    )?;
 
-    println!("Exported fixture STLs to {}", args.output_dir.display());
-    println!("Chip priming fixture: Rev C pocket, bubble-view window, tubing combs, luer clips, and overflow trough.");
-    Ok(())
+    if index != 3 {
+        return Err("invalid component".into());
+    }
+    Ok(assembly)
 }
 
 fn tubing_comb(name: &str) -> Part {

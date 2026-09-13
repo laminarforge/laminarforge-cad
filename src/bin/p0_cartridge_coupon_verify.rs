@@ -1,143 +1,124 @@
+use clap::Parser;
 use laminarforge_cad::p0_cartridge_coupons::{
-    CouponFamily, MATERIAL_STACKS, REVISION, SOURCE_ARTIFACTS, SUITE_ID, TICKET_ID,
+    descriptors, CouponFamily, Parameters, REVISION, SOURCE_ARTIFACTS, SUITE_ID, TICKET_ID,
 };
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
-use std::collections::BTreeSet;
-use std::fs;
-use std::path::Path;
+use std::{collections::BTreeMap, fs, path::PathBuf};
 
-const MANIFEST_PATH: &str = "output/p0_cartridge_coupons/manifest.json";
-
-#[derive(Debug, Deserialize)]
-struct RuntimeManifest {
-    schema_version: String,
-    suite_id: String,
-    revision: String,
-    ticket: String,
-    source_artifacts: Vec<String>,
-    scope: String,
-    design_status: String,
-    material_stacks: Vec<RuntimeStack>,
-    families: Vec<RuntimeFamily>,
-    shared_interfaces: Vec<String>,
-    outputs: Vec<RuntimeOutput>,
+#[derive(Parser)]
+struct Args {
+    #[arg(long, default_value = "models/p0_cartridge_coupons.toml")]
+    config: PathBuf,
+    #[arg(long, default_value = "all")]
+    stack: String,
+    #[arg(long, default_value = "output/p0_cartridge_coupons")]
+    output_dir: PathBuf,
 }
-
-#[derive(Debug, Deserialize)]
-struct RuntimeStack {
-    slug: String,
-    base_thickness_mm: f64,
-    spacer_thickness_mm: f64,
-    cover_thickness_mm: f64,
-}
-
-#[derive(Debug, Deserialize)]
-struct RuntimeFamily {
-    family: String,
-    coupon_id: String,
-    purpose: String,
-    conditional: bool,
-}
-
-#[derive(Debug, Deserialize)]
-struct RuntimeOutput {
+#[derive(Deserialize)]
+struct Output {
+    mesh: serde_json::Value,
+    preview_sha256: String,
     kind: String,
     family: Option<String>,
     stack: Option<String>,
-    path: String,
+    path: PathBuf,
     bytes: u64,
     sha256: String,
 }
 
-fn main() {
-    let raw = fs::read_to_string(MANIFEST_PATH).unwrap_or_else(|error| {
-        panic!(
-            "missing generated P0 coupon manifest {MANIFEST_PATH}: {error}; run p0_cartridge_coupon_suite first"
-        )
-    });
-    let manifest: RuntimeManifest = serde_json::from_str(&raw)
-        .unwrap_or_else(|error| panic!("invalid generated P0 coupon manifest: {error}"));
-
-    assert_eq!(manifest.schema_version, "1");
-    assert_eq!(manifest.suite_id, SUITE_ID);
-    assert_eq!(manifest.revision, REVISION);
-    assert_eq!(manifest.ticket, TICKET_ID);
-    assert_eq!(manifest.source_artifacts, SOURCE_ARTIFACTS);
-    assert!(manifest.scope.contains("dry"));
-    assert!(manifest.design_status.contains("not validated"));
-    assert_eq!(manifest.material_stacks.len(), MATERIAL_STACKS.len());
-    assert_eq!(manifest.families.len(), CouponFamily::ALL.len());
-    assert_eq!(manifest.shared_interfaces.len(), 6);
-
-    let stack_slugs: BTreeSet<_> = manifest
-        .material_stacks
-        .iter()
-        .map(|stack| stack.slug.as_str())
-        .collect();
-    assert_eq!(stack_slugs.len(), MATERIAL_STACKS.len());
-    for stack in &manifest.material_stacks {
-        assert!(stack.base_thickness_mm > 0.0);
-        assert!(stack.spacer_thickness_mm > 0.0);
-        assert!(stack.cover_thickness_mm > 0.0);
-    }
-
-    let family_slugs: BTreeSet<_> = manifest
-        .families
-        .iter()
-        .map(|family| family.family.as_str())
-        .collect();
-    assert_eq!(family_slugs.len(), CouponFamily::ALL.len());
-    for family in &manifest.families {
-        assert!(!family.coupon_id.is_empty());
-        assert!(!family.purpose.is_empty());
-        assert_eq!(
-            family.conditional,
-            family.family == "conditional_blister",
-            "only the blister family is conditional"
-        );
-    }
-
-    let expected_output_count = MATERIAL_STACKS.len() * CouponFamily::ALL.len() + 1;
-    assert_eq!(manifest.outputs.len(), expected_output_count);
-    let mut paths = BTreeSet::new();
-    let mut disposable_count = 0;
-    let mut fixture_count = 0;
-    for output in &manifest.outputs {
-        assert!(paths.insert(output.path.as_str()), "duplicate output path");
-        let path = Path::new(&output.path);
-        assert!(path.exists(), "missing generated output {}", path.display());
-        let bytes = fs::read(path)
-            .unwrap_or_else(|error| panic!("failed reading {}: {error}", path.display()));
-        assert!(bytes.len() > 84, "STL output is unexpectedly small");
-        assert_eq!(bytes.len() as u64, output.bytes);
-        assert_eq!(format!("{:x}", Sha256::digest(&bytes)), output.sha256);
-        assert!(output.path.ends_with(".stl"));
-        match output.kind.as_str() {
-            "disposable_coupon" => {
-                disposable_count += 1;
-                assert!(output.family.is_some());
-                assert!(output.stack.is_some());
-            }
-            "reusable_fixture" => {
-                fixture_count += 1;
-                assert!(output.family.is_none());
-                assert!(output.stack.is_none());
-            }
-            other => panic!("unexpected output kind {other}"),
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::parse();
+    let (parameters, config_sha256) = Parameters::load(&args.config)?;
+    let stacks = parameters.select_stacks(&args.stack)?;
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read(args.output_dir.join("manifest.json"))?)?;
+    for (key, expected) in [
+        ("schema_version", serde_json::json!("2")),
+        ("suite_id", serde_json::json!(SUITE_ID)),
+        ("revision", serde_json::json!(REVISION)),
+        ("ticket", serde_json::json!(TICKET_ID)),
+        ("source_artifacts", serde_json::json!(SOURCE_ARTIFACTS)),
+        ("parameters", serde_json::to_value(&parameters)?),
+        ("material_stacks", serde_json::to_value(&stacks)?),
+        ("families", serde_json::to_value(descriptors())?),
+        ("stack_selection", serde_json::json!(args.stack)),
+        ("config_sha256", serde_json::json!(config_sha256)),
+    ] {
+        if manifest[key] != expected {
+            return Err(format!("P0 manifest {key} does not match requested configuration").into());
         }
     }
-    assert_eq!(
-        disposable_count,
-        MATERIAL_STACKS.len() * CouponFamily::ALL.len()
-    );
-    assert_eq!(fixture_count, 1);
-
-    println!("P0 cartridge coupon verification passed");
-    println!("  Manifest:             {MANIFEST_PATH}");
-    println!("  Material stacks:      {}", manifest.material_stacks.len());
-    println!("  Coupon families:      {}", manifest.families.len());
-    println!("  Verified STL hashes:  {}", manifest.outputs.len());
-    println!("  Reusable fixtures:    {fixture_count}");
-    println!("  Scope:                dry engineering geometry only");
+    if !manifest["scope"]
+        .as_str()
+        .is_some_and(|s| s.contains("dry"))
+        || !manifest["design_status"]
+            .as_str()
+            .is_some_and(|s| s.contains("not validated"))
+        || manifest["shared_interfaces"].as_array().map(Vec::len) != Some(6)
+    {
+        return Err("P0 manifest claim/interface contract differs".into());
+    }
+    let outputs: Vec<Output> = serde_json::from_value(manifest["outputs"].clone())?;
+    let mut expected = BTreeMap::new();
+    for stack in &stacks {
+        for family in CouponFamily::ALL {
+            expected.insert(
+                format!("{}_{}.stl", family.slug(), stack.slug),
+                (Some(family), Some(*stack)),
+            );
+        }
+    }
+    expected.insert("shared_3_2_1_alignment_nest.stl".into(), (None, None));
+    if outputs.len() != expected.len() {
+        return Err("P0 output matrix incomplete".into());
+    }
+    for output in &outputs {
+        let name = output
+            .path
+            .file_name()
+            .and_then(|s| s.to_str())
+            .ok_or("invalid output name")?;
+        let (family, stack) = expected
+            .remove(name)
+            .ok_or("duplicate or unexpected output")?;
+        if output.path != args.output_dir.join(name)
+            || output.family != family.map(|f| f.slug().to_owned())
+            || output.stack != stack.map(|s| s.slug.to_owned())
+            || output.kind
+                != if family.is_some() {
+                    "disposable_coupon"
+                } else {
+                    "reusable_fixture"
+                }
+        {
+            return Err("P0 output identity differs".into());
+        }
+        let bytes = fs::read(&output.path)?;
+        if bytes.len() < 84
+            || bytes.len() as u64 != output.bytes
+            || format!("{:x}", Sha256::digest(&bytes)) != output.sha256
+        {
+            return Err("P0 output hash/size differs".into());
+        }
+        if laminarforge_cad::runtime_cad::mesh(&bytes)? != output.mesh {
+            return Err("mesh evidence differs".into());
+        }
+        let preview = laminarforge_cad::runtime_cad::preview(&bytes)?;
+        if fs::read_to_string(output.path.with_extension("preview.svg"))? != preview
+            || laminarforge_cad::runtime_cad::hash(preview.as_bytes()) != output.preview_sha256
+        {
+            return Err("preview evidence differs".into());
+        }
+        let part = match (family, stack) {
+            (Some(f), Some(s)) => parameters.build_coupon(f, s),
+            (None, None) => parameters.build_alignment_nest(),
+            _ => unreachable!(),
+        };
+        if part.to_stl()? != bytes {
+            return Err(format!("geometry differs from runtime configuration: {name}").into());
+        }
+    }
+    println!("P0 coupon verification passed: {} outputs, shared runtime configuration, exact geometry and hashes",outputs.len());
+    Ok(())
 }

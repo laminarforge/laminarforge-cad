@@ -1,0 +1,31 @@
+coupon_length_mm = 86.0
+coupon_width_mm = 54.0
+key_notch_length_mm = 8.0
+key_notch_width_mm = 7.0
+registration_hole_diameter_mm = 3.2
+registration_slot_width_mm = 3.2
+registration_slot_length_mm = 8.0
+registration_y_mm = -20.0
+registration_left_x_mm = -31.0
+registration_right_x_mm = 28.0
+min_seal_land_mm = 3.0
+channel_width_mm = 1.2
+chamber_length_mm = 20.0
+chamber_width_mm = 8.0
+meter_nominal_ul = 2.5
+feature_overlap_mm = 0.04
+
+[coc_cop_target]
+base_thickness_mm = 1.0
+spacer_thickness_mm = 0.14
+cover_thickness_mm = 0.20
+
+[pmma_control]
+base_thickness_mm = 1.50
+spacer_thickness_mm = 0.14
+cover_thickness_mm = 0.20
+
+[pet_comparator]
+base_thickness_mm = 0.25
+spacer_thickness_mm = 0.14
+cover_thickness_mm = 0.125

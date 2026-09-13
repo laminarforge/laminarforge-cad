@@ -1,6 +1,6 @@
 # CAD iteration and Codex capability audit — September 13, 2026
 
-Implementation update: see [the completed safeguards and heating-platen conversion](cad-safeguards-2026-09-13.md). The findings below describe the audit before those changes.
+Implementation update: see [the completed runtime migrations and enforcement](cad-workflow-completion-2026-09-13.md), plus [the earlier safeguards](cad-safeguards-2026-09-13.md). The findings below are historical pre-change observations, not current outstanding work.
 
 ## Recommendation
 

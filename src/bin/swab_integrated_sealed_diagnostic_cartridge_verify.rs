@@ -1,3 +1,4 @@
+use clap::Parser;
 use laminarforge_cad::swab_integrated_sealed_diagnostic_cartridge::{
     build_publication_components, composite_stl_bytes, verify_design, CartridgeParams,
     PUBLICATION_STEM, REQUIRED_FEATURES, SOURCE_ARTIFACTS, TICKET_ID,
@@ -24,6 +25,7 @@ struct TrackedManifest {
 
 #[derive(Debug, Deserialize)]
 struct RuntimeManifest {
+    config_sha256: String,
     design: RuntimeDesign,
     outputs: Vec<RuntimeOutput>,
     verification: Vec<String>,
@@ -54,13 +56,41 @@ struct RuntimeOutput {
     sha256: String,
 }
 
+#[derive(Parser)]
+struct Args {
+    #[arg(
+        long,
+        default_value = "models/swab_integrated_sealed_diagnostic_cartridge.toml"
+    )]
+    config: PathBuf,
+    #[arg(long, default_value = "output")]
+    output_dir: PathBuf,
+}
+
 fn main() {
-    let params = CartridgeParams::default();
+    let args = Args::parse();
+    let (params, config_sha256) =
+        CartridgeParams::load(&args.config).expect("invalid runtime configuration");
     verify_design(params).expect("default architecture invariants failed");
     verify_tracked_manifest();
 
-    let runtime_path = PathBuf::from(format!("output/{PUBLICATION_STEM}.manifest.json"));
+    let runtime_path = args
+        .output_dir
+        .join(format!("{PUBLICATION_STEM}.manifest.json"));
     let runtime: RuntimeManifest = read_json(&runtime_path);
+    assert_eq!(
+        runtime.config_sha256, config_sha256,
+        "configuration identity differs"
+    );
+    let raw: serde_json::Value = read_json(&runtime_path);
+    assert_eq!(
+        raw["design"],
+        serde_json::to_value(
+            laminarforge_cad::swab_integrated_sealed_diagnostic_cartridge::design_manifest(params)
+        )
+        .unwrap(),
+        "design evidence differs from runtime configuration"
+    );
     assert_eq!(runtime.design.publication_stem, PUBLICATION_STEM);
     assert_eq!(runtime.design.ticket, TICKET_ID);
     assert_eq!(runtime.design.source_artifacts, SOURCE_ARTIFACTS);
@@ -79,8 +109,14 @@ fn main() {
     assert_eq!(runtime.verification.len(), 7);
 
     let expected_paths = [
-        format!("output/{PUBLICATION_STEM}.stl"),
-        format!("output/{PUBLICATION_STEM}.stp"),
+        args.output_dir
+            .join(format!("{PUBLICATION_STEM}.stl"))
+            .to_string_lossy()
+            .into_owned(),
+        args.output_dir
+            .join(format!("{PUBLICATION_STEM}.stp"))
+            .to_string_lossy()
+            .into_owned(),
     ];
     assert_eq!(runtime.outputs.len(), expected_paths.len());
     for (output, expected_path) in runtime.outputs.iter().zip(&expected_paths) {
@@ -88,7 +124,22 @@ fn main() {
         verify_output(output);
     }
 
-    verify_repeatable_stl(&expected_paths[0]);
+    verify_repeatable_stl(&expected_paths[0], params);
+    let stl = fs::read(&expected_paths[0]).expect("STL");
+    assert_eq!(
+        raw["mesh"],
+        laminarforge_cad::runtime_cad::mesh(&stl).expect("mesh")
+    );
+    let svg = laminarforge_cad::runtime_cad::preview(&stl).expect("preview");
+    assert_eq!(
+        fs::read_to_string(Path::new(&expected_paths[0]).with_extension("preview.svg"))
+            .expect("preview file"),
+        svg
+    );
+    assert_eq!(
+        raw["preview_sha256"],
+        laminarforge_cad::runtime_cad::hash(svg.as_bytes())
+    );
 
     println!("Integrated sealed swab cartridge verification passed");
     println!("  Publication stem:      {PUBLICATION_STEM}");
@@ -130,9 +181,9 @@ fn verify_output(output: &RuntimeOutput) {
     assert_eq!(format!("{:x}", Sha256::digest(&bytes)), output.sha256);
 }
 
-fn verify_repeatable_stl(expected_path: &str) {
+fn verify_repeatable_stl(expected_path: &str, params: CartridgeParams) {
     let expected = fs::read(expected_path).expect("failed reading publication STL");
-    let repeated = composite_stl_bytes(&build_publication_components(CartridgeParams::default()))
+    let repeated = composite_stl_bytes(&build_publication_components(params))
         .expect("failed deterministic STL rebuild");
     assert_eq!(expected, repeated, "repeated geometry export changed bytes");
 }

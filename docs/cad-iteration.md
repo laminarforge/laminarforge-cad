@@ -11,7 +11,7 @@ The priming fixture reads models/chip_priming_tubing_fixture.toml at runtime.
 All values are required millimeters; missing, unknown and invalid values fail.
 Its CLI accepts --config PATH and --output-dir PATH. After building it once,
 editing the TOML and running the executable requires no Rust compilation.
-This first conversion covers the priming fixture, not all CAD models.
+See [the runtime contract](cad-runtime-contract.md) for all converted families and their verifiers.
 
 Build and run the fixture once using this `laminarforge_build` input:
 

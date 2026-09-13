@@ -51,7 +51,8 @@ pub const PROHIBITED_FEATURES: [&str; 7] = [
     "alternate_flow_route",
 ];
 
-#[derive(Debug, Clone, Copy, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, serde::Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct CartridgeParams {
     pub body_length_mm: f64,
     pub body_width_mm: f64,
@@ -115,6 +116,14 @@ impl Default for CartridgeParams {
 }
 
 impl CartridgeParams {
+    pub fn load(path: &std::path::Path) -> Result<(Self, String), Box<dyn std::error::Error>> {
+        use sha2::{Digest, Sha256};
+        let raw = std::fs::read_to_string(path)?;
+        let p: Self = toml::from_str(&raw)?;
+        verify_design(p)?;
+        Ok((p, format!("{:x}", Sha256::digest(raw.as_bytes()))))
+    }
+
     pub fn wash_pouch_nominal_ul(self) -> f64 {
         self.wash_pouch_length_mm * self.wash_pouch_width_mm * self.wash_pouch_internal_height_mm
     }
@@ -326,6 +335,24 @@ pub fn design_manifest(params: CartridgeParams) -> DesignManifest {
 }
 
 pub fn verify_design(params: CartridgeParams) -> Result<(), String> {
+    for (name, value, low, high) in [
+        ("body_length_mm", params.body_length_mm, 150.0, 160.0),
+        ("body_width_mm", params.body_width_mm, 86.0, 96.0),
+    ] {
+        if !value.is_finite() || !(low..=high).contains(&value) {
+            return Err(format!(
+                "{name} must be finite and within {low}..={high} mm"
+            ));
+        }
+    }
+    // The publication is a fixed internal architecture. Reject fields that the
+    // representation cannot vary instead of publishing misleading parameter claims.
+    let mut fixed = params;
+    fixed.body_length_mm = 150.0;
+    fixed.body_width_mm = 86.0;
+    if fixed != CartridgeParams::default() {
+        return Err("this publication supports body length/width adjustments only; internal architecture values must match the documented fixed design".into());
+    }
     let close = |actual: f64, expected: f64| (actual - expected).abs() < 1.0e-9;
     if !close(params.wash_pouch_nominal_ul(), 600.0) {
         return Err("wash pouch must remain the proposed exact-dose 600 uL envelope".into());
@@ -505,10 +532,42 @@ pub fn build_publication_components(p: CartridgeParams) -> Vec<Part> {
         2.0,
     );
     // Continuous perimeter seal, represented as four independent converted rails.
-    cube("perimeter_seal_front", 0.0, -40.0, 1.5, 144.0, 3.0, 0.7);
-    cube("perimeter_seal_rear", 0.0, 40.0, 1.5, 144.0, 3.0, 0.7);
-    cube("perimeter_seal_left", -72.0, 0.0, 1.5, 3.0, 80.0, 0.7);
-    cube("perimeter_seal_right", 72.0, 0.0, 1.5, 3.0, 80.0, 0.7);
+    cube(
+        "perimeter_seal_front",
+        0.0,
+        -(p.body_width_mm / 2.0 - 3.0),
+        1.5,
+        p.body_length_mm - 6.0,
+        3.0,
+        0.7,
+    );
+    cube(
+        "perimeter_seal_rear",
+        0.0,
+        p.body_width_mm / 2.0 - 3.0,
+        1.5,
+        p.body_length_mm - 6.0,
+        3.0,
+        0.7,
+    );
+    cube(
+        "perimeter_seal_left",
+        -(p.body_length_mm / 2.0 - 3.0),
+        0.0,
+        1.5,
+        3.0,
+        p.body_width_mm - 6.0,
+        0.7,
+    );
+    cube(
+        "perimeter_seal_right",
+        p.body_length_mm / 2.0 - 3.0,
+        0.0,
+        1.5,
+        3.0,
+        p.body_width_mm - 6.0,
+        0.7,
+    );
 
     // Permanently closed swab entry and elution body.
     parts.borrow_mut().push(

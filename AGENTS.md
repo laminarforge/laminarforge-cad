@@ -22,6 +22,7 @@ Use `mcp__agentic-mcp__laminarforge_build` for CAD/build work in this repository
   background build/run, register its receipt with one targeted `build`.
 - Do not run package-wide release builds/tests or `run_all` for a single-model edit.
   Select tests for the affected geometry and contracts. Final optimization is explicit.
+- Read `docs/cad-runtime-contract.md`. The MCP enforces `cad-workflow.json`: new or changed frozen model entry points require a reviewed runtime config/verifier contract. Never refresh a frozen model hash to bypass migration.
 - New adjustable models must take validated runtime parameters and an explicit
   output directory. Generators and verifiers must consume the same configuration;
   reject missing/unknown fields and invalid dimensions before generating geometry.
