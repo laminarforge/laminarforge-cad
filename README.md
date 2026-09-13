@@ -1,31 +1,27 @@
-[![CI](https://github.com/laminarforge/laminarforge-cad/actions/workflows/ci.yml/badge.svg)](https://github.com/laminarforge/laminarforge-cad/actions/workflows/ci.yml)
-[![Release](https://github.com/laminarforge/laminarforge-cad/actions/workflows/release.yml/badge.svg)](https://github.com/laminarforge/laminarforge-cad/actions/workflows/release.yml)
-
 # laminarforge-cad
 
 Parametric CAD models for the LaminarForge open-source diagnostics platform, written in Rust using the [`vcad`](https://crates.io/crates/vcad) crate. Core LAMP/CRISPR device CAD is now built around a sealed disposable diagnostic cartridge rather than loose PCR tubes. Shared constants live in `src/lib.rs`, device and validation generators live in `src/bin/`, and PCB routing lives in `src/pcb/`.
 
-## Setup
+## Local iteration
 
-```bash
-# Clone the repository
-git clone <repo-url>
-cd laminarforge-cad
+Use the local `laminarforge_build` MCP tool with an explicit `bin`:
 
-# Build all models
-cargo build --release
+| Change | Action | Purpose |
+| --- | --- | --- |
+| Rust source validation | `check` | Check one target without code generation. |
+| Rust source needs execution | `run`, profile `dev` | Build and run one target. |
+| Runtime TOML only, executable already built from the intended source | `execute`, profile `dev` | Generate outputs without invoking Cargo. |
+| Final optimized output | `run`, profile `release` | Explicitly optimize the selected target. |
 
-# Generate the sealed disposable cartridge prototype
-cargo run --release --bin diagnostic_cartridge
+The priming fixture accepts runtime TOML. Other models vary: some already read
+configuration, while others use compiled constants. See [the iteration guide](docs/cad-iteration.md)
+for exact tool arguments and verification requirements, and [the workflow audit](docs/cad-workflow-audit-2026-09-13.md)
+for the remaining improvements.
 
-# Generate the reusable device assembly visualization
-cargo run --release --bin assembly
+## Source and delivery
 
-# Run tests
-cargo test --release
-```
-
-## CI / Release
-
-- Every push and PR against `main` runs `cargo fmt --check`, `cargo clippy -D warnings`, `cargo build --release`, and `cargo test --release` (see `.github/workflows/ci.yml`).
-- Tagging a release (`git tag vX.Y.Z && git push --tags`) builds all bins, zips `output/*.stl`, and attaches the archive to the GitHub release (see `.github/workflows/release.yml`).
+`main` is canonical. Builds and CAD generation run locally on the Mac. AWS,
+GitHub Actions and Namespace processing are retired; GitHub stores source only.
+Pushing or tagging does not build or publish model outputs. Validate each
+changed model and deliver its explicit output files through the local workflow.
+PCB manufacturing output must also pass the [routing and release standard](docs/pcba_routing_and_release_standard.md).

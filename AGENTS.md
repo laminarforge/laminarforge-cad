@@ -14,6 +14,19 @@ AWS, GitHub Actions and Namespace build processing are retired. GitHub is source
 
 Use `mcp__agentic-mcp__laminarforge_build` for CAD/build work in this repository.
 
+- Read `docs/cad-iteration.md`. Select one binary; use `check` for Rust validation,
+  `run` with profile `dev` when changed Rust needs execution, and `execute` for
+  runtime configuration changes after building the intended source once.
+- `execute` does not prove binary freshness. After Rust, dependencies, features,
+  or toolchain changes, build the target again before executing it.
+- Do not run package-wide release builds/tests or `run_all` for a single-model edit.
+  Select tests for the affected geometry and contracts. Final optimization is explicit.
+- New adjustable models must take validated runtime parameters and an explicit
+  output directory. Generators and verifiers must consume the same configuration;
+  reject missing/unknown fields and invalid dimensions before generating geometry.
+- Record the configuration, source/binary identity and geometry verification with
+  delivered outputs. A successful process exit alone is not manufacturing validation.
+
 ## PCBA Routing And Release
 
 The mandatory policy is [`docs/pcba_routing_and_release_standard.md`](docs/pcba_routing_and_release_standard.md). Board-specific files may add fixtures and evidence, but may not weaken or fork it.
