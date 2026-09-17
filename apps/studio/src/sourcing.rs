@@ -96,7 +96,7 @@ mod tests {
     fn subtotal_counts_purchase_packs_and_excludes_candidates_and_unknowns() {
         let s = Sourcing::load().unwrap();
         assert_eq!(s.catalog_subtotal(), 63337);
-        assert_eq!(s.quotes.len(), 7);
+        assert_eq!(s.quotes.len(), 27);
         assert!(s.items.iter().any(|i| i.unit_cents.is_none()));
         assert!(s
             .items
