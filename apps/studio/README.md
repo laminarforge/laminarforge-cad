@@ -13,6 +13,11 @@ It requires macOS 12 or later. Build on the target Mac architecture.
   on app exit. Funding content is independent of CAD folder permissions.
 - Copy individual application fields and open the provider form when ready.
   The app does not submit applications. The initial round covers fabrication, assembly and water-based thermal validation; no lab access is required. Budget allowances are provisional.
+- **Supplier quotes and equipment prices** shows dated research, source links,
+  sent RFQ threads and unresolved costs. The catalog subtotal excludes unpriced
+  items and optional candidates. It does not replace the complete funding budget.
+  This bundled snapshot is refreshed with app updates independently of saved
+  proposal edits; it does not poll Gmail or automatically send follow-ups.
 
 - Open **LaminarForge Studio.app**, then **Open folder…** or **Open design…**.
 - A dropped STL file or directory also opens in the workspace.

@@ -1,0 +1,225 @@
+{
+  "checked_on": "2026-09-17",
+  "follow_up_on": "2026-09-24",
+  "package": "LF-CAS-V0 Rev A · 79 file hashes verified · STEP + shop drawings + manufacturing notes sent",
+  "quotes": [
+    {
+      "name": "Spot On CNC",
+      "email": "export@spotoncnc.com",
+      "url": "https://www.spotoncnc.com/en/contactus",
+      "scope": "One complete mechanical set; separate machining, finish, cut materials and optional assembly. Five-set comparison requested.",
+      "message_id": "1a0afdee95421544",
+      "status": "Sent; quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afdee95421544"
+    },
+    {
+      "name": "Fahsaeng Serenex",
+      "email": "info@serenexthai.com",
+      "url": "https://www.serenexthai.com/",
+      "scope": "One complete mechanical set; separate machining, finish, cut materials and optional assembly. Five-set comparison requested.",
+      "message_id": "1a0afdf2a4b639c5",
+      "status": "Sent; quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afdf2a4b639c5"
+    },
+    {
+      "name": "Prickly Pear Prototypes",
+      "email": "sales@pricklypearprototypes.com",
+      "url": "https://www.pricklypearprototypes.com/",
+      "scope": "One complete mechanical set; separate machining, finish, cut materials and optional assembly. Five-set comparison requested.",
+      "message_id": "1a0afdf4f7df33db",
+      "status": "Sent; quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afdf4f7df33db"
+    },
+    {
+      "name": "DigiKey",
+      "email": "orders@digikey.com",
+      "url": "https://www.digikey.com/en/help-support/place-an-order/request-quote-online",
+      "scope": "Electrical BOM pricing, pack sizes and small-quantity 67L050 availability. DigiKey redirected the RFQ to its online myLists tool; no line-item quotation received. Safari control failed before navigation, so portal submission remains pending. Reply: https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afe3670d3e551",
+      "message_id": "1a0afe177e41c7d7",
+      "status": "Automatic reply received; myLists submission required",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afe177e41c7d7"
+    },
+    {
+      "name": "DwyerOmega",
+      "email": "cservice@dwyeromega.com",
+      "url": "https://www.dwyeromega.com/en-us/contact-us",
+      "scope": "Two surface RTDs and an independent calibrated microplate measurement system.",
+      "message_id": "1a0afe17b76c6d34",
+      "status": "Sent; quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afe17b76c6d34"
+    },
+    {
+      "name": "Physitemp",
+      "email": "info@physitemp.com",
+      "url": "https://physitemp.com/term/",
+      "scope": "THERMES-USB, five microprobes, software and complete-system calibration.",
+      "message_id": "1a0afe17df89e72f",
+      "status": "Sent; quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afe17df89e72f"
+    },
+    {
+      "name": "H-O Products",
+      "email": "website@h-oproducts.com",
+      "url": "https://h-oproducts.com/product/bisco-bf-1000-extra-soft/",
+      "scope": "Three closed BF-1000 gasket frames, smallest stock option and 3M 9731 adhesive.",
+      "message_id": "1a0afe33d4e5556c",
+      "status": "Sent; quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afe33d4e5556c"
+    }
+  ],
+  "items": [
+    {
+      "name": "Keenovo 12073 / variant 33194097803404",
+      "quantity": 2,
+      "unit_cents": 2774,
+      "unit": "heater",
+      "included": true,
+      "url": "https://keenovo.store/products/keenovo-square-silicone-heater-3d-printer-build-plate-heatbed-heating-pad?variant=33194097803404",
+      "note": "100 × 100 mm, 24 V, 60 W. Manufacturer variant JSON reports available. Confirm adhesive and lead configuration before purchase."
+    },
+    {
+      "name": "Auber SYL-2L52",
+      "quantity": 2,
+      "unit_cents": 4650,
+      "unit": "controller",
+      "included": true,
+      "url": "https://www.auberins.com/index.php?main_page=product_info&products_id=601",
+      "note": "Choose SSR-output model; the SYL-2L72 AC-output variant is not the specified controller."
+    },
+    {
+      "name": "Carlo Gavazzi RM1D060D10",
+      "quantity": 2,
+      "unit_cents": 5700,
+      "unit": "DC SSR",
+      "included": true,
+      "url": "https://www.digikey.com/en/products/detail/carlo-gavazzi-inc/RM1D060D10/13277977",
+      "note": "DC load switching, 10 A. Catalog listed 231 in stock; tariffs may apply."
+    },
+    {
+      "name": "Omron G2R-2-SD DC24(S)",
+      "quantity": 2,
+      "unit_cents": 1628,
+      "unit": "relay",
+      "included": true,
+      "url": "https://www.digikey.com/en/products/detail/omron-automation-and-safety/G2R-2-SD-DC24-S/1789761",
+      "note": "24 V coil with diode. Catalog listed 150 in stock."
+    },
+    {
+      "name": "Omron P2RF-08-PU",
+      "quantity": 2,
+      "unit_cents": 1801,
+      "unit": "socket",
+      "included": true,
+      "url": "https://www.digikey.com/en/products/detail/omron-automation-and-safety/G2R-2-SD-DC24-S/1789761",
+      "note": "Price in distributor associated-products listing; requested in formal BOM quote."
+    },
+    {
+      "name": "Mean Well GST160A24-R7B",
+      "quantity": 1,
+      "unit_cents": 5240,
+      "unit": "supply",
+      "included": true,
+      "url": "https://www.digikey.com/en/products/detail/mean-well-usa-inc/GST160A24-R7B/7703602",
+      "note": "24 V / 160 W external brick. Cord separate; tariffs may apply."
+    },
+    {
+      "name": "Mean Well YP12_YC12",
+      "quantity": 1,
+      "unit_cents": 729,
+      "unit": "US cord",
+      "included": true,
+      "url": "https://www.digikey.com/en/products/detail/mean-well-usa-inc/GST160A24-R7B/7703602",
+      "note": "Associated-products listing. US NEMA 5-15P to IEC C13; select local cord if testing elsewhere."
+    },
+    {
+      "name": "Kycon KPJX-PM-4S",
+      "quantity": 1,
+      "unit_cents": 245,
+      "unit": "inlet",
+      "included": true,
+      "url": "https://www.digikey.com/en/products/detail/mean-well-usa-inc/GST160A24-R7B/7703602",
+      "note": "Panel inlet from associated-products listing."
+    },
+    {
+      "name": "Greiner 655101 water-test plates",
+      "quantity": 1,
+      "unit_cents": 9338,
+      "unit": "case of 100",
+      "included": true,
+      "url": "https://pipette.com/greiner-bio-one-north-america-inc-655101.html",
+      "note": "Catalog purchase pack is 100 plates. Not a tissue-on-chip plate. One is used per test; ask for a smaller pack/sample before buying a case."
+    },
+    {
+      "name": "Greiner 656101 lids",
+      "quantity": 1,
+      "unit_cents": 6779,
+      "unit": "case of 100",
+      "included": true,
+      "url": "https://pipette.com/greiner-bio-one-north-america-inc-656101.html",
+      "note": "High-profile 9 mm lids. Budget counts a full case, not an unavailable single-piece price."
+    },
+    {
+      "name": "Omega SA1-RTD, 3-wire Pt100, 1 m",
+      "quantity": 2,
+      "unit_cents": null,
+      "unit": "surface sensor",
+      "included": true,
+      "url": "https://www.dwyeromega.com/en-us/p/SA1-RTD",
+      "note": "Exact order code and price requested. Control sensors are separate from water-validation probes."
+    },
+    {
+      "name": "Sensata/Airpax 67L050",
+      "quantity": 2,
+      "unit_cents": null,
+      "unit": "thermostat",
+      "included": true,
+      "url": "https://www.digikey.com/en/products/detail/sensata-airpax/67L050/1631970",
+      "note": "Listing shows 19 in stock but only 500-piece pricing and no backorders. Small-quantity availability unresolved; do not budget the bulk price or substitute 67F050."
+    },
+    {
+      "name": "BF-1000 gasket + 3M 9731 + stainless shim kit",
+      "quantity": 1,
+      "unit_cents": null,
+      "unit": "set",
+      "included": true,
+      "url": "https://h-oproducts.com/product/bisco-bf-1000-extra-soft/",
+      "note": "Three 3/32-inch closed foam frames incl. spares. Converter RFQ sent; CNC shops also asked. Avoid double-counting supplied materials."
+    },
+    {
+      "name": "igus A160-T-010-0500-G guide tape",
+      "quantity": 1,
+      "unit_cents": null,
+      "unit": "stock quantity to confirm",
+      "included": true,
+      "url": "https://www.igus.com/product/iglidur_T_A160",
+      "note": "Six cut guide strips per drawings. Confirm minimum purchase size and installed thickness; no price verified."
+    },
+    {
+      "name": "Remaining electrical and assembly hardware",
+      "quantity": 1,
+      "unit_cents": null,
+      "unit": "BOM balance",
+      "included": true,
+      "url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afe177e41c7d7",
+      "note": "DDR-15G-12, enclosure/panel, buttons, fuses/holders, DIN parts, Wago, glands, cables, connectors, wire and fasteners. Distributor RFQ pending; not included as zero-cost."
+    },
+    {
+      "name": "Physitemp THERMES-USB candidate",
+      "quantity": 1,
+      "unit_cents": 185000,
+      "unit": "logger only",
+      "included": false,
+      "url": "https://physitemp.com/dataacquisys_p114",
+      "note": "Catalog $1,850, seven Type T inputs. Candidate only: five microprobes, calibration, DASYLab license and compatible Windows computer are additional. Whole-system ≤0.2°C uncertainty and ≥1 sample/s/channel require confirmation. Excluded from selected-parts subtotal."
+    }
+  ],
+  "open_items": [
+    "Manufacturing prices, lead times and DFM feedback are pending. Do not present the $4,000 machining allowance as a quote.",
+    "The catalog subtotal is incomplete and excludes machining, unpriced parts, freight, tax, tariff, tools, calibration and revision work. Keep the $15,000 request provisional until quotes close those gaps.",
+    "Confirm five-channel measurement system with ≤0.2°C combined uncertainty near 37°C, small immersion probes and ≥1 sample/s/channel. Request calibration at 35/37/39°C.",
+    "Check what assembly tools, multimeter, water-dispensing equipment and balance are already available before budgeting replacements.",
+    "Shipping destination remains unset; RFQs request ex-works price and packed weight/dimensions. No lab lease or facility membership is required.",
+    "Review supplier replies on 2026-09-24. These are sent-mail records, not delivery receipts or automatic inbox monitoring.",
+    "DigiKey requires online myLists submission. The email request was acknowledged but did not produce a quote; Safari control is unavailable. The BOM remains ready for upload."
+  ]
+}

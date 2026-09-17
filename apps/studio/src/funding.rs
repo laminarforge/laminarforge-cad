@@ -1,6 +1,9 @@
 use eframe::egui::{self, RichText};
 use serde::{Deserialize, Serialize};
 
+#[path = "sourcing.rs"]
+mod sourcing;
+
 const KEY: &str = "funding_workspace_v1";
 
 #[derive(Serialize, Deserialize)]
@@ -11,6 +14,8 @@ pub struct BudgetItem {
 
 #[derive(Serialize, Deserialize)]
 pub struct Funding {
+    #[serde(skip)]
+    sourcing: Option<sourcing::Sourcing>,
     title: String,
     application_url: String,
     summary: String,
@@ -51,6 +56,7 @@ impl Funding {
             funding.scope_revision = 1;
             funding.reviewed = false;
         }
+        funding.sourcing = Some(sourcing::Sourcing::load()?);
         Ok(funding)
     }
 
@@ -98,6 +104,7 @@ impl Funding {
                 ui.separator();
                 ui.label(RichText::new(&self.title).strong());
                 ui.label("Organizational structure: undecided. No personal cash match assumed.");
+                if let Some(sourcing) = &self.sourcing { sourcing.show(ui); }
                 ui.label(RichText::new("Initial round: manufacture → assemble → validate temperatures with water-filled plates.").strong());
                 ui.label("An ordinary workspace with suitable electrical safety and measurement equipment is sufficient. Lab access, facility rent and cell experiments are outside this round.");
                 edit(ui, "Weekly availability", &mut self.availability, 1);
@@ -189,6 +196,7 @@ mod tests {
         assert_eq!(restored.proposal, f.proposal);
         assert_eq!(restored.total(), f.total());
         assert_eq!(restored.availability, f.availability);
+        assert!(restored.sourcing.is_some());
     }
     #[test]
     fn previous_draft_loses_lab_prerequisite_without_losing_edits() {
