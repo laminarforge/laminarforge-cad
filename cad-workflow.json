@@ -53,6 +53,10 @@
       "mode": "frozen",
       "source_sha256": "e75209177cf40c4c75f0bc1a4cf0637b41907f9f569d3924ed27aae1d5ceff51"
     },
+    "cassette_release": {
+      "mode": "frozen",
+      "source_sha256": "bacb751a3cc24a23ddb8c6dce8f33783c47f5d77c5d1ed935d31d00cbbb16415"
+    },
     "cassette_sensor_backplane": {
       "mode": "frozen",
       "source_sha256": "bf840ea9ae09756c1a73f863dd0c28843ea48965fa28ca15358425b4fa882cf8"
@@ -1344,8 +1348,9 @@
       "source_sha256": "f8018bce2e8e189e70c9d632a9f04478ac9762b252fbad8b43f2e293cd5a62a0"
     },
     "heated_microplate_cassette_v0": {
-      "mode": "frozen",
-      "source_sha256": "27d0cea7dbed9c9fb19efca088ca055e94c39fe716761df17739817dd6053ebf"
+      "mode": "runtime",
+      "config": "models/heated_microplate_cassette_v0.toml",
+      "verifier": "heated_microplate_cassette_v0"
     },
     "heating_block": {
       "mode": "runtime",

@@ -60,3 +60,19 @@ Runtime configuration edits do not invalidate the executable receipt. Outputs re
 configuration and generator identity; the MCP receipt supplies source/toolchain
 identity. Keep the tool result with the output evidence. Changing either inputs or
 binary invalidates the associated verification.
+
+## Cassette fabrication tools
+
+`heated_microplate_cassette_v0` is a runtime target using
+`models/heated_microplate_cassette_v0.toml`. Its verification is integrated into
+its generation pass: it checks mesh closure, interference/travel, and (with the
+`step` feature) analytic STEP round-trip volume and bounds, then writes
+`verification.json`. Its self-referential registry verifier means rerunning that
+checked generation into a new output directory, not passing `--verify`. The
+`--validate-only` option checks dimensions without generating geometry.
+
+`cassette_release` is a fixed-source packaging utility, not adjustable geometry.
+It takes `--input-dir`, `--output-dir`, and `--source-dir`, validates the input
+report and source hashes, and packages the existing artifacts. Its reviewed source
+hash is registered separately. Keep both entries updated when changing these tools;
+new model implementation commits must include their registry contract.
