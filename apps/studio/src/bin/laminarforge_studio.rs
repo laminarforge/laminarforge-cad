@@ -1,3 +1,5 @@
+#[path = "../funding.rs"]
+mod funding;
 #[path = "../mesh.rs"]
 mod mesh;
 #[path = "../renderer.rs"]
@@ -23,6 +25,9 @@ enum Loaded {
     Model(PathBuf, mesh::Mesh),
 }
 struct Studio {
+    funding: funding::Funding,
+    funding_tab: bool,
+    saved_notice: Option<std::time::Instant>,
     preferences: Preferences,
     files: Vec<PathBuf>,
     search: String,
@@ -69,6 +74,9 @@ impl Studio {
             .or_else(|| preferences.folder.clone())
             .or_else(|| preferences.recent.clone());
         let mut app = Self {
+            funding: funding::Funding::load(cc.storage)?,
+            funding_tab: false,
+            saved_notice: None,
             preferences,
             files: vec![],
             search: String::new(),
@@ -204,13 +212,17 @@ impl Studio {
 impl eframe::App for Studio {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         eframe::set_value(storage, "library", &self.preferences);
+        self.funding.save(storage);
+    }
+    fn auto_save_interval(&self) -> std::time::Duration {
+        std::time::Duration::from_secs(5)
     }
     fn on_exit(&mut self, gl: Option<&eframe::glow::Context>) {
         if let Some(gl) = gl {
             self.renderer.lock().destroy(gl);
         }
     }
-    fn update(&mut self, ctx: &egui::Context, _: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         self.poll(ctx);
         let screenshot = ctx.input(|i| {
             i.events.iter().find_map(|event| match event {
@@ -219,6 +231,9 @@ impl eframe::App for Studio {
             })
         });
         if let (Some(image), Some(path)) = (screenshot, self.capture.as_ref()) {
+            if self.funding_tab {
+                self.viewport = ctx.screen_rect();
+            }
             let ppp = ctx.pixels_per_point();
             let mut pixels = Vec::with_capacity(image.pixels.len() * 4);
             for pixel in &image.pixels {
@@ -260,8 +275,43 @@ impl eframe::App for Studio {
         if self.render_check && self.error.is_some() {
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
         }
-        if self.render_check && self.model.is_some() && self.capture.is_some() {
+        if self.render_check && (self.model.is_some() || self.funding_tab) && self.capture.is_some()
+        {
             ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(Default::default()));
+        }
+        egui::TopBottomPanel::top("workspace_tabs").show(ctx, |ui| {
+            ui.horizontal(|ui| {
+                ui.selectable_value(&mut self.funding_tab, false, "Designs");
+                ui.selectable_value(&mut self.funding_tab, true, "Funding");
+            });
+        });
+        if self.funding_tab {
+            if self.funding.show(ctx) {
+                if let Some(storage) = frame.storage_mut() {
+                    self.funding.save(storage);
+                    storage.flush();
+                    self.saved_notice = Some(std::time::Instant::now());
+                    tracing::info!(component = "studio_funding", "Funding workspace saved");
+                } else {
+                    self.error =
+                        Some("Local storage is unavailable; changes cannot be saved.".into());
+                }
+            }
+            if self.saved_notice.is_some_and(|t| t.elapsed().as_secs() < 3) {
+                egui::Window::new("Saved")
+                    .collapsible(false)
+                    .resizable(false)
+                    .show(ctx, |ui| {
+                        ui.label("Funding changes saved on this Mac.");
+                    });
+                ctx.request_repaint_after(std::time::Duration::from_secs(3));
+            }
+            if let Some(error) = &self.error {
+                egui::Window::new("Storage error").show(ctx, |ui| {
+                    ui.label(error);
+                });
+            }
+            return;
         }
         let busy = self.pending.is_some();
         let dropped = ctx.input(|i| i.raw.dropped_files.first().and_then(|f| f.path.clone()));
@@ -512,16 +562,27 @@ fn main() -> eframe::Result<()> {
         .with_writer(std::io::stderr)
         .init();
     let args: Vec<_> = std::env::args_os().skip(1).collect();
+    let funding_check = args.first().is_some_and(|arg| arg == "--funding-check");
+    if funding_check && args.len() != 2 {
+        return Err(eframe::Error::AppCreation(
+            "Usage: --funding-check OUTPUT.png".into(),
+        ));
+    }
     let render_check = args.first().is_some_and(|arg| arg == "--render-check");
     if render_check && !(3..=4).contains(&args.len()) {
         return Err(eframe::Error::AppCreation(
             "Usage: laminarforge_studio --render-check INPUT_STL_OR_FOLDER OUTPUT.png".into(),
         ));
     }
-    let initial = args
-        .get(if render_check { 1 } else { 0 })
-        .map(PathBuf::from);
-    let capture = if render_check {
+    let initial = if funding_check {
+        None
+    } else {
+        args.get(if render_check { 1 } else { 0 })
+            .map(PathBuf::from)
+    };
+    let capture = if funding_check {
+        args.get(1).map(PathBuf::from)
+    } else if render_check {
         args.get(2).map(PathBuf::from)
     } else {
         None
@@ -556,7 +617,8 @@ fn main() -> eframe::Result<()> {
         options,
         Box::new(move |cc| {
             let mut app = Studio::new(cc, initial)?;
-            app.render_check = render_check;
+            app.render_check = render_check || funding_check;
+            app.funding_tab = funding_check;
             app.capture = capture;
             app.mode = mode;
             Ok(Box::new(app))

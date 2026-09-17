@@ -7,6 +7,14 @@ It requires macOS 12 or later. Build on the target Mac architecture.
 
 ## Use
 
+- Select **Funding** to edit the prototype grant proposal, expense budget, prospective
+  location and submission checklist. The initial application ships with the app.
+- Funding edits persist locally, including in the sandboxed TestFlight app. Use
+  **Save changes** to save immediately; normal autosave runs every five seconds and
+  on app exit. Funding content is independent of CAD folder permissions.
+- Copy individual application fields and open the provider form when ready.
+  The app does not submit applications. Location and budget allowances are provisional.
+
 - Open **LaminarForge Studio.app**, then **Open folder…** or **Open design…**.
 - A dropped STL file or directory also opens in the workspace.
 - Drag to orbit; right/middle drag to pan; scroll to zoom.

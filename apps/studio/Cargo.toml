@@ -13,6 +13,7 @@ rfd = "0.15"
 stl_io = "0.8"
 bytemuck = "1"
 image = { version = "0.25", default-features = false, features = ["png"] }
+serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
