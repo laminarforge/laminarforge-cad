@@ -105,7 +105,7 @@ impl Funding {
                 ui.label(RichText::new(&self.title).strong());
                 ui.label("Organizational structure: undecided. No personal cash match assumed.");
                 if let Some(sourcing) = &self.sourcing { sourcing.show(ui); }
-                ui.label(RichText::new("Initial round: manufacture → assemble → validate temperatures with water-filled plates.").strong());
+                ui.label(RichText::new("Initial round: manufacture, assemble, then validate temperatures with water-filled plates.").strong());
                 ui.label("An ordinary workspace with suitable electrical safety and measurement equipment is sufficient. Lab access, facility rent and cell experiments are outside this round.");
                 edit(ui, "Weekly availability", &mut self.availability, 1);
                 egui::CollapsingHeader::new("Application text").default_open(true).show(ui, |ui| {
