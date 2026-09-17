@@ -25,9 +25,9 @@
       "name": "Prickly Pear Prototypes",
       "email": "sales@pricklypearprototypes.com",
       "url": "https://www.pricklypearprototypes.com/",
-      "scope": "Supplier proposed imperial-stock cut plates with finish machining and a four-plate doweled/bolted housing. Detailed quantities 1 and 5 pricing expected mid-next week (around September 23). September 17 follow-up requested exact thicknesses, joint sketch, savings and clarification whether the indication covers anodizing alone or the mechanical set. No design change or manufacture authorized. Follow-up sent: 1a0b00be2361007b.",
+      "scope": "September 17 supplier clarification (message 1a0b00e1a4ec55e1) explicitly says the range is anodizing alone. It is not a firm finishing quote or total mechanical-set price. Machining prices for 1 and 5 sets expected around September 23. Follow-up 1a0b02132fb5bc0c asks for separate lot minimum, masking/racking and coating costs, plus a clear Type II alternative for engineering review. Supplier also proposed standard-stock cut plates and a four-plate bolted/doweled housing; details and savings pending. No fabrication or substitutions approved.",
       "message_id": "1a0afdf4f7df33db",
-      "status": "Preliminary $1,500–$2,000 indication; scope clarification and detailed quote pending",
+      "status": "Confirmed: $1,500–$2,000 preliminary estimate for anodizing ALONE",
       "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afdf4f7df33db"
     },
     {
@@ -245,6 +245,96 @@
       "message_id": "1a0b01701ef3bb23",
       "status": "Sent; receipt and quote pending",
       "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b01701ef3bb23"
+    },
+    {
+      "name": "Sentinel Machining",
+      "email": "contact@sentinelmachining.com",
+      "url": "https://sentinelmachining.com/",
+      "scope": "Austin, Texas, USA. 1 and 5 complete mechanical sets; separate machining and finish prices. Requests plate-built alternatives, main cost drivers and outsourced-operation locations. ZIP attached.",
+      "message_id": "1a0b0217b1d18cb3",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b0217b1d18cb3"
+    },
+    {
+      "name": "Protogeometrics",
+      "email": "rddept@protogeometrics.com",
+      "url": "https://protogeometrics.com/",
+      "scope": "Stafford, Texas, USA. 1 and 5 complete mechanical sets; separate machining and finish prices. Requests plate-built alternatives, main cost drivers and outsourced-operation locations. ZIP attached.",
+      "message_id": "1a0b02198013d8a8",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b02198013d8a8"
+    },
+    {
+      "name": "Texas Machining",
+      "email": "info@texas-machining.com",
+      "url": "https://www.texas-machining.com/",
+      "scope": "Gastonia, North Carolina, USA. 1 and 5 complete mechanical sets; separate machining and finish prices. Requests plate-built alternatives, main cost drivers and outsourced-operation locations. ZIP attached.",
+      "message_id": "1a0b021bb055cfb2",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b021bb055cfb2"
+    },
+    {
+      "name": "MI CNC Parts",
+      "email": "evan@micncparts.com",
+      "url": "https://www.micncparts.com/",
+      "scope": "Michigan, USA. 1 and 5 complete mechanical sets; separate machining and finish prices. Requests plate-built alternatives, main cost drivers and outsourced-operation locations. ZIP attached.",
+      "message_id": "1a0b021d64f4099c",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b021d64f4099c"
+    },
+    {
+      "name": "Alpha Precision CNC",
+      "email": "sales@alphaprecisioncnc.com",
+      "url": "https://alphaprecisioncnc.com/",
+      "scope": "Fremont, California, USA. 1 and 5 complete mechanical sets; separate machining and finish prices. Requests plate-built alternatives, main cost drivers and outsourced-operation locations. ZIP attached.",
+      "message_id": "1a0b021f530be6af",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b021f530be6af"
+    },
+    {
+      "name": "McCarty Fabrication",
+      "email": "kyle@mccartyfab.com",
+      "url": "https://www.mccartyfabrication.com/",
+      "scope": "Corbin, Kentucky, USA. 1 and 5 complete mechanical sets; separate machining and finish prices. Requests plate-built alternatives, main cost drivers and outsourced-operation locations. ZIP attached.",
+      "message_id": "1a0b02240167f91b",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b02240167f91b"
+    },
+    {
+      "name": "Diamond Metal Finishing",
+      "email": "orders@diamondmf.com",
+      "url": "https://www.diamondmf.com/contact-us/",
+      "scope": "Houston, Texas, USA. Anodizing only for 1 and 5 mechanical sets: Type III baseline versus proposed clear Type II; asks for lot minimum, masking/racking, thickness/growth, sealing, cost drivers and lead time. Alternatives require engineering review. ZIP attached.",
+      "message_id": "1a0b0225ae163eec",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b0225ae163eec"
+    },
+    {
+      "name": "Houston Anodizing",
+      "email": "sales@houstonanodizing.com",
+      "url": "https://houstonanodizing.com/contact",
+      "scope": "Houston, Texas, USA. Anodizing only for 1 and 5 mechanical sets: Type III baseline versus proposed clear Type II; asks for lot minimum, masking/racking, thickness/growth, sealing, cost drivers and lead time. Alternatives require engineering review. ZIP attached.",
+      "message_id": "1a0b022764b578e6",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b022764b578e6"
+    },
+    {
+      "name": "Consolidated Metal Technologies",
+      "email": "sales@cmtfinishing.com",
+      "url": "https://cmtfinishing.com/metal-finishing/anodizing/",
+      "scope": "Round Rock, Texas, USA. Anodizing only for 1 and 5 mechanical sets: Type III baseline versus proposed clear Type II; asks for lot minimum, masking/racking, thickness/growth, sealing, cost drivers and lead time. Alternatives require engineering review. ZIP attached.",
+      "message_id": "1a0b02290985c7c4",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b02290985c7c4"
+    },
+    {
+      "name": "Anodize Solutions",
+      "email": "quotes@anodizesolutions.com",
+      "url": "https://anodizesolutions.com/contact",
+      "scope": "Tualatin, Oregon, USA. Anodizing only for 1 and 5 mechanical sets: Type III baseline versus proposed clear Type II; asks for lot minimum, masking/racking, thickness/growth, sealing, cost drivers and lead time. Alternatives require engineering review. ZIP attached.",
+      "message_id": "1a0b022aa5b79990",
+      "status": "Sent; receipt and quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b022aa5b79990"
     }
   ],
   "items": [
@@ -412,7 +502,7 @@
     }
   ],
   "open_items": [
-    "23 machining/fabrication suppliers contacted in total, plus 4 component vendors. Prickly Pear has provided a preliminary $1,500–$2,000 indication with scope still ambiguous; detailed quotes and anodizing costs remain pending. The $4,000 machining allowance is not a quote.",
+    "29 machining/fabrication prospects, 4 direct anodizers and 4 component vendors contacted (37 distinct suppliers). Prickly Pear confirmed its preliminary $1,500–$2,000 indication covers anodizing ALONE; actual finishing quote and machining cost remain pending. The $4,000 machining allowance is not a quote.",
     "The catalog subtotal is incomplete and excludes machining, unpriced parts, freight, tax, tariff, tools, calibration and revision work. Keep the $15,000 request provisional until quotes close those gaps.",
     "Confirm five-channel measurement system with ≤0.2°C combined uncertainty near 37°C, small immersion probes and ≥1 sample/s/channel. Request calibration at 35/37/39°C.",
     "Check what assembly tools, multimeter, water-dispensing equipment and balance are already available before budgeting replacements.",
@@ -420,6 +510,10 @@
     "Review supplier replies on 2026-09-24. These are sent-mail records, not delivery receipts or automatic inbox monitoring.",
     "DigiKey requires online myLists submission. The email request was acknowledged but did not produce a quote; Safari control is unavailable. The BOM remains ready for upload.",
     "September 17 expansion: 20 additional individual RFQs confirmed in Sent Mail, each with the 2,480,834-byte manufacturing ZIP; no bounces found at the post-send check. 11 Thailand-based suppliers, Disk Precision corporate sales for its Thai factory, 3 Vietnam, 1 Malaysia, 4 China. Sent status does not establish delivery, acceptance or qualification.",
-    "P Quality Machine Parts was screened but its email tool call failed; two Sent Mail checks found no message. It is excluded from the 20 additional sends and 23 manufacturing-supplier total. DanThai was contacted instead."
+    "US expansion September 17: 6 machining shops and 4 direct anodizers emailed individually, all 10 messages and manufacturing ZIPs verified in Sent Mail. No bounces found at the post-send check. Receipt, willingness to quote and final manufacturing location still require supplier confirmation.",
+    "Supplier feedback under review — Prickly Pear: standard imperial plate blanks plus laser cutting and finish machining may reduce stock and machining cost. Ask for affected part numbers, exact thicknesses and savings. Check mating dimensions, heater/sensor pockets, fastener engagement, flatness and final coated clearances before approval. Status: proposal, not accepted.",
+    "Supplier feedback under review — Prickly Pear: split U-housing into four doweled/bolted plates to reduce material removal and setups. Joint sketch and quantified savings requested. Check guide alignment, stiffness, gasket continuity, joint thermal conductance and access for assembly before approval. Status: proposal, not accepted.",
+    "Finish review — engineering question prompted by anodizing cost: compare drawing Type III 50 µm with separately quoted Type II, including masking/racking and lot minimums. Preserve coating-growth allowances and heater/sensor contact requirements; confirm wear and corrosion needs before revising specification. Status: alternatives requested, no finish change approved.",
+    "Quote follow-up plan: review promised responses first (DwyerOmega 2–3 business days; Prickly Pear around September 23). For new suppliers without acknowledgment, check after 2 business days, then ask for a quote date or explicit decline. Review all remaining open requests September 24. This is a recorded plan, not automatic email scheduling."
   ]
 }
