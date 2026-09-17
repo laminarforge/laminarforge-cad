@@ -1,5 +1,5 @@
 # Heated cassette V0: selected electrical assembly and terminal schedule
-Rev A component selection and terminal schedule, 2026-09-13. Read with the final control-box drilling layout and mechanical assembly handbook. No purchases or physical commissioning have been performed.
+Rev B component selection and terminal schedule, 2026-09-13. Read with the final control-box drilling layout and mechanical assembly handbook. No purchases or physical commissioning have been performed.
 
 ## Selected architecture
 Two independent 24 V resistive heaters, each controlled by a standalone Pt100 PID and DC-output SSR. Each heater also has a separate metal-mounted, normally-closed bimetal thermostat controlling a manually latched electromechanical power relay. The brick contains all mains wiring. A shared red STOP drops both heater relays; green RESET buttons arm zones separately. Controllers remain powered when heaters are stopped.

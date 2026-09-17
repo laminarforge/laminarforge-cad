@@ -1,4 +1,4 @@
-# Assembly handbook - LF-CAS-V0 Rev A
+# Assembly handbook - LF-CAS-V0 Rev B
 
 ## Mechanical hardware to order
 
@@ -22,11 +22,11 @@ All ordinary machine screws below are A2-70 stainless socket caps, ISO 4762, coa
 | 2 | Keenovo 12073, variant 33194097803404 | 24 V, 60 W, 100 x 100 mm heater |
 | 2 | Omega SA1-RTD | 3-wire Pt100, 1 m stripped leads |
 | 2 | Sensata 67L050 | NC temperature cutoffs; electrical BOM includes these |
-| 1 set | BF-1000 gasket, 9731 PSA, stainless shim kit | Front seal |
+| 1 set | BF-1000 gasket, 9731 PSA, measured backing stack | Front seal |
 | 1 set | A160-T-010-0500-G tape profiles | Six guide strips |
 | 1 each | Greiner 655101 and 656101 lid | Water-test plate and lid |
 
-Heaters, RTDs and cutoffs also appear in the electrical BOM: order two total of each, not four. Guard spacers are eight custom 6061 sleeves, diameter 6 / bore 3.4 / length 8.0. Use the exact CAD/stock kit for other custom parts.
+Heaters, RTDs and cutoffs also appear in the electrical BOM: order two total of each, not four. Guard spacers are eight aluminum sleeves, diameter 6 / bore 3.4 / length 8.0 +/-0.10; plain uncoated tube cut and faced to length is acceptable. Use the exact CAD/stock kit for other custom parts.
 
 Reference links: https://www.accu.co.uk/knurled-socket-shoulder-screws/49839-SKH-M2-10-A2 ; https://www.elesa.com/en/elesab2bstoreus/Clamping-knobs--Knurled-knobs--BT-p . Confirm Elesa M4x16 variant at order time.
 
@@ -46,7 +46,7 @@ Dress RTD and thermostat leads separately from heater power joints. Use heat-rat
 
 ## 2. Install guide tape, rails and risers
 
-Apply the six cut tape pieces to clean dry guide edges; plate contact remains bare aluminum. Left lower has stop access; left upper begins Y=22. No folded edge, adhesive squeeze-out or overlapping tape. Measure installed thickness and assemble within the guide acceptance ranges.
+Apply the six cut tape pieces to clean dry guide edges; plate contact remains the aluminum drawer surface, with its specified anodized finish. Left lower has stop access; left upper begins Y=22. No folded edge, adhesive squeeze-out or overlapping tape. Measure installed thickness and assemble within the guide acceptance ranges.
 
 Fit rails and risers with six M3x40 screws, heads in the underside counterbores. Starting assembly torque is 0.3 N m, an engineering bench limit rather than a supplier fastener rating. Seat evenly and verify a flat base. Reduce torque if thin parts distort; do not use tightening to pull a crooked rail into alignment. All M3 structural joints use this initial limit unless a component manufacturer specifies otherwise.
 

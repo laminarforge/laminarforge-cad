@@ -1,5 +1,5 @@
 //! Readable handbooks and 1:1 cutting templates, generated alongside CAD.
-use super::{Config, Layout};
+use super::{Config, Item, Layout};
 use std::{fs, path::Path};
 fn esc(s: &str) -> String {
     s.replace('&', "&amp;")
@@ -54,7 +54,7 @@ pub fn templates(dir: &Path, p: &Config, d: &Layout) -> Result<(), Box<dyn std::
     Ok(())
 }
 fn control_box(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;font-size:20px;fill:#163040}</style><text x=\"40\" y=\"55\" style=\"font-size:30px;font-weight:bold\">Control box / Hammond 1554YA2GY + 1554YPL / Rev A</text><text x=\"40\" y=\"92\">Units mm. Modify purchased parts; preserve factory mounting holes. Coordinate tables in handbook control.</text>");
+    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;font-size:20px;fill:#163040}</style><text x=\"40\" y=\"55\" style=\"font-size:30px;font-weight:bold\">Control box / Hammond 1554YA2GY + 1554YPL / Rev B</text><text x=\"40\" y=\"92\">Units mm. Modify purchased parts; preserve factory mounting holes. Coordinate tables in handbook control.</text>");
     for (label, oy, rear) in [
         ("FRONT BASE WALL - X / Z", 150.0, false),
         ("REAR BASE WALL - X / Z", 420.0, true),
@@ -218,7 +218,7 @@ fn procurement(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
         (
             "8",
             "11 guard spacer",
-            "Diameter 6 / bore 3.4 / length 8; identical",
+            "Plain aluminum OD6 / bore3.4 / length8 +/-0.10; identical; cut and face tube allowed",
         ),
         ("2", "12 guard sheet", "Identical 1 mm sheet"),
         (
@@ -366,7 +366,7 @@ fn render_docs(folder: &Path, names: &[&str]) -> Result<(), Box<dyn std::error::
     }
     let total = pages.len();
     for (idx, page) in pages.into_iter().enumerate() {
-        let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"210mm\" height=\"297mm\" viewBox=\"0 0 1200 1697\"><rect width=\"1200\" height=\"1697\" fill=\"white\"/><style>text{font-family:Arial,sans-serif;fill:#163040}</style><text x=\"65\" y=\"65\" font-size=\"18\">LAMINARFORGE / CASSETTE V0 / REV A / BUILD AND COMMISSION</text><path d=\"M65 90 H1135\" stroke=\"#8aa3b2\"/>");
+        let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"210mm\" height=\"297mm\" viewBox=\"0 0 1200 1697\"><rect width=\"1200\" height=\"1697\" fill=\"white\"/><style>text{font-family:Arial,sans-serif;fill:#163040}</style><text x=\"65\" y=\"65\" font-size=\"18\">LAMINARFORGE / CASSETTE V0 / REV B / BUILD AND COMMISSION</text><path d=\"M65 90 H1135\" stroke=\"#8aa3b2\"/>");
         let mut y = 145;
         for (s, size) in page {
             svg.push_str(&format!(
@@ -379,5 +379,65 @@ fn render_docs(folder: &Path, names: &[&str]) -> Result<(), Box<dyn std::error::
         svg.push_str(&format!("<path d=\"M65 1570 H1135\" stroke=\"#8aa3b2\"/><text x=\"65\" y=\"1610\" font-size=\"18\">Water-test prototype. Read paired shop drawings and verification manifest.</text><text x=\"1040\" y=\"1610\" font-size=\"18\">{} / {total}</text></svg>",idx+1));
         fs::write(folder.join(format!("manual-{:03}.svg", idx + 1)), svg)?;
     }
+    Ok(())
+}
+
+pub fn manufacturing_index(dir: &Path, parts: &[Item]) -> Result<(), Box<dyn std::error::Error>> {
+    let mut groups = std::collections::BTreeMap::<String, Vec<&Item>>::new();
+    for p in parts.iter().filter(|i| !i.reference) {
+        groups
+            .entry(super::drawings::part_key(&p.name))
+            .or_default()
+            .push(p);
+    }
+    let mut records = Vec::new();
+    let mut csv = String::from("representative_step,quantity,scope,material,finish\n");
+    for entries in groups.values() {
+        let p = entries[0];
+        // Deduplication must not silently turn unlike shapes into quantity repeats.
+        for other in &entries[1..] {
+            if (p.part.volume() - other.part.volume()).abs() > 0.01 {
+                return Err(format!(
+                    "duplicate group volume differs: {} / {}",
+                    p.name, other.name
+                )
+                .into());
+            }
+        }
+        let optional = p.name.starts_with("08_") || p.name.starts_with("13_");
+        let material = if p.name.starts_with("08_") {
+            "igus A160 tape"
+        } else if p.name.starts_with("13_") {
+            "302 stainless reference stack"
+        } else {
+            "6061 aluminum"
+        };
+        let finish = if optional {
+            "none"
+        } else if p.name.starts_with("11_") {
+            "plain uncoated allowed"
+        } else {
+            "Type II clear sealed 5-15 um"
+        };
+        let scope = if optional {
+            "owner-sourced reference"
+        } else {
+            "base CNC quote"
+        };
+        csv.push_str(&format!(
+            "{}.step,{},{},{},{}\n",
+            p.name,
+            entries.len(),
+            scope,
+            material,
+            finish
+        ));
+        records.push(serde_json::json!({"name":p.name,"quantity":entries.len(),"optional":optional,"material":material,"finish":finish}));
+    }
+    fs::write(dir.join("manufacturing-bom.csv"), csv)?;
+    fs::write(
+        dir.join("manufacturing-index.json"),
+        serde_json::to_vec_pretty(&records)?,
+    )?;
     Ok(())
 }

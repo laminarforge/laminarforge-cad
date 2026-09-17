@@ -1,4 +1,4 @@
-//! Rev A water-test prototype: analytic fabrication solids, assembly sheets and sizing evidence.
+//! Rev B water-test prototype: analytic fabrication solids, assembly sheets and sizing evidence.
 use base64::Engine;
 use clap::Parser;
 use serde::{Deserialize, Serialize};
@@ -295,6 +295,7 @@ impl Config {
 
 fn block(name: &str, min: [f64; 3], max: [f64; 3]) -> Part {
     Part::primitive(
+        name,
         centered_cube(name, max[0] - min[0], max[1] - min[1], max[2] - min[2]).translate(
             (min[0] + max[0]) / 2.0,
             (min[1] + max[1]) / 2.0,
@@ -305,6 +306,7 @@ fn block(name: &str, min: [f64; 3], max: [f64; 3]) -> Part {
 }
 fn cy(name: &str, x: f64, y: f64, z: f64, diameter: f64, length: f64, n: u32) -> Part {
     Part::primitive(
+        name,
         centered_cylinder(name, diameter / 2.0, length, n)
             .rotate(90.0, 0.0, 0.0)
             .translate(x, y, z),
@@ -313,6 +315,7 @@ fn cy(name: &str, x: f64, y: f64, z: f64, diameter: f64, length: f64, n: u32) ->
 }
 fn cx(name: &str, x: f64, y: f64, z: f64, diameter: f64, length: f64, n: u32) -> Part {
     Part::primitive(
+        name,
         centered_cylinder(name, diameter / 2.0, length, n)
             .rotate(0.0, 90.0, 0.0)
             .translate(x, y, z),
@@ -321,6 +324,7 @@ fn cx(name: &str, x: f64, y: f64, z: f64, diameter: f64, length: f64, n: u32) ->
 }
 fn cz(name: &str, x: f64, y: f64, z: f64, diameter: f64, length: f64, n: u32) -> Part {
     Part::primitive(
+        name,
         centered_cylinder(name, diameter / 2.0, length, n).translate(x, y, z),
         solid::Primitive::Cylinder([x, y, z], diameter / 2.0, length, 2),
     )
@@ -1324,6 +1328,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     thermal::run(&args.output_dir, &p, &d, &parts)?;
     package::templates(&args.output_dir, &p, &d)?;
     package::handbook(&args.output_dir)?;
+    package::manufacturing_index(&args.output_dir, &parts)?;
     let source = fs::read("src/bin/heated_microplate_cassette_v0.rs")?;
     let mut dependencies = BTreeMap::new();
     for path in [
@@ -1334,6 +1339,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "src/cassette/package.rs",
         "Cargo.toml",
         "Cargo.lock",
+        "docs/heated-cassette-v0/README.md",
+        "docs/heated-cassette-v0/manufacturing-notes.md",
+        "docs/heated-cassette-v0/assembly.md",
+        "docs/heated-cassette-v0/electrical-assembly.md",
+        "docs/heated-cassette-v0/control-box-layout.md",
+        "docs/heated-cassette-v0/validation.md",
+        "docs/heated-cassette-v0/RFQ.md",
+        "docs/heated-cassette-v0/wiring.svg",
     ] {
         dependencies.insert(path, sha(&fs::read(path)?));
     }
@@ -1356,7 +1369,7 @@ fn render(
     d: &Layout,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1600\" height=\"1100\" viewBox=\"0 0 1600 1100\"><rect width=\"1600\" height=\"1100\" fill=\"#eef2f5\"/><style>text{font-family:Helvetica,Arial,sans-serif;fill:#162b3b}.title{font-size:34px;font-weight:bold}.sub{font-size:18px;fill:#425d70}.label{font-size:22px;font-weight:bold}.note{font-size:17px}</style>");
-    svg.push_str("<text x=\"45\" y=\"55\" class=\"title\">LaminarForge / heated microplate cassette V0</text><text x=\"45\" y=\"87\" class=\"sub\">Rev A water-test prototype / manual drawer / 6061 aluminum / two heater zones</text>");
+    svg.push_str("<text x=\"45\" y=\"55\" class=\"title\">LaminarForge / heated microplate cassette V0</text><text x=\"45\" y=\"87\" class=\"sub\">Rev B water-test prototype / manual drawer / 6061 aluminum / two heater zones</text>");
     let panels = [
         ("01  CLOSED", 0.0, false, 40.0, 115.0),
         ("02  FULL ACCESS", d.stroke, false, 820.0, 115.0),

@@ -1,4 +1,4 @@
-# LaminarForge heated microplate cassette V0 - Rev A
+# LaminarForge heated microplate cassette V0 - Rev B
 
 This package defines one manual, two-zone heated aluminum cassette for water-filled microplate temperature testing. Manufacture to the analytic STEP files together with the shop drawings and manufacturing notes. STLs and assembly images are viewing aids. The physical prototype still needs commissioning and temperature mapping.
 
@@ -6,9 +6,9 @@ Greiner 655101 with lid 656101 is the selected inexpensive thermal surrogate. It
 
 ## Fabrication and assembly
 
-Send the manufacturing folder and shop-drawings PDF to a CNC shop. Request one set, 6061-T6, including finishing and dimensional inspection. Buy the commercial mechanical/electrical parts from the BOM. Assembly needs metric hex tools, a small torque driver, multimeter, suitable connector crimp tooling, solder/heat-shrink supplies and temperature-measurement equipment.
+Send the complete supplier RFQ ZIP, including the manufacturing BOM, shop-drawings PDF and assembly handbook, to a CNC shop. Request one set, 6061-T6, including clear Type II finishing and the limited fit-dimension report. Buy the commercial mechanical/electrical parts from the BOM. Assembly needs metric hex tools, a small torque driver, multimeter, suitable connector crimp tooling, solder/heat-shrink supplies and temperature-measurement equipment.
 
-Eight positioned spacer files represent eight identical spacers. Both guards, both risers and both cable jaws are identical after translation. The left guide rail has an extra stop-access hole. The cable-bracket bases differ.
+One representative spacer file specifies eight identical spacers. Both guards, both risers and both cable jaws are identical after translation. The left guide rail has an extra stop-access hole. The cable-bracket bases differ.
 
 ## Design definition
 

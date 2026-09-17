@@ -9,6 +9,14 @@ pub struct Sourcing {
     quotes: Vec<Quote>,
     items: Vec<Item>,
     open_items: Vec<String>,
+    design_review: Vec<DesignReview>,
+}
+
+#[derive(Deserialize)]
+struct DesignReview {
+    title: String,
+    decision: String,
+    source: String,
 }
 
 #[derive(Deserialize)]
@@ -53,6 +61,14 @@ impl Sourcing {
                 ui.label(RichText::new(format!("{} quote requests sent · research checked {}", self.quotes.len(), self.checked_on)).strong());
                 ui.label(format!("Reply review date: {}. This snapshot does not monitor your inbox.", self.follow_up_on));
                 ui.label(&self.package);
+                egui::CollapsingHeader::new("Rev B manufacturing decisions").default_open(true).show(ui, |ui| {
+                    for review in &self.design_review {
+                        ui.label(RichText::new(&review.title).strong());
+                        ui.label(&review.decision);
+                        ui.hyperlink_to("Manufacturer guidance", &review.source);
+                        ui.separator();
+                    }
+                });
                 ui.label(format!("Priced catalog subset: ${:.2} USD. This is not the complete prototype cost.", self.catalog_subtotal() as f64 / 100.0));
                 ui.label("Catalog prices exclude shipping, taxes and tariffs. Unpriced items and optional candidates are excluded from this subtotal; the application budget remains provisional.");
                 egui::CollapsingHeader::new("Sent quote requests").show(ui, |ui| {

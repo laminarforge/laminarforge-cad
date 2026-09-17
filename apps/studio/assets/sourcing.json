@@ -1,7 +1,7 @@
 {
   "checked_on": "2026-09-17",
   "follow_up_on": "2026-09-24",
-  "package": "LF-CAS-V0 Rev A · 79 file hashes verified · STEP + shop drawings + manufacturing notes sent",
+  "package": "Rev A was sent to suppliers. Rev B updates the finish, quote scope, hole schedules and masking diagrams; revised supplier package has not been emailed.",
   "quotes": [
     {
       "name": "Spot On CNC",
@@ -279,7 +279,7 @@
       "url": "https://www.micncparts.com/",
       "scope": "Michigan, USA. 1 and 5 complete mechanical sets; separate machining and finish prices. Requests plate-built alternatives, main cost drivers and outsourced-operation locations. ZIP attached.",
       "message_id": "1a0b021d64f4099c",
-      "status": "Sent; receipt and quote pending",
+      "status": "Declined / out, per Alex; no further follow-up",
       "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b021d64f4099c"
     },
     {
@@ -502,6 +502,10 @@
     }
   ],
   "open_items": [
+    "Hardware acceptance: document fit and electrical fault checks, then map water in at least five wells. Proposed targets: all measured water 36.5-37.5 C, spatial spread <=0.5 C, and recovery within 10 minutes after 30 seconds open. These are targets, not achieved performance.",
+    "Rev B: compare itemized machining and Type II finishing prices. Previous Rev A hardcoat estimates are not prices for the revised scope.",
+    "Integral housing remains a cost driver. A bolted roof/side/front alternative needs joint, alignment and thermal review before changing CAD.",
+    "Measure the purchased gasket before ordering its backing thickness; do not order a nine-frame cut shim kit.",
     "29 machining/fabrication prospects, 4 direct anodizers and 4 component vendors contacted (37 distinct suppliers). Prickly Pear confirmed its preliminary $1,500–$2,000 indication covers anodizing ALONE; actual finishing quote and machining cost remain pending. The $4,000 machining allowance is not a quote.",
     "The catalog subtotal is incomplete and excludes machining, unpriced parts, freight, tax, tariff, tools, calibration and revision work. Keep the $15,000 request provisional until quotes close those gaps.",
     "Confirm five-channel measurement system with ≤0.2°C combined uncertainty near 37°C, small immersion probes and ≥1 sample/s/channel. Request calibration at 35/37/39°C.",
@@ -513,7 +517,28 @@
     "US expansion September 17: 6 machining shops and 4 direct anodizers emailed individually, all 10 messages and manufacturing ZIPs verified in Sent Mail. No bounces found at the post-send check. Receipt, willingness to quote and final manufacturing location still require supplier confirmation.",
     "Supplier feedback under review — Prickly Pear: standard imperial plate blanks plus laser cutting and finish machining may reduce stock and machining cost. Ask for affected part numbers, exact thicknesses and savings. Check mating dimensions, heater/sensor pockets, fastener engagement, flatness and final coated clearances before approval. Status: proposal, not accepted.",
     "Supplier feedback under review — Prickly Pear: split U-housing into four doweled/bolted plates to reduce material removal and setups. Joint sketch and quantified savings requested. Check guide alignment, stiffness, gasket continuity, joint thermal conductance and access for assembly before approval. Status: proposal, not accepted.",
-    "Finish review — engineering question prompted by anodizing cost: compare drawing Type III 50 µm with separately quoted Type II, including masking/racking and lot minimums. Preserve coating-growth allowances and heater/sensor contact requirements; confirm wear and corrosion needs before revising specification. Status: alternatives requested, no finish change approved.",
     "Quote follow-up plan: review promised responses first (DwyerOmega 2–3 business days; Prickly Pear around September 23). For new suppliers without acknowledgment, check after 2 business days, then ask for a quote date or explicit decline. Review all remaining open requests September 24. This is a recorded plan, not automatic email scheduling."
+  ],
+  "design_review": [
+    {
+      "title": "Drawing clarity",
+      "decision": "Rev B adds labeled hole schedules, overall dimensions, a heater/RTD masking diagram, and one representative drawing per duplicate part. CAD remains authoritative for unlisted geometry.",
+      "source": "https://www.hubs.com/knowledge-base/how-prepare-technical-drawing-cnc-machining/"
+    },
+    {
+      "title": "Prototype finish",
+      "decision": "Use clear sealed Type II anodizing, 5-15 microns, with finished fit dimensions controlled. Retain masking for threads and defined adhesive lands. Hardcoat wear resistance is not an established V0 requirement; test warm drawer travel and inspect wear.",
+      "source": "https://www.anoplate.com/finishes/sulfuric-anodize"
+    },
+    {
+      "title": "Coating allowance",
+      "decision": "Anodize converts substrate as well as growing outward. The finisher must confirm the machining allowance; coating thickness must not be subtracted uniformly from every CAD surface.",
+      "source": "https://www.anoplate.com/news-and-events/the-impact-of-anodize-on-dimensions/"
+    },
+    {
+      "title": "Machining cost",
+      "decision": "Base quote covers aluminum parts and guard sheets. Foam, backing, guide tape and electronics are owner-sourced. Plain cut-and-faced aluminum spacer tube is permitted. Larger cutters and bolted housing alternatives require explicit marked-up geometry review.",
+      "source": "https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/"
+    }
   ]
 }

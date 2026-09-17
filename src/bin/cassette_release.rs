@@ -123,16 +123,30 @@ fn main() -> Result<()> {
     for p in [&m, &assembly, &evidence, &source] {
         fs::create_dir_all(p)?;
     }
-    for p in files(&a.input_dir, "step")? {
-        fs::copy(&p, m.join(p.file_name().unwrap()))?;
+    let optional = a.output_dir.join("optional-materials");
+    fs::create_dir_all(&optional)?;
+    let index: Vec<serde_json::Value> =
+        serde_json::from_slice(&fs::read(a.input_dir.join("manufacturing-index.json"))?)?;
+    for row in &index {
+        let name = row["name"].as_str().ok_or("missing part name")?;
+        let filename = format!("{name}.step");
+        let target = if row["optional"] == true {
+            &optional
+        } else {
+            &m
+        };
+        fs::copy(a.input_dir.join(&filename), target.join(&filename))?;
     }
     for p in files(&a.input_dir, "dxf")? {
-        fs::copy(&p, m.join(p.file_name().unwrap()))?;
+        fs::copy(&p, optional.join(p.file_name().unwrap()))?;
     }
     for p in files(&a.input_dir, "csv")? {
         fs::copy(
             &p,
-            if p.file_name()
+            if p.file_name().unwrap() == "manufacturing-bom.csv" {
+                m.join(p.file_name().unwrap())
+            } else if p
+                .file_name()
                 .unwrap()
                 .to_string_lossy()
                 .starts_with("thermal-")
@@ -207,7 +221,27 @@ fn main() -> Result<()> {
         fs::copy(a.source_dir.join(p), dest)?;
     }
     fs::write(source.join("README.txt"),format!("This is a relevant-source snapshot, not a standalone copy of the full CAD monorepo.\nCanonical repository: https://github.com/laminarforge/laminarforge-cad\nCommit: {}\nUse the full checkout at that commit to reproduce.\nRun the local laminarforge_build MCP tool for bin heated_microplate_cassette_v0, profile dev, features [step], with --config models/heated_microplate_cassette_v0.toml and an empty --output-dir.\nThen run bin cassette_release with --input-dir, a new --output-dir, and --source-dir pointing to that checkout.\nPDF tools required: rsvg-convert, pdfunite, pdftoppm. No cloud build.\n",report["git_head"].as_str().unwrap_or("unknown")))?;
-    fs::write(a.output_dir.join("START-HERE.txt"),"LaminarForge LF-CAS-V0 Rev A - one manual water-test prototype\n\nSend manufacturing/ and shop-drawings.pdf to the CNC shop.\nUse assembly-handbook.pdf and assembly/procurement-bom.csv to purchase and assemble.\nSTEP + explicit drawing notes control fabrication; STL is a viewing aid.\nverification/ records geometry, source and reduced thermal calculations.\nThermal performance, electrical protection and cable behavior require the specified physical commissioning.\nThis is not a released biological culture system.\n")?;
+    fs::write(a.output_dir.join("START-HERE.txt"),"LaminarForge LF-CAS-V0 Rev B - one manual water-test prototype\n\nSend supplier-RFQ.zip to the CNC shop. It includes manufacturing/, optional-materials/, both PDFs and the BOM.\nUse assembly-handbook.pdf and assembly/procurement-bom.csv to purchase and assemble.\nSTEP + explicit drawing notes control fabrication; STL is a viewing aid.\nverification/ records geometry, source and reduced thermal calculations.\nThermal performance, electrical protection and cable behavior require the specified physical commissioning.\nThis is not a released biological culture system.\n")?;
+    fs::copy(
+        a.source_dir.join("docs/heated-cassette-v0/RFQ.md"),
+        a.output_dir.join("RFQ.md"),
+    )?;
+    let zip = Command::new("zip")
+        .current_dir(&a.output_dir)
+        .args([
+            "-qr",
+            "supplier-RFQ.zip",
+            "manufacturing",
+            "optional-materials",
+            "shop-drawings.pdf",
+            "assembly-handbook.pdf",
+            "assembly/procurement-bom.csv",
+            "RFQ.md",
+        ])
+        .output()?;
+    if !zip.status.success() {
+        return Err("supplier ZIP creation failed".into());
+    }
     let mut hashes = std::collections::BTreeMap::new();
     walk(&a.output_dir, &a.output_dir, &mut hashes)?;
     fs::write(
