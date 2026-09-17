@@ -17,10 +17,9 @@ pub struct Funding {
     proposal: String,
     budget: Vec<BudgetItem>,
     budget_note: String,
-    location: String,
-    location_url: String,
     availability: String,
-    workspace_costs: String,
+    #[serde(default)]
+    scope_revision: u32,
     notes: String,
     milestones: String,
     reviewed: bool,
@@ -31,12 +30,28 @@ pub struct Funding {
 impl Funding {
     pub fn load(storage: Option<&dyn eframe::Storage>) -> Result<Self, String> {
         let saved = storage.and_then(|s| s.get_string(KEY));
-        serde_json::from_str(
+        let mut funding: Self = serde_json::from_str(
             saved
                 .as_deref()
                 .unwrap_or(include_str!("../assets/funding.json")),
         )
-        .map_err(|e| format!("Could not load funding workspace: {e}"))
+        .map_err(|e| format!("Could not load funding workspace: {e}"))?;
+        if funding.scope_revision == 0 {
+            funding.proposal = funding.proposal.replace(
+                "twelve weeks from funding and access to a suitable workspace, subject to fabrication and instrument lead times",
+                "twelve weeks from funding, subject to fabrication and instrument lead times",
+            ).replace(
+                "I will run the validation internally, starting with water-filled plates.",
+                "I will assemble and validate the cassette internally using water-filled plates in an ordinary workspace with suitable electrical safety and measurement equipment. This initial round requires no biological lab, shared-lab membership or cell culture work.",
+            );
+            funding.budget_note = funding.budget_note.replace(
+                "Facility costs must be established before this is a complete project budget.",
+                "No laboratory access or facility rental is required for this round. The deliverable is an assembled cassette validated with water-filled plates.",
+            );
+            funding.scope_revision = 1;
+            funding.reviewed = false;
+        }
+        Ok(funding)
     }
 
     pub fn save(&self, storage: &mut dyn eframe::Storage) {
@@ -83,13 +98,9 @@ impl Funding {
                 ui.separator();
                 ui.label(RichText::new(&self.title).strong());
                 ui.label("Organizational structure: undecided. No personal cash match assumed.");
-                egui::CollapsingHeader::new("Location and remaining details").default_open(true).show(ui, |ui| {
-                    edit(ui, "Planned build / test location", &mut self.location, 3);
-                    ui.hyperlink_to("Fitzsimons shared-lab information ↗", &self.location_url);
-                    ui.label("Published half- and full-bench options. Confirm identity, price, availability and permitted work before claiming access.");
-                    edit(ui, "Weekly availability", &mut self.availability, 1);
-                    edit(ui, "Workspace and working-time costs to include", &mut self.workspace_costs, 2);
-                });
+                ui.label(RichText::new("Initial round: manufacture → assemble → validate temperatures with water-filled plates.").strong());
+                ui.label("An ordinary workspace with suitable electrical safety and measurement equipment is sufficient. Lab access, facility rent and cell experiments are outside this round.");
+                edit(ui, "Weekly availability", &mut self.availability, 1);
                 egui::CollapsingHeader::new("Application text").default_open(true).show(ui, |ui| {
                     ui.horizontal(|ui| {
                         ui.label("Short description");
@@ -164,7 +175,7 @@ mod tests {
         assert_eq!(f.total(), 15000);
         assert!(!f.submitted);
         assert!(f.proposal.split_whitespace().count() <= 1500);
-        assert!(f.location.contains("Prospective"));
+        assert_eq!(f.scope_revision, 1);
     }
     #[test]
     fn edited_application_survives_restart() {
@@ -178,6 +189,34 @@ mod tests {
         assert_eq!(restored.proposal, f.proposal);
         assert_eq!(restored.total(), f.total());
         assert_eq!(restored.availability, f.availability);
+    }
+    #[test]
+    fn previous_draft_loses_lab_prerequisite_without_losing_edits() {
+        let mut value = serde_json::to_value(Funding::load(None).unwrap()).unwrap();
+        value.as_object_mut().unwrap().remove("scope_revision");
+        value["location"] = "Prospective Fitzsimons".into();
+        value["workspace_costs"] = "".into();
+        value["proposal"] = "Custom intro. twelve weeks from funding and access to a suitable workspace, subject to fabrication and instrument lead times".into();
+        value["budget_note"] = "Custom costs. Facility costs must be established before this is a complete project budget.".into();
+        value["availability"] = "8 hours/week".into();
+        value["budget"][0]["amount"] = 123.into();
+        let mut storage = Memory::default();
+        storage.set_string(KEY, value.to_string());
+        let migrated = Funding::load(Some(&storage)).unwrap();
+        assert!(migrated.proposal.starts_with("Custom intro."));
+        assert!(!migrated.proposal.contains("access to a suitable workspace"));
+        assert!(migrated.budget_note.starts_with("Custom costs."));
+        assert!(!migrated.budget_note.contains("Facility costs must"));
+        assert_eq!(migrated.budget[0].amount, 123);
+        assert_eq!(migrated.availability, "8 hours/week");
+        migrated.save(&mut storage);
+        let saved = storage.get_string(KEY).unwrap();
+        assert!(!saved.contains("Fitzsimons"));
+        assert!(!saved.contains("workspace_costs"));
+        assert_eq!(
+            Funding::load(Some(&storage)).unwrap().proposal,
+            migrated.proposal
+        );
     }
     #[test]
     fn corrupt_saved_work_is_not_silently_reset() {
