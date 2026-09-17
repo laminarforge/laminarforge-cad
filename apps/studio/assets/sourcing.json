@@ -201,7 +201,7 @@
       "unit": "BOM balance",
       "included": true,
       "url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0afe177e41c7d7",
-      "note": "DDR-15G-12, enclosure/panel, buttons, fuses/holders, DIN parts, Wago, glands, cables, connectors, wire and fasteners. Distributor RFQ pending; not included as zero-cost."
+      "note": "DDR-15G-12, buttons, fuses/holders, DIN parts, Wago, glands, cables, connectors, wire and fasteners. Distributor RFQ pending; not included as zero-cost."
     },
     {
       "name": "Physitemp THERMES-USB candidate",
@@ -211,6 +211,24 @@
       "included": false,
       "url": "https://physitemp.com/dataacquisys_p114",
       "note": "Catalog $1,850, seven Type T inputs. Candidate only: five microprobes, calibration, DASYLab license and compatible Windows computer are additional. Whole-system ≤0.2°C uncertainty and ≥1 sample/s/channel require confirmation. Excluded from selected-parts subtotal."
+    },
+    {
+      "name": "Hammond 1554YA2GY",
+      "quantity": 1,
+      "unit_cents": 6600,
+      "unit": "enclosure",
+      "included": true,
+      "url": "https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554ya2gy",
+      "note": "Exact specified control enclosure. Public USD catalog price; direct ship from Hammond. Subpanel separate."
+    },
+    {
+      "name": "Hammond 1554YPL",
+      "quantity": 1,
+      "unit_cents": 1300,
+      "unit": "mounting panel",
+      "included": true,
+      "url": "https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/subpanels/1554ypl",
+      "note": "Matching galvanized steel panel. Listing includes four M3 x 8 mm screws; confirm these satisfy the mounting schedule before buying duplicates."
     }
   ],
   "open_items": [
