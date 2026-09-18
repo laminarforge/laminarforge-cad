@@ -97,6 +97,52 @@ fn walk(
     }
     Ok(())
 }
+// Validate the files that will actually be shipped using a separately installed importer.
+fn exchange_check(folder: &Path, evidence: &Path) -> Result<()> {
+    fs::create_dir_all(evidence)?;
+    let version = Command::new("DRAWEXE")
+        .args(["-b", "-c", "pload ALL; puts [dversion]; exit"])
+        .output()?;
+    if !version.status.success() {
+        return Err("independent CAD checker unavailable".into());
+    }
+    fs::write(evidence.join("checker-version.txt"), &version.stdout)?;
+    for path in files(folder, "step")? {
+        let raw = path.to_str().ok_or("non UTF-8 CAD path")?;
+        if raw.contains(['{', '}', '\n', '\r']) {
+            return Err("unsupported CAD path characters".into());
+        }
+        let script=format!("pload ALL; if {{[catch {{ReadStep D {{{raw}}}; XGetOneShape s D; set result [checkshape s -exact]; puts $result; if {{[string first {{This shape seems to be valid}} $result] < 0}} {{error {{invalid imported shape}}}}; puts [nbshapes s]; puts [vprops s]; puts {{LF_IMPORT_VALID}}}} err]}} {{puts stderr $err; exit 1}}; exit 0");
+        let result = Command::new("DRAWEXE")
+            .args(["-b", "-c", &script])
+            .output()?;
+        let log = format!(
+            "{}\n{}",
+            String::from_utf8_lossy(&result.stdout),
+            String::from_utf8_lossy(&result.stderr)
+        );
+        fs::write(
+            evidence.join(format!(
+                "{}.txt",
+                path.file_stem().unwrap().to_string_lossy()
+            )),
+            &log,
+        )?;
+        if !result.status.success() || !log.contains("LF_IMPORT_VALID") {
+            return Err(
+                format!("Independent STEP validity check failed: {}", path.display()).into(),
+            );
+        }
+        let solid_line = log
+            .lines()
+            .find(|l| l.trim_start().starts_with("SOLID "))
+            .ok_or("missing independent solid count")?;
+        if solid_line.split(':').nth(1).map(str::trim) != Some("1") {
+            return Err(format!("not one solid: {}", path.display()).into());
+        }
+    }
+    Ok(())
+}
 fn main() -> Result<()> {
     let a = Args::parse();
     if a.output_dir.exists() {
@@ -188,6 +234,17 @@ fn main() -> Result<()> {
     let qa_dir = a.output_dir.with_extension("qa");
     fs::create_dir_all(&qa_dir)?;
     combine(
+        &files(&a.input_dir.join("assembly-pages"), "svg")?,
+        &a.output_dir.join("assembly-drawings.pdf"),
+        &qa_dir.join("assembly-pdf-pages"),
+    )?;
+    qa(
+        &a.output_dir.join("assembly-drawings.pdf"),
+        &qa_dir.join("assembly"),
+    )?;
+    exchange_check(&m, &evidence.join("independent-import"))?;
+    exchange_check(&optional, &evidence.join("independent-import-optional"))?;
+    combine(
         &drawings,
         &a.output_dir.join("shop-drawings.pdf"),
         &qa_dir.join("shop-pdf-pages"),
@@ -210,6 +267,8 @@ fn main() -> Result<()> {
         "src/bin/cassette_release.rs",
         "src/cassette/solid.rs",
         "src/cassette/drawings.rs",
+        "src/cassette/assembly_drawings.rs",
+        "src/cassette/feature_drawings.rs",
         "src/cassette/thermal.rs",
         "src/cassette/package.rs",
         "models/heated_microplate_cassette_v0.toml",
@@ -221,7 +280,7 @@ fn main() -> Result<()> {
         fs::copy(a.source_dir.join(p), dest)?;
     }
     fs::write(source.join("README.txt"),format!("This is a relevant-source snapshot, not a standalone copy of the full CAD monorepo.\nCanonical repository: https://github.com/laminarforge/laminarforge-cad\nCommit: {}\nUse the full checkout at that commit to reproduce.\nRun the local laminarforge_build MCP tool for bin heated_microplate_cassette_v0, profile dev, features [step], with --config models/heated_microplate_cassette_v0.toml and an empty --output-dir.\nThen run bin cassette_release with --input-dir, a new --output-dir, and --source-dir pointing to that checkout.\nPDF tools required: rsvg-convert, pdfunite, pdftoppm. No cloud build.\n",report["git_head"].as_str().unwrap_or("unknown")))?;
-    fs::write(a.output_dir.join("START-HERE.txt"),"LaminarForge LF-CAS-V0 Rev B - one manual water-test prototype\n\nSend supplier-RFQ.zip to the CNC shop. It includes manufacturing/, optional-materials/, both PDFs and the BOM.\nUse assembly-handbook.pdf and assembly/procurement-bom.csv to purchase and assemble.\nSTEP + explicit drawing notes control fabrication; STL is a viewing aid.\nverification/ records geometry, source and reduced thermal calculations.\nThermal performance, electrical protection and cable behavior require the specified physical commissioning.\nThis is not a released biological culture system.\n")?;
+    fs::write(a.output_dir.join("START-HERE.txt"),"LaminarForge LF-CAS-V0 Rev C - one manual water-test prototype\n\nSend supplier-RFQ.zip to the CNC shop. It includes manufacturing/, optional-materials/, all three PDFs, the numbered assembly BOM and the procurement BOM.\nUse assembly-handbook.pdf and assembly/procurement-bom.csv to purchase and assemble.\nSTEP + explicit drawing notes control fabrication; STL is a viewing aid.\nverification/ records geometry, source and reduced thermal calculations.\nThermal performance, electrical protection and cable behavior require the specified physical commissioning.\nThis is not a released biological culture system.\n")?;
     fs::copy(
         a.source_dir.join("docs/heated-cassette-v0/RFQ.md"),
         a.output_dir.join("RFQ.md"),
@@ -235,7 +294,11 @@ fn main() -> Result<()> {
             "optional-materials",
             "shop-drawings.pdf",
             "assembly-handbook.pdf",
+            "assembly-drawings.pdf",
+            "assembly/assembly-bom.csv",
+            "assembly/assembly-overview.png",
             "assembly/procurement-bom.csv",
+            "verification/independent-import",
             "RFQ.md",
         ])
         .output()?;

@@ -1,4 +1,4 @@
-//! Rev B water-test prototype: analytic fabrication solids, assembly sheets and sizing evidence.
+//! Rev C water-test prototype: analytic fabrication solids, assembly sheets and sizing evidence.
 use base64::Engine;
 use clap::Parser;
 use serde::{Deserialize, Serialize};
@@ -11,8 +11,12 @@ use std::{
     process::Command,
 };
 use vcad::{centered_cube, centered_cylinder};
+#[path = "../cassette/assembly_drawings.rs"]
+mod assembly_drawings;
 #[path = "../cassette/drawings.rs"]
 mod drawings;
+#[path = "../cassette/feature_drawings.rs"]
+mod feature_drawings;
 #[path = "../cassette/package.rs"]
 mod package;
 #[path = "../cassette/solid.rs"]
@@ -1279,7 +1283,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         #[cfg(feature = "step")]
         if !i.reference {
             let path = args.output_dir.join(format!("{}.step", i.name));
-            let shape = i.part.analytic();
+            let mut shape = i.part.analytic();
+            // Unify coplanar Boolean faces for portable STEP import. Geometry is verified below.
+            shape.clean();
             shape.write_step(&path)?;
             let recovered = opencascade::primitives::Shape::read_step(&path)?;
             let mesh = recovered.mesh();
@@ -1325,6 +1331,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     render(&args.output_dir.join("design-review.svg"), &parts, &p, &d)?;
     drawings::sheets(&args.output_dir.join("drawing-pages"), &parts, &p, &d)?;
+    assembly_drawings::sheets(&args.output_dir.join("assembly-pages"), &parts, &p, &d)?;
     thermal::run(&args.output_dir, &p, &d, &parts)?;
     package::templates(&args.output_dir, &p, &d)?;
     package::handbook(&args.output_dir)?;
@@ -1335,6 +1342,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "src/bin/heated_microplate_cassette_v0.rs",
         "src/cassette/solid.rs",
         "src/cassette/drawings.rs",
+        "src/cassette/assembly_drawings.rs",
+        "src/cassette/feature_drawings.rs",
         "src/cassette/thermal.rs",
         "src/cassette/package.rs",
         "Cargo.toml",
@@ -1369,7 +1378,7 @@ fn render(
     d: &Layout,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1600\" height=\"1100\" viewBox=\"0 0 1600 1100\"><rect width=\"1600\" height=\"1100\" fill=\"#eef2f5\"/><style>text{font-family:Helvetica,Arial,sans-serif;fill:#162b3b}.title{font-size:34px;font-weight:bold}.sub{font-size:18px;fill:#425d70}.label{font-size:22px;font-weight:bold}.note{font-size:17px}</style>");
-    svg.push_str("<text x=\"45\" y=\"55\" class=\"title\">LaminarForge / heated microplate cassette V0</text><text x=\"45\" y=\"87\" class=\"sub\">Rev B water-test prototype / manual drawer / 6061 aluminum / two heater zones</text>");
+    svg.push_str("<text x=\"45\" y=\"55\" class=\"title\">LaminarForge / heated microplate cassette V0</text><text x=\"45\" y=\"87\" class=\"sub\">Rev C water-test prototype / manual drawer / 6061 aluminum / two heater zones</text>");
     let panels = [
         ("01  CLOSED", 0.0, false, 40.0, 115.0),
         ("02  FULL ACCESS", d.stroke, false, 820.0, 115.0),

@@ -54,7 +54,7 @@ pub fn templates(dir: &Path, p: &Config, d: &Layout) -> Result<(), Box<dyn std::
     Ok(())
 }
 fn control_box(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;font-size:20px;fill:#163040}</style><text x=\"40\" y=\"55\" style=\"font-size:30px;font-weight:bold\">Control box / Hammond 1554YA2GY + 1554YPL / Rev B</text><text x=\"40\" y=\"92\">Units mm. Modify purchased parts; preserve factory mounting holes. Coordinate tables in handbook control.</text>");
+    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;font-size:20px;fill:#163040}</style><text x=\"40\" y=\"55\" style=\"font-size:30px;font-weight:bold\">Control box / Hammond 1554YA2GY + 1554YPL / Rev C</text><text x=\"40\" y=\"92\">Units mm. Modify purchased parts; preserve factory mounting holes. Coordinate tables in handbook control.</text>");
     for (label, oy, rear) in [
         ("FRONT BASE WALL - X / Z", 150.0, false),
         ("REAR BASE WALL - X / Z", 420.0, true),
@@ -276,7 +276,17 @@ fn procurement(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
             quote(notes)
         ));
     }
-    fs::write(dir.join("procurement-bom.csv"), csv)?;
+    // Plain ASCII CSV survives legacy Excel encodings; preserve units explicitly.
+    let csv = csv
+        .replace('×', " x ")
+        .replace(['–', '—'], "-")
+        .replace('°', " deg ")
+        .replace('²', "2")
+        .replace('µ', "u");
+    if !csv.is_ascii() {
+        return Err("procurement BOM contains unsupported non-ASCII text".into());
+    }
+    fs::write(dir.join("procurement-bom.csv"), csv.replace("\n", "\r\n"))?;
     fs::write(dir.join("commissioning-log.csv"),"timestamp,assembly_revision,ambient_c,roof_metal_c,drawer_metal_c,water_corner_1_c,water_corner_2_c,water_corner_3_c,water_corner_4_c,water_center_c,supply_v,total_current_a,drawer_state,notes\n")?;
     Ok(())
 }
@@ -366,7 +376,7 @@ fn render_docs(folder: &Path, names: &[&str]) -> Result<(), Box<dyn std::error::
     }
     let total = pages.len();
     for (idx, page) in pages.into_iter().enumerate() {
-        let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"210mm\" height=\"297mm\" viewBox=\"0 0 1200 1697\"><rect width=\"1200\" height=\"1697\" fill=\"white\"/><style>text{font-family:Arial,sans-serif;fill:#163040}</style><text x=\"65\" y=\"65\" font-size=\"18\">LAMINARFORGE / CASSETTE V0 / REV B / BUILD AND COMMISSION</text><path d=\"M65 90 H1135\" stroke=\"#8aa3b2\"/>");
+        let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"210mm\" height=\"297mm\" viewBox=\"0 0 1200 1697\"><rect width=\"1200\" height=\"1697\" fill=\"white\"/><style>text{font-family:Arial,sans-serif;fill:#163040}</style><text x=\"65\" y=\"65\" font-size=\"18\">LAMINARFORGE / CASSETTE V0 / REV C / BUILD AND COMMISSION</text><path d=\"M65 90 H1135\" stroke=\"#8aa3b2\"/>");
         let mut y = 145;
         for (s, size) in page {
             svg.push_str(&format!(
@@ -391,7 +401,8 @@ pub fn manufacturing_index(dir: &Path, parts: &[Item]) -> Result<(), Box<dyn std
             .push(p);
     }
     let mut records = Vec::new();
-    let mut csv = String::from("representative_step,quantity,scope,material,finish\n");
+    let mut csv =
+        String::from("assembly_item,representative_step,quantity,scope,material,finish\r\n");
     for entries in groups.values() {
         let p = entries[0];
         // Deduplication must not silently turn unlike shapes into quantity repeats.
@@ -425,7 +436,8 @@ pub fn manufacturing_index(dir: &Path, parts: &[Item]) -> Result<(), Box<dyn std
             "base CNC quote"
         };
         csv.push_str(&format!(
-            "{}.step,{},{},{},{}\n",
+            "{},{}.step,{},{},{},{}\r\n",
+            super::assembly_drawings::item_id(&p.name, parts),
             p.name,
             entries.len(),
             scope,

@@ -55,7 +55,7 @@
     },
     "cassette_release": {
       "mode": "frozen",
-      "source_sha256": "a05962ca1fe75d8dd0277b8e9aa0bbd7f34d1b5612e5c37f680c81a3d3d8d488"
+      "source_sha256": "675acf1534967a10e8cea271cb5845132943f992f70c6be96cbcfe4f55264466"
     },
     "cassette_sensor_backplane": {
       "mode": "frozen",

@@ -1,13 +1,13 @@
-# Fabrication inquiry - Rev B
+# Fabrication inquiry - Rev C
 
-Send the entire supplier RFQ ZIP. It includes the quantities, hole schedules and masking diagrams; the handbook is included to resolve assembly context.
+Send the entire supplier RFQ ZIP. It includes assembly-drawings.pdf (numbered parts, quantities, exploded groups and hardware connections), shop-drawings.pdf (part views, feature leaders, hole schedules and masking diagrams), ASCII CSV BOMs and the assembly handbook. Rev C supersedes Rev A and Rev B.
 
 ```text
-Please quote one and five sets of LaminarForge LF-CAS-V0 Rev B, a manual water-test cassette.
+Please quote one and five sets of LaminarForge LF-CAS-V0 Rev C, a manual water-test cassette.
 
-The base scope is the aluminum parts and guard sheets listed in manufacturing-bom.csv. Identical parts have one representative STEP with the required quantity. Use the paired Rev B drawings and manufacturing notes.
+The base scope is the aluminum parts and guard sheets listed in manufacturing-bom.csv. Identical parts have one representative STEP with the required quantity. Use the paired Rev C drawings and manufacturing notes.
 
-Please separate machining, clear sealed Type II anodizing (5-15 microns), masking, shipping and lead time. Show any minimum lot charge. Type III hardcoat is not required. Plain aluminum cut-to-length spacers are acceptable to the drawing.
+Please provide per-part unit prices, a separate clear sealed Type II anodizing charge (5-15 microns), shipping and lead time. Show any minimum lot charge; identify masking as included or extra. An operation-by-operation cost breakdown is not required. Type III hardcoat is not required. Plain aluminum cut-to-length spacers are acceptable to the drawing.
 
 We supply the foam gasket, measured shim backing, guide tape, hardware and electronics. Optional materials are references, excluded from the base CNC quote. No cosmetic matching, pressure-tight certification or cleanroom processing is required.
 

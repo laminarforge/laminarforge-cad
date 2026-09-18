@@ -1,4 +1,4 @@
-# Rev B water-test fabrication geometry, millimeters; physical commissioning required.
+# Rev C water-test fabrication geometry, millimeters; physical commissioning required.
 # Plate/lid height is a conservative reservation, not a vendor assembled-height specification.
 plate_x = 127.76
 plate_y = 85.48

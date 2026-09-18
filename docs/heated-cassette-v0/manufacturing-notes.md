@@ -1,4 +1,4 @@
-# Manufacturing notes - LF-CAS-V0 Rev B
+# Manufacturing notes - LF-CAS-V0 Rev C
 
 ## Quote scope
 
@@ -18,7 +18,7 @@ Deburr 0.2-0.4 mm without rolling burrs into guides/seal. Cable entries R0.5 min
 
 ## Threads
 
-STEP shows tap-drill bores, not helical threads. Tap M2x0.4, M3x0.5 and M4x0.7 to 6H. Verify engagement and no bottoming. Flat-ended pilot geometry defines cylindrical depth; drill-point/runout beyond it must leave adequate wall. Nest taps must not break through the drawer underside.
+STEP shows tap-drill bores, not helical threads. Tap M2x0.4, M3x0.5, M4x0.7 and the probe port M5x0.8 to 6H. Verify engagement and no bottoming. Flat-ended pilot geometry defines cylindrical depth; drill-point/runout beyond it must leave adequate wall. Nest taps must not break through the drawer underside.
 
 Housing rail taps: M3, 8 mm full thread minimum from Z=6, 11 mm drill depth. Rear taps: M3, 8 full thread/11 drill. Stop receiver: M2, 4.2 full thread/8 drill from guide roof. Closure M4 and shim-ear M2 through bezel. Guard/thermostat roof taps M3 through roof.
 
@@ -42,7 +42,7 @@ M2x4 screws retain shim ears; flange pockets clear the heads. M4 knobs close aga
 
 ## Quote alternatives and inspection scope
 
-Return one-set and five-set prices by BOM line. Show machining subtotal, anodizing minimum-lot charge, masking cost, lead time, shipping and any exclusions. No cosmetic matching or independent metrology certification is requested. A shop dimensional report covering the guide gap, drawer thickness/width, groove depth and thread fit is sufficient.
+Return one-set and five-set prices by BOM line. Show per-part prices, anodizing minimum-lot charge, lead time, shipping and any exclusions. State whether masking is included or extra; operation-by-operation costing is not required. No cosmetic matching or independent metrology certification is requested. A shop dimensional report covering the guide gap, drawer thickness/width, groove depth and thread fit is sufficient.
 
 A bolted roof/side/front assembly or imperial-stock alternative may be proposed with a marked-up sketch and cost saving. These are quote alternatives, not authorized substitutions: joints, alignment and thermal behavior must be checked before a revised CAD release. Current STEP retains the integral housing.
 

@@ -1,4 +1,4 @@
-# LaminarForge heated microplate cassette V0 - Rev B
+# LaminarForge heated microplate cassette V0 - Rev C
 
 This package defines one manual, two-zone heated aluminum cassette for water-filled microplate temperature testing. Manufacture to the analytic STEP files together with the shop drawings and manufacturing notes. STLs and assembly images are viewing aids. The physical prototype still needs commissioning and temperature mapping.
 

@@ -28,7 +28,7 @@ pub fn sheets(
                 bounds[1][a] = bounds[1][a].max(v[a] as f64);
             }
         }
-        let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936}}.title{{font-size:28px;font-weight:bold}}.note{{font-size:19px}}.small{{font-size:17px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"67\" class=\"title\">LF-CAS-V0 / {} / REV B</text><text x=\"50\" y=\"96\" class=\"small\">Units mm | Model-based definition: paired analytic STEP controls unlisted geometry | Do not scale</text>",esc(&i.name));
+        let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936}}.title{{font-size:28px;font-weight:bold}}.note{{font-size:19px}}.small{{font-size:17px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"67\" class=\"title\">LF-CAS-V0 / {} / REV C</text><text x=\"50\" y=\"96\" class=\"small\">Units mm | Model-based definition: paired analytic STEP controls unlisted geometry | Do not scale</text>",esc(&i.name));
         for (index, axes, title) in [
             (0, [0, 1, 2], "TOP: X / Y, looking -Z"),
             (1, [0, 2, 1], "FRONT: X / Z, looking +Y"),
@@ -162,7 +162,7 @@ pub fn sheets(
                 y1 + 20.0,
                 x1,
                 y1 + 20.0,
-                &format!("{width:.3}"),
+                &super::feature_drawings::extent(&i.name, a, width),
             );
             dimension(
                 &mut svg,
@@ -170,7 +170,7 @@ pub fn sheets(
                 y0,
                 x0 - 16.0,
                 y1,
-                &format!("{height:.3}"),
+                &super::feature_drawings::extent(&i.name, b, height),
             );
             svg.push_str(&format!("<path d=\"M{x0} {y1} V{} M{x1} {y1} V{} M{x0} {y0} H{} M{x0} {y1} H{}\" stroke=\"#8aa0aa\" stroke-width=\"0.7\"/>",y1+25.0,y1+25.0,x0-21.0,x0-21.0));
             let mut marks = std::collections::BTreeMap::<String, (f64, f64, Vec<usize>)>::new();
@@ -203,6 +203,7 @@ pub fn sheets(
             ));
         }
         svg.push_str("<path d=\"M25 1040 H1575\" stroke=\"#132936\"/><text x=\"50\" y=\"1070\" class=\"note\">WATER-TEST PROTOTYPE | Thermal performance must be measured after assembly | Not a biological release</text><text x=\"50\" y=\"1097\" class=\"small\">Read manufacturing-notes and assembly instructions with this sheet. Coordinates share the assembly datum.</text></svg>");
+        super::feature_drawings::sheets(dir, i, p, d, &svg, bounds)?;
         fs::write(dir.join(format!("{}.svg", i.name)), svg)?;
     }
     land_sheet(dir, p, d)?;
@@ -315,7 +316,7 @@ fn hole_schedule(
     if holes.is_empty() {
         return Ok(());
     }
-    let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial;fill:#132936;font-size:19px}}</style><text x=\"50\" y=\"60\" font-weight=\"bold\">LF-CAS-V0 / {name} / REV B / HOLE SCHEDULE</text><text x=\"50\" y=\"102\">Coordinates in assembly datum, mm; axis is hole axis; dash means coordinate along hole axis.</text><text x=\"50\" y=\"136\">Center location +/-0.10 unless overridden; clearance diameters +0.10/0. Blind drill depths exclude drill point.</text><text x=\"50\" y=\"170\">Labels match orthographic sheet. Tap-drill diameters in STEP are not finished threaded diameters.</text>");
+    let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial;fill:#132936;font-size:19px}}</style><text x=\"50\" y=\"60\" font-weight=\"bold\">LF-CAS-V0 / {name} / REV C / HOLE SCHEDULE</text><text x=\"50\" y=\"102\">Coordinates in assembly datum, mm; axis is hole axis; dash means coordinate along hole axis.</text><text x=\"50\" y=\"136\">Center location +/-0.10 unless overridden; clearance diameters +0.10/0. Blind drill depths exclude drill point.</text><text x=\"50\" y=\"170\">Labels match orthographic sheet. Tap-drill diameters in STEP are not finished threaded diameters.</text>");
     for (x, t) in [
         (50, "ID"),
         (130, "Axis"),
@@ -352,7 +353,7 @@ fn hole_schedule(
     Ok(())
 }
 fn land_sheet(dir: &Path, p: &Config, d: &Layout) -> Result<(), Box<dyn std::error::Error>> {
-    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;fill:#132936;font-size:20px}</style><text x=\"50\" y=\"60\" font-size=\"28\">LF-CAS-V0 / REV B / HEATER LANDS AND GUIDE FIT</text><text x=\"50\" y=\"102\">Coordinate diagram: X horizontal, Y up. Same X/Y lands on roof exterior and drawer underside.</text>");
+    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;fill:#132936;font-size:20px}</style><text x=\"50\" y=\"60\" font-size=\"28\">LF-CAS-V0 / REV C / HEATER LANDS AND GUIDE FIT</text><text x=\"50\" y=\"102\">Coordinate diagram: X horizontal, Y up. Same X/Y lands on roof exterior and drawer underside.</text>");
     let sx = 440.0;
     let sy = 630.0;
     let k = 3.0;
@@ -416,7 +417,7 @@ mod tests {
 }
 
 fn guide_section(dir: &Path, p: &Config, d: &Layout) -> Result<(), Box<dyn std::error::Error>> {
-    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><defs><pattern id=\"hatch\" width=\"8\" height=\"8\" patternUnits=\"userSpaceOnUse\"><path d=\"M0 8 L8 0\" stroke=\"#6a8b99\" stroke-width=\"0.8\"/></pattern></defs><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;fill:#132936;font-size:20px}</style><text x=\"50\" y=\"60\" font-size=\"28\">LF-CAS-V0 / REV B / GUIDE CROSS-SECTION A-A</text><text x=\"50\" y=\"102\">X/Z section at Y=40 mm, looking rearward (+Y). Plate, nest, guards and cables omitted for clarity.</text>");
+    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><defs><pattern id=\"hatch\" width=\"8\" height=\"8\" patternUnits=\"userSpaceOnUse\"><path d=\"M0 8 L8 0\" stroke=\"#6a8b99\" stroke-width=\"0.8\"/></pattern></defs><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;fill:#132936;font-size:20px}</style><text x=\"50\" y=\"60\" font-size=\"28\">LF-CAS-V0 / REV C / GUIDE CROSS-SECTION A-A</text><text x=\"50\" y=\"102\">X/Z section at Y=40 mm, looking rearward (+Y). Plate, nest, guards and cables omitted for clarity.</text>");
     let k = 6.0;
     let x = |v: f64| 800.0 + k * v;
     let y = |v: f64| 620.0 - k * v;

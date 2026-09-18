@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 1600 1131">
 <rect width="1600" height="1131" fill="white"/>
 <style>text{font-family:Arial,sans-serif;fill:#153141;font-size:22px}.title{font-size:32px;font-weight:bold}.small{font-size:19px}.box{fill:#eef3f5;stroke:#345368;stroke-width:2}.wire{fill:none;stroke:#345368;stroke-width:3}</style>
-<text x="45" y="60" class="title">LF-CAS-V0 / Rev B / electrical connection overview</text>
+<text x="45" y="60" class="title">LF-CAS-V0 / Rev C / electrical connection overview</text>
 <text x="45" y="99">Repeat zone circuit for i=1 roof and i=2 drawer. Terminal schedule controls every physical connection.</text>
 <text x="45" y="156" font-weight="bold">24 V heater power path - each zone</text>
 <path class="wire" d="M60 235 H1510"/>

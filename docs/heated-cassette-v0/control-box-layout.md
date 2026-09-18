@@ -1,4 +1,4 @@
-# Control-box fabrication and layout - Rev B
+# Control-box fabrication and layout - Rev C
 
 Use Hammond 1554YA2GY with its 1554YPL factory panel. Exterior is 299.33 x 239.46 x 119.73 mm. Base height is 69.84 mm; lid height 49.89 mm. Interior plan envelope is 289.09 x 229.22, closed interior height 111.75. Do not put the controllers through the lid.
 

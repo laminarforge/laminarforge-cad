@@ -1,4 +1,4 @@
-# Assembly handbook - LF-CAS-V0 Rev B
+# Assembly handbook - LF-CAS-V0 Rev C
 
 ## Mechanical hardware to order
 
