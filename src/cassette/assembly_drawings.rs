@@ -42,7 +42,7 @@ fn view(
     svg: &mut String,
     items: &[(&Item, [f64; 3])],
     area: [f64; 4],
-) -> Result<Vec<[f64; 2]>, Box<dyn std::error::Error>> {
+) -> Result<Vec<Option<[f64; 2]>>, Box<dyn std::error::Error>> {
     let mut tris = Vec::new();
     let mut bounds = [
         f64::INFINITY,
@@ -51,7 +51,7 @@ fn view(
         f64::NEG_INFINITY,
     ];
     let mut centers = Vec::new();
-    for (i, offset) in items {
+    for (owner, (i, offset)) in items.iter().enumerate() {
         let mesh = i.part.to_mesh();
         let vv = mesh.vertices();
         let (lo, hi) = i.part.bounding_box();
@@ -73,7 +73,7 @@ fn view(
             let b = glam::DVec3::from_array(xyz[2]) - glam::DVec3::from_array(xyz[0]);
             let n = a.cross(b).normalize_or_zero();
             let shade = 0.65 + 0.35 * n.z.abs();
-            tris.push((t, i.color.map(|c| (c as f64 * shade) as u8)));
+            tris.push((t, i.color.map(|c| (c as f64 * shade) as u8), owner));
         }
     }
     let [px, py, width, height] = area;
@@ -85,7 +85,8 @@ fn view(
     let h = (height * 2.0) as usize;
     let mut raster = image::RgbImage::from_pixel(w as u32, h as u32, image::Rgb([255, 255, 255]));
     let mut depth = vec![f64::NEG_INFINITY; w * h];
-    for (mut t, c) in tris {
+    let mut owners = vec![usize::MAX; w * h];
+    for (mut t, c, owner) in tris {
         for v in &mut t {
             v[0] = 2.0 * (ox + v[0] * scale);
             v[1] = 2.0 * (oy + v[1] * scale);
@@ -135,6 +136,7 @@ fn view(
                     let k = y * w + x;
                     if z > depth[k] {
                         depth[k] = z;
+                        owners[k] = owner;
                         raster.put_pixel(x as u32, y as u32, image::Rgb(c));
                     }
                 }
@@ -144,10 +146,23 @@ fn view(
     let mut png = std::io::Cursor::new(Vec::new());
     image::DynamicImage::ImageRgb8(raster).write_to(&mut png, image::ImageFormat::Png)?;
     svg.push_str(&format!("<image x=\"{px}\" y=\"{py}\" width=\"{width}\" height=\"{height}\" href=\"data:image/png;base64,{}\"/>",base64::engine::general_purpose::STANDARD.encode(png.into_inner())));
-    Ok(centers
-        .iter()
-        .map(|v| [px + ox + scale * v[0], py + oy + scale * v[1]])
-        .collect())
+    // Land leaders on a visible pixel of the named solid, never in a hollow bounding-box center.
+    let mut anchors = vec![None; items.len()];
+    let mut nearest = vec![f64::INFINITY; items.len()];
+    for (pixel, &owner) in owners.iter().enumerate() {
+        if owner == usize::MAX {
+            continue;
+        }
+        let x = (pixel % w) as f64 / 2.0;
+        let y = (pixel / w) as f64 / 2.0;
+        let v = centers[owner];
+        let distance = (x - ox - scale * v[0]).powi(2) + (y - oy - scale * v[1]).powi(2);
+        if distance < nearest[owner] {
+            nearest[owner] = distance;
+            anchors[owner] = Some([px + x, py + y]);
+        }
+    }
+    Ok(anchors)
 }
 fn text(svg: &mut String, x: f64, y: f64, s: &str) {
     svg.push_str(&format!("<text x=\"{x}\" y=\"{y}\">{}</text>", esc(s)));
@@ -287,7 +302,12 @@ pub fn sheets(
             let row = if left { j } else { j - n.div_ceil(2) };
             let x = if left { 130. } else { 1450. };
             let y = 185. + row as f64 * 98.;
-            let a = anchors[*k];
+            let a = anchors[*k].ok_or_else(|| {
+                format!(
+                    "exploded assembly hides ballooned part {}",
+                    entries[*k].0.name
+                )
+            })?;
             svg.push_str(&format!("<path d=\"M{} {y} L{} {y} L{} {}\" stroke=\"#345\" fill=\"none\"/><circle cx=\"{x}\" cy=\"{y}\" r=\"26\" fill=\"white\" stroke=\"#345\"/><text x=\"{x}\" y=\"{}\" text-anchor=\"middle\">{id}</text><circle cx=\"{}\" cy=\"{}\" r=\"3\" fill=\"#345\"/>",if left{x+26.}else{x-26.},if left{245.}else{1330.},a[0],a[1],y+7.,a[0],a[1]));
         }
         text(&mut svg,50.,970.,"Exploded offsets are illustrative only; all STEP files use the closed assembly coordinates. See A02 for quantities.");
