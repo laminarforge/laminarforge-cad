@@ -299,18 +299,25 @@ pub fn sheets(
                 *entry = j;
             }
         }
-        let n = unique.len();
-        for (j, (id, k)) in unique.iter().enumerate() {
-            let left = j < n.div_ceil(2);
-            let row = if left { j } else { j - n.div_ceil(2) };
-            let x = if left { 130. } else { 1450. };
-            let y = 185. + row as f64 * 98.;
-            let a = anchors[*k].ok_or_else(|| {
+        let mut labels = Vec::new();
+        for (id, k) in unique {
+            let a = anchors[k].ok_or_else(|| {
                 format!(
                     "exploded assembly hides ballooned part {}",
-                    entries[*k].0.name
+                    entries[k].0.name
                 )
             })?;
+            labels.push((id, a));
+        }
+        labels.sort_by(|a, b| a.1[0].total_cmp(&b.1[0]));
+        let split = labels.len().div_ceil(2);
+        labels[..split].sort_by(|a, b| a.1[1].total_cmp(&b.1[1]));
+        labels[split..].sort_by(|a, b| a.1[1].total_cmp(&b.1[1]));
+        for (j, (id, a)) in labels.iter().enumerate() {
+            let left = j < split;
+            let row = if left { j } else { j - split };
+            let x = if left { 130. } else { 1450. };
+            let y = 185. + row as f64 * 98.;
             svg.push_str(&format!("<path d=\"M{} {y} L{} {y} L{} {}\" stroke=\"#345\" fill=\"none\"/><circle cx=\"{x}\" cy=\"{y}\" r=\"26\" fill=\"white\" stroke=\"#345\"/><text x=\"{x}\" y=\"{}\" text-anchor=\"middle\">{id}</text><circle cx=\"{}\" cy=\"{}\" r=\"3\" fill=\"#345\"/>",if left{x+26.}else{x-26.},if left{245.}else{1330.},a[0],a[1],y+7.,a[0],a[1]));
         }
         text(&mut svg,50.,970.,"Exploded offsets are illustrative only; all STEP files use the closed assembly coordinates. See A02 for quantities.");
