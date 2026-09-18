@@ -34,6 +34,13 @@ pub fn sheets(
             (1, [0, 2, 1], "FRONT: X / Z, looking +Y"),
             (2, [1, 2, 0], "SIDE: Y / Z, looking -X"),
         ] {
+            let rear = index == 1 && i.name.starts_with("05_");
+            let title = if rear {
+                "REAR: -X / Z, looking -Y"
+            } else {
+                title
+            };
+            let hs = if rear { -1.0 } else { 1.0 };
             let px = 45 + index * 510;
             let py = 140;
             let a = axes[0];
@@ -69,9 +76,9 @@ pub fn sheets(
                 let n = n.map(|a| a / len);
                 let t = pts.map(|v| {
                     [
-                        2.0 * (ox + scale * v[a]),
+                        2.0 * (ox + hs * scale * v[a]),
                         2.0 * (oy - scale * v[b]),
-                        v[dep] * if index == 1 { -1.0 } else { 1.0 },
+                        v[dep] * if index == 1 && !rear { -1.0 } else { 1.0 },
                     ]
                 });
                 let ar = (t[1][0] - t[0][0]) * (t[2][1] - t[0][1])
@@ -175,7 +182,7 @@ pub fn sheets(
             svg.push_str(&format!("<path d=\"M{x0} {y1} V{} M{x1} {y1} V{} M{x0} {y0} H{} M{x0} {y1} H{}\" stroke=\"#8aa0aa\" stroke-width=\"0.7\"/>",y1+25.0,y1+25.0,x0-21.0,x0-21.0));
             let mut marks = std::collections::BTreeMap::<String, (f64, f64, Vec<usize>)>::new();
             for (h, hole) in holes.iter().enumerate().filter(|(_, h)| h.axis == dep) {
-                let x = px as f64 + ox + scale * hole.center[a];
+                let x = px as f64 + ox + hs * scale * hole.center[a];
                 let y = py as f64 + 12.0 + oy - scale * hole.center[b];
                 marks
                     .entry(format!("{x:.3}:{y:.3}"))

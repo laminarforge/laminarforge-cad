@@ -14,6 +14,9 @@ fn esc(s: &str) -> String {
         .replace('>', "&gt;")
 }
 pub fn extent(name: &str, axis: usize, value: f64) -> String {
+    if name.starts_with("08_") || name.starts_with("13_") {
+        return format!("{value:.3} REF");
+    }
     let tol = if axis == 2 && (name.starts_with("04_") || name.starts_with("07_")) {
         "+/-0.05"
     } else {
@@ -433,7 +436,12 @@ pub fn sheets(
         let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936;font-size:19px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"65\" font-size=\"26\">LF-CAS-V0 / {n} / REV C / DETAIL {}</text><text x=\"50\" y=\"105\">{title} | Units mm | Finished after coating | Do not scale</text><svg x=\"45\" y=\"175\" width=\"864\" height=\"684\" viewBox=\"{original_x} 152 480 380\">{}</svg>",sheet+1,images[view]);
         notes.sort_by(|a, b| b.point[1].total_cmp(&a.point[1]));
         for (j, note) in notes.iter().enumerate() {
-            let x = 45. + 1.8 * (ox + scale * note.point[0]);
+            let hs = if n.starts_with("05_") && view == 1 {
+                -1.0
+            } else {
+                1.0
+            };
+            let x = 45. + 1.8 * (ox + hs * scale * note.point[0]);
             let y = 175. + 1.8 * (oy - scale * note.point[1]);
             let ly = 175. + j as f64 * 150.;
             svg.push_str(&format!("<path d=\"M{x} {y} L925 {} L955 {}\" stroke=\"#087482\" fill=\"none\"/><circle cx=\"{x}\" cy=\"{y}\" r=\"5\" fill=\"#087482\"/>",ly+20.,ly+20.));
