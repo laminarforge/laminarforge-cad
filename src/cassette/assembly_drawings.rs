@@ -294,7 +294,10 @@ pub fn sheets(
         let anchors = view(&mut svg, &entries, [260., 150., 1050., 775.])?;
         let mut unique = BTreeMap::<String, usize>::new();
         for (j, (i, _)) in entries.iter().enumerate() {
-            unique.entry(item_id(&i.name, parts)).or_insert(j);
+            let entry = unique.entry(item_id(&i.name, parts)).or_insert(j);
+            if anchors[*entry].is_none() && anchors[j].is_some() {
+                *entry = j;
+            }
         }
         let n = unique.len();
         for (j, (id, k)) in unique.iter().enumerate() {
