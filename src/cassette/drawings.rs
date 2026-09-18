@@ -288,8 +288,21 @@ pub fn part_key(name: &str) -> String {
     name.into()
 }
 fn dimension(svg: &mut String, x0: f64, y0: f64, x1: f64, y1: f64, label: &str) {
-    svg.push_str(&format!("<path d=\"M{x0} {y0} L{x1} {y1} M{} {} l8 8 M{} {} l8 8\" fill=\"none\" stroke=\"#163040\" stroke-width=\"1\"/><text x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-size=\"13\">{label}</text>",x0-4.0,y0-4.0,x1-4.0,y1-4.0,(x0+x1)/2.0, (y0+y1)/2.0-5.0));
+    svg.push_str(&format!("<path d=\"M{x0} {y0} L{x1} {y1} M{} {} l8 8 M{} {} l8 8\" fill=\"none\" stroke=\"#163040\" stroke-width=\"1\"/>",x0-4.0,y0-4.0,x1-4.0,y1-4.0));
+    let vertical = (x1 - x0).abs() < 0.01;
+    let x = (x0 + x1) / 2.0 - if vertical { 6.0 } else { 0.0 };
+    let y = (y0 + y1) / 2.0 - if vertical { 0.0 } else { 5.0 };
+    let transform = if vertical {
+        format!(" transform=\"rotate(-90 {x} {y})\"")
+    } else {
+        String::new()
+    };
+    svg.push_str(&format!(
+        "<text x=\"{x}\" y=\"{y}\" text-anchor=\"middle\" font-size=\"13\"{transform}>{}</text>",
+        esc(label)
+    ));
 }
+
 fn callout(name: &str, diameter: f64) -> String {
     match name {
         "rail_M3_tap" => "M3x0.5-6H; 8 full thread / 11 drill from underside".into(),
