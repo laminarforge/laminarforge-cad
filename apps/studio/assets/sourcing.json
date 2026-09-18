@@ -1,7 +1,7 @@
 {
-  "checked_on": "2026-09-17",
+  "checked_on": "2026-09-18",
   "follow_up_on": "2026-09-24",
-  "package": "Rev A was sent to suppliers. Rev B updates the finish, quote scope, hole schedules and masking diagrams; revised supplier package has not been emailed.",
+  "package": "Rev C is undergoing release checks: assembly/exploded drawings, feature callouts, ASCII BOMs and independently checked STEP files. Suppliers still hold Rev A until replacement emails are verified.",
   "quotes": [
     {
       "name": "Spot On CNC",
@@ -89,9 +89,9 @@
       "email": "contact@dxm-engineering.com",
       "url": "https://dxmengineering.com/",
       "scope": "Thailand. One complete mechanical set and five-set comparison; separate machining, anodizing, optional assembly and exclusions. Lower-cost stock plate, cut-blank and bolted-housing alternatives requested for engineering review. Published capabilities screened; supplier quality and one-set acceptance not yet validated. Manufacturing ZIP attached (2,480,834 bytes).",
-      "message_id": "1a0b013ec94659bf",
-      "status": "Sent; receipt and quote pending",
-      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b013ec94659bf"
+      "message_id": "1a0b3d3c9f266a96",
+      "status": "Acknowledged; quote pending",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b3d3c9f266a96"
     },
     {
       "name": "Amethai",
@@ -203,39 +203,39 @@
     },
     {
       "name": "WayKen",
-      "email": "info@waykenrm.com",
+      "email": "lingo@waykenrm.com",
       "url": "https://waykenrm.com/contact-us/",
       "scope": "China. One complete mechanical set and five-set comparison; separate machining, anodizing, optional assembly and exclusions. Lower-cost stock plate, cut-blank and bolted-housing alternatives requested for engineering review. Published capabilities screened; supplier quality and one-set acceptance not yet validated. Manufacturing ZIP attached (2,480,834 bytes).",
-      "message_id": "1a0b01639d8a511f",
-      "status": "Sent; receipt and quote pending",
-      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b01639d8a511f"
+      "message_id": "1a0b37c45b410835",
+      "status": "Declined: solid housing cost and shop fit; recommends plate construction",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b37c45b410835"
     },
     {
       "name": "RapidDirect",
-      "email": "inquiry@rapiddirect.com",
+      "email": "valeria@rapiddirect.com",
       "url": "https://www.rapiddirect.com/contact/",
       "scope": "China. One complete mechanical set and five-set comparison; separate machining, anodizing, optional assembly and exclusions. Lower-cost stock plate, cut-blank and bolted-housing alternatives requested for engineering review. Published capabilities screened; supplier quality and one-set acceptance not yet validated. Manufacturing ZIP attached (2,480,834 bytes).",
-      "message_id": "1a0b0165a5345ed3",
-      "status": "Sent; receipt and quote pending",
-      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b0165a5345ed3"
+      "message_id": "1a0b3c4dbe12c56c",
+      "status": "Files received; budget/timing qualification requested; standard quote format offered",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b3c4dbe12c56c"
     },
     {
       "name": "3ERP",
-      "email": "info@3erp.com",
+      "email": "nyla@3erp.com",
       "url": "https://www.3erp.com/faqs/",
       "scope": "China. One complete mechanical set and five-set comparison; separate machining, anodizing, optional assembly and exclusions. Lower-cost stock plate, cut-blank and bolted-housing alternatives requested for engineering review. Published capabilities screened; supplier quality and one-set acceptance not yet validated. Manufacturing ZIP attached (2,480,834 bytes).",
-      "message_id": "1a0b0167ea3d56a2",
-      "status": "Sent; receipt and quote pending",
-      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b0167ea3d56a2"
+      "message_id": "1a0b356588269b23",
+      "status": "Evaluation paused for assembly drawing, complete part dimensions and feature tolerances",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b356588269b23"
     },
     {
       "name": "HLH Prototypes",
-      "email": "FreeQuote@HLHPrototypes.com",
+      "email": "kaysie@hlhprototypes.com",
       "url": "https://www.hlhprototypes.com/",
       "scope": "China. One complete mechanical set and five-set comparison; separate machining, anodizing, optional assembly and exclusions. Lower-cost stock plate, cut-blank and bolted-housing alternatives requested for engineering review. Published capabilities screened; supplier quality and one-set acceptance not yet validated. Manufacturing ZIP attached (2,480,834 bytes).",
-      "message_id": "1a0b0169ad9fffe7",
-      "status": "Sent; receipt and quote pending",
-      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b0169ad9fffe7"
+      "message_id": "1a0b37d128f13496",
+      "status": "Quote in progress; requested replacement fixed bracket and readable BOM",
+      "thread_url": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b37d128f13496"
     },
     {
       "name": "DanThai Machinery",
@@ -503,7 +503,7 @@
   ],
   "open_items": [
     "Hardware acceptance: document fit and electrical fault checks, then map water in at least five wells. Proposed targets: all measured water 36.5-37.5 C, spatial spread <=0.5 C, and recovery within 10 minutes after 30 seconds open. These are targets, not achieved performance.",
-    "Rev B: compare itemized machining and Type II finishing prices. Previous Rev A hardcoat estimates are not prices for the revised scope.",
+    "Rev C: compare itemized machining and Type II finishing prices. Previous Rev A hardcoat estimates are not prices for the revised scope.",
     "Integral housing remains a cost driver. A bolted roof/side/front alternative needs joint, alignment and thermal review before changing CAD.",
     "Measure the purchased gasket before ordering its backing thickness; do not order a nine-frame cut shim kit.",
     "29 machining/fabrication prospects, 4 direct anodizers and 4 component vendors contacted (37 distinct suppliers). Prickly Pear confirmed its preliminary $1,500–$2,000 indication covers anodizing ALONE; actual finishing quote and machining cost remain pending. The $4,000 machining allowance is not a quote.",
@@ -521,9 +521,9 @@
   ],
   "design_review": [
     {
-      "title": "Drawing clarity",
-      "decision": "Rev B adds labeled hole schedules, overall dimensions, a heater/RTD masking diagram, and one representative drawing per duplicate part. CAD remains authoritative for unlisted geometry.",
-      "source": "https://www.hubs.com/knowledge-base/how-prepare-technical-drawing-cnc-machining/"
+      "title": "Drawing completion for 3ERP",
+      "decision": "Rev C adds numbered assembly and exploded drawings, an assembly BOM, hardware connections and enlarged feature leaders for special tolerances. Final PDF and model consistency checks must pass before issue.",
+      "source": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b356588269b23"
     },
     {
       "title": "Prototype finish",
@@ -539,6 +539,16 @@
       "title": "Machining cost",
       "decision": "Base quote covers aluminum parts and guard sheets. Foam, backing, guide tape and electronics are owner-sourced. Plain cut-and-faced aluminum spacer tube is permitted. Larger cutters and bolted housing alternatives require explicit marked-up geometry review.",
       "source": "https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/"
+    },
+    {
+      "title": "HLH file compatibility",
+      "decision": "The original fixed bracket passed a separate Open CASCADE 7.9.3 validity check and Gmsh import. Rev C unifies coplanar faces before STEP export and uses ASCII CSV plus a PDF assembly BOM. HLH must still confirm its importer accepts the replacement.",
+      "source": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b37d128f13496"
+    },
+    {
+      "title": "WayKen cost feedback",
+      "decision": "WayKen declined and recommended cut-plate construction. Current RFQ geometry retains the integral housing; a bolted alternative is still a priced proposal, not a released design or proven saving.",
+      "source": "https://mail.google.com/mail/u/?authuser=atravislewis%40gmail.com#all/1a0b37c45b410835"
     }
   ]
 }

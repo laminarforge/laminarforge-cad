@@ -61,11 +61,11 @@ impl Sourcing {
                 ui.label(RichText::new(format!("{} quote requests sent · research checked {}", self.quotes.len(), self.checked_on)).strong());
                 ui.label(format!("Reply review date: {}. This snapshot does not monitor your inbox.", self.follow_up_on));
                 ui.label(&self.package);
-                egui::CollapsingHeader::new("Rev B manufacturing decisions").default_open(true).show(ui, |ui| {
+                egui::CollapsingHeader::new("Supplier feedback and Rev C decisions").default_open(true).show(ui, |ui| {
                     for review in &self.design_review {
                         ui.label(RichText::new(&review.title).strong());
                         ui.label(&review.decision);
-                        ui.hyperlink_to("Manufacturer guidance", &review.source);
+                        ui.hyperlink_to("Source", &review.source);
                         ui.separator();
                     }
                 });
@@ -77,7 +77,7 @@ impl Sourcing {
                             ui.horizontal_wrapped(|ui| {
                                 ui.hyperlink_to(&quote.name, &quote.url);
                                 ui.label(&quote.status);
-                                ui.hyperlink_to("Open sent email ↗", &quote.thread_url);
+                                ui.hyperlink_to("Open email thread", &quote.thread_url);
                             });
                             ui.label(&quote.email);
                             ui.label(&quote.scope);
