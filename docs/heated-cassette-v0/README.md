@@ -6,7 +6,7 @@ Greiner 655101 with lid 656101 is the selected inexpensive thermal surrogate. It
 
 ## Fabrication and assembly
 
-Send the complete supplier RFQ ZIP, including the manufacturing BOM, shop-drawings PDF and assembly handbook, to a CNC shop. Request one set, 6061-T6, including clear Type II finishing and the limited fit-dimension report. Buy the commercial mechanical/electrical parts from the BOM. Assembly needs metric hex tools, a small torque driver, multimeter, suitable connector crimp tooling, solder/heat-shrink supplies and temperature-measurement equipment.
+Send the complete supplier RFQ ZIP, including assembly-drawings.pdf, the numbered assembly/manufacturing BOMs, shop-drawings.pdf and the assembly handbook, to a CNC shop. Request one set, 6061-T6, including clear Type II finishing and the limited fit-dimension report. Buy the commercial mechanical/electrical parts from the BOM. Assembly needs metric hex tools, a small torque driver, multimeter, suitable connector crimp tooling, solder/heat-shrink supplies and temperature-measurement equipment.
 
 One representative spacer file specifies eight identical spacers. Both guards, both risers and both cable jaws are identical after translation. The left guide rail has an extra stop-access hole. The cable-bracket bases differ.
 
@@ -31,9 +31,15 @@ Greiner's 655101 drawing specifies 127.76 +/-0.20 x 85.48 +/-0.20 mm footprint a
 
 Lid 656101 is 127.5 +/-0.2 x 85.0 +/-0.2 mm. Its drawing shows 10 mm overall lid features but does not certify assembled plate/lid height. This design reserves a 26 mm lidded object plus 8 mm roof clearance. The 26 mm value is a design allowance, not the actual Greiner assembled height. Measure the delivered lidded plate. Future tissue plates need separate exterior, lid, port, orientation, access and rocking checks.
 
+## Rev C changes
+
+Rev C replaces Rev A and Rev B for quotation. It adds a five-sheet assembly drawing set with numbered custom parts, exploded groups and hardware connections. Enlarged feature sheets attach special tolerances to the relevant surfaces. CSV BOMs use ASCII text for legacy spreadsheet compatibility. Coplanar Boolean faces are unified before STEP export; the mechanical dimensions are unchanged.
+
+Rev A hardcoat is superseded by clear sealed Type II anodizing, 5-15 micrometers. The quote covers 23 aluminum pieces in 13 designs per set. Foam, backing, guide tape, hardware and electronics are owner supplied. Per-part prices and a separate finishing charge are sufficient; operation-level costing is not required. The integral housing is retained; a bolted alternative remains a separate proposal requiring revised geometry and fit review.
+
 ## Verification and file precedence
 
-The generator uses one construction tree for analytic STEP and review meshes. It reimports every custom STEP, checks one manifold solid, compares volumes and records hashes. It checks closed meshes and sampled moving/fixed interference. These checks do not establish fatigue, deformable-part behavior, process capability or electrical certification.
+The generator uses one construction tree for analytic STEP and review meshes. It reimports every custom STEP, checks one manifold solid, compares volumes and records hashes. It checks closed meshes and sampled moving/fixed interference. Packaging separately imports every supplied STEP into the installed Open CASCADE DRAW checker, checks exact shape validity and one solid, and retains the result logs. This is a separate version/import path, not proof that every supplier CAD system will accept the file. These checks do not establish fatigue, deformable-part behavior, process capability or electrical certification.
 
 The reduced thermal model estimates steady aluminum-sheet conduction over assumed heat-loss/conductivity cases. It does not resolve media, plastic wells, evaporation, airflow or PID transients. Water measurements decide thermal acceptance.
 
