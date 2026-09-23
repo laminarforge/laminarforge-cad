@@ -1,4 +1,4 @@
-# Assembly handbook - LF-CAS-V0 Rev C
+# Assembly handbook - LF-CAS-V0 Rev D
 
 ## Mechanical hardware to order
 
@@ -6,6 +6,10 @@ All ordinary machine screws below are A2-70 stainless socket caps, ISO 4762, coa
 
 | Quantity | Item | Use |
 |---:|---|---|
+| 6 | M3x14 | Roof to side plates |
+| 4 | M3x10 | Bezel to side plates, recessed heads |
+| 4 | D3 m6 x10 dowel | Side to roof, 6 mm insertion |
+| 2 | D3 m6 x10 dowel | Side to bezel, 6 mm insertion |
 | 6 | M3x40 | Risers and guide rails into housing |
 | 4 | M3x12 | Rear cover |
 | 3 | M3x14 | Front flange to drawer |
@@ -89,3 +93,7 @@ Micro-Fit contacts accept 20-24 AWG; use the specified transition pigtails for 1
 Follow the electrical inspection and fault-test sequence, then the water-temperature protocol. Keep prototype operation attended until those tests pass. Record actual controller values, sensor calibration corrections, gasket shim stack, currents and temperatures in the commissioning log.
 
 This cassette can later be mounted to a rocking shelf, but the V0 bench feet are not a rocker. A later shelf must support both risers, secure the cassette, retain the plate/lid and preserve cable clearances through tilt. No angle is assumed for an unselected tissue plate.
+
+## Rev D frame assembly
+
+Finish-ream the side D3 H7 locating bores after anodizing. Use D3 m6 dowels: this is a transition fit, so do not assume every pin is a press fit. If loose, retain the side end with a suitable retaining compound per its manufacturer instructions; keep the mating plate slip bores clean. Roof and bezel bores are D3.15 +0.02/0 to accommodate the specified +/-0.025 coordinate tolerance. Seat roof pins 6 mm into sides; fit roof and tighten six M3x14 screws evenly. Seat front pins 6 mm into sides; their ends sit nominally 2 mm below the assembled bezel front. Fit bezel with four M3x10 screws; all heads must be below the front seal face. Assemble on a flat surface, measure guide spacing and diagonals, and verify the loaded drawer moves freely cold and at 37 C. Reject binding, rocking joints, exposed front fastener heads or pins, and any seal-face step. The joints are not pressure seals.

@@ -28,7 +28,7 @@ pub fn sheets(
                 bounds[1][a] = bounds[1][a].max(v[a] as f64);
             }
         }
-        let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936}}.title{{font-size:28px;font-weight:bold}}.note{{font-size:19px}}.small{{font-size:17px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"67\" class=\"title\">LF-CAS-V0 / {} / REV C</text><text x=\"50\" y=\"96\" class=\"small\">Units mm | Model-based definition: paired analytic STEP controls unlisted geometry | Do not scale</text>",esc(&i.name));
+        let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936}}.title{{font-size:28px;font-weight:bold}}.note{{font-size:19px}}.small{{font-size:17px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"67\" class=\"title\">LF-CAS-V0 / {} / REV D</text><text x=\"50\" y=\"96\" class=\"small\">Units mm | Model-based definition: paired analytic STEP controls unlisted geometry | Do not scale</text>",esc(&i.name));
         for (index, axes, title) in [
             (0, [0, 1, 2], "TOP: X / Y, looking -Z"),
             (1, [0, 2, 1], "FRONT: X / Z, looking +Y"),
@@ -232,17 +232,33 @@ impl Points for [u32] {
     }
 }
 fn part_notes(name: &str, p: &Config, d: &Layout) -> Vec<String> {
-    if name.starts_with("01_") {
+    if name == "01_front_bezel" {
         vec![
-        format!("Datum A: front stop face Y=0, flatness 0.10. Datum B: guide mounting plane Z={:.3}. C: X=0.",p.guide_rail_thickness),
-        format!("Guide roof nominal Z={:.3}; relief width {:.3} +/-0.10; guide seat flatness 0.05.",d.guide_ceiling,d.guide_width),
-        "6x M3x0.5-6H rail taps from underside: 8 min full thread, 11 drill depth. See labeled hole schedule.".into(),
-        "4x M3x0.5-6H rear taps: 8 min full thread, 11 drill depth; 2x M4x0.7-6H closure taps THRU bezel.".into(),
-        "4x guard + 1x thermostat M3x0.5-6H THRU roof; 2x shim-retention M2x0.4-6H THRU bezel.".into(),
-        format!("Stop receiver X={:.3}, Y={:.3}: M2x0.4-6H, 4.2 min full thread from guide roof; 8 drill depth.",d.stop_x,p.stop_y),
-        "Gasket groove depth 2.50 +/-0.05 from A; width 3.50 +0.10/0; flat floor, Ra 3.2 max.".into(),
-        "Heater/sensor bond lands Ra 1.6 max; mask labeled roof pad and RTD land on companion land sheet.".into(),
-        "Machine from bottom/front/rear; nonfunctional corner changes require a marked-up proposal; seal/guide geometry per STEP.".into()]
+            "Finish 6.00 +/-0.05 from 1/4-inch plate; front seal face flatness 0.10, Ra 3.2 max.".into(),
+            "Gasket groove depth 2.50 +/-0.05; radial width 3.50 +0.10/0. See seal detail sheet.".into(),
+            "Joint bores: coordinate tolerance +/-0.025; D3.15 +0.02/0 slip bores THRU.".into(),
+            "4x D6 counterbores 3.20 +0.05/0 deep from front; M3x10 heads must sit below seal face.".into(),
+            "2x M4 closure taps and 2x M2 shim taps THRU. Deburr seal face without rolling edges.".into()]
+    } else if name == "01_roof_plate" {
+        vec![
+            "Finish 6.00 +/-0.05 from 1/4-inch plate. Side mating lands coplanar within 0.05."
+                .into(),
+            "6x D3.4 clearance THRU for M3x14 screws into side plates; heads on top.".into(),
+            "4x D3.15 +0.02/0 slip bores THRU; joint coordinate tolerance +/-0.025.".into(),
+            "4x guard + 1x thermostat M3 THRU. Rear M3 taps: 8 full thread / 11 drill depth."
+                .into(),
+            "Heater/sensor bond lands Ra 1.6 max. Mask bond lands during anodizing.".into(),
+        ]
+    } else if name.ends_with("side_plate") {
+        vec![
+            format!("Finish thickness {:.3} +/-0.05 from nominal 3/4-inch plate; verify stock cleanup allowance.",p.side_wall),
+            format!("Rail seating Z={:.3} and guide roof Z={:.3}: flatness 0.05; separation +/-0.05.",p.guide_rail_thickness,d.guide_ceiling),
+            "Top mating land flatness 0.05; perpendicular to front joint face within 0.05 over height.".into(),
+            "Roof M3: 9 min full thread; front M3: 8 min; both 11 drill depth. Joint coordinates +/-0.025.".into(),
+            "Dowel bores D3 H7, 6.00 +0.10/0 depth; mask and finish-ream AFTER anodizing.".into(),
+            "Use D3 m6 x10 roof pins and D3 m6 x10 front pins; seat 6.0 into side plates; retain if transition fit is loose.".into(),
+            "3x underside rail M3 taps and 1x rear M3 tap: 8 full thread / 11 drill depth.".into(),
+            if name.contains("left") { "Left only: stop receiver M2; 4.2 full thread / 8 drill from guide roof.".into() } else { "Right side has no stop receiver.".into() }]
     } else if name.starts_with("04_") {
         vec![
         format!("Plate contact top Z={:.3}: flatness 0.10, Ra 3.2 max. Thickness 6.00 +/-0.05; width +/-0.10.",d.drawer_top),
@@ -312,6 +328,15 @@ fn dimension(svg: &mut String, x0: f64, y0: f64, x1: f64, y1: f64, label: &str) 
 
 fn callout(name: &str, diameter: f64) -> String {
     match name {
+        "joint_roof_M3_tap" => "M3x0.5-6H; 9 full thread / 11 drill from top".into(),
+        "joint_front_M3_tap" => "M3x0.5-6H; 8 full thread / 11 drill from front".into(),
+        "joint_roof_pin_clearance" | "joint_front_pin_clearance" => {
+            "D3 H7; 6.00 +0.10/0 deep from joint face".into()
+        }
+        "joint_roof_slip_clearance" | "joint_front_slip_clearance" => {
+            "D3.15 +0.02/0 THRU; coordinate +/-0.025".into()
+        }
+        "joint_front_counterbore" => "D6.0 +0.10/0 x 3.20 +0.05/0 deep from front".into(),
         "rail_M3_tap" => "M3x0.5-6H; 8 full thread / 11 drill from underside".into(),
         "rear_M3_tap" => "M3x0.5-6H; 8 full thread / 11 drill from rear".into(),
         "flange_M3_tap" => "M3x0.5-6H; 8 full thread / 11 drill from front".into(),
@@ -336,7 +361,7 @@ fn hole_schedule(
     if holes.is_empty() {
         return Ok(());
     }
-    let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial;fill:#132936;font-size:19px}}</style><text x=\"50\" y=\"60\" font-weight=\"bold\">LF-CAS-V0 / {name} / REV C / HOLE SCHEDULE</text><text x=\"50\" y=\"102\">Coordinates in assembly datum, mm; axis is hole axis; dash means coordinate along hole axis.</text><text x=\"50\" y=\"136\">Center location +/-0.10 unless overridden; clearance diameters +0.10/0. Blind drill depths exclude drill point.</text><text x=\"50\" y=\"170\">Labels match orthographic sheet. Tap-drill diameters in STEP are not finished threaded diameters.</text>");
+    let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial;fill:#132936;font-size:19px}}</style><text x=\"50\" y=\"60\" font-weight=\"bold\">LF-CAS-V0 / {name} / REV D / HOLE SCHEDULE</text><text x=\"50\" y=\"102\">Coordinates in assembly datum, mm; axis is hole axis; dash means coordinate along hole axis.</text><text x=\"50\" y=\"136\">Center location +/-0.10 unless overridden; clearance diameters +0.10/0. Blind drill depths exclude drill point.</text><text x=\"50\" y=\"170\">Labels match orthographic sheet. Tap-drill diameters in STEP are not finished threaded diameters.</text>");
     for (x, t) in [
         (50, "ID"),
         (130, "Axis"),
@@ -373,7 +398,7 @@ fn hole_schedule(
     Ok(())
 }
 fn land_sheet(dir: &Path, p: &Config, d: &Layout) -> Result<(), Box<dyn std::error::Error>> {
-    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;fill:#132936;font-size:20px}</style><text x=\"50\" y=\"60\" font-size=\"28\">LF-CAS-V0 / REV C / HEATER LANDS AND GUIDE FIT</text><text x=\"50\" y=\"102\">Coordinate diagram: X horizontal, Y up. Same X/Y lands on roof exterior and drawer underside.</text>");
+    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;fill:#132936;font-size:20px}</style><text x=\"50\" y=\"60\" font-size=\"28\">LF-CAS-V0 / REV D / HEATER LANDS AND GUIDE FIT</text><text x=\"50\" y=\"102\">Coordinate diagram: X horizontal, Y up. Same X/Y lands on roof exterior and drawer underside.</text>");
     let sx = 440.0;
     let sy = 630.0;
     let k = 3.0;
@@ -437,7 +462,7 @@ mod tests {
 }
 
 fn guide_section(dir: &Path, p: &Config, d: &Layout) -> Result<(), Box<dyn std::error::Error>> {
-    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><defs><pattern id=\"hatch\" width=\"8\" height=\"8\" patternUnits=\"userSpaceOnUse\"><path d=\"M0 8 L8 0\" stroke=\"#6a8b99\" stroke-width=\"0.8\"/></pattern></defs><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;fill:#132936;font-size:20px}</style><text x=\"50\" y=\"60\" font-size=\"28\">LF-CAS-V0 / REV C / GUIDE CROSS-SECTION A-A</text><text x=\"50\" y=\"102\">X/Z section at Y=40 mm, looking rearward (+Y). Plate, nest, guards and cables omitted for clarity.</text>");
+    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><defs><pattern id=\"hatch\" width=\"8\" height=\"8\" patternUnits=\"userSpaceOnUse\"><path d=\"M0 8 L8 0\" stroke=\"#6a8b99\" stroke-width=\"0.8\"/></pattern></defs><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;fill:#132936;font-size:20px}</style><text x=\"50\" y=\"60\" font-size=\"28\">LF-CAS-V0 / REV D / GUIDE CROSS-SECTION A-A</text><text x=\"50\" y=\"102\">X/Z section at Y=40 mm, looking rearward (+Y). Plate, nest, guards and cables omitted for clarity.</text>");
     let k = 6.0;
     let x = |v: f64| 800.0 + k * v;
     let y = |v: f64| 620.0 - k * v;

@@ -76,3 +76,19 @@ It takes `--input-dir`, `--output-dir`, and `--source-dir`, validates the input
 report and source hashes, and packages the existing artifacts. Its reviewed source
 hash is registered separately. Keep both entries updated when changing these tools;
 new model implementation commits must include their registry contract.
+
+### Rev D plate frame contract
+
+The heated cassette runtime configuration now requires `[joints]` coordinates.
+The generator and validator share these values. Validation rejects the former
+narrow housing, inadequate gasket/edge lands, colliding joint-hole patterns,
+rear-hole intrusion and unreviewed roof/bezel thickness changes that would alter
+commercial screw engagement. The geometry pass checks the four separate frame
+parts, sampled drawer travel and the new joint hardware against non-parent solids.
+Threaded parent engagement is intentionally excluded from the hardware check.
+Tests exercise rejected dimensions and missing/unknown fields. This does not
+validate coating-process capability, fastener preload or fluid temperature.
+
+The fixed packaging utility's Rev D review changes only its release label and
+adds the new joint module to the source snapshot. Its registry source identity
+tracks those reviewed packaging changes; adjustable geometry remains runtime.

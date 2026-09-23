@@ -1,4 +1,4 @@
-# Rev C water-test fabrication geometry, millimeters; physical commissioning required.
+# Rev D water-test fabrication geometry, millimeters; physical commissioning required.
 # Plate/lid height is a conservative reservation, not a vendor assembled-height specification.
 plate_x = 127.76
 plate_y = 85.48
@@ -9,7 +9,7 @@ nest_height = 2.0
 nest_side_margin = 2.0
 front_margin = 6.0
 top_clearance = 8.0
-side_wall = 12.25
+side_wall = 18.5
 roof_thickness = 6.0
 drawer_thickness = 6.0
 guide_overlap = 5.0
@@ -51,3 +51,12 @@ metal_sensor_setpoint_c = 37.0
 density_kg_m3 = 2700.0
 specific_heat_j_kgk = 930.0
 grid_cells = 40
+
+# Rev D: finish side plates from nominal 3/4-inch stock; verify stock cleanup allowance.
+[joints]
+roof_edge = 6.0
+front_edge = 4.0
+roof_screw_y = [30.0, 80.0, 132.0]
+roof_pin_y = [50.0, 115.0]
+front_screw_z = [28.0, 41.0]
+front_pin_z = 35.0

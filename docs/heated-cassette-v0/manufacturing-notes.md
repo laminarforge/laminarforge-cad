@@ -1,10 +1,10 @@
-# Manufacturing notes - LF-CAS-V0 Rev C
+# Manufacturing notes - LF-CAS-V0 Rev D
 
 ## Quote scope
 
 One water-test prototype. Base quote: supply the aluminum parts and two guard sheets listed in manufacturing-bom.csv. Quote machining and Type II finishing separately. Foam, shim backing, guide tape, commercial hardware, electronics and assembly are owner-sourced; quote those only as separately labeled options. No pressure test, cosmetic color matching, cleanroom process, motor or rocker.
 
-Quantities: one housing, rear cover, drawer, front flange and nest; one left and one right rail; two risers; eight identical spacers; two identical guards; one moving and one fixed cable bracket; two identical jaws. The BOM groups identical pieces and points to one representative STEP each. Spacers may be cut and faced from plain aluminum tube: OD6, bore3.4, length8.00 +/-0.10; no anodize required. The optional-materials folder contains six tape profiles and a nominal shim reference, excluded from the base machining quote.
+Quantities: one each roof, left side, right side, bezel, rear cover, drawer, front flange and nest; one left and one right rail; two risers; eight identical spacers; two identical guards; one moving and one fixed cable bracket; two identical jaws. The BOM groups identical pieces and points to one representative STEP each. Spacers may be cut and faced from plain aluminum tube: OD6, bore3.4, length8.00 +/-0.10; no anodize required. The optional-materials folder contains six tape profiles and a nominal shim reference, excluded from the base machining quote.
 
 ## Datums and anodizing
 
@@ -23,6 +23,8 @@ STEP shows tap-drill bores, not helical threads. Tap M2x0.4, M3x0.5, M4x0.7 and 
 Housing rail taps: M3, 8 mm full thread minimum from Z=6, 11 mm drill depth. Rear taps: M3, 8 full thread/11 drill. Stop receiver: M2, 4.2 full thread/8 drill from guide roof. Closure M4 and shim-ear M2 through bezel. Guard/thermostat roof taps M3 through roof.
 
 Drawer front: M3, 8 full thread/11 drill. Nest: M2, 3.5 full thread/4.5 drill from top; 1.5 mm nominal bottom wall. Guard, thermostat and cable-bracket M3 through drawer. Rear-cover cable mounts: M3, 6 full thread/9 drill from bottom. Jaw taps: M2, 4.5 full thread/7 drill from split face. Use the labeled hole schedules on the individual sheets for positions, thread sizes and depths.
+
+Joint coordinates: +/-0.025 mm; D3 H7 side locating bores 6.00 +0.10/0 deep, finished after coating. Mating slip bores D3.15 +0.02/0 THRU. All six locating pins are D3 m6 x10, seated 6 mm into sides. Transition fits may need retaining compound at the side end. Roof screws M3x14 (8 mm nominal engagement, 9 mm minimum full tapped thread); front M3x10 (7.2 mm engagement), D6 counterbores 3.20 +0.05/0 deep. Roof and side top mating lands flatness 0.05.
 
 ## Guides
 
@@ -44,11 +46,11 @@ M2x4 screws retain shim ears; flange pockets clear the heads. M4 knobs close aga
 
 Return one-set and five-set prices by BOM line. Show per-part prices, anodizing minimum-lot charge, lead time, shipping and any exclusions. State whether masking is included or extra; operation-by-operation costing is not required. No cosmetic matching or independent metrology certification is requested. A shop dimensional report covering the guide gap, drawer thickness/width, groove depth and thread fit is sufficient.
 
-A bolted roof/side/front assembly or imperial-stock alternative may be proposed with a marked-up sketch and cost saving. These are quote alternatives, not authorized substitutions: joints, alignment and thermal behavior must be checked before a revised CAD release. Current STEP retains the integral housing.
+Rev D uses a bolted roof/side/front assembly. Finish roof and bezel to 6 mm from nominal 1/4-inch plate; sides to 18.50 mm from nominal 3/4-inch plate, subject to stock cleanup allowance. Quote saw/waterjet blanks plus machining of functional surfaces. Do not weld.
 
 ## Process and inspection
 
-Housing: establish datum faces; mill open-bottom cavity/guides; front setup for opening, seal and holes; rear for taps; top/bottom drilling as needed. Drawer/flat parts: face, profile/drill, then edge-tap. Brackets use accessible open-side grooves. Avoid cosmetic setups and welded assemblies.
+Frame: finish roof and bezel from flat stock. Machine each side plate as an open L profile with accessible rail relief; drill/ream joint bores from exposed ends. Machine bezel opening and gasket groove in a face setup. Drawer/flat parts: face, profile/drill, then edge-tap. Brackets use accessible open-side grooves. Avoid cosmetic setups and welded assemblies.
 
 Inspect and report critical dimensions after anodizing. Deliver dry clean parts, protected contact faces and chip-free blind holes.
 

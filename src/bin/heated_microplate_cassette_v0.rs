@@ -1,4 +1,4 @@
-//! Rev C water-test prototype: analytic fabrication solids, assembly sheets and sizing evidence.
+//! Rev D water-test prototype: analytic fabrication solids, assembly sheets and sizing evidence.
 use base64::Engine;
 use clap::Parser;
 use serde::{Deserialize, Serialize};
@@ -17,6 +17,8 @@ mod assembly_drawings;
 mod drawings;
 #[path = "../cassette/feature_drawings.rs"]
 mod feature_drawings;
+#[path = "../cassette/joints.rs"]
+mod joints;
 #[path = "../cassette/package.rs"]
 mod package;
 #[path = "../cassette/solid.rs"]
@@ -81,6 +83,7 @@ struct Config {
     stop_y: f64,
     mesh_segments: u32,
     thermal: thermal::Parameters,
+    joints: joints::Parameters,
 }
 
 #[derive(Debug, Serialize)]
@@ -176,7 +179,7 @@ impl Config {
     fn validate(&self) -> Result<Layout, String> {
         let values = serde_json::to_value(self).map_err(|e| e.to_string())?;
         for (k, v) in values.as_object().ok_or("configuration is not an object")? {
-            if k == "mesh_segments" || k == "thermal" {
+            if k == "mesh_segments" || k == "thermal" || k == "joints" {
                 continue;
             }
             let n = v.as_f64().ok_or_else(|| format!("{k}: must be finite"))?;
@@ -186,6 +189,7 @@ impl Config {
         }
         let d = self.layout();
         thermal::validate(&self.thermal)?;
+        joints::validate(self, &d)?;
         let squeeze = 1.0
             - (self.gasket_groove_depth - self.gasket_backing_thickness)
                 / self.gasket_free_thickness;
@@ -383,17 +387,9 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
     let copper = [214, 128, 52];
     let mut out = Vec::new();
     let mut housing = block(
-        "housing",
-        [-d.outer_x / 2.0, p.bezel_thickness, p.guide_rail_thickness],
+        "roof_plate",
+        [-d.outer_x / 2.0, p.bezel_thickness, d.roof_bottom],
         [d.outer_x / 2.0, d.rear_y, d.roof_top],
-    ) - block(
-        "main_cavity",
-        [-d.cavity_x / 2.0, p.bezel_thickness - 1.0, -1.0],
-        [d.cavity_x / 2.0, d.rear_y + 1.0, d.roof_bottom],
-    ) - block(
-        "guide_relief",
-        [-d.guide_width / 2.0, p.bezel_thickness - 1.0, -1.0],
-        [d.guide_width / 2.0, d.rear_y + 1.0, d.guide_ceiling],
     );
     // Surface-bonded pads: no recess weakens the 6 mm spreaders.
     // Four guard holes per zone, outside the heater and plate envelope.
@@ -449,34 +445,13 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
         (-d.cavity_x / 3.0, (d.roof_bottom + d.roof_top) / 2.0),
         (d.cavity_x / 3.0, (d.roof_bottom + d.roof_top) / 2.0),
     ];
-    for (x, z) in mount_points {
+    for (x, z) in mount_points.into_iter().skip(2) {
         housing = housing - cy("rear_M3_tap", x, d.rear_y - 5.0, z, 2.5, 12.0, n);
     }
     let rail_positions = [p.bezel_thickness + 20.0, d.rear_y / 2.0, d.rear_y - 16.0];
-    for sign in [-1.0, 1.0] {
-        for y in rail_positions {
-            housing = housing
-                - cz(
-                    "rail_M3_tap",
-                    sign * d.rail_screw_x,
-                    y,
-                    p.guide_rail_thickness + 5.0,
-                    2.5,
-                    12.0,
-                    n,
-                );
-        }
-    }
-    housing = housing
-        - cz(
-            "stop_receiver",
-            d.stop_x,
-            p.stop_y,
-            d.guide_ceiling + 3.5,
-            1.6,
-            9.0,
-            n,
-        );
+    housing = joints::roof_holes(housing, p, d);
+    let left_side = joints::side(p, d, -1.0, rail_positions);
+    let right_side = joints::side(p, d, 1.0, rail_positions);
     let mut bezel = block(
         "bezel",
         [-d.bezel_x / 2.0, 0.0, d.bezel_min_z],
@@ -650,9 +625,12 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
                 n,
             );
     }
+    out.push(item("01_roof_plate", housing, false, false, alum));
+    out.push(item("01_left_side_plate", left_side, false, false, alum));
+    out.push(item("01_right_side_plate", right_side, false, false, alum));
     out.push(item(
-        "01_fixed_U_housing",
-        housing + bezel,
+        "01_front_bezel",
+        joints::bezel_holes(bezel, p, d),
         false,
         false,
         alum,
@@ -1190,6 +1168,7 @@ fn model(p: &Config, d: &Layout) -> Vec<Item> {
             alum,
         ));
     }
+    out.extend(joints::hardware(p, d));
     out
 }
 
@@ -1222,6 +1201,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err("output directory must be empty; preserve each candidate's evidence".into());
     }
     let parts = model(&p, &d);
+    joints::verify_hardware(&parts, &d)?;
     let mut checks = Vec::new();
     for (index, a) in parts.iter().enumerate().filter(|(_, i)| !i.reference) {
         for b in parts
@@ -1341,6 +1321,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for path in [
         "src/bin/heated_microplate_cassette_v0.rs",
         "src/cassette/solid.rs",
+        "src/cassette/joints.rs",
         "src/cassette/drawings.rs",
         "src/cassette/assembly_drawings.rs",
         "src/cassette/feature_drawings.rs",
@@ -1349,6 +1330,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "Cargo.toml",
         "Cargo.lock",
         "docs/heated-cassette-v0/README.md",
+        "docs/heated-cassette-v0/revd-design-review.md",
         "docs/heated-cassette-v0/manufacturing-notes.md",
         "docs/heated-cassette-v0/assembly.md",
         "docs/heated-cassette-v0/electrical-assembly.md",
@@ -1359,7 +1341,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ] {
         dependencies.insert(path, sha(&fs::read(path)?));
     }
-    let report = json!({"status":"V0_WATER_TEST_PROTOTYPE_FABRICATION_PACKAGE","configuration_sha256":sha(raw.as_bytes()),"source_sha256":sha(&source),"source_dependencies_sha256":dependencies,"git_head":git(&["rev-parse","HEAD"])? ,"git_status":git(&["status","--porcelain"])? ,"binary_sha256":sha(&fs::read(std::env::current_exe()?)?),"config":p,"layout":d,"parts":reports,"rigid_parts_assembled_interference_check":"pass","travel_checks":checks,"limitations":["Greiner water-test surrogate; future tissue plate compatibility unqualified","Reduced aluminum sheet model only; no media-temperature or physical performance validation","Sampled rigid travel; some hardware simplified; flexible cable geometry requires assembly inspection","Threads represented by pilot bores: drawings specify thread and depth","Guide clearances remain draft paths; no hermetic or pressure rating","Electrical startup/fault response, cable retention and thermal maps require commissioning"]});
+    let report = json!({"status":"V0_WATER_TEST_PROTOTYPE_FABRICATION_PACKAGE","configuration_sha256":sha(raw.as_bytes()),"source_sha256":sha(&source),"source_dependencies_sha256":dependencies,"git_head":git(&["rev-parse","HEAD"])? ,"git_status":git(&["status","--porcelain"])? ,"binary_sha256":sha(&fs::read(std::env::current_exe()?)?),"config":p,"layout":d,"parts":reports,"rigid_parts_assembled_interference_check":"pass","plate_joint_hardware_clearance_check":"pass; threaded parent engagement excluded","travel_checks":checks,"limitations":["Greiner water-test surrogate; future tissue plate compatibility unqualified","Reduced aluminum sheet model only; no media-temperature or physical performance validation","Sampled rigid travel; some hardware simplified; flexible cable geometry requires assembly inspection","Threads represented by pilot bores: drawings specify thread and depth","Guide clearances remain draft paths; no hermetic or pressure rating","Electrical startup/fault response, cable retention and thermal maps require commissioning"]});
     fs::write(
         args.output_dir.join("verification.json"),
         serde_json::to_vec_pretty(&report)?,
@@ -1378,7 +1360,7 @@ fn render(
     d: &Layout,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1600\" height=\"1100\" viewBox=\"0 0 1600 1100\"><rect width=\"1600\" height=\"1100\" fill=\"#eef2f5\"/><style>text{font-family:Helvetica,Arial,sans-serif;fill:#162b3b}.title{font-size:34px;font-weight:bold}.sub{font-size:18px;fill:#425d70}.label{font-size:22px;font-weight:bold}.note{font-size:17px}</style>");
-    svg.push_str("<text x=\"45\" y=\"55\" class=\"title\">LaminarForge / heated microplate cassette V0</text><text x=\"45\" y=\"87\" class=\"sub\">Rev C water-test prototype / manual drawer / 6061 aluminum / two heater zones</text>");
+    svg.push_str("<text x=\"45\" y=\"55\" class=\"title\">LaminarForge / heated microplate cassette V0</text><text x=\"45\" y=\"87\" class=\"sub\">Rev D water-test prototype / manual drawer / 6061 aluminum / two heater zones</text>");
     let panels = [
         ("01  CLOSED", 0.0, false, 40.0, 115.0),
         ("02  FULL ACCESS", d.stroke, false, 820.0, 115.0),
@@ -1403,9 +1385,10 @@ fn render(
         ];
         for i in parts {
             if cutaway
-                && (i.name == "01_fixed_U_housing"
+                && (i.name.starts_with("01_")
                     || i.name == "03_rear_cover"
                     || i.name == "REF_top_heater"
+                    || i.name.starts_with("REF_joint_")
                     || i.name.starts_with("11_roof")
                     || i.name.starts_with("12_roof")
                     || i.name.starts_with("REF_roof"))

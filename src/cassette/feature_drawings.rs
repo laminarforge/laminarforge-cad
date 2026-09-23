@@ -17,7 +17,11 @@ pub fn extent(name: &str, axis: usize, value: f64) -> String {
     if name.starts_with("08_") || name.starts_with("13_") {
         return format!("{value:.3} REF");
     }
-    let tol = if axis == 2 && (name.starts_with("04_") || name.starts_with("07_")) {
+    let tol = if (axis == 2
+        && (name.starts_with("04_") || name.starts_with("07_") || name == "01_roof_plate"))
+        || (axis == 1 && name == "01_front_bezel")
+        || (axis == 0 && name.ends_with("side_plate"))
+    {
         "+/-0.05"
     } else {
         "+/-0.10"
@@ -36,7 +40,7 @@ pub fn sheets(
     let a = d.drawer_y - 12.;
     let shim_top = d.gasket_center_z + d.gasket_outer_z / 2.;
     let mut pages: Vec<(usize, &str, Vec<Note>)> = Vec::new();
-    if n.starts_with("01_") {
+    if n == "01_front_bezel" {
         pages.push((
             1,
             "FRONT SEAL AND OPENING",
@@ -46,7 +50,7 @@ pub fn sheets(
                     vec![
                         "A: front stop face Y=0".into(),
                         "FLATNESS 0.10; Ra 3.2 max".into(),
-                        "Bezel thickness 6.00 +/-0.10".into(),
+                        "Bezel thickness 6.00 +/-0.05".into(),
                     ],
                 ),
                 note(
@@ -95,47 +99,119 @@ pub fn sheets(
             ],
         ));
         pages.push((
-            2,
-            "BODY PROFILE AND DATUMS",
+            1,
+            "BEZEL JOINT HOLES",
             vec![
                 note(
-                    [p.bezel_thickness, d.roof_top],
+                    [
+                        d.outer_x / 2. - p.joints.front_edge,
+                        p.joints.front_screw_z[1],
+                    ],
                     vec![
-                        format!("Body Y={:.3} to {:.3}", p.bezel_thickness, d.rear_y),
-                        format!("Body width {:.3} +/-0.10", d.outer_x),
-                        format!("Roof top Z={:.3}", d.roof_top),
+                        "4x D3.4 THRU with D6 +0.10/0 CB".into(),
+                        "Counterbore 3.20 +0.05/0 from front".into(),
+                        "Coordinates +/-0.025; see hole table".into(),
+                    ],
+                ),
+                note(
+                    [d.outer_x / 2. - p.joints.front_edge, p.joints.front_pin_z],
+                    vec![
+                        "2x D3.15 +0.02/0 slip bore THRU".into(),
+                        "Coordinates +/-0.025; see hole table".into(),
+                        "Pins and screw heads below seal face".into(),
+                    ],
+                ),
+                note(
+                    [
+                        d.outer_x / 2. - p.joints.front_edge - 3.,
+                        p.joints.front_screw_z[0],
+                    ],
+                    vec![
+                        "Do not break into gasket groove".into(),
+                        format!(
+                            "Nominal groove land {:.2}",
+                            d.outer_x / 2.
+                                - p.joints.front_edge
+                                - 3.
+                                - (d.gasket_outer_x + 0.5) / 2.
+                        ),
+                        "Bezel finished thickness 6.00 +/-0.05".into(),
+                    ],
+                ),
+            ],
+        ));
+    } else if n == "01_roof_plate" {
+        pages.push((
+            0,
+            "ROOF JOINTS AND MATING LANDS",
+            vec![
+                note(
+                    [
+                        d.outer_x / 2. - p.joints.roof_edge,
+                        p.joints.roof_screw_y[0],
+                    ],
+                    vec![
+                        "6x D3.4 THRU; M3x14 heads on top".into(),
+                        "Hole schedule gives assembly X/Y".into(),
+                        "Joint coordinates +/-0.025".into(),
+                    ],
+                ),
+                note(
+                    [d.outer_x / 2. - p.joints.roof_edge, p.joints.roof_pin_y[1]],
+                    vec![
+                        "4x D3.15 +0.02/0 THRU".into(),
+                        "Slip fit to D3 m6 locating pins".into(),
+                        "Joint coordinates +/-0.025".into(),
+                    ],
+                ),
+                note(
+                    [d.outer_x / 2. - 2., d.rear_y / 2.],
+                    vec![
+                        "Underside side-contact lands".into(),
+                        "FLATNESS / COPLANARITY 0.05".into(),
+                        "Plate thickness 6.00 +/-0.05".into(),
+                    ],
+                ),
+            ],
+        ));
+    } else if n.ends_with("side_plate") {
+        pages.push((
+            2,
+            "SIDE PLATE GUIDE AND JOINT DATUMS",
+            vec![
+                note(
+                    [d.rear_y / 2., p.guide_rail_thickness],
+                    vec![
+                        "B: rail seat FLATNESS 0.05".into(),
+                        format!(
+                            "Guide roof above B: {:.3} +/-0.05",
+                            d.guide_ceiling - p.guide_rail_thickness
+                        ),
+                        "Guide roof FLATNESS 0.05".into(),
                     ],
                 ),
                 note(
                     [d.rear_y / 2., d.roof_bottom],
                     vec![
-                        format!("Cavity width {:.3} +/-0.10", d.cavity_x),
-                        format!("Cavity roof Z={:.3}; roof 6.00 thick", d.roof_bottom),
-                        "C: X=0 symmetry plane".into(),
+                        "Roof contact land FLATNESS 0.05".into(),
+                        "Front face perpendicular within 0.05".into(),
+                        format!("Thickness {:.3} +/-0.05", p.side_wall),
                     ],
                 ),
                 note(
-                    [d.rear_y / 2., p.guide_rail_thickness],
+                    [p.joints.roof_pin_y[0], d.roof_bottom - 3.],
                     vec![
-                        "B: rail seating plane Z=6.000".into(),
-                        "FLATNESS 0.05 on each seating face".into(),
-                        "Guide separation from B: 8.950 +/-0.05".into(),
+                        "2x roof + 1x front D3 H7 bore".into(),
+                        "Depth 6.00 +0.10/0 from joint face".into(),
+                        "Ream after coating; coordinate +/-0.025".into(),
                     ],
                 ),
                 note(
-                    [d.rear_y / 2., d.guide_ceiling],
+                    [p.bezel_thickness + 5., p.joints.front_screw_z[1]],
                     vec![
-                        format!("Guide roof Z={:.3} REF", d.guide_ceiling),
-                        "Guide roof FLATNESS 0.05".into(),
-                        format!("Guide width {:.3} +/-0.10", d.guide_width),
-                    ],
-                ),
-                note(
-                    [p.bezel_thickness / 2., d.bezel_max_z],
-                    vec![
-                        "Bezel joins body at Y=6".into(),
-                        "All profile sizes +/-0.10 unless marked".into(),
-                        "Thread positions/depths: hole schedule".into(),
+                        "2x front + 3x roof M3x0.5-6H".into(),
+                        "Full thread: front 8 min, roof 9 min".into(),
+                        "Drill 11 deep; coordinates +/-0.025".into(),
                     ],
                 ),
             ],
@@ -433,7 +509,7 @@ pub fn sheets(
         let ox = 240. - scale * (bounds[0][aa] + bounds[1][aa]) / 2.;
         let oy = 190. + scale * (bounds[0][bb] + bounds[1][bb]) / 2.;
         let original_x = 45. + view as f64 * 510.;
-        let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936;font-size:19px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"65\" font-size=\"26\">LF-CAS-V0 / {n} / REV C / DETAIL {}</text><text x=\"50\" y=\"105\">{title} | Units mm | Finished after coating | Do not scale</text><svg x=\"45\" y=\"175\" width=\"864\" height=\"684\" viewBox=\"{original_x} 152 480 380\">{}</svg>",sheet+1,images[view]);
+        let mut svg=format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936;font-size:19px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"65\" font-size=\"26\">LF-CAS-V0 / {n} / REV D / DETAIL {}</text><text x=\"50\" y=\"105\">{title} | Units mm | Finished after coating | Do not scale</text><svg x=\"45\" y=\"175\" width=\"864\" height=\"684\" viewBox=\"{original_x} 152 480 380\">{}</svg>",sheet+1,images[view]);
         notes.sort_by(|a, b| b.point[1].total_cmp(&a.point[1]));
         for (j, note) in notes.iter().enumerate() {
             let hs = if n.starts_with("05_") && view == 1 {

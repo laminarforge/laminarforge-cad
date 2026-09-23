@@ -54,7 +54,7 @@ pub fn templates(dir: &Path, p: &Config, d: &Layout) -> Result<(), Box<dyn std::
     Ok(())
 }
 fn control_box(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;font-size:20px;fill:#163040}</style><text x=\"40\" y=\"55\" style=\"font-size:30px;font-weight:bold\">Control box / Hammond 1554YA2GY + 1554YPL / Rev C</text><text x=\"40\" y=\"92\">Units mm. Modify purchased parts; preserve factory mounting holes. Coordinate tables in handbook control.</text>");
+    let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{font-family:Arial;font-size:20px;fill:#163040}</style><text x=\"40\" y=\"55\" style=\"font-size:30px;font-weight:bold\">Control box / Hammond 1554YA2GY + 1554YPL / Rev D</text><text x=\"40\" y=\"92\">Units mm. Modify purchased parts; preserve factory mounting holes. Coordinate tables in handbook control.</text>");
     for (label, oy, rear) in [
         ("FRONT BASE WALL - X / Z", 150.0, false),
         ("REAR BASE WALL - X / Z", 420.0, true),
@@ -211,7 +211,7 @@ fn procurement(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
     for (q, item, notes) in [
         (
             "1",
-            "01 housing; 03 rear; 04 drawer; 05 flange; 06 nest; left/right 07 rails",
+            "01 roof + left side + right side + bezel; 03 rear; 04 drawer; 05 flange; 06 nest; left/right 07 rails",
             "One EACH; see individual STEP/drawings",
         ),
         ("2", "10 bench riser", "Identical parts after translation"),
@@ -376,7 +376,7 @@ fn render_docs(folder: &Path, names: &[&str]) -> Result<(), Box<dyn std::error::
     }
     let total = pages.len();
     for (idx, page) in pages.into_iter().enumerate() {
-        let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"210mm\" height=\"297mm\" viewBox=\"0 0 1200 1697\"><rect width=\"1200\" height=\"1697\" fill=\"white\"/><style>text{font-family:Arial,sans-serif;fill:#163040}</style><text x=\"65\" y=\"65\" font-size=\"18\">LAMINARFORGE / CASSETTE V0 / REV C / BUILD AND COMMISSION</text><path d=\"M65 90 H1135\" stroke=\"#8aa3b2\"/>");
+        let mut svg=String::from("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"210mm\" height=\"297mm\" viewBox=\"0 0 1200 1697\"><rect width=\"1200\" height=\"1697\" fill=\"white\"/><style>text{font-family:Arial,sans-serif;fill:#163040}</style><text x=\"65\" y=\"65\" font-size=\"18\">LAMINARFORGE / CASSETTE V0 / REV D / BUILD AND COMMISSION</text><path d=\"M65 90 H1135\" stroke=\"#8aa3b2\"/>");
         let mut y = 145;
         for (s, size) in page {
             svg.push_str(&format!(

@@ -176,7 +176,7 @@ pub fn run(
     fs::write(
         dir.join("thermal-sizing.json"),
         serde_json::to_vec_pretty(
-            &json!({"model":"2D finite-volume steady aluminum sheet with distributed pad input and ambient loss; roof side losses lumped at two edges","parameters":t,"assembled_aluminum_mass_kg":mass,"all_aluminum_ideal_sensible_energy_j":energy,"ideal_no_loss_120w_seconds_NOT_warmup_prediction":energy/120.0,"scenarios":scenarios,"limits":["No media, plate-plastic, thermal-contact, enclosure-air or evaporation model","No transient/PID simulation; warmup and recovery require experiments","Effective h values are assumed sensitivity cases, not measured boundary conditions","Opposite-zone coupling, rear cover, guide contact and bench conduction not resolved","Metal spread is a sizing estimate, never proof of fluid uniformity"]}),
+            &json!({"model":"2D finite-volume steady aluminum sheet with distributed pad input and ambient loss; roof side losses lumped at two edges","parameters":t,"assembled_aluminum_mass_kg":mass,"all_aluminum_ideal_sensible_energy_j":energy,"ideal_no_loss_120w_seconds_NOT_warmup_prediction":energy/120.0,"scenarios":scenarios,"limits":["No media, plate-plastic, thermal-contact, enclosure-air or evaporation model","Rev D bolted interface contact resistance is not modeled; edge loss assumes fully coupled sides as a screening case","No transient/PID simulation; warmup and recovery require experiments","Effective h values are assumed sensitivity cases, not measured boundary conditions","Opposite-zone coupling, rear cover, guide contact and bench conduction not resolved","Metal spread is a sizing estimate, never proof of fluid uniformity"]}),
         )?,
     )?;
     Ok(())

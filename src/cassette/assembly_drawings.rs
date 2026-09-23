@@ -9,7 +9,7 @@ fn esc(s: &str) -> String {
         .replace('>', "&gt;")
 }
 fn page(title: &str) -> String {
-    format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936;font-size:19px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"65\" font-size=\"28\">LF-CAS-V0 / REV C / {title}</text><text x=\"50\" y=\"102\">Units mm | X right, Y rearward, Z up | Assembly coordinates | Do not scale</text>")
+    format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"420mm\" height=\"297mm\" viewBox=\"0 0 1600 1131\"><rect width=\"1600\" height=\"1131\" fill=\"white\"/><style>text{{font-family:Arial,sans-serif;fill:#132936;font-size:19px}}</style><rect x=\"25\" y=\"25\" width=\"1550\" height=\"1081\" fill=\"none\" stroke=\"#132936\"/><text x=\"50\" y=\"65\" font-size=\"28\">LF-CAS-V0 / REV D / {title}</text><text x=\"50\" y=\"102\">Units mm | X right, Y rearward, Z up | Assembly coordinates | Do not scale</text>")
 }
 fn end(mut s: String) -> String {
     s.push_str("<path d=\"M25 1040 H1575\" stroke=\"#132936\"/><text x=\"50\" y=\"1075\">Manual water-test prototype | M-items: custom parts; H-items: owner-supplied hardware | No fabrication PO</text></svg>");
@@ -220,7 +220,7 @@ pub fn sheets(
         } else {
             "6061-T6 aluminum"
         };
-        let y = 202.0 + j as f64 * 36.0;
+        let y = 202.0 + j as f64 * 32.0;
         for (x, s) in [
             (50., id.clone()),
             (135., g.len().to_string()),
@@ -245,7 +245,7 @@ pub fn sheets(
         ));
     }
     text(&mut svg,50.,965.,"One representative file per identical group; do not quote each translated instance as a different design.");
-    text(&mut svg,50.,1000.,"13 aluminum designs / 23 physical aluminum pieces per set. M-items remain stable across drawings and CSV.");
+    text(&mut svg,50.,1000.,"16 aluminum designs / 26 physical aluminum pieces per set. M-items remain stable across drawings and CSV.");
     fs::write(dir.join("A02-assembly-bom.svg"), end(svg))?;
     fs::write(dir.parent().unwrap().join("assembly-bom.csv"), csv)?;
     // Separate each mechanism so balloons land on actual visible solids rather than hidden assembly centers.
@@ -258,8 +258,12 @@ pub fn sheets(
         let mut entries: Vec<(&Item, [f64; 3])> = Vec::new();
         for i in parts.iter().filter(|i| !i.reference && i.moving == moving) {
             let n = &i.name;
-            let o = if n.starts_with("01_") {
-                [0., 0., 55.]
+            let o = if n == "01_roof_plate" {
+                [0., 0., 65.]
+            } else if n == "01_front_bezel" {
+                [0., -70., 20.]
+            } else if n.ends_with("side_plate") {
+                [if n.contains("left") { -45. } else { 45. }, 0., 20.]
             } else if n.starts_with("03_") {
                 [0., 100., 20.]
             } else if n.starts_with("05_") {
@@ -283,9 +287,17 @@ pub fn sheets(
             } else if n.starts_with("13_") {
                 [0., -75., 55.]
             } else if n.starts_with("14_") {
-                [0., 105., -40.]
+                [
+                    0.,
+                    if moving { 105. } else { 185. },
+                    if moving { -40. } else { -80. },
+                ]
             } else if n.starts_with("15_") {
-                [45., 105., -40.]
+                [
+                    45.,
+                    if moving { 105. } else { 185. },
+                    if moving { -40. } else { -80. },
+                ]
             } else {
                 [0.; 3]
             };
@@ -317,7 +329,8 @@ pub fn sheets(
             let left = j < split;
             let row = if left { j } else { j - split };
             let x = if left { 130. } else { 1450. };
-            let y = 185. + row as f64 * 98.;
+            let spacing = (690. / split.saturating_sub(1).max(1) as f64).min(98.);
+            let y = 185. + row as f64 * spacing;
             svg.push_str(&format!("<path d=\"M{} {y} L{} {y} L{} {}\" stroke=\"#345\" fill=\"none\"/><circle cx=\"{x}\" cy=\"{y}\" r=\"26\" fill=\"white\" stroke=\"#345\"/><text x=\"{x}\" y=\"{}\" text-anchor=\"middle\">{id}</text><circle cx=\"{}\" cy=\"{}\" r=\"3\" fill=\"#345\"/>",if left{x+26.}else{x-26.},if left{245.}else{1330.},a[0],a[1],y+7.,a[0],a[1]));
         }
         text(&mut svg,50.,970.,"Exploded offsets are illustrative only; all STEP files use the closed assembly coordinates. See A02 for quantities.");
@@ -340,7 +353,7 @@ fn hardware(dir: &Path, parts: &[Item], d: &Layout) -> Result<(), Box<dyn std::e
             "M3x40 socket cap",
             format!(
                 "Risers + rails into housing {}; heads in riser counterbores",
-                id("01_fixed_U_housing")
+                format!("{}/{}", id("01_left_side_plate"), id("01_right_side_plate"))
             ),
         ),
         (
@@ -348,9 +361,9 @@ fn hardware(dir: &Path, parts: &[Item], d: &Layout) -> Result<(), Box<dyn std::e
             "4",
             "M3x12 socket cap",
             format!(
-                "Rear {} into housing {}",
+                "Rear {} into side plates {} and roof",
                 id("03_rear_cover"),
-                id("01_fixed_U_housing")
+                format!("{}/{}", id("01_left_side_plate"), id("01_right_side_plate"))
             ),
         ),
         (
@@ -457,6 +470,30 @@ fn hardware(dir: &Path, parts: &[Item], d: &Layout) -> Result<(), Box<dyn std::e
             "Greiner 655101 / 656101",
             "Owner water-test plate/lid; reference envelope only".into(),
         ),
+        (
+            "H19",
+            "6",
+            "M3x14 socket cap",
+            "Roof into side plates; 8 mm nominal engagement".into(),
+        ),
+        (
+            "H20",
+            "4",
+            "M3x10 socket cap",
+            "Bezel counterbores into sides; 7.2 mm engagement".into(),
+        ),
+        (
+            "H21",
+            "4",
+            "D3 m6 x10 dowel",
+            "Side to roof; seat 6 mm into side".into(),
+        ),
+        (
+            "H22",
+            "2",
+            "D3 m6 x10 dowel",
+            "Side to bezel; seat 6 mm; front end recessed 2 mm nominal".into(),
+        ),
     ];
     for (x, s) in [
         (50., "ITEM"),
@@ -467,7 +504,7 @@ fn hardware(dir: &Path, parts: &[Item], d: &Layout) -> Result<(), Box<dyn std::e
         text(&mut svg, x, 160., s);
     }
     for (j, (n, q, item, note)) in rows.iter().enumerate() {
-        let y = 202. + j as f64 * 39.;
+        let y = 202. + j as f64 * 33.;
         for (x, s) in [(50., *n), (130., *q), (220., *item), (745., note.as_str())] {
             text(&mut svg, x, y, s);
         }

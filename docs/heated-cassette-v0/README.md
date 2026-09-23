@@ -1,4 +1,4 @@
-# LaminarForge heated microplate cassette V0 - Rev C
+# LaminarForge heated microplate cassette V0 - Rev D
 
 This package defines one manual, two-zone heated aluminum cassette for water-filled microplate temperature testing. Manufacture to the analytic STEP files together with the shop drawings and manufacturing notes. STLs and assembly images are viewing aids. The physical prototype still needs commissioning and temperature mapping.
 
@@ -12,16 +12,16 @@ One representative spacer file specifies eight identical spacers. Both guards, b
 
 ## Design definition
 
-- Fixed U housing/front bezel, rear cover, heated sliding bottom, front flange and removable nest.
+- Four-piece bolted frame (roof, left/right side plates, front bezel), rear cover, heated sliding bottom, front flange and removable nest.
 - Two manual M4 closure knobs; continuous silicone face gasket; metal face-to-face closing stop.
 - Two 100 x 100 mm, 24 V, 60 W heaters with separate Pt100 sensors, PIDs and DC SSRs.
 - Independent NC thermostats drop latched power relays. Shared STOP and separate zone RESET buttons.
 - Guide tape on edges only. The plate sits directly on the aluminum drawer.
 - Rearward R35 cable loops and 30 mm bench risers; keep the service bay clear.
 
-Housing/flange envelope: 184.76 W x 176.73 D x 75.225 H mm. Complete bench assembly is approximately 95.225 mm high, Z=-30 to +65.225 including upper screw heads. Reserve 120 mm forward of the closed front for drawer access and space through Y=270 behind the assembly datum for cable travel. Closed outer front is Y=-8. Controller box and power brick are separate.
+Housing/flange envelope: 197.26 W x 176.73 D x 75.225 H mm. Complete bench assembly is approximately 95.225 mm high, Z=-30 to +65.225 including upper screw heads. Reserve 120 mm forward of the closed front for drawer access and space through Y=270 behind the assembly datum for cable travel. Closed outer front is Y=-8. Controller box and power brick are separate.
 
-The closure knobs project another 11.5 mm forward and slightly beyond the flange sides; their total width is approximately 186.01 mm. With the reserved rear cable bay, allow approximately 290 mm closed bench depth, plus the forward drawer-access space. Aluminum mass is about 2.21 kg in this prototype. This is a bench arrangement, not a finalized rack pitch.
+The closure knobs project another 11.5 mm forward and remain within the wider 197.26 mm flange width. With the reserved rear cable bay, allow approximately 290 mm closed bench depth, plus the forward drawer-access space. See the generated thermal-sizing.json for the current aluminum mass. This is a bench arrangement, not a finalized rack pitch.
 
 Nominal stroke is 107.73 mm. Rear aluminum capture is 45 mm; the shortened left upper tape retains 29 mm overlap. The flange defines closing position. The stop slot allows approximately 0.2 mm pin clearance beyond nominal travel.
 
@@ -31,11 +31,11 @@ Greiner's 655101 drawing specifies 127.76 +/-0.20 x 85.48 +/-0.20 mm footprint a
 
 Lid 656101 is 127.5 +/-0.2 x 85.0 +/-0.2 mm. Its drawing shows 10 mm overall lid features but does not certify assembled plate/lid height. This design reserves a 26 mm lidded object plus 8 mm roof clearance. The 26 mm value is a design allowance, not the actual Greiner assembled height. Measure the delivered lidded plate. Future tissue plates need separate exterior, lid, port, orientation, access and rocking checks.
 
-## Rev C changes
+## Rev D changes
 
-Rev C replaces Rev A and Rev B for quotation. It adds a five-sheet assembly drawing set with numbered custom parts, exploded groups and hardware connections. Enlarged feature sheets attach special tolerances to the relevant surfaces. CSV BOMs use ASCII text for legacy spreadsheet compatibility. Coplanar Boolean faces are unified before STEP export; the mechanical dimensions are unchanged.
+Rev D replaces the unsent integral Rev C housing with four bolted plates. Side plates finish at 18.50 mm from nominal 3/4-inch stock; roof and bezel finish at 6 mm from 1/4-inch stock. The body grows 12.50 mm in width while the drawer, plate clearances and stroke remain unchanged. Six roof screws, four recessed bezel screws and six locating dowels join the frame. Assembly drawings, BOMs and individual STEP files describe the separate parts. Joint contact resistance and thermal behavior require physical commissioning.
 
-Rev A hardcoat is superseded by clear sealed Type II anodizing, 5-15 micrometers. The quote covers 23 aluminum pieces in 13 designs per set. Foam, backing, guide tape, hardware and electronics are owner supplied. Per-part prices and a separate finishing charge are sufficient; operation-level costing is not required. The integral housing is retained; a bolted alternative remains a separate proposal requiring revised geometry and fit review.
+Rev A hardcoat is superseded by clear sealed Type II anodizing, 5-15 micrometers. The quote covers 26 aluminum pieces in 16 designs per set. Foam, backing, guide tape, hardware and electronics are owner supplied. Per-part prices and a separate finishing charge are sufficient; operation-level costing is not required. The integral housing is replaced by four plates, located by dowels and fastened with M3 screws.
 
 ## Verification and file precedence
 

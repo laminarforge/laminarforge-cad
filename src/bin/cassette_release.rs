@@ -266,6 +266,7 @@ fn main() -> Result<()> {
         "src/bin/heated_microplate_cassette_v0.rs",
         "src/bin/cassette_release.rs",
         "src/cassette/solid.rs",
+        "src/cassette/joints.rs",
         "src/cassette/drawings.rs",
         "src/cassette/assembly_drawings.rs",
         "src/cassette/feature_drawings.rs",
@@ -280,7 +281,7 @@ fn main() -> Result<()> {
         fs::copy(a.source_dir.join(p), dest)?;
     }
     fs::write(source.join("README.txt"),format!("This is a relevant-source snapshot, not a standalone copy of the full CAD monorepo.\nCanonical repository: https://github.com/laminarforge/laminarforge-cad\nCommit: {}\nUse the full checkout at that commit to reproduce.\nRun the local laminarforge_build MCP tool for bin heated_microplate_cassette_v0, profile dev, features [step], with --config models/heated_microplate_cassette_v0.toml and an empty --output-dir.\nThen run bin cassette_release with --input-dir, a new --output-dir, and --source-dir pointing to that checkout.\nPDF tools required: rsvg-convert, pdfunite, pdftoppm. No cloud build.\n",report["git_head"].as_str().unwrap_or("unknown")))?;
-    fs::write(a.output_dir.join("START-HERE.txt"),"LaminarForge LF-CAS-V0 Rev C - one manual water-test prototype\n\nSend supplier-RFQ.zip to the CNC shop. It includes manufacturing/, optional-materials/, all three PDFs, the numbered assembly BOM and the procurement BOM.\nUse assembly-handbook.pdf and assembly/procurement-bom.csv to purchase and assemble.\nSTEP + explicit drawing notes control fabrication; STL is a viewing aid.\nverification/ records geometry, source and reduced thermal calculations.\nThermal performance, electrical protection and cable behavior require the specified physical commissioning.\nThis is not a released biological culture system.\n")?;
+    fs::write(a.output_dir.join("START-HERE.txt"),"LaminarForge LF-CAS-V0 Rev D - one manual water-test prototype\n\nSend supplier-RFQ.zip to the CNC shop. It includes manufacturing/, optional-materials/, all three PDFs, the numbered assembly BOM and the procurement BOM.\nUse assembly-handbook.pdf and assembly/procurement-bom.csv to purchase and assemble.\nSTEP + explicit drawing notes control fabrication; STL is a viewing aid.\nverification/ records geometry, source and reduced thermal calculations.\nThermal performance, electrical protection and cable behavior require the specified physical commissioning.\nThis is not a released biological culture system.\n")?;
     fs::copy(
         a.source_dir.join("docs/heated-cassette-v0/RFQ.md"),
         a.output_dir.join("RFQ.md"),
