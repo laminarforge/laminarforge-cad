@@ -40,6 +40,10 @@ Check the shop's finished-dimension report, threaded holes, flat stop faces and 
 
 Check each heater resistance at room temperature: at least 9.0 ohms, no conductor-to-metal short. Confirm the three-wire Pt100 lead pair by resistance, and confirm the 67L050 contact is closed at room temperature. The heater's embedded NTC pair is unused: insulate the two wires separately.
 
+## 0. Assemble the Rev D frame
+
+Finish-ream the side D3 H7 locating bores after anodizing. Use D3 m6 dowels: this is a transition fit, so do not assume every pin is a press fit. If loose, retain the side end with a suitable retaining compound per its manufacturer instructions; keep the mating plate slip bores clean. Roof and bezel bores are D3.15 +0.02/0 to accommodate the specified +/-0.025 coordinate tolerance. Seat roof pins 6 mm into sides; fit roof and tighten six M3x14 screws evenly. Seat front pins 6 mm into sides; their ends sit nominally 2 mm below the assembled bezel front. Fit bezel with four M3x10 screws; all heads must be below the front seal face. Assemble on a flat surface, measure guide spacing and diagonals, and verify the loaded drawer moves freely cold and at 37 C. Reject binding, rocking joints, exposed front fastener heads or pins, and any seal-face step. The joints are not pressure seals.
+
 ## 1. Bond the two heaters and sensors
 
 The pad land is centered at X=0, Y=59.99: X=-50..50, Y=9.99..109.99. Housing heater bonds to Z=53.225; drawer heater bonds to its underside Z=7.225. Leads point rearward. Clean the bare masked lands as the adhesive manufacturer specifies, apply without air bubbles, and allow its required bond dwell before cycling heat.
@@ -94,6 +98,3 @@ Follow the electrical inspection and fault-test sequence, then the water-tempera
 
 This cassette can later be mounted to a rocking shelf, but the V0 bench feet are not a rocker. A later shelf must support both risers, secure the cassette, retain the plate/lid and preserve cable clearances through tilt. No angle is assumed for an unselected tissue plate.
 
-## Rev D frame assembly
-
-Finish-ream the side D3 H7 locating bores after anodizing. Use D3 m6 dowels: this is a transition fit, so do not assume every pin is a press fit. If loose, retain the side end with a suitable retaining compound per its manufacturer instructions; keep the mating plate slip bores clean. Roof and bezel bores are D3.15 +0.02/0 to accommodate the specified +/-0.025 coordinate tolerance. Seat roof pins 6 mm into sides; fit roof and tighten six M3x14 screws evenly. Seat front pins 6 mm into sides; their ends sit nominally 2 mm below the assembled bezel front. Fit bezel with four M3x10 screws; all heads must be below the front seal face. Assemble on a flat surface, measure guide spacing and diagonals, and verify the loaded drawer moves freely cold and at 37 C. Reject binding, rocking joints, exposed front fastener heads or pins, and any seal-face step. The joints are not pressure seals.
