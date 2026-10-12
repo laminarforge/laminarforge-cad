@@ -1,8 +1,9 @@
 # Runtime CAD contract
 
 Local Rust executables construct geometry. Agents edit the model's runtime TOML
-for supported dimensional changes and call MCP `execute`; they rebuild one target
-only after Rust/dependency/toolchain changes. GitHub stores source only. AWS,
+for supported dimensional changes and call receipt-authorized MCP `execute`.
+Rust/dependency/toolchain changes require canonical publication and a matching
+pipeline artifact before subsequent execution. GitHub stores source only. AWS,
 GitHub Actions and Namespace do not build or process these models.
 
 ## Published model families
@@ -41,18 +42,20 @@ Unconverted historical entry points are frozen to reviewed source hashes. Changi
 one or adding a new target requires a deliberate contract update before compilation.
 Do not refresh a frozen model hash to bypass migration. Convert adjustable geometry
 and its verification together. For non-model reports or fixed validation utilities,
-review the change and its tests before recording a new fixed source identity.
+review the change and actual tool/service evidence before recording a new fixed source identity.
 
 The registry is a workflow gate, not a semantic proof of arbitrary Rust. Library
-geometry changes still require review, parameter/geometry tests and mating-interface
+geometry changes still require review, actual parameter/geometry verification and mating-interface
 checks. Executable receipts separately cover source, dependencies and toolchain;
 changing shared Rust invalidates prior executables. Existing untouched historical
 models are not described as converted.
 
-Package-wide `run_all` is rejected at MCP. Select one target; use `check` for type
-validation and `run` only when execution is needed. Final release optimization is
-explicit. All heavy CAD work shares the Mac host lock and compiler jobs are capped
-at two. Native builds, including optional STEP kernels, stay local.
+Package-wide `run_all` is rejected at MCP. Compilation is requested only by
+canonical `main` pushes; normal agents do not invoke check/build/run compiler
+actions. The registered `cad-priming-dev` group covers one reviewed target.
+Other targets need explicit recipe enrollment. The local pipeline serializes
+compilation jobs while Cargo uses its normal parallelism without a custom jobs
+cap. Native builds, including optional STEP kernels, stay local.
 
 Each candidate gets its own output directory. A generator invalidates its old
 manifest before writing a new publication. Verification must pass before promotion.

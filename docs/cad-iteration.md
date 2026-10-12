@@ -1,7 +1,9 @@
 # Local CAD iteration
 
 AWS, GitHub Actions and Namespace processing are retired. GitHub is source
-control only. Use the local LaminarForge MCP tool with an explicit binary.
+control only. Compilation follows canonical `main` pushes and the registered
+recipe; see [the queue contract](local-build-pipeline.md). Normal agents do not
+invoke compiler/Make commands or MCP check/build/run submission actions.
 
 Development uses incremental compilation, opt-level 1 for model code and
 opt-level 2 for dependencies. Release remains explicit final optimization.
@@ -13,13 +15,10 @@ Its CLI accepts --config PATH and --output-dir PATH. After building it once,
 editing the TOML and running the executable requires no Rust compilation.
 See [the runtime contract](cad-runtime-contract.md) for all converted families and their verifiers.
 
-Build and run the fixture once using this `laminarforge_build` input:
-
-```json
-{"repo":"laminarforge-cad","action":"run","bin":"chip_priming_tubing_fixture","profile":"dev","args":["--config","models/chip_priming_tubing_fixture.toml","--output-dir","output/priming-fixture"]}
-```
-
-After editing only its TOML, reuse the executable:
+After pipeline compilation and supported executable-receipt registration, use
+execute-only geometry processing. If that adapter or receipt is missing, report
+execution pending instead of invoking a legacy compiler action. After editing
+only its TOML, reuse the receipt-authorized executable:
 
 ```json
 {"repo":"laminarforge-cad","action":"execute","bin":"chip_priming_tubing_fixture","profile":"dev","args":["--config","models/chip_priming_tubing_fixture.toml","--output-dir","output/priming-fixture"]}
@@ -27,19 +26,19 @@ After editing only its TOML, reuse the executable:
 
 Use a separate output directory for each candidate. Check expected dimensions
 and component outputs before promoting a candidate. The tool's `execute` action
-requires a matching executable receipt. Use targeted `run` after changing
-source, dependencies, features or the toolchain. After a background run, use
-one targeted `build` to register its receipt before execute-only iteration. `check`
-does not refresh the executable. Do not reuse preview evidence as final release
+requires a matching executable receipt. After changing source, dependencies,
+features or the toolchain, publish `main` and wait for the exact new artifact and
+supported execution receipt. A pipeline compile-only receipt does not by itself
+authorize geometry execution. Do not reuse preview evidence as final release
 evidence after changing the configuration.
 
 Already compiled PCB tools that read TOML can also use `execute`, but all routing
 and release gates still apply. Do not pass the fixture's CLI flags to binaries
 that do not implement them.
 
-The installed MCP exposes `check`, `execute`, `profile` and `args`. If a running
-client still shows the old schema, reconnect that client to load the installed
-tool. Do not change the request to a full release build to bypass a stale schema.
+If a running client has a stale schema, report reconnect pending rather than
+bypassing pipeline policy with a different build action. Verify actual execution
+and its observable output; do not create synthetic or mocked test scaffolding.
 
 Exa research verified against primary sources:
 - https://doc.rust-lang.org/cargo/reference/profiles.html
@@ -55,7 +54,8 @@ a global wrapper. Preserve repository-lock safeguards.
 
 `heating_block` and `heating_block_verify` both accept `--config` and
 `--output-dir`. Their default configuration is `models/heating_block.toml`.
-Build each target once, then execute the generator and verifier with the same
+Enroll and compile each required target through its canonical push recipe, then
+use supported receipt-authorized execution for the generator and verifier with the same
 configuration and output directory. The five exposed parameters control body
 height, registration pocket depth, X/Y clearance and heater bore diameter.
 Other cartridge/assembly dimensions remain fixed; these files are mechanical

@@ -21,14 +21,24 @@ registered cache. Each job receives a copied, read-only binary and a version-1
 identity, artifact path and SHA-256. Artifact kind is `compiled-binary`.
 `phases.ndjson`, `changed-paths.txt`, the worker's build log and Cargo timings
 provide observable checkpoints.
+Recipe phases include job ID, exact SHA, cache directory and elapsed seconds in
+both stdout and `phases.ndjson`: started, compiling, compiled, artifact_copied,
+and completed after the receipt is committed. Nonzero exits emit failed.
 
 This is compilation only. A compiler artifact is not a geometry result,
 manufacturing validation, installation or delivery. Runtime execution still
 requires the existing CAD configuration/verifier contract and appropriate MCP
 execution receipt; the pipeline receipt is not a substitute for that authority.
 
-Activation and real compilation remain pending. The pipeline must explicitly
+Intake uses outbound branch polling, with a normal 60-second interval. No public
+webhook listener or router changes are needed. Build recipes and product setup
+must not touch WireGuard, routing/forwarding, PF, DuckDNS or their services; that
+separate maintenance scope requires Alex's exact instruction.
+
+The pipeline must explicitly
 allow this repository, group, `dev` profile and compiled-binary artifact before
-claiming success. Verification requires actual canonical pushes and this real
+claiming success. Record actual job IDs, exact SHA, receipt and observed result;
+report any activation, compilation or execution checkpoint that is still pending.
+Verification requires actual canonical pushes and this real
 compiler flowing through the queue, including repeated waiting pushes grouped
 into one newest-commit build while another repository's running job continues.
