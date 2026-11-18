@@ -379,6 +379,10 @@ name = "water_bath"
 path = "src/bin/water_bath.rs"
 
 [[bin]]
+name = "water_transfer_dock"
+path = "src/bin/water_transfer_dock.rs"
+
+[[bin]]
 name = "water_bath_safety_kit"
 path = "src/bin/water_bath_safety_kit.rs"
 

@@ -797,4 +797,5 @@ mod step_export;
 
 pub mod cassette_print_coupons;
 pub mod runtime_cad;
+pub mod water_transfer_preview;
 pub mod diagnostic_cartridge_model;

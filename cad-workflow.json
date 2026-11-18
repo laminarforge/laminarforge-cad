@@ -1723,6 +1723,11 @@
       "mode": "frozen",
       "source_sha256": "5feb43281c751829c0b5bb97c0bba7297e6f7ca73dd6335c2cec1dd7579236ca"
     },
+    "water_transfer_dock": {
+      "mode": "runtime",
+      "config": "models/water_transfer_dock.toml",
+      "verifier": "water_transfer_dock"
+    },
     "water_bath": {
       "mode": "frozen",
       "source_sha256": "41475b5985595f75bbb5963f0cc5d2b4e109362f908931e59dd8a9b0a9519cac"

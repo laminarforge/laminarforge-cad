@@ -15,8 +15,8 @@ AWS, GitHub Actions and Namespace build processing are retired. GitHub is source
 Publish the workspace to canonical `main`; push is the sole normal compilation
 request. Do not invoke MCP build/setup/deploy submissions, `laminarforge_build`
 check/build/run actions, compiler/Make commands or indirect compilation wrappers.
-The registered `cad-priming-dev` recipe compiles only
-`chip_priming_tubing_fixture`. Additional targets require deliberate recipe and
+The registered `cad-priming-dev` recipe compiles
+`chip_priming_tubing_fixture` and `water_transfer_dock`. Additional targets require deliberate recipe and
 pipeline registration changes; do not bypass missing coverage with manual builds.
 
 - Read `docs/local-build-pipeline.md` and `docs/cad-iteration.md`. Record the

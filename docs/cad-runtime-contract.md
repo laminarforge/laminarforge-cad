@@ -16,6 +16,7 @@ regenerated STL bytes. These are engineering checks, not manufacturing approval.
 | Generator | Config under models/ | Verification |
 | --- | --- | --- |
 | chip_priming_tubing_fixture | chip_priming_tubing_fixture.toml | same target with --verify |
+| water_transfer_dock | water_transfer_dock.toml | same target with --verify; see water-transfer-dock.md |
 | heating_block | heating_block.toml | heating_block_verify |
 | p0_cartridge_coupon_suite | p0_cartridge_coupons.toml | p0_cartridge_coupon_verify, same --stack selection |
 | sixteen_slot_cassette_print_coupons | sixteen_slot_cassette_print_coupons.toml | same target with --verify |
@@ -52,7 +53,8 @@ models are not described as converted.
 
 Package-wide `run_all` is rejected at MCP. Compilation is requested only by
 canonical `main` pushes; normal agents do not invoke check/build/run compiler
-actions. The registered `cad-priming-dev` group covers one reviewed target.
+actions. The registered `cad-priming-dev` group covers the priming fixture and
+water-transfer dock.
 Other targets need explicit recipe enrollment. The local pipeline serializes
 compilation jobs while Cargo uses its normal parallelism without a custom jobs
 cap. Native builds, including optional STEP kernels, stay local.
