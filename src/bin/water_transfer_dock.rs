@@ -18,7 +18,7 @@ mod bench_modules;
 struct BenchArgs {
     #[command(flatten)]
     common: Args,
-    #[arg(long, default_value = "dock", value_parser = ["dock", "receiver", "controller", "coupon", "outlet"])]
+    #[arg(long, default_value = "dock", value_parser = ["dock", "receiver", "controller", "coupon", "outlet", "source"])]
     module: String,
 }
 const FILES: [&str; 5] = [

@@ -18,7 +18,10 @@
         "liquid_connector"
       ],
       "next": "compare_manual_bringup_with_full_cost_of_required_motorization",
-      "reference_candidate": "New Era NE-1000"
+      "reference_candidate": "New Era NE-1000",
+      "manual_source_support_config": "models/water_bench_source_saddle.toml",
+      "manual_source_support_selector": "source",
+      "manual_source_support_state": "implemented_generation_pending"
     },
     {
       "id": "M02",
@@ -88,7 +91,9 @@
       "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970",
       "independent_support_config": "models/water_bench_outlet_support.toml",
       "independent_support_selector": "outlet",
-      "independent_support_state": "implemented_generation_pending"
+      "independent_support_state": "candidate_01_exported_verified",
+      "independent_support_evidence_job_id": "8da3e6bf-c659-49f3-a183-8912436b2ffc",
+      "independent_support_evidence_source_sha": "de532b94db059b9b6122215c74dccc3cbe95f4ee"
     },
     {
       "id": "M06",

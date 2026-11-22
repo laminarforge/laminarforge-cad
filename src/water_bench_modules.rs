@@ -10,6 +10,8 @@ use vcad::{centered_cube, centered_cylinder, Part};
 
 #[path = "water_bench_outlet.rs"]
 mod outlet;
+#[path = "water_bench_source.rs"]
+mod source;
 
 const E: f64 = 0.02;
 type Bounds = ([f64; 3], [f64; 3]);
@@ -914,6 +916,7 @@ pub fn run(args: &Args, module: &str) -> Result<(), Box<dyn std::error::Error>> 
     let raw = fs::read_to_string(&args.config)?;
     match module {
         "outlet" => outlet::run(args, &raw),
+        "source" => source::run(args, &raw),
         "coupon" => {
             let p: Coupon = toml::from_str(&raw)?;
             p.validate()?;

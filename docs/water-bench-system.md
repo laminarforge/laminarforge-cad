@@ -1,4 +1,4 @@
-# Connected water-bench modules — interface revision W2
+# Connected water-bench modules — interface revision W3
 
 Ticket T-21BC0885. Scope: one water/dye engineering lane. No cell, pathogen,
 vector, culture, assay or incubation procedure is specified here.
@@ -207,3 +207,23 @@ half the clearance diameter; bracket/base/rail clearance also constrains travel.
 The two separate printed candidates need slicer and material review; no load
 capacity or support-free print is established. This does not modify a balance
 or require holes drilled in Alex's bench.
+
+## Non-actuated source saddle pair
+
+`water_transfer_dock --module source` uses
+`models/water_bench_source_saddle.toml`. Two separate 24×58×22 mm saddle
+candidates support a generic Ø20×100 mm barrel envelope on a common X axis,
+with their centers 60 mm apart. Each has four nominal M3 base holes and a
+transverse strap passage. The two STL files A/B represent two physical copies
+of the same saddle. A reference barrel and configured assembly are review-only.
+
+The model checks clearance for the entered washer envelope around the raised
+saddle, base edge lands, separation between tie and bolt passages, floor
+material below the saddle, support spacing and reference length. Unknown fields,
+missing values and invalid dimensions fail before publication. These checks do
+not establish an actual syringe fit: its flange, plunger and outlet are absent.
+There is no axial restraint and no actuator-load qualification. Independently
+anchor the bases and choose straps against measured source dimensions; do not
+use a loose barrel as a pump drive assembly. The historical pump redesign stays
+open. This support is useful for organizing a manual water-only source while
+that drive decision remains unresolved.
