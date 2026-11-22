@@ -1,5 +1,5 @@
 {
-  "revision": "W0",
+  "revision": "W1",
   "scope": "single-lane water/dye engineering only",
   "physical_system_verified": false,
   "modules": [
@@ -17,7 +17,8 @@
         "stop",
         "liquid_connector"
       ],
-      "next": "measure_selected_hardware_and_convert_adjustable_pump_design"
+      "next": "resolve_flow_requirements_and_compare_complete_purchased_vs_custom_pump_routes",
+      "reference_candidate": "New Era NE-1000"
     },
     {
       "id": "M02",
@@ -59,7 +60,9 @@
       "design_state": "candidate_01_exported_and_verified",
       "physical_state": "unverified",
       "config": "models/water_transfer_dock.toml",
-      "next": "measured_component_fit_and_print_review"
+      "next": "measured_component_fit_and_print_review",
+      "latest_export_evidence_job_id": "8d3248eb-aa95-4525-92c6-629dd55b97ca",
+      "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970"
     },
     {
       "id": "M05",
@@ -70,9 +73,17 @@
       "selector": "receiver",
       "scale_selection": null,
       "vial_selection": null,
-      "next": "export_verify_review_and_measure_actual_scale_vial",
+      "next": "design_independent_adjustable_support_from_exact_balance_pan_and_draft_shield_interfaces",
       "evidence_job_id": "a174a1ca-63c9-4717-b501-3456e72c3bc7",
-      "evidence_source_sha": "bd99b90f27ac2f4934f51b61def7e89a3568a66c"
+      "evidence_source_sha": "bd99b90f27ac2f4934f51b61def7e89a3568a66c",
+      "reference_candidates": [
+        "A&D FX-120i",
+        "A&D EJ-123 with EJ-03",
+        "A&D EJ-303 with EJ-03"
+      ],
+      "commercial_fit_verified": false,
+      "latest_export_evidence_job_id": "8d3248eb-aa95-4525-92c6-629dd55b97ca",
+      "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970"
     },
     {
       "id": "M06",
@@ -83,9 +94,12 @@
       "selector": "controller",
       "board_selection": null,
       "power_selection": null,
-      "next": "export_verify_review_then_select_electronics_and_stop_design",
+      "next": "review_real_stop_and_power_design_then_determine_if_separate_io_board_is_needed",
       "evidence_job_id": "a174a1ca-63c9-4717-b501-3456e72c3bc7",
-      "evidence_source_sha": "bd99b90f27ac2f4934f51b61def7e89a3568a66c"
+      "evidence_source_sha": "bd99b90f27ac2f4934f51b61def7e89a3568a66c",
+      "first_lane_role": "optional_io_not_required_for_direct_serial_architecture",
+      "latest_export_evidence_job_id": "8d3248eb-aa95-4525-92c6-629dd55b97ca",
+      "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970"
     },
     {
       "id": "M07",
@@ -153,5 +167,9 @@
     "multi_position_carrier",
     "automated_handling"
   ],
-  "system_document": "docs/water-bench-system.md"
+  "system_document": "docs/water-bench-system.md",
+  "hardware_ownership": "none_selected_confirmed_by_Alex",
+  "hardware_basis_document": "docs/water-bench-hardware-basis.md",
+  "reference_architecture": "host_direct_serial_pump_and_balance",
+  "reference_architecture_adopted": false
 }

@@ -1,4 +1,4 @@
-# Connected water-bench modules — interface revision W0
+# Connected water-bench modules — interface revision W1
 
 Ticket T-21BC0885. Scope: one water/dye engineering lane. No cell, pathogen,
 vector, culture, assay or incubation procedure is specified here.
@@ -182,3 +182,5 @@ Keep all generated files and diagnostics on the mounted ORICO filesystem. Inspec
 the actual mesh/preview outputs and preserve native tool receipts with each candidate.
 
 Pump redesign findings and required measurements: [pump review](water-bench-pump-review.md).
+
+Hardware ownership is now confirmed: none selected. See the [sourced hardware basis](water-bench-hardware-basis.md) for the proposed direct-serial first lane, alternatives, measurement budget and commercial-fit changes still required. The generic fixtures remain provisional.

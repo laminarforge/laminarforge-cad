@@ -1,0 +1,108 @@
+{
+  "revision": "W1",
+  "scope": "water_only_engineering",
+  "ownership_confirmed": "none_selected",
+  "purchase_authorized": false,
+  "selected_bom": null,
+  "reference_architecture": {
+    "status": "proposed_not_adopted",
+    "host": "existing Mac",
+    "pump_link": "separate USB-to-RS-232 adapter and manufacturer cable",
+    "balance_link": "separate USB-to-RS-232 adapter and documented cable",
+    "separate_io_board_required": false,
+    "hardware_stop_design": "pending"
+  },
+  "candidates": [
+    {
+      "role": "pump",
+      "model": "New Era NE-1000",
+      "listed_base_price_usd": 825,
+      "price_excludes": [
+        "shipping",
+        "tax",
+        "syringe",
+        "plumbing",
+        "serial cable/adapter"
+      ],
+      "source": "https://www.syringepump.com/NE-1000.php",
+      "status": "engineering_reference_not_selected"
+    },
+    {
+      "role": "pump",
+      "model": "New Era NE-501",
+      "listed_base_price_usd": 575,
+      "price_excludes": [
+        "power supply",
+        "operator interface",
+        "shipping",
+        "tax",
+        "syringe",
+        "plumbing",
+        "serial cable/adapter"
+      ],
+      "source": "https://www.syringepump.com/oem.php",
+      "status": "OEM_alternative_not_selected"
+    },
+    {
+      "role": "balance",
+      "model": "A&D FX-120i",
+      "capacity_g": 122,
+      "readability_g": 0.001,
+      "listed_repeatability_g": 0.001,
+      "interface": "RS-232 standard",
+      "price_usd": null,
+      "availability": "manufacturer_US_page_unavailable_when_checked",
+      "source": "https://weighing.andonline.com/product/fzfx-series-precision-balances-fx-120i/",
+      "status": "performance_reference_not_selected"
+    },
+    {
+      "role": "balance",
+      "model": "A&D EJ-123 with EJ-03",
+      "capacity_g": 120,
+      "readability_g": 0.001,
+      "listed_repeatability_g": 0.003,
+      "interface": "RS-232 optional EJ-03",
+      "price_usd": null,
+      "source": "https://www.aandd.jp/products/manual/balances/ej1mg_manual.pdf",
+      "status": "quote_alternative_not_selected"
+    },
+    {
+      "role": "balance",
+      "model": "A&D EJ-303 with EJ-03",
+      "capacity_g": 310,
+      "readability_g": 0.001,
+      "listed_repeatability_g": 0.003,
+      "interface": "RS-232 optional EJ-03",
+      "price_usd": null,
+      "source": "https://www.aandd.jp/products/manual/balances/ej1mg_manual.pdf",
+      "status": "higher_capacity_alternative_not_selected"
+    }
+  ],
+  "unresolved_requirements": {
+    "flow_range_ul_min": null,
+    "measurement_uncertainty": null,
+    "run_duration_min": null,
+    "delivered_budget_usd": null,
+    "syringe_model": null,
+    "tubing_id_od_mm": null,
+    "fittings": null,
+    "coupon_working_limits": null,
+    "exact_balance_variant_and_drawing": null
+  },
+  "cad_gaps": [
+    "receiver does not fit documented FX-family body envelope",
+    "pan origin and height must be independent of balance body",
+    "draft-shield access and rear cable/front key clearances unresolved",
+    "single enlarged integral frame is not the preferred support design",
+    "generic carrier hole pitch is not an UNO board mounting pattern"
+  ],
+  "verification": {
+    "physical_hardware": false,
+    "serial_identity_read": false,
+    "mass_samples_observed": false,
+    "stop_reconnect_observed": false,
+    "water_delivery_observed": false
+  },
+  "primary_sources_checked_date_utc": "2026-11-22",
+  "design_document": "docs/water-bench-hardware-basis.md"
+}
