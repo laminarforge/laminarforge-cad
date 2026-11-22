@@ -1,0 +1,13 @@
+# WATER-ONLY REVIEW MESH. Not fabrication release; fitting and bond process open.
+# Outer dimensions assert the current dock interface; internal geometry is adjustable.
+length_mm = 75.0
+width_mm = 25.0
+body_thickness_mm = 3.0
+bottom_thickness_mm = 1.0
+channel_width_mm = 0.50
+channel_depth_mm = 0.20
+chamber_length_mm = 14.0
+chamber_width_mm = 6.0
+port_pitch_mm = 54.0
+port_diameter_mm = 2.0
+minimum_bond_land_mm = 2.0

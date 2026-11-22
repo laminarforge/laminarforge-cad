@@ -33,7 +33,7 @@ This revision does not establish an ingress rating or electrical protection.
 | --- | --- | --- | --- | --- |
 | M01 | Pump/source | Historical `syringe_pump_standalone` is frozen concept geometry; PHIL/open-well research is another earlier path, not an adopted closed-flow controller | Actual pump, syringe barrel/flange/plunger dimensions, travel, driver, stop/limit behavior, connector | Select and measure the actual assembly; observe commanded displacement and independent delivered mass |
 | M02 | Tubing/fittings | Dry guides use provisional 4 mm OD; wetted parts are purchased components | Tube ID/OD, bend radius, lengths, fitting interfaces, dead volume and material compatibility | Assemble and photograph a fully identified water-only harness; inspect bends, connections and free outlet |
-| M03 | Flow coupon | Rev D0 review draft, nominal 75×25 mm; dock thickness assumption 4 mm | Bottom/bond stack, bought fittings, ports, actual thickness, fabrication/inspection definition | Advisor/vendor review followed by measured water-only first article; no fabrication release in this revision |
+| M03 | Flow coupon | Adjustable water-only review geometry based on Rev D0, 75×25×4 mm nominal stack | Bottom/bond stack, bought fittings, ports, actual thickness, fabrication/inspection definition | Advisor/vendor review followed by measured water-only first article; no fabrication release in this revision |
 | M04 | Dry coupon dock | Candidate 01 already generated and verified; tray, cradle, two guides | Actual coupon/tube fit and print/material choice | Physical dry fit without forcing coupon or pinching tube; inspect floor and sockets |
 | M05 | Receiver/measurement | New adjustable on-pan vial nest plus independently supported outlet frame | Actual scale body/pan, accuracy/resolution/interface, vial dimensions, tube anchoring and support stability | Fit selected scale/vial; demonstrate no mechanical contact or load path from tubing/frame into weighing assembly |
 | M06 | Controller/electrical | New adjustable generic dry board carrier; not an electronics design | Board/driver, actual hole pattern and connectors, power ratings, limit inputs, stop circuit and cable restraint | Review actual wiring/power/stop design; verify clearances and observed motor stop before commanded water run |
@@ -87,6 +87,30 @@ cannot touch the table or conductive features. The two end windows are generic
 connector clearances, not strain relief or proof of USB/power connector fit.
 The carrier is open, has no wet-area or electrical rating, and is not a protective
 enclosure. Do not energize hardware based on this dry model.
+
+## Water-only coupon review contract
+
+Use `water_transfer_dock --module coupon`, with
+`models/water_bench_coupon.toml`. This makes review meshes for the proposed
+Rev D0 topology: one inlet, one chamber and one outlet. The 75×25×4 mm outer
+interface is asserted to match the current dock. Internal channel/chamber/port
+dimensions can vary within checked bounds without changing Rust.
+
+Default body 3 mm and bottom 1 mm are provisional; the zero-thickness bond
+interface is a geometry assumption. Defaults retain the earlier proposed
+0.50×0.20 mm channel and 14×6×0.20 mm chamber. Ports at X±27 mm have a 2 mm
+review bore, which is **not matched to a selected fitting**. These dimensions
+do not establish manufacturability, acceptable pressure, bond integrity or flow.
+
+The generator checks port/channel/chamber intersection requirements, nominal
+roof and edge/bond lands, actual mesh bounds and sampled openings/solid lands.
+It also exports an intended fluid-space mesh for connectivity inspection.
+The underside-view mesh is the same body turned over, not another part.
+Every coupon mesh is named REVIEW or VIEW_ONLY. Neither these STL files nor a
+faceted conversion to STEP supplies a fabricator-approved analytic solid or a
+controlled drawing. Keep the earlier advisor/vendor review gate in
+`microfluidic_chip_revd_first_article_review_rfq.md`; do not send this as a
+released fabrication package or print it as the functional fluidic article.
 
 ## Controller and record design
 
@@ -152,6 +176,7 @@ receipt-authorized tool (no direct compiler or manual build):
 ```
 
 Repeat with `--verify` and the same directory. Use `controller` with its matching
-config for M06. Omitting `--module` preserves the existing dock behavior and config.
+config for M06, or `coupon` and `water_bench_coupon.toml` for review geometry.
+Omitting `--module` preserves the existing dock behavior and config.
 Keep all generated files and diagnostics on the mounted ORICO filesystem. Inspect
 the actual mesh/preview outputs and preserve native tool receipts with each candidate.

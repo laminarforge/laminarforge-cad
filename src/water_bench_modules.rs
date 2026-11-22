@@ -608,6 +608,238 @@ impl Controller {
     }
 }
 
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct Coupon {
+    length_mm: f64,
+    width_mm: f64,
+    body_thickness_mm: f64,
+    bottom_thickness_mm: f64,
+    channel_width_mm: f64,
+    channel_depth_mm: f64,
+    chamber_length_mm: f64,
+    chamber_width_mm: f64,
+    port_pitch_mm: f64,
+    port_diameter_mm: f64,
+    minimum_bond_land_mm: f64,
+}
+impl Coupon {
+    fn validate(&self) -> Result<(), String> {
+        finite(self)?;
+        require((self.length_mm-75.).abs()<1e-6 && (self.width_mm-25.).abs()<1e-6 && (self.body_thickness_mm+self.bottom_thickness_mm-4.).abs()<1e-6,"current dock interface requires 75x25x4 mm; revise mating contract explicitly for other envelopes")?;
+        require(
+            (0.7..=1.5).contains(&self.bottom_thickness_mm)
+                && (2.5..=3.3).contains(&self.body_thickness_mm),
+            "unsupported provisional body/bottom stack",
+        )?;
+        require(
+            (0.3..=1.).contains(&self.channel_width_mm)
+                && (0.1..=0.5).contains(&self.channel_depth_mm)
+                && self.body_thickness_mm - self.channel_depth_mm >= 1.5,
+            "invalid channel or insufficient roof",
+        )?;
+        require(
+            (8. ..=20.).contains(&self.chamber_length_mm)
+                && (3. ..=10.).contains(&self.chamber_width_mm)
+                && self.channel_width_mm < self.chamber_width_mm,
+            "invalid chamber/channel transition",
+        )?;
+        require(
+            (1. ..=4.).contains(&self.port_diameter_mm)
+                && self.port_diameter_mm >= self.channel_width_mm
+                && (2. ..=4.).contains(&self.minimum_bond_land_mm),
+            "invalid unselected port/bond-land envelope",
+        )?;
+        require(
+            self.port_pitch_mm / 2.
+                > self.chamber_length_mm / 2.
+                    + self.port_diameter_mm / 2.
+                    + self.minimum_bond_land_mm,
+            "port overlaps chamber transition",
+        )?;
+        require(
+            self.length_mm / 2. - self.port_pitch_mm / 2. - self.port_diameter_mm / 2.
+                >= self.minimum_bond_land_mm
+                && self.width_mm / 2.
+                    - (self.chamber_width_mm / 2.).max(self.port_diameter_mm / 2.)
+                    >= self.minimum_bond_land_mm,
+            "insufficient nominal edge/bond land",
+        )
+    }
+    fn void(&self, epsilon: f64) -> Part {
+        let mut p = block(
+            "channel",
+            self.port_pitch_mm,
+            self.channel_width_mm,
+            self.channel_depth_mm + epsilon,
+            -epsilon,
+        ) + block(
+            "chamber",
+            self.chamber_length_mm,
+            self.chamber_width_mm,
+            self.channel_depth_mm + epsilon,
+            -epsilon,
+        );
+        for sign in [-1., 1.] {
+            p = p + cylinder(
+                "port",
+                self.port_diameter_mm / 2.,
+                self.body_thickness_mm + 2. * epsilon,
+                -epsilon,
+            )
+            .translate(sign * self.port_pitch_mm / 2., 0., 0.);
+        }
+        p
+    }
+    fn body(&self) -> Part {
+        block(
+            "coupon_body",
+            self.length_mm,
+            self.width_mm,
+            self.body_thickness_mm,
+            0.,
+        ) - self.void(E)
+    }
+    fn bottom(&self) -> Part {
+        block(
+            "coupon_bottom",
+            self.length_mm,
+            self.width_mm,
+            self.bottom_thickness_mm,
+            0.,
+        )
+    }
+    fn exports(&self) -> Vec<Export> {
+        let low = [-self.length_mm / 2., -self.width_mm / 2., 0.];
+        let high = [
+            self.length_mm / 2.,
+            self.width_mm / 2.,
+            self.body_thickness_mm,
+        ];
+        let vx = (self.port_pitch_mm + self.port_diameter_mm) / 2.;
+        let vy = self.chamber_width_mm.max(self.port_diameter_mm) / 2.;
+        vec![
+            Export {
+                name: "coupon_body_REVIEW_NOT_FOR_MANUFACTURE.stl",
+                part: self.body(),
+                bounds: (low, high),
+                role: "water_only_review_body_not_fabrication_release",
+            },
+            Export {
+                name: "coupon_bottom_REVIEW_NOT_FOR_MANUFACTURE.stl",
+                part: self.bottom(),
+                bounds: (low, [high[0], high[1], self.bottom_thickness_mm]),
+                role: "unselected_bottom_and_bond_stack_review_only",
+            },
+            Export {
+                name: "coupon_assembly_REVIEW_NOT_FOR_MANUFACTURE.stl",
+                part: self.bottom() + self.body().translate(0., 0., self.bottom_thickness_mm),
+                bounds: (low, [high[0], high[1], 4.]),
+                role: "nominal_zero_bondline_assembly_review_only",
+            },
+            Export {
+                name: "coupon_channel_face_VIEW_ONLY.stl",
+                part: self
+                    .body()
+                    .rotate(180., 0., 0.)
+                    .translate(0., 0., self.body_thickness_mm),
+                bounds: (low, high),
+                role: "alternate_underside_view_same_body_not_additional_part",
+            },
+            Export {
+                name: "coupon_fluid_space_VIEW_ONLY.stl",
+                part: self.void(0.),
+                bounds: ([-vx, -vy, 0.], [vx, vy, self.body_thickness_mm]),
+                role: "negative_space_visualization_not_a_physical_part",
+            },
+        ]
+    }
+    fn probes(&self) -> Vec<Probe> {
+        let mut probes = vec![
+            Probe {
+                index: 0,
+                name: "chamber_open_at_bond_face",
+                point: [0., 0., self.channel_depth_mm / 2.],
+                solid: false,
+            },
+            Probe {
+                index: 0,
+                name: "chamber_roof",
+                point: [0., 0., self.channel_depth_mm + 0.3],
+                solid: true,
+            },
+            Probe {
+                index: 0,
+                name: "bond_land",
+                point: [
+                    0.,
+                    self.chamber_width_mm / 2. + self.minimum_bond_land_mm / 2.,
+                    self.channel_depth_mm / 2.,
+                ],
+                solid: true,
+            },
+            Probe {
+                index: 1,
+                name: "bottom_closed",
+                point: [0., 0., self.bottom_thickness_mm / 2.],
+                solid: true,
+            },
+            Probe {
+                index: 2,
+                name: "assembled_chamber_void",
+                point: [
+                    0.,
+                    0.,
+                    self.bottom_thickness_mm + self.channel_depth_mm / 2.,
+                ],
+                solid: false,
+            },
+            Probe {
+                index: 4,
+                name: "fluid_chamber",
+                point: [0., 0., self.channel_depth_mm / 2.],
+                solid: true,
+            },
+        ];
+        for sign in [-1., 1.] {
+            let x = sign * (self.port_pitch_mm + self.chamber_length_mm) / 4.;
+            probes.push(Probe {
+                index: 0,
+                name: "channel_connects_chamber_and_port",
+                point: [x, 0., self.channel_depth_mm / 2.],
+                solid: false,
+            });
+            probes.push(Probe {
+                index: 0,
+                name: "through_port",
+                point: [
+                    sign * self.port_pitch_mm / 2.,
+                    0.,
+                    self.body_thickness_mm / 2.,
+                ],
+                solid: false,
+            });
+            probes.push(Probe {
+                index: 4,
+                name: "fluid_channel",
+                point: [x, 0., self.channel_depth_mm / 2.],
+                solid: true,
+            });
+            probes.push(Probe {
+                index: 4,
+                name: "fluid_port",
+                point: [
+                    sign * self.port_pitch_mm / 2.,
+                    0.,
+                    self.body_thickness_mm / 2.,
+                ],
+                solid: true,
+            });
+        }
+        probes
+    }
+}
+
 fn publish<P: Serialize>(
     args: &Args,
     model: &str,
@@ -678,6 +910,20 @@ fn publish<P: Serialize>(
 pub fn run(args: &Args, module: &str) -> Result<(), Box<dyn std::error::Error>> {
     let raw = fs::read_to_string(&args.config)?;
     match module {
+        "coupon" => {
+            let p: Coupon = toml::from_str(&raw)?;
+            p.validate()?;
+            let design = json!({"use":"water/dye engineering review only","fabrication_released":false,"outer_envelope_mm":[p.length_mm,p.width_mm,4.],"port_centers_body_mm":[[-p.port_pitch_mm/2.,0.],[p.port_pitch_mm/2.,0.]],"chamber_size_mm":[p.chamber_length_mm,p.chamber_width_mm,p.channel_depth_mm],"channel_size_mm":[p.channel_width_mm,p.channel_depth_mm],"assembly_transforms":[{"file":"coupon_bottom_REVIEW_NOT_FOR_MANUFACTURE.stl","translation_mm":[0.,0.,0.]},{"file":"coupon_body_REVIEW_NOT_FOR_MANUFACTURE.stl","translation_mm":[0.,0.,p.bottom_thickness_mm]},{"file":"coupon_fluid_space_VIEW_ONLY.stl","translation_mm":[0.,0.,p.bottom_thickness_mm],"negative_space_only":true}],"review_decisions_open":["actual bought fitting and port interface","body and bottom materials","bond process, bond-line thickness and intrusion allowance","dimensional tolerances and inspection","fabricator-accepted analytic solid and controlled drawings","leak/pressure criteria and physical flow observations"],"assembly_rules":["No STL here is a manufacturing release. Review with the selected fabricator first.","Zero-thickness bond interface is a geometric assumption, not a specified adhesive or sealing process.","The underside-view STL is the same body turned over, not an extra component.","The fluid-space STL shows intended empty volume; never manufacture it as a part.","No fittings, seals, tubing or biological features are modeled." ]});
+            publish(
+                args,
+                "water_bench_coupon",
+                &raw,
+                &p,
+                p.exports(),
+                p.probes(),
+                design,
+            )
+        }
         "receiver" => {
             let p: Receiver = toml::from_str(&raw)?;
             p.validate()?;
