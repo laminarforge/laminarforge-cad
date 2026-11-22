@@ -21,7 +21,9 @@
       "reference_candidate": "New Era NE-1000",
       "manual_source_support_config": "models/water_bench_source_saddle.toml",
       "manual_source_support_selector": "source",
-      "manual_source_support_state": "implemented_generation_pending"
+      "manual_source_support_state": "20mm_and_10mm_candidates_exported_verified",
+      "manual_source_evidence_source_sha": "763b65743d2c4e3d4f0742fa9733932b26482a25",
+      "manual_source_evidence_job_id": "18941b6b-d3e8-4f05-847a-0986dda914f4"
     },
     {
       "id": "M02",
@@ -91,9 +93,9 @@
       "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970",
       "independent_support_config": "models/water_bench_outlet_support.toml",
       "independent_support_selector": "outlet",
-      "independent_support_state": "candidate_01_exported_verified",
-      "independent_support_evidence_job_id": "8da3e6bf-c659-49f3-a183-8912436b2ffc",
-      "independent_support_evidence_source_sha": "de532b94db059b9b6122215c74dccc3cbe95f4ee"
+      "independent_support_state": "long_and_short_high_candidates_exported_verified",
+      "independent_support_evidence_job_id": "18941b6b-d3e8-4f05-847a-0986dda914f4",
+      "independent_support_evidence_source_sha": "763b65743d2c4e3d4f0742fa9733932b26482a25"
     },
     {
       "id": "M06",
@@ -114,10 +116,11 @@
     {
       "id": "M07",
       "name": "instrumentation_observation",
-      "design_state": "requirements",
+      "design_state": "observation_interfaces_defined_acquisition_pending",
       "physical_state": "unverified",
       "instrument_selections": [],
-      "next": "identify_real_measurement_and_camera_interfaces"
+      "next": "identify_real_measurement_and_camera_interfaces",
+      "document": "docs/water-bench-observation-plan.md"
     },
     {
       "id": "M08",
@@ -125,7 +128,10 @@
       "design_state": "state_and_observation_contract",
       "physical_state": "unverified",
       "hardware_driver_implemented": false,
-      "next": "implement_selected_device_commands_readings_and_stop_observations"
+      "next": "implement_selected_device_commands_readings_and_stop_observations",
+      "engineering_plan_recorder": "tools/water_bench_record.py",
+      "engineering_plan_recorder_state": "implemented_end_to_end_execution_pending",
+      "document": "docs/water-bench-records.md"
     }
   ],
   "connections": [

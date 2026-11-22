@@ -227,3 +227,5 @@ anchor the bases and choose straps against measured source dimensions; do not
 use a loose barrel as a pump drive assembly. The historical pump redesign stays
 open. This support is useful for organizing a manual water-only source while
 that drive decision remains unresolved.
+
+The [engineering-plan recorder](water-bench-records.md) implements configuration/evidence storage only. The [observation plan](water-bench-observation-plan.md) defines M07 image/readout interfaces; physical acquisition and M08 device control remain pending.
