@@ -180,3 +180,5 @@ config for M06, or `coupon` and `water_bench_coupon.toml` for review geometry.
 Omitting `--module` preserves the existing dock behavior and config.
 Keep all generated files and diagnostics on the mounted ORICO filesystem. Inspect
 the actual mesh/preview outputs and preserve native tool receipts with each candidate.
+
+Pump redesign findings and required measurements: [pump review](water-bench-pump-review.md).

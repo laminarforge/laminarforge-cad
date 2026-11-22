@@ -458,8 +458,9 @@ fn guide(p: &Parameters, d: &Derived) -> Part {
         "open_saddle_body",
         p.guide_length_mm,
         p.guide_body_width_mm,
-        d.guide_height_mm - p.guide_base_thickness_mm,
-        p.guide_base_thickness_mm,
+        // Overlap the base so export produces a fused joint, not touching shells.
+        d.guide_height_mm - p.guide_base_thickness_mm + EPS,
+        p.guide_base_thickness_mm - EPS,
     );
     let saddle = centered_cylinder(
         "oversize_tube_saddle",
