@@ -41,3 +41,41 @@ water delivery before treating a command acknowledgment as a physical result.
 
 All hardware dimensions remain unselected. Do not infer them from historical
 constants or claim print, motion or delivery verification from this review.
+
+## Separate runtime carriage review
+
+`water_transfer_dock --module carriage` with
+`models/water_bench_carriage.toml` creates a separate dry carriage review.
+The historical frozen pump entry point remains untouched. The default body is
+40×76×36 mm, with rod axes along X at Y±24 mm, Z18 mm. Full-length Ø8.6 mm
+clearances continue beyond the rear-loaded Ø15.2×24.5 mm bearing pockets.
+The separate 3 mm end plate has matching rod and lead-screw passages. Four
+nominal M3 through-bolt paths align with the body. The 48 mm body variant is a
+separate adjustable candidate, not a chosen travel/frame dimension.
+
+A rectangular 20.4×20.4 mm nut pocket opens from the same rear face and ends at
+X16.4 mm. Its flats provide a nominal anti-rotation envelope and its front
+shoulder/end plate provide nominal axial lands. Actual nut geometry, clearance,
+endplay, fastening, shimming and load capacity remain unresolved. It is not the
+round historical T8 nut, a selected commercial square nut or a printable thread.
+The displayed reference nut has an unthreaded visualization bore only.
+
+Body and cap review meshes are rotated to pocket-up/flat orientations; assembly
+and REF parts remain in the unrotated X-axis engineering frame. The manifest
+records those transformations and actual mesh checkpoints for through passages,
+bearing insertion, shoulder and cap lands. Every carriage mesh is DRY_FIT_REVIEW
+or REF. These geometry checks do not qualify a powered pump or establish
+alignment, torque, force, backlash, travel, motion or water delivery.
+
+The bearing envelope is consistent with the nominal 8/15/24 mm dimensions in
+[THK's LM8UU product record](https://store-na.thk.com/Product/lm8uu), but no actual
+bearing or shaft is purchased/measured and fit tolerances are not inferred from
+that nominal size. [ServoCity's square-nut product](https://www.servocity.com/3506-series-lead-screw-square-nut-8mm-lead-4-start-16mm-length/)
+illustrates a commercial non-round restraint approach; its M12 attachment and
+full external geometry have NOT been adopted into this provisional pocket.
+
+Next integrate only after choosing measured nut/shaft/bearing interfaces and
+reviewing the motor/frame, guide alignment, full stroke, syringe flange/plunger
+restraint, hard stops/limits, electrical stop and independent delivered mass.
+Do not fabricate or energize a working pump from the old source or this
+standalone carriage review.
