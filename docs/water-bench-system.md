@@ -1,4 +1,4 @@
-# Connected water-bench modules — interface revision W1
+# Connected water-bench modules — interface revision W2
 
 Ticket T-21BC0885. Scope: one water/dye engineering lane. No cell, pathogen,
 vector, culture, assay or incubation procedure is specified here.
@@ -184,3 +184,5 @@ the actual mesh/preview outputs and preserve native tool receipts with each cand
 Pump redesign findings and required measurements: [pump review](water-bench-pump-review.md).
 
 Hardware ownership is now confirmed: none selected. See the [sourced hardware basis](water-bench-hardware-basis.md) for the proposed direct-serial first lane, alternatives, measurement budget and commercial-fit changes still required. The generic fixtures remain provisional.
+
+Alex chose lowest practical cost. The [W2 cost basis](water-bench-low-cost.md) prioritizes manual water-path bring-up, a lower-cost balance candidate and a separate 4.7 mm dry guide config. Motorized operation and full coupon fabrication costs remain open.

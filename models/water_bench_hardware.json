@@ -1,11 +1,11 @@
 {
-  "revision": "W1",
+  "revision": "W2",
   "scope": "water_only_engineering",
   "ownership_confirmed": "none_selected",
   "purchase_authorized": false,
   "selected_bom": null,
   "reference_architecture": {
-    "status": "proposed_not_adopted",
+    "status": "higher_cost_reference_not_adopted",
     "host": "existing Mac",
     "pump_link": "separate USB-to-RS-232 adapter and manufacturer cable",
     "balance_link": "separate USB-to-RS-232 adapter and documented cable",
@@ -76,6 +76,23 @@
       "price_usd": null,
       "source": "https://www.aandd.jp/products/manual/balances/ej1mg_manual.pdf",
       "status": "higher_capacity_alternative_not_selected"
+    },
+    {
+      "role": "balance",
+      "model": "U.S. Solid USS-DBS46-1",
+      "sku": "JFDBS00046-100G",
+      "listed_base_price_usd": 96.49,
+      "capacity_g": 100,
+      "readability_g": 0.001,
+      "repeatability_product_page_g": 0.002,
+      "repeatability_linked_manual_g": 0.003,
+      "linearity_product_page_g": 0.003,
+      "linearity_linked_manual_g": 0.004,
+      "specification_revision_confirmed": false,
+      "availability_confirmed": false,
+      "interface": "RS232 continuous/key output; actual frames unobserved",
+      "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html",
+      "status": "low_cost_candidate_not_selected"
     }
   ],
   "unresolved_requirements": {
@@ -104,5 +121,32 @@
     "water_delivery_observed": false
   },
   "primary_sources_checked_date_utc": "2026-11-22",
-  "design_document": "docs/water-bench-hardware-basis.md"
+  "design_document": "docs/water-bench-hardware-basis.md",
+  "cost_preference": "lowest_practical_cost",
+  "cost_basis_document": "docs/water-bench-low-cost.md",
+  "preferred_bringup": {
+    "status": "proposed_not_selected",
+    "source": "manual syringe or gravity; controlled flow not established",
+    "controller_board_required": false,
+    "balance_candidate": "USS-DBS46-1",
+    "listed_price_subtotal_usd": 116.87,
+    "allowances_usd": [
+      50,
+      120
+    ],
+    "planning_range_usd": [
+      166.87,
+      236.87
+    ],
+    "excluded": [
+      "shipping",
+      "tax",
+      "coupon fabrication bonding inspection",
+      "coupon fittings",
+      "motorized pump",
+      "electronics",
+      "support cost beyond allowance"
+    ],
+    "complete_system_quote": false
+  }
 }

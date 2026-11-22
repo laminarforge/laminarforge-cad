@@ -5,6 +5,8 @@ selected. This document proposes a reference architecture; it is not a purchase,
 selected BOM, fabricated fixture or verified hardware system. Scope is water-only.
 Primary manufacturer sources were checked on 2026-11-22 UTC.
 
+The later [W2 low-cost basis](water-bench-low-cost.md) supersedes this document's procurement priority after Alex chose lowest practical cost. Retain the instrument/interface findings below as higher-cost references.
+
 ## Proposed first lane
 
 Use the Mac as the run coordinator, with separate USB-to-RS-232 connections to a

@@ -1,5 +1,5 @@
 {
-  "revision": "W1",
+  "revision": "W2",
   "scope": "single-lane water/dye engineering only",
   "physical_system_verified": false,
   "modules": [
@@ -17,7 +17,7 @@
         "stop",
         "liquid_connector"
       ],
-      "next": "resolve_flow_requirements_and_compare_complete_purchased_vs_custom_pump_routes",
+      "next": "compare_manual_bringup_with_full_cost_of_required_motorization",
       "reference_candidate": "New Era NE-1000"
     },
     {
@@ -62,7 +62,8 @@
       "config": "models/water_transfer_dock.toml",
       "next": "measured_component_fit_and_print_review",
       "latest_export_evidence_job_id": "8d3248eb-aa95-4525-92c6-629dd55b97ca",
-      "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970"
+      "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970",
+      "alternative_config": "models/water_transfer_dock_4p7mm.toml"
     },
     {
       "id": "M05",
@@ -77,6 +78,7 @@
       "evidence_job_id": "a174a1ca-63c9-4717-b501-3456e72c3bc7",
       "evidence_source_sha": "bd99b90f27ac2f4934f51b61def7e89a3568a66c",
       "reference_candidates": [
+        "U.S. Solid USS-DBS46-1; specification revision unconfirmed",
         "A&D FX-120i",
         "A&D EJ-123 with EJ-03",
         "A&D EJ-303 with EJ-03"
@@ -170,6 +172,8 @@
   "system_document": "docs/water-bench-system.md",
   "hardware_ownership": "none_selected_confirmed_by_Alex",
   "hardware_basis_document": "docs/water-bench-hardware-basis.md",
-  "reference_architecture": "host_direct_serial_pump_and_balance",
-  "reference_architecture_adopted": false
+  "reference_architecture": "manual_bringup_then_performance_driven_motorization",
+  "reference_architecture_adopted": false,
+  "cost_preference": "lowest_practical_cost",
+  "cost_basis_document": "docs/water-bench-low-cost.md"
 }

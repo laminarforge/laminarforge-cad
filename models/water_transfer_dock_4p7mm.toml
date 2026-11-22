@@ -1,0 +1,42 @@
+# Supplier-size candidate: Adafruit 3659 lists 2.5 mm ID / 4.7 mm OD.
+# This changes dry guide sizing only; actual tubing and fitting compatibility remain unverified.
+# Millimeters. These are provisional dry-fit dimensions, not a released fluidic chip.
+# Measure the actual coupon stack and tubing before changing these editable envelopes.
+coupon_length_mm = 75.0
+coupon_width_mm = 25.0
+coupon_thickness_mm = 4.0
+coupon_clearance_per_side_mm = 0.30
+coupon_support_overlap_mm = 2.0
+cradle_wall_mm = 3.0
+cradle_support_thickness_mm = 3.0
+cradle_standoff_mm = 4.0
+cradle_lip_above_coupon_mm = 1.0
+cradle_foot_length_mm = 8.0
+cradle_foot_width_mm = 4.0
+socket_clearance_per_side_mm = 0.25
+socket_depth_mm = 1.8
+socket_bottom_above_floor_mm = 0.4
+socket_wall_mm = 1.5
+tray_length_mm = 160.0
+tray_width_mm = 100.0
+tray_wall_mm = 2.4
+tray_floor_mm = 2.4
+tray_spill_depth_mm = 8.0
+tube_outer_diameter_mm = 4.7
+tube_diametral_clearance_mm = 0.6
+guide_length_mm = 20.0
+guide_base_width_mm = 32.0
+guide_base_thickness_mm = 3.2
+guide_body_width_mm = 12.0
+guide_under_saddle_web_mm = 5.0
+guide_top_wall_mm = 2.0
+guide_mount_pitch_mm = 22.0
+tie_passage_width_mm = 3.4
+tie_passage_height_mm = 1.6
+tie_passage_floor_above_base_mm = 1.6
+mount_hole_diameter_mm = 3.4
+mount_pad_height_mm = 9.0
+nut_pocket_across_flats_mm = 6.0
+nut_pocket_depth_mm = 3.0
+fastener_length_mm = 12.0
+nut_thickness_mm = 2.4
