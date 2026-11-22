@@ -2,7 +2,7 @@
 use super::*;
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct SourceSaddle {
+pub(super) struct SourceSaddle {
     barrel_diameter_mm: f64,
     barrel_diametral_clearance_mm: f64,
     reference_barrel_length_mm: f64,
@@ -21,13 +21,21 @@ struct SourceSaddle {
     support_center_spacing_mm: f64,
 }
 impl SourceSaddle {
+    pub(super) fn base_probe(&self) -> [f64; 3] {
+        [
+            -self.support_center_spacing_mm / 2. + self.saddle_length_mm / 2. - 1.,
+            self.base_width_mm / 2. - 1.,
+            self.base_thickness_mm / 2.,
+        ]
+    }
+
     fn radius(&self) -> f64 {
         (self.barrel_diameter_mm + self.barrel_diametral_clearance_mm) / 2.
     }
     fn body_width(&self) -> f64 {
         2. * (self.radius() + self.saddle_wall_mm)
     }
-    fn validate(&self) -> Result<(), String> {
+    pub(super) fn validate(&self) -> Result<(), String> {
         finite(self)?;
         require(
             (10. ..=32.).contains(&self.barrel_diameter_mm)
@@ -143,7 +151,7 @@ impl SourceSaddle {
         )
         .rotate(0., 90., 0.)
     }
-    fn exports(&self) -> Vec<Export> {
+    pub(super) fn exports(&self) -> Vec<Export> {
         let b = (
             [-self.saddle_length_mm / 2., -self.base_width_mm / 2., 0.],
             [

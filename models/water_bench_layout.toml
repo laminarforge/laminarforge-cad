@@ -1,0 +1,127 @@
+# Combined dry layout, all purchased components remain unselected references.
+[layout]
+source_x_mm = -250.0
+source_y_mm = 100.0
+dock_x_mm = 0.0
+dock_y_mm = 100.0
+outlet_x_mm = 250.0
+outlet_y_mm = 0.0
+minimum_module_gap_mm = 20.0
+minimum_outlet_air_gap_mm = 5.0
+maximum_outlet_air_gap_mm = 30.0
+
+[source]
+# Millimeters. Generic non-actuated barrel support; measure the actual source.
+barrel_diameter_mm = 20.0
+barrel_diametral_clearance_mm = 0.6
+reference_barrel_length_mm = 100.0
+saddle_length_mm = 24.0
+saddle_top_z_mm = 22.0
+saddle_wall_mm = 4.0
+base_width_mm = 58.0
+base_thickness_mm = 6.0
+mount_pitch_x_mm = 14.0
+mount_pitch_y_mm = 42.0
+mount_hole_diameter_mm = 3.4
+washer_envelope_diameter_mm = 7.0
+tie_passage_width_mm = 3.4
+tie_passage_height_mm = 1.6
+tie_passage_bottom_mm = 2.4
+support_center_spacing_mm = 60.0
+
+[dock]
+# Supplier-size candidate: Adafruit 3659 lists 2.5 mm ID / 4.7 mm OD.
+# This changes dry guide sizing only; actual tubing and fitting compatibility remain unverified.
+# Millimeters. These are provisional dry-fit dimensions, not a released fluidic chip.
+# Measure the actual coupon stack and tubing before changing these editable envelopes.
+coupon_length_mm = 75.0
+coupon_width_mm = 25.0
+coupon_thickness_mm = 4.0
+coupon_clearance_per_side_mm = 0.30
+coupon_support_overlap_mm = 2.0
+cradle_wall_mm = 3.0
+cradle_support_thickness_mm = 3.0
+cradle_standoff_mm = 4.0
+cradle_lip_above_coupon_mm = 1.0
+cradle_foot_length_mm = 8.0
+cradle_foot_width_mm = 4.0
+socket_clearance_per_side_mm = 0.25
+socket_depth_mm = 1.8
+socket_bottom_above_floor_mm = 0.4
+socket_wall_mm = 1.5
+tray_length_mm = 160.0
+tray_width_mm = 100.0
+tray_wall_mm = 2.4
+tray_floor_mm = 2.4
+tray_spill_depth_mm = 8.0
+tube_outer_diameter_mm = 4.7
+tube_diametral_clearance_mm = 0.6
+guide_length_mm = 20.0
+guide_base_width_mm = 32.0
+guide_base_thickness_mm = 3.2
+guide_body_width_mm = 12.0
+guide_under_saddle_web_mm = 5.0
+guide_top_wall_mm = 2.0
+guide_mount_pitch_mm = 22.0
+tie_passage_width_mm = 3.4
+tie_passage_height_mm = 1.6
+tie_passage_floor_above_base_mm = 1.6
+mount_hole_diameter_mm = 3.4
+mount_pad_height_mm = 9.0
+nut_pocket_across_flats_mm = 6.0
+nut_pocket_depth_mm = 3.0
+fastener_length_mm = 12.0
+nut_thickness_mm = 2.4
+
+[outlet]
+# Dry candidate, millimeters. No bought balance or vial dimensions are assumed.
+# Base MUST be independently anchored/clamped; not a free-standing stability claim.
+base_length_mm = 112.0
+base_width_mm = 100.0
+base_thickness_mm = 8.0
+rail_width_mm = 40.0
+rail_thickness_mm = 6.0
+rail_height_mm = 212.0
+slot_bottom_z_mm = 40.0
+slot_top_z_mm = 200.0
+mounting_slot_width_mm = 4.6
+mounting_pitch_mm = 20.0
+arm_width_mm = 40.0
+arm_reach_mm = 180.0
+arm_thickness_mm = 8.0
+bracket_height_mm = 30.0
+bracket_thickness_mm = 6.0
+mounting_center_z_mm = 150.0
+tube_outer_diameter_mm = 4.7
+tube_diametral_clearance_mm = 0.6
+tube_end_margin_mm = 12.0
+tie_slot_width_mm = 3.4
+tie_slot_length_mm = 8.0
+tie_slot_center_x_mm = 8.0
+tube_projection_below_arm_mm = 20.0
+anchor_hole_diameter_mm = 4.6
+anchor_pitch_x_mm = 88.0
+anchor_pitch_y_mm = 70.0
+
+[receiver]
+# Provisional envelopes, not selected commercial parts. All dimensions in mm.
+scale_length_mm = 120.0
+scale_width_mm = 120.0
+scale_pan_height_mm = 40.0
+pan_length_mm = 100.0
+pan_width_mm = 100.0
+vial_diameter_mm = 24.0
+vial_height_mm = 50.0
+vial_clearance_per_side_mm = 0.4
+nest_wall_mm = 2.0
+nest_base_mm = 3.0
+nest_capture_height_mm = 8.0
+scale_to_frame_gap_mm = 12.0
+frame_base_mm = 6.0
+post_width_mm = 12.0
+crossbar_depth_mm = 12.0
+crossbar_thickness_mm = 8.0
+tube_outer_diameter_mm = 4.0
+tube_diametral_clearance_mm = 0.6
+outlet_above_vial_mm = 8.0
+tube_projection_below_crossbar_mm = 12.0

@@ -1,4 +1,4 @@
-# Connected water-bench modules — interface revision W3
+# Connected water-bench modules — interface revision W4
 
 Ticket T-21BC0885. Scope: one water/dye engineering lane. No cell, pathogen,
 vector, culture, assay or incubation procedure is specified here.
@@ -229,3 +229,27 @@ open. This support is useful for organizing a manual water-only source while
 that drive decision remains unresolved.
 
 The [engineering-plan recorder](water-bench-records.md) implements configuration/evidence storage only. The [observation plan](water-bench-observation-plan.md) defines M07 image/readout interfaces; physical acquisition and M08 device control remain pending.
+
+## Combined dry layout
+
+`water_transfer_dock --module bench` uses `models/water_bench_layout.toml`.
+It embeds the existing source, dock, outlet and generic collection parameters
+under explicit sections, with a shared layout section. The collection center
+is derived from the outlet tube axis. The independent stand base, source and
+dock have minimum plan-envelope gaps; the nominal tube-tip/vial air gap is
+checked separately. Parameter validation precedes geometry publication.
+
+The initial planning envelope is 610×284×220 mm. The nominal air gap is 22 mm;
+source-to-dock gap 102.4 mm, dock-to-collection gap 92.4 mm, and stand-base to
+collection gap 64 mm. These values are configured envelope relationships, not
+measured installed clearances. The source support and collection references
+have no actual syringe/flange/outlet or commercial scale/draft shield detail.
+The dock contains its reference coupon blank; no fluidic fabrication is implied.
+
+The five VIEW_ONLY exports provide the combined assembly and its four posed
+subassemblies. They are not print orientations or a fabrication release. Use
+the individual module PRINT candidates for slicer/physical review. Tubing,
+fittings, screws, clamps, ties, cables and actual liquid connections remain
+unmodeled. Full collision/access review, anchoring, purchased-part fit and
+water performance remain open. The layout establishes neither a pump nor a
+camera/electronics purchase requirement.

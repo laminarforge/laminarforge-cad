@@ -8,6 +8,8 @@ use serde_json::{json, Value};
 use std::fs;
 use vcad::{centered_cube, centered_cylinder, Part};
 
+#[path = "water_bench_layout.rs"]
+mod layout;
 #[path = "water_bench_outlet.rs"]
 mod outlet;
 #[path = "water_bench_source.rs"]
@@ -917,6 +919,7 @@ pub fn run(args: &Args, module: &str) -> Result<(), Box<dyn std::error::Error>> 
     match module {
         "outlet" => outlet::run(args, &raw),
         "source" => source::run(args, &raw),
+        "bench" => layout::run(args, &raw),
         "coupon" => {
             let p: Coupon = toml::from_str(&raw)?;
             p.validate()?;

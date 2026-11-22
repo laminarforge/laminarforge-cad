@@ -1,5 +1,5 @@
 {
-  "revision": "W3",
+  "revision": "W4",
   "scope": "single-lane water/dye engineering only",
   "physical_system_verified": false,
   "modules": [
@@ -130,8 +130,9 @@
       "hardware_driver_implemented": false,
       "next": "implement_selected_device_commands_readings_and_stop_observations",
       "engineering_plan_recorder": "tools/water_bench_record.py",
-      "engineering_plan_recorder_state": "implemented_end_to_end_execution_pending",
-      "document": "docs/water-bench-records.md"
+      "engineering_plan_recorder_state": "actual_plan_creation_artifact_attachment_and_readback_observed",
+      "document": "docs/water-bench-records.md",
+      "engineering_plan_id": "612ab001-59b9-4b29-9e26-57dd8d169e7a"
     }
   ],
   "connections": [
@@ -189,5 +190,8 @@
   "reference_architecture": "manual_bringup_then_performance_driven_motorization",
   "reference_architecture_adopted": false,
   "cost_preference": "lowest_practical_cost",
-  "cost_basis_document": "docs/water-bench-low-cost.md"
+  "cost_basis_document": "docs/water-bench-low-cost.md",
+  "combined_layout_config": "models/water_bench_layout.toml",
+  "combined_layout_selector": "bench",
+  "combined_layout_state": "implemented_generation_pending"
 }

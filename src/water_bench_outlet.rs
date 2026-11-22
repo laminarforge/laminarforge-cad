@@ -3,7 +3,7 @@ use super::*;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct OutletSupport {
+pub(super) struct OutletSupport {
     base_length_mm: f64,
     base_width_mm: f64,
     base_thickness_mm: f64,
@@ -32,6 +32,21 @@ struct OutletSupport {
     anchor_pitch_y_mm: f64,
 }
 impl OutletSupport {
+    pub(super) fn tube_interface(&self) -> [f64; 3] {
+        [
+            0.,
+            self.arm_y() + self.tube_y(),
+            self.arm_z() - self.tube_projection_below_arm_mm,
+        ]
+    }
+    pub(super) fn base_size(&self) -> [f64; 3] {
+        [
+            self.base_length_mm,
+            self.base_width_mm,
+            self.base_thickness_mm,
+        ]
+    }
+
     fn top(&self) -> f64 {
         self.base_thickness_mm + self.rail_height_mm
     }
@@ -47,7 +62,7 @@ impl OutletSupport {
     fn arm_y(&self) -> f64 {
         (self.rail_thickness_mm + self.bracket_thickness_mm) / 2.
     }
-    fn validate(&self) -> Result<(), String> {
+    pub(super) fn validate(&self) -> Result<(), String> {
         finite(self)?;
         require(
             (90. ..=160.).contains(&self.base_length_mm)
@@ -220,7 +235,7 @@ impl OutletSupport {
         )
         .translate(0., self.tube_y(), 0.)
     }
-    fn exports(&self) -> Vec<Export> {
+    pub(super) fn exports(&self) -> Vec<Export> {
         let xmin = -self.base_length_mm / 2.;
         let ymin = -self.base_width_mm / 2.;
         vec![
