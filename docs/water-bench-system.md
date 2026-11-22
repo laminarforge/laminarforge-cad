@@ -186,3 +186,24 @@ Pump redesign findings and required measurements: [pump review](water-bench-pump
 Hardware ownership is now confirmed: none selected. See the [sourced hardware basis](water-bench-hardware-basis.md) for the proposed direct-serial first lane, alternatives, measurement budget and commercial-fit changes still required. The generic fixtures remain provisional.
 
 Alex chose lowest practical cost. The [W2 cost basis](water-bench-low-cost.md) prioritizes manual water-path bring-up, a lower-cost balance candidate and a separate 4.7 mm dry guide config. Motorized operation and full coupon fabrication costs remain open.
+
+## Independent adjustable outlet support
+
+`water_transfer_dock --module outlet` uses
+`models/water_bench_outlet_support.toml`. This is a separate support path that
+does not wrap a guessed balance body. A 112×100×8 mm base carries a slotted
+40×6 mm vertical rail, total height 220 mm. The separate arm reaches 180 mm
+from its clamp-face center and uses two nominal M4 clearance paths 20 mm apart.
+The configured bolt center is Z150 mm; arm underside Z135 mm; intended 20 mm
+tube projection gives a nominal tip at Z115 mm. Position the actual balance
+and vial independently, then measure the real gap. No instrument fit is implied.
+
+The base must be clamped or anchored to a suitable independent bench/board.
+The footprint is not qualified against cantilever tipping. Select actual
+fasteners, washers/nuts, anchors or clamps and inspect arm deflection, slip,
+retention and tube bend radius before use. Fasteners/tubing are omitted from
+geometry. Slot endpoints are not usable bolt-center endpoints: retain at least
+half the clearance diameter; bracket/base/rail clearance also constrains travel.
+The two separate printed candidates need slicer and material review; no load
+capacity or support-free print is established. This does not modify a balance
+or require holes drilled in Alex's bench.

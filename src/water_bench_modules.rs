@@ -8,6 +8,9 @@ use serde_json::{json, Value};
 use std::fs;
 use vcad::{centered_cube, centered_cylinder, Part};
 
+#[path = "water_bench_outlet.rs"]
+mod outlet;
+
 const E: f64 = 0.02;
 type Bounds = ([f64; 3], [f64; 3]);
 struct Export {
@@ -910,6 +913,7 @@ fn publish<P: Serialize>(
 pub fn run(args: &Args, module: &str) -> Result<(), Box<dyn std::error::Error>> {
     let raw = fs::read_to_string(&args.config)?;
     match module {
+        "outlet" => outlet::run(args, &raw),
         "coupon" => {
             let p: Coupon = toml::from_str(&raw)?;
             p.validate()?;

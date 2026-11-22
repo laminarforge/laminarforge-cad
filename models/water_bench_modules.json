@@ -1,5 +1,5 @@
 {
-  "revision": "W2",
+  "revision": "W3",
   "scope": "single-lane water/dye engineering only",
   "physical_system_verified": false,
   "modules": [
@@ -74,7 +74,7 @@
       "selector": "receiver",
       "scale_selection": null,
       "vial_selection": null,
-      "next": "design_independent_adjustable_support_from_exact_balance_pan_and_draft_shield_interfaces",
+      "next": "export_inspect_adjustable_support_then_measure_actual_balance_vial_and_anchoring",
       "evidence_job_id": "a174a1ca-63c9-4717-b501-3456e72c3bc7",
       "evidence_source_sha": "bd99b90f27ac2f4934f51b61def7e89a3568a66c",
       "reference_candidates": [
@@ -85,7 +85,10 @@
       ],
       "commercial_fit_verified": false,
       "latest_export_evidence_job_id": "8d3248eb-aa95-4525-92c6-629dd55b97ca",
-      "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970"
+      "latest_export_evidence_source_sha": "79540c83801b1e69ef4df65c16e94c82d46ee970",
+      "independent_support_config": "models/water_bench_outlet_support.toml",
+      "independent_support_selector": "outlet",
+      "independent_support_state": "implemented_generation_pending"
     },
     {
       "id": "M06",
