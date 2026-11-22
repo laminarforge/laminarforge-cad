@@ -52,6 +52,15 @@ pipeline allowlist. Activate matching controller and execution configuration
 through supported receipt-bound service controls while no older single-target
 CAD job or receipt is pending. Do not interrupt unrelated running compilation.
 
+Receipt acceptance compares the configured `artifact_targets` set against the
+recipe's complete output set. A successful compiler exit does not pass that gate
+when registration still lists only `chip_priming_tubing_fixture`. Keep both
+`chip_priming_tubing_fixture` and `water_transfer_dock` in the controller and
+execution-worker configuration. Apply registration repairs through receipt-bound
+staging and drain-safe update controls, preserving the registered paths and
+unrelated repository settings. Publish a canonical change to request a fresh
+build after repairing registration; do not invoke a manual compiler retry.
+
 The dock's outputs and execution checkpoints are described in
 [water-transfer-dock.md](water-transfer-dock.md). Its mesh previews come from
 the actual STL vertices. A compiled binary receipt does not establish that those
