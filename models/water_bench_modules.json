@@ -1,0 +1,26 @@
+{
+  "revision": "W0",
+  "scope": "single-lane water/dye engineering only",
+  "physical_system_verified": false,
+  "modules": [
+    {"id":"M01","name":"pump_source","design_state":"historical_concept_and_research","physical_state":"unverified","selection":null,"open_interfaces":["syringe_geometry","travel","driver","limits","stop","liquid_connector"],"next":"measure_selected_hardware_and_convert_adjustable_pump_design"},
+    {"id":"M02","name":"tubing_fittings","design_state":"interface_draft","physical_state":"unverified","selection":null,"tube_od_mm":{"value":4.0,"evidence":"provisional"},"tube_id_mm":null,"minimum_bend_radius_mm":null,"fitting_interface":null,"next":"identify_harness_parts_and_connection_map"},
+    {"id":"M03","name":"flow_coupon","design_state":"advisor_review_draft","physical_state":"unverified","document":"docs/microfluidic_chip_revd_first_article_review_rfq.md","envelope_mm":{"value":[75,25,4],"evidence":"provisional_total_stack"},"next":"resolve_fittings_bond_stack_and_fabrication_review"},
+    {"id":"M04","name":"dry_coupon_dock","design_state":"candidate_01_exported_and_verified","physical_state":"unverified","config":"models/water_transfer_dock.toml","next":"measured_component_fit_and_print_review"},
+    {"id":"M05","name":"collection_measurement","design_state":"adjustable_dry_candidate_source","physical_state":"unverified","config":"models/water_bench_receiver.toml","selector":"receiver","scale_selection":null,"vial_selection":null,"next":"export_verify_review_and_measure_actual_scale_vial"},
+    {"id":"M06","name":"controller_electrical","design_state":"generic_dry_carrier_source","physical_state":"unverified","config":"models/water_bench_controller.toml","selector":"controller","board_selection":null,"power_selection":null,"next":"export_verify_review_then_select_electronics_and_stop_design"},
+    {"id":"M07","name":"instrumentation_observation","design_state":"requirements","physical_state":"unverified","instrument_selections":[],"next":"identify_real_measurement_and_camera_interfaces"},
+    {"id":"M08","name":"control_run_records","design_state":"state_and_observation_contract","physical_state":"unverified","hardware_driver_implemented":false,"next":"implement_selected_device_commands_readings_and_stop_observations"}
+  ],
+  "connections": [
+    {"from":"M01","to":"M02","kind":"liquid","interface_selected":false},
+    {"from":"M02","to":"M03","kind":"liquid","interface_selected":false},
+    {"from":"M03","to":"M05","kind":"liquid_via_free_outlet","interface_selected":false},
+    {"from":"M04","to":"M03","kind":"dry_mechanical_support","fit_verified":false},
+    {"from":"M06","to":"M01","kind":"control_power","interface_selected":false},
+    {"from":"M05","to":"M08","kind":"independent_mass_observation","interface_selected":false},
+    {"from":"M07","to":"M08","kind":"instrument_observations","interface_selected":false}
+  ],
+  "later_design_tracks": ["environmental_enclosure","multi_position_carrier","automated_handling"],
+  "system_document": "docs/water-bench-system.md"
+}

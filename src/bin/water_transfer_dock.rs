@@ -11,6 +11,16 @@ use vcad::{centered_cube, centered_cylinder, Part};
 
 const MODEL: &str = "water_transfer_dock";
 const EPS: f64 = 0.02;
+#[path = "../water_bench_modules.rs"]
+mod bench_modules;
+
+#[derive(Parser)]
+struct BenchArgs {
+    #[command(flatten)]
+    common: Args,
+    #[arg(long, default_value = "dock", value_parser = ["dock", "receiver", "controller"])]
+    module: String,
+}
 const FILES: [&str; 5] = [
     "water_transfer_dock_tray_PRINT.stl",
     "water_transfer_dock_coupon_cradle_PRINT.stl",
@@ -748,7 +758,11 @@ fn write_or_verify(
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse();
+    let options = BenchArgs::parse();
+    if options.module != "dock" {
+        return bench_modules::run(&options.common, &options.module);
+    }
+    let args = options.common;
     let raw = fs::read_to_string(&args.config)?;
     let p: Parameters = toml::from_str(&raw)?;
     let d = p.validate()?;

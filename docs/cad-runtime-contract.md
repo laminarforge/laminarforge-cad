@@ -16,6 +16,9 @@ regenerated STL bytes. These are engineering checks, not manufacturing approval.
 | Generator | Config under models/ | Verification |
 | --- | --- | --- |
 | chip_priming_tubing_fixture | chip_priming_tubing_fixture.toml | same target with --verify |
+| water_transfer_dock (default module) | water_transfer_dock.toml | same target with --verify |
+| water_transfer_dock --module receiver | water_bench_receiver.toml | same selector/config with --verify |
+| water_transfer_dock --module controller | water_bench_controller.toml | same selector/config with --verify |
 | water_transfer_dock | water_transfer_dock.toml | same target with --verify; see water-transfer-dock.md |
 | heating_block | heating_block.toml | heating_block_verify |
 | p0_cartridge_coupon_suite | p0_cartridge_coupons.toml | p0_cartridge_coupon_verify, same --stack selection |

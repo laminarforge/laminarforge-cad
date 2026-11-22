@@ -1,0 +1,21 @@
+# Provisional envelopes, not selected commercial parts. All dimensions in mm.
+scale_length_mm = 120.0
+scale_width_mm = 120.0
+scale_pan_height_mm = 40.0
+pan_length_mm = 100.0
+pan_width_mm = 100.0
+vial_diameter_mm = 24.0
+vial_height_mm = 50.0
+vial_clearance_per_side_mm = 0.4
+nest_wall_mm = 2.0
+nest_base_mm = 3.0
+nest_capture_height_mm = 8.0
+scale_to_frame_gap_mm = 12.0
+frame_base_mm = 6.0
+post_width_mm = 12.0
+crossbar_depth_mm = 12.0
+crossbar_thickness_mm = 8.0
+tube_outer_diameter_mm = 4.0
+tube_diametral_clearance_mm = 0.6
+outlet_above_vial_mm = 8.0
+tube_projection_below_crossbar_mm = 12.0

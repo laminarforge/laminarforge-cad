@@ -1,0 +1,17 @@
+# Provisional generic board envelope/hole pattern, not a selected controller.
+board_length_mm = 80.0
+board_width_mm = 50.0
+board_thickness_mm = 1.6
+mount_pitch_x_mm = 64.0
+mount_pitch_y_mm = 34.0
+mount_hole_diameter_mm = 3.4
+board_edge_clearance_mm = 2.0
+wall_mm = 3.0
+base_mm = 3.0
+foot_height_mm = 4.0
+foot_width_mm = 10.0
+standoff_height_mm = 6.0
+standoff_diameter_mm = 8.0
+rim_height_mm = 8.0
+cable_window_width_mm = 16.0
+cable_window_bottom_above_base_mm = 2.0
