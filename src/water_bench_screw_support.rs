@@ -3,7 +3,7 @@ use super::motor::Motor;
 use super::*;
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Support {
+pub(super) struct Support {
     support: Parameters,
     drive: Motor,
     retention: Option<Retention>,
@@ -52,6 +52,46 @@ struct Parameters {
     minimum_base_gap_mm: f64,
 }
 impl Support {
+    pub(super) fn guide_config(&self) -> &super::frame::Frame {
+        self.drive.guide_config()
+    }
+    pub(super) fn has_axial_candidate(&self) -> bool {
+        self.retention.is_some()
+    }
+    pub(super) fn board_anchors(&self) -> Vec<[f64; 3]> {
+        let p = &self.support;
+        let mut v = self.drive.board_anchors();
+        for x in [-1., 1.] {
+            for y in [-1., 1.] {
+                v.push([
+                    p.base_center_x_mm + x * p.anchor_pitch_x_mm / 2.,
+                    y * p.anchor_pitch_y_mm / 2.,
+                    p.anchor_hole_mm,
+                ]);
+            }
+        }
+        v
+    }
+    pub(super) fn start_layout(&self) -> Part {
+        let mut a = self.drive.layout() + self.stand() + self.housing_reference();
+        if let Some(t) = &self.retention {
+            a = a + self.retention_reference(t);
+        }
+        a
+    }
+    pub(super) fn layout_bounds(&self) -> Bounds {
+        let g = self.drive.layout_bounds();
+        let (a, b) = self.base_bounds();
+        (
+            [g.0[0].min(a[0]), g.0[1].min(a[1]), 0.],
+            [
+                g.1[0].max(b[0]),
+                g.1[1].max(b[1]),
+                g.1[2].max(self.support.plate_top_mm),
+            ],
+        )
+    }
+
     fn base_bounds(&self) -> Bounds {
         let p = &self.support;
         (
@@ -70,7 +110,7 @@ impl Support {
     fn plate_x(&self) -> f64 {
         self.support.pillow_rear_x_mm - self.support.plate_thickness_mm
     }
-    fn validate(&self) -> Result<(), String> {
+    pub(super) fn validate(&self) -> Result<(), String> {
         finite(&self.support)?;
         self.drive.validate()?;
         let p = &self.support;

@@ -324,6 +324,19 @@ impl Motor {
             p.axis_height_mm,
         )
     }
+    pub(super) fn guide_config(&self) -> &Frame {
+        &self.guide
+    }
+    pub(super) fn board_anchors(&self) -> Vec<[f64; 3]> {
+        let p = &self.motor;
+        let mut v = self.guide.board_anchors();
+        for x in [p.anchor_back_x_mm, p.anchor_front_x_mm] {
+            for y in [-p.anchor_pitch_y_mm / 2., p.anchor_pitch_y_mm / 2.] {
+                v.push([p.motor_face_in_guide_x_mm + x, y, p.anchor_hole_diameter_mm]);
+            }
+        }
+        v
+    }
     pub(super) fn axis_height(&self) -> f64 {
         self.motor.axis_height_mm
     }

@@ -378,3 +378,42 @@ the nominal roof peak. Four 8×4×30 mm side braces join the tall flange plates 
 the base outside the reference flange and anchor tool envelopes. They do not
 establish a load rating. Repeat actual export/preflight; a shape change alone is
 not proof of printability or strength.
+
+
+## Raised barrel supports and shared drive-board candidate
+
+The `raised_source` module nests the current axial-support and restraint
+configurations, then rejects differing guide snapshots. The motor, guide,
+radial/axial support, moving keeper and flange yoke use the same carriage start
+and guide dimensions. Their original individual geometries remain separate
+modules; the full dry view constructs their existing geometry helpers.
+
+Two integrated raised saddles, quantity two from one mesh, sit at X280 and X320.
+Each has a 32×90×6 mm independently anchored base, 10 mm thick upright, four
+8×4×35 mm braces, and an open half-round seat. The cut axis is Z80.3 mm for
+0.6 mm diametral clearance, placing the resting circular reference barrel axis
+at nominal Z80.0 mm. The provisional barrel starts at the configured flange
+front (X231.5 or X231.25) and is 100 mm long; it is not an actual selected syringe.
+Saddle end contact, strap force, deformation and barrel strength remain unqualified.
+
+A rectangular 3.4×1.6 mm strap throat runs below the seat, with a 60-degree roof
+and 4 mm nominal land below the barrel bottom. Its position follows the barrel
+size. No strap is selected; a passage alone does not retain the barrel against
+lift. The seat gauge is the actual upper saddle section, trimmed 0.2 mm above
+the roof apex and laid flat, not a separately reconstructed mating geometry.
+
+The reference drive board is 560×150×12 mm, world X−180..380, Y±75, top Z0.
+Its thickness is a visual envelope, not a material or stiffness choice. All
+24 Ø4.5 mm anchor paths derive from the nested motor, radial stand, guide,
+flange yoke and saddle parameters. The earlier 400×150 board is superseded for
+this candidate. The receiver, dock, outlet and controller remain separate bench
+modules; this is not a common plate for every module.
+
+The full dry view omits the tangent-contact generic barrel solid, which is
+exported separately with its exact assembly pose. This preserves reference-part
+identity for actual contact checking and visual composition. It also omits a
+complete syringe stem/outlet and does not establish actual syringe length,
+usable stroke, alignment, force/flow delivery, guarding or powered readiness.
+The previous flange-yoke high preflight warning remains unresolved. Individual
+parts require actual toolpath/material and physical dry-fit review. Do not print
+the full assembly or reference board as a manufacturing job; do not energize.

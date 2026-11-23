@@ -19,6 +19,8 @@ regenerated STL bytes. These are engineering checks, not manufacturing approval.
 | water_transfer_dock (default module) | water_transfer_dock.toml | same target with --verify |
 | water_transfer_dock --module receiver | water_bench_receiver.toml | same selector/config with --verify |
 | water_transfer_dock --module controller | water_bench_controller.toml | same selector/config with --verify |
+| water_transfer_dock --module raised_source | water_bench_raised_source.toml | same selector/config with --verify; integrated dry drive/source/board review |
+| water_transfer_dock --module restraints | water_bench_restraints.toml | same selector/config with --verify; provisional flange/thumb fixtures |
 | water_transfer_dock --module screw_support | water_bench_screw_support.toml | same selector/config with --verify; radial stand only, no axial thrust restraint |
 | water_transfer_dock --module motor | water_bench_motor.toml | same selector/config with --verify; unpowered motor/bracket/layout review |
 | water_transfer_dock --module frame | water_bench_frame.toml | same selector/config with --verify; unpowered guide-frame review |

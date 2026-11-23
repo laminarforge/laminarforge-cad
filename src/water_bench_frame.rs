@@ -236,6 +236,17 @@ impl Frame {
                 .dry_assembly()
                 .translate(x, 0., self.carriage_z())
     }
+    pub(super) fn board_anchors(&self) -> Vec<[f64; 3]> {
+        let (a, b) = self.base_bounds();
+        let e = self.frame.bench_edge_offset_mm;
+        let mut v = Vec::new();
+        for x in [a[0] + e, b[0] - e] {
+            for y in [a[1] + e, b[1] - e] {
+                v.push([x, y, self.frame.bench_hole_diameter_mm]);
+            }
+        }
+        v
+    }
     pub(super) fn restraint_interface(&self) -> [f64; 9] {
         self.carriage.restraint_interface()
     }

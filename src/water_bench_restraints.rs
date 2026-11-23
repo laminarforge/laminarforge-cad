@@ -3,7 +3,7 @@ use super::frame::Frame;
 use super::*;
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Restraints {
+pub(super) struct Restraints {
     restraint: Parameters,
     guide: Frame,
 }
@@ -46,6 +46,44 @@ struct Parameters {
     minimum_wall_mm: f64,
 }
 impl Restraints {
+    pub(super) fn guide_config(&self) -> &Frame {
+        &self.guide
+    }
+    pub(super) fn source_contract(&self) -> [f64; 5] {
+        let p = self.p();
+        [
+            p.axis_height_mm,
+            p.barrel_diameter_mm,
+            p.diametral_clearance_mm,
+            p.yoke_center_x_mm + p.flange_thickness_mm / 2.,
+            p.yoke_center_x_mm + p.yoke_base_length_mm / 2.,
+        ]
+    }
+    pub(super) fn board_anchors(&self) -> Vec<[f64; 3]> {
+        let p = self.p();
+        let mut v = Vec::new();
+        for x in [-1., 1.] {
+            for y in [-1., 1.] {
+                v.push([
+                    p.yoke_center_x_mm + x * p.anchor_pitch_x_mm / 2.,
+                    y * p.anchor_pitch_y_mm / 2.,
+                    p.anchor_hole_mm,
+                ]);
+            }
+        }
+        v
+    }
+    pub(super) fn attached_start(&self) -> Part {
+        let p = self.p();
+        let pos = self.guide.restraint_positions();
+        (self.moving() + self.thumb()).translate(pos[0], 0., pos[2])
+            + (self.yoke() + self.flange()).translate(p.yoke_center_x_mm, 0., 0.)
+    }
+    pub(super) fn assembly_top(&self) -> f64 {
+        self.yoke_top()
+            .max(self.top() + self.guide.restraint_positions()[2])
+    }
+
     fn p(&self) -> &Parameters {
         &self.restraint
     }
@@ -76,7 +114,7 @@ impl Restraints {
     fn yoke_top(&self) -> f64 {
         self.p().axis_height_mm + self.p().flange_height_mm / 2. + self.p().yoke_edge_land_mm
     }
-    fn validate(&self) -> Result<(), String> {
+    pub(super) fn validate(&self) -> Result<(), String> {
         self.guide.validate()?;
         finite(self.p())?;
         let p = self.p();
