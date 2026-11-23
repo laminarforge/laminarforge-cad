@@ -2,6 +2,8 @@
 [retention]
 collar_outer_diameter_mm = 21.0
 collar_length_mm = 9.0
+collar_rotating_envelope_diameter_mm = 24.8
+minimum_collar_plate_axial_gap_mm = 0.5
 thrust_outer_diameter_mm = 15.72
 thrust_length_mm = 4.96
 bore_mm = 8.0
@@ -14,7 +16,7 @@ base_center_x_mm = -48.0
 base_length_mm = 32.0
 base_width_mm = 96.0
 base_thickness_mm = 6.0
-plate_thickness_mm = 6.0
+plate_thickness_mm = 4.0
 plate_width_mm = 64.0
 plate_top_mm = 44.0
 pillow_rear_x_mm = -46.0
@@ -25,7 +27,7 @@ pillow_bore_mm = 8.0
 pillow_mount_pitch_mm = 32.0
 pillow_mount_hole_mm = 4.05
 stand_mount_hole_mm = 4.5
-pilot_clearance_mm = 21.4
+pilot_clearance_mm = 18.4
 axis_height_mm = 28.0
 anchor_pitch_x_mm = 20.0
 anchor_pitch_y_mm = 78.0

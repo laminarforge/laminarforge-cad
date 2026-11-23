@@ -13,6 +13,8 @@ struct Support {
 struct Retention {
     collar_outer_diameter_mm: f64,
     collar_length_mm: f64,
+    collar_rotating_envelope_diameter_mm: f64,
+    minimum_collar_plate_axial_gap_mm: f64,
     thrust_outer_diameter_mm: f64,
     thrust_length_mm: f64,
     bore_mm: f64,
@@ -103,6 +105,8 @@ impl Support {
                     && (8. ..=10.).contains(&t.collar_length_mm)
                     && (15. ..=16.).contains(&t.thrust_outer_diameter_mm)
                     && (4.8..=5.2).contains(&t.thrust_length_mm)
+                    && (24.5..=26.).contains(&t.collar_rotating_envelope_diameter_mm)
+                    && t.minimum_collar_plate_axial_gap_mm >= 0.5
                     && t.minimum_radial_clearance_mm >= 0.2
                     && t.minimum_end_gap_mm >= 3.,
                 "invalid dry axial hardware references",
@@ -111,11 +115,13 @@ impl Support {
             let front =
                 p.pillow_rear_x_mm + p.pillow_length_mm + t.thrust_length_mm + t.collar_length_mm;
             require(
-                (p.pilot_clearance_mm - t.collar_outer_diameter_mm) / 2. + 1e-8
+                (p.pilot_clearance_mm - t.thrust_outer_diameter_mm) / 2. + 1e-8
                     >= t.minimum_radial_clearance_mm
+                    && p.pillow_rear_x_mm-t.thrust_length_mm<=self.plate_x()-t.minimum_collar_plate_axial_gap_mm
+                    && p.axis_height_mm-t.collar_rotating_envelope_diameter_mm/2.>=p.base_thickness_mm+p.minimum_wall_mm
                     && rear - self.drive.coupler_end_x() >= t.minimum_end_gap_mm
                     && self.drive.guide_rear_support_x() - front >= t.minimum_end_gap_mm,
-                "collar hits stand opening, coupler or guide support; dry axial layout rejected",
+                "rotating collar overlaps upright/base or thrust hits opening, coupler or guide support; dry axial layout rejected",
             )?;
         }
         let r = p.pilot_clearance_mm / 2.;
@@ -285,13 +291,13 @@ impl Support {
         (
             [
                 p.pillow_rear_x_mm - t.thrust_length_mm - t.collar_length_mm,
-                -t.collar_outer_diameter_mm / 2.,
-                p.axis_height_mm - t.collar_outer_diameter_mm / 2.,
+                -t.collar_rotating_envelope_diameter_mm / 2.,
+                p.axis_height_mm - t.collar_rotating_envelope_diameter_mm / 2.,
             ],
             [
                 p.pillow_rear_x_mm + p.pillow_length_mm + t.thrust_length_mm + t.collar_length_mm,
-                t.collar_outer_diameter_mm / 2.,
-                p.axis_height_mm + t.collar_outer_diameter_mm / 2.,
+                t.collar_rotating_envelope_diameter_mm / 2.,
+                p.axis_height_mm + t.collar_rotating_envelope_diameter_mm / 2.,
             ],
         )
     }
@@ -318,7 +324,7 @@ impl Support {
         annulus(
             p.pillow_rear_x_mm - t.thrust_length_mm - t.collar_length_mm,
             t.collar_length_mm,
-            t.collar_outer_diameter_mm,
+            t.collar_rotating_envelope_diameter_mm,
         ) + annulus(
             p.pillow_rear_x_mm - t.thrust_length_mm,
             t.thrust_length_mm,
@@ -327,7 +333,7 @@ impl Support {
             + annulus(
                 front + t.thrust_length_mm,
                 t.collar_length_mm,
-                t.collar_outer_diameter_mm,
+                t.collar_rotating_envelope_diameter_mm,
             )
     }
     fn exports(&self) -> Vec<Export> {
@@ -492,7 +498,7 @@ pub(super) fn run(args: &Args, raw: &str) -> Result<(), Box<dyn std::error::Erro
         let rear = s.pillow_rear_x_mm - t.thrust_length_mm - t.collar_length_mm;
         let front =
             s.pillow_rear_x_mm + s.pillow_length_mm + t.thrust_length_mm + t.collar_length_mm;
-        design["axial_retention_candidate"] = json!({"collar_sku":"3504-0804-2109","collar_quantity":2,"thrust_bearing_sku":"1613-0516-0008","thrust_bearing_quantity":2,"supplier_arrangement_basis":"3212-0001-0001 manual page 4; this candidate substitutes second threaded collar for kit hyper hub","supplier_manual_url":"https://www.servocity.com/content/user_manuals/3212-0001-0001_assembly-instructions.min.pdf","thrust_catalog_od_mm":15.5,"thrust_step_od_mm":t.thrust_outer_diameter_mm,"thrust_step_length_mm":t.thrust_length_mm,"axial_stack_bounds_mm":p.retention_bounds(t),"collar_to_coupler_gap_mm":rear-p.drive.coupler_end_x(),"collar_to_guide_support_gap_mm":p.drive.guide_rear_support_x()-front,"collar_radial_stand_clearance_mm":(s.pilot_clearance_mm-t.collar_outer_diameter_mm)/2.,"nominal_face_stack":"rear collar / thrust bearing / pillow block / thrust bearing / front collar","intended_reaction_path":"screw threads -> clamped collar -> thrust bearing -> stationary pillow-block face -> face bolts -> stand -> common board; direction selects opposite stack","qualification":"Topology proposal only. Actual supplier contacts, radial inner/outer race isolation, washer seats, endplay, preload, bolt access, collar slip, printed stand strength, and common board remain unqualified. Do not energize.","hardware_reference_mesh":"Smooth annular envelopes, no threads, rolling elements, split collar, pinch bolt, or exact supplier faces; use actual supplier STEP for collision/contact review."});
+        design["axial_retention_candidate"] = json!({"collar_sku":"3504-0804-2109","collar_quantity":2,"thrust_bearing_sku":"1613-0516-0008","thrust_bearing_quantity":2,"supplier_arrangement_basis":"3212-0001-0001 manual page 4; this candidate substitutes second threaded collar for kit hyper hub","supplier_manual_url":"https://www.servocity.com/content/user_manuals/3212-0001-0001_assembly-instructions.min.pdf","thrust_catalog_od_mm":15.5,"thrust_step_od_mm":t.thrust_outer_diameter_mm,"thrust_step_length_mm":t.thrust_length_mm,"axial_stack_bounds_mm":p.retention_bounds(t),"collar_to_coupler_gap_mm":rear-p.drive.coupler_end_x(),"collar_to_guide_support_gap_mm":p.drive.guide_rear_support_x()-front,"nominal_collar_body_diameter_mm":t.collar_outer_diameter_mm,"collar_rotating_envelope_diameter_mm":t.collar_rotating_envelope_diameter_mm,"collar_to_plate_axial_gap_mm":p.plate_x()-(s.pillow_rear_x_mm-t.thrust_length_mm),"thrust_radial_stand_clearance_mm":(s.pilot_clearance_mm-t.thrust_outer_diameter_mm)/2.,"nominal_face_stack":"rear collar / thrust bearing / pillow block / thrust bearing / front collar","intended_reaction_path":"screw threads -> clamped collar -> thrust bearing -> stationary pillow-block face -> face bolts -> stand -> common board; direction selects opposite stack","qualification":"Topology proposal only. Actual supplier contacts, radial inner/outer race isolation, washer seats, endplay, preload, bolt access, collar slip, printed stand strength, and common board remain unqualified. Do not energize.","hardware_reference_mesh":"Smooth annular envelopes, no threads, rolling elements, split collar, pinch bolt, or exact supplier faces; use actual supplier STEP for collision/contact review."});
     }
     publish(
         args,
