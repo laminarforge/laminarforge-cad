@@ -237,3 +237,16 @@ clearance. This independent plate is for a later measured dry fit, not an extra
 structural mounting part or a substitute for a working motor bracket. It is
 rotated flat for review and keeps a circular opening regardless of bracket mode.
 Actual hardware, thread engagement, dimensional accuracy and fit remain pending.
+
+
+The 45-degree diamond did not improve the actual geometry-preflight result:
+it was flagged high risk, versus medium for the 6 mm circular bracket. Preserve
+it as a comparison; do not describe it as print-ready or a validated improvement.
+All three flat gauges reported low geometry risk, which is still not physical fit.
+
+`models/water_bench_motor_steep.toml` adds mode 2: the circular pilot clearance
+plus a 60-degree tangent roof. The circular lower half is preserved; the roof
+peaks at Z50.4 mm, leaving 5.6 mm nominal top land. This keeps the required
+circular pilot envelope while changing its ceiling angle. Additional top/bolt
+lands are validated. Actual exported geometry and preflight comparison must
+establish the observed outcome; angle alone does not qualify printing.

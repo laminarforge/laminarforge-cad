@@ -86,7 +86,7 @@ impl Motor {
                 && (2. * a * a).sqrt() - r - h >= p.minimum_wall_mm,
             "motor holes or reference body conflict with bracket",
         )?;
-        require(p.boss_roof_mode <= 1, "unsupported pilot roof mode")?;
+        require(p.boss_roof_mode <= 2, "unsupported pilot roof mode")?;
         if p.boss_roof_mode == 1 {
             let extent = r * 2_f64.sqrt();
             require(
@@ -95,6 +95,13 @@ impl Motor {
                     && p.plate_width_mm / 2. - extent >= p.minimum_wall_mm
                     && (p.mounting_pitch_mm - extent) / 2_f64.sqrt() - h >= p.minimum_wall_mm,
                 "diamond pilot clearance conflicts with edges or mount holes",
+            )?;
+        }
+        if p.boss_roof_mode == 2 {
+            require(
+                p.plate_top_mm - p.axis_height_mm - 2. * r >= p.minimum_wall_mm
+                    && ((3_f64.sqrt() + 1.) * a - 2. * r) / 2. - h >= p.minimum_wall_mm,
+                "steep pilot roof conflicts with top or mounting holes",
             )?;
         }
         require(
@@ -184,7 +191,7 @@ impl Motor {
                     0.,
                 );
         }
-        part = self.face_clearances(part, p.boss_roof_mode == 1);
+        part = self.face_clearances(part, p.boss_roof_mode);
         for x in [p.anchor_back_x_mm, p.anchor_front_x_mm] {
             for y in [-p.anchor_pitch_y_mm / 2., p.anchor_pitch_y_mm / 2.] {
                 part = part
@@ -199,10 +206,10 @@ impl Motor {
         }
         part
     }
-    fn face_clearances(&self, mut part: Part, diamond: bool) -> Part {
+    fn face_clearances(&self, mut part: Part, roof: u8) -> Part {
         let p = &self.motor;
         let d = p.boss_diameter_mm + p.boss_diametral_clearance_mm;
-        let clearance = if diamond {
+        let clearance = if roof == 1 {
             centered_cube(
                 "diamond_pilot_clearance",
                 p.plate_thickness_mm + 2. * E,
@@ -211,6 +218,29 @@ impl Motor {
             )
             .rotate(45., 0., 0.)
             .translate(p.plate_thickness_mm / 2., 0., p.axis_height_mm)
+        } else if roof == 2 {
+            let round = self.x_cylinder(
+                "round_pilot_clearance",
+                d / 2.,
+                -E,
+                p.plate_thickness_mm + 2. * E,
+                0.,
+                p.axis_height_mm,
+            );
+            let roof_diamond =
+                centered_cube("steep_roof_rhombus", p.plate_thickness_mm + 2. * E, d, d)
+                    .rotate(45., 0., 0.)
+                    .scale(1., (2_f64 / 3.).sqrt(), 2_f64.sqrt())
+                    .translate(p.plate_thickness_mm / 2., 0., p.axis_height_mm);
+            let upper_clip = block(
+                "upper_roof_only",
+                p.plate_thickness_mm + 4. * E,
+                2. * d,
+                d,
+                p.axis_height_mm + 0.49 * d / 2.,
+            )
+            .translate(p.plate_thickness_mm / 2., 0., 0.);
+            round + (roof_diamond & upper_clip)
         } else {
             self.x_cylinder(
                 "full_boss_clearance",
@@ -247,9 +277,11 @@ impl Motor {
             p.base_thickness_mm,
         )
         .translate(p.plate_thickness_mm / 2., 0., 0.);
-        self.face_clearances(face, false)
-            .rotate(0., 90., 0.)
-            .translate(-p.base_thickness_mm, 0., p.plate_thickness_mm)
+        self.face_clearances(face, 0).rotate(0., 90., 0.).translate(
+            -p.base_thickness_mm,
+            0.,
+            p.plate_thickness_mm,
+        )
     }
     fn motor_reference(&self) -> Part {
         let p = &self.motor;
@@ -495,7 +527,7 @@ pub(super) fn run(args: &Args, raw: &str) -> Result<(), Box<dyn std::error::Erro
     let p: Motor = toml::from_str(raw)?;
     p.validate()?;
     let m = &p.motor;
-    let design = json!({"motor_reference":"Adafruit 324 / linked XY42STH34-0354A drawing, unpurchased","coupler_reference":"Adafruit 1176, 5 to 8 mm, outer envelope only","axis":"X","boss_roof_mode":m.boss_roof_mode,"boss_clearance_profile":if m.boss_roof_mode==1 {"diamond with 45 degree roof, inscribed circular pilot clearance"} else {"circular"},"gauge_pilot_profile":"circular regardless of bracket roof mode","axis_height_mm":m.axis_height_mm,"motor_face_in_guide_x_mm":m.motor_face_in_guide_x_mm,"motor_body_bottom_gap_mm":m.axis_height_mm-m.body_square_mm/2.-m.base_thickness_mm,"mount_hole_pitch_yz_mm":[m.mounting_pitch_mm,m.mounting_pitch_mm],"boss_clearance_diameter_mm":m.boss_diameter_mm+m.boss_diametral_clearance_mm,"nominal_shaft_end_gap_mm":m.reference_screw_start_x_mm-m.shaft_length_mm,"worst_reference_shaft_end_gap_mm":m.reference_screw_start_x_mm-m.shaft_length_mm-m.shaft_length_tolerance_mm,"nominal_motor_overlap_with_coupler_outer_mm":m.shaft_length_mm-m.coupler_start_x_mm,"nominal_screw_overlap_with_coupler_outer_mm":m.coupler_start_x_mm+m.coupler_length_mm-m.reference_screw_start_x_mm,"base_to_guide_base_gap_mm":p.guide.base_bounds().0[0]-m.motor_face_in_guide_x_mm-m.base_front_mm,"rules":["Dry mechanical engineering review only. Do not energize this assembly.","Motor body is a conservative square/length envelope; shaft flat, boss projection, mounting threads, wires and connectors are omitted.","Product page and linked drawing differ on winding resistance/holding torque; no force or drive-current design is inferred here.","Coupler is an outer envelope only. Bore transition, insertion depths, set-screw positions, thread-shaft grip and tightening access require actual hardware.","Smooth reference screw has no threads and is not a printable hardware part.","A flexible coupler is not an axial thrust bearing. Screw radial and bidirectional thrust support are still absent.","Separate bases have no structural connection; a common anchored datum, alignment and rigidity are not established.","No syringe restraint, limits, hard stops, guard, driver, power supply or electrical stop circuit is included.","Bracket is in upright engineering orientation; actual slicer supports, material, fasteners and load capacity remain unresolved."]});
+    let design = json!({"motor_reference":"Adafruit 324 / linked XY42STH34-0354A drawing, unpurchased","coupler_reference":"Adafruit 1176, 5 to 8 mm, outer envelope only","axis":"X","boss_roof_mode":m.boss_roof_mode,"boss_clearance_profile":if m.boss_roof_mode==1 {"diamond with 45 degree roof, inscribed circular pilot clearance"} else if m.boss_roof_mode==2 {"circular pilot plus 60 degree tangent roof"} else {"circular"},"gauge_pilot_profile":"circular regardless of bracket roof mode","axis_height_mm":m.axis_height_mm,"motor_face_in_guide_x_mm":m.motor_face_in_guide_x_mm,"motor_body_bottom_gap_mm":m.axis_height_mm-m.body_square_mm/2.-m.base_thickness_mm,"mount_hole_pitch_yz_mm":[m.mounting_pitch_mm,m.mounting_pitch_mm],"boss_clearance_diameter_mm":m.boss_diameter_mm+m.boss_diametral_clearance_mm,"nominal_shaft_end_gap_mm":m.reference_screw_start_x_mm-m.shaft_length_mm,"worst_reference_shaft_end_gap_mm":m.reference_screw_start_x_mm-m.shaft_length_mm-m.shaft_length_tolerance_mm,"nominal_motor_overlap_with_coupler_outer_mm":m.shaft_length_mm-m.coupler_start_x_mm,"nominal_screw_overlap_with_coupler_outer_mm":m.coupler_start_x_mm+m.coupler_length_mm-m.reference_screw_start_x_mm,"base_to_guide_base_gap_mm":p.guide.base_bounds().0[0]-m.motor_face_in_guide_x_mm-m.base_front_mm,"rules":["Dry mechanical engineering review only. Do not energize this assembly.","Motor body is a conservative square/length envelope; shaft flat, boss projection, mounting threads, wires and connectors are omitted.","Product page and linked drawing differ on winding resistance/holding torque; no force or drive-current design is inferred here.","Coupler is an outer envelope only. Bore transition, insertion depths, set-screw positions, thread-shaft grip and tightening access require actual hardware.","Smooth reference screw has no threads and is not a printable hardware part.","A flexible coupler is not an axial thrust bearing. Screw radial and bidirectional thrust support are still absent.","Separate bases have no structural connection; a common anchored datum, alignment and rigidity are not established.","No syringe restraint, limits, hard stops, guard, driver, power supply or electrical stop circuit is included.","Bracket is in upright engineering orientation; actual slicer supports, material, fasteners and load capacity remain unresolved."]});
     publish(
         args,
         "water_bench_motor",
