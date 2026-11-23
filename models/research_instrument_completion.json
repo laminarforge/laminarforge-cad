@@ -1,5 +1,5 @@
 {
-  "revision": "R1",
+  "revision": "R2",
   "purpose": "Finish equipment that serves the intended research workflow; water-only benches are verification equipment, not the completed research instrument.",
   "decision_owner": "Engineering choices delegated to the agent; do not require Alex to choose legacy architecture or invent device operating limits.",
   "source_review_baseline": "c265539fd1ac088df86f1c75d1fe3810764e3a2e",
@@ -67,8 +67,8 @@
       "id": "R02",
       "name": "Actual replaceable vessel and fluid-service interface",
       "owner": "engineering",
-      "state": "No adopted complete vessel/connector/pump combination demonstrated.",
-      "next": "Select a compatible candidate combination from supplier-rated components and complete support-equipment costs; preserve alternatives only where unresolved evidence matters."
+      "state": "F1 prefers NE-501 commercial serial integration; exact research vessel and assembled path not released.",
+      "next": "Close G01/G02 scientific interface and exact working ratings; complete unpriced support roles before procurement."
     },
     {
       "id": "R03",
@@ -101,5 +101,6 @@
   ],
   "work_admission_rule": "New CAD must close an identified instrument interface or evidence gap. Do not add stand-alone provisional fixture families as a substitute for component selection, integration or physical evidence.",
   "next_engineering_priority": "R02: actual vessel/connector/actuator compatibility and complete implementation costs, using existing R01 requirements and recording any qualified-lab interface gaps.",
-  "scope": "Requirements and engineering reconciliation only; no biological procedure, hardware purchase, vendor message, fabrication or readiness release."
+  "scope": "Requirements and engineering reconciliation only; no biological procedure, hardware purchase, vendor message, fabrication or readiness release.",
+  "fluid_service_selection": "models/research_fluid_service_selection.json"
 }

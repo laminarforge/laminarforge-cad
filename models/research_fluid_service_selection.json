@@ -1,0 +1,245 @@
+{
+  "revision": "F1",
+  "checked_date_utc": "2026-11-22",
+  "baseline_sha": "1402c88bb2f59c4d1dde8396c88744533cf7fff6",
+  "decision_status": "engineering integration recommendation; not procurement or research-use release",
+  "recommended_path": "Commercial serial-controlled syringe pump outside wet/environment zone; replaceable documented wetted path; replaceable commercial vessel adapter; independent delivered-mass observation; manual initial loading. Finite operation first; do not claim continuous supply.",
+  "preferred_pump": "NE-501",
+  "pump_package_listed_usd": 657.5,
+  "ne1000_plus_usb_reference_usd": 852.5,
+  "listed_package_difference_usd": 195,
+  "reference_vessel_status": "ibidi I Luer family retained for interface engineering; 80171 used only as an exact costing example. Scientific vessel selection remains open.",
+  "cost": {
+    "currency": "USD",
+    "basis": "manufacturer listed prices; regional and SKU differences must be requoted",
+    "items": [
+      {
+        "role": "pump",
+        "part": "NE-501",
+        "quantity": 1,
+        "listed_usd": 575,
+        "source": "P1",
+        "status": "preferred integration candidate; no purchase/release"
+      },
+      {
+        "role": "pump_power_and_host_cables",
+        "part": "OEM-USB-START",
+        "quantity": 1,
+        "listed_usd": 42.5,
+        "source": "P2",
+        "status": "includes supply, primary serial cable and USB converter; host compatibility unverified"
+      },
+      {
+        "role": "pump_bottom_cover",
+        "part": "OEM-BOTCOVER-ASSBLY",
+        "quantity": 1,
+        "listed_usd": 40,
+        "source": "P1",
+        "status": "bottom cover only; not a complete spill/motion enclosure"
+      },
+      {
+        "role": "reference_vessel_pack",
+        "part": "ibidi 80171, 15 per box",
+        "quantity": 1,
+        "listed_usd": 360,
+        "source": "V3",
+        "status": "commercial interface reference only; no scientific selection of surface/channel"
+      },
+      {
+        "role": "reference_adapter_pack",
+        "part": "ibidi 10831, 12 pieces / 6 pairs",
+        "quantity": 1,
+        "listed_usd": 215,
+        "source": "V3",
+        "status": "reference packaging cost, not minimum connector cost"
+      },
+      {
+        "role": "water_characterization_syringe_tubing_kit",
+        "part": "P-SYRKIT-SM",
+        "quantity": 1,
+        "listed_usd": 20.38,
+        "source": "F1",
+        "status": "several syringe sizes; final syringe size and material compatibility unresolved"
+      },
+      {
+        "role": "mass_observation_candidate",
+        "part": "USS-DBS46-1 / JFDBS00046-100G",
+        "quantity": 1,
+        "listed_usd": 96.49,
+        "source": "M1",
+        "status": "candidate only; stock/accuracy discrepancies remain"
+      }
+    ],
+    "known_reference_subtotal_usd": 1349.37,
+    "complete_system_total_usd": null,
+    "unpriced_roles": [
+      "pressure observation/protection and fittings",
+      "independent physical stop and wiring/enclosure",
+      "balance-specific serial cable and USB adapter",
+      "host USB-C adapter/hub if required",
+      "collection vial/nest and spill containment",
+      "dry mounts, fasteners and fabrication",
+      "calibration/verification references and labor",
+      "environment control and scientific readout",
+      "shipping/taxes/regional power and consumable replacement"
+    ],
+    "do_not_interpret_as": "approved spend, minimum-cost complete system or scientific-use BOM"
+  },
+  "interfaces": [
+    {
+      "id": "I01",
+      "ends": [
+        "NE-501",
+        "syringe"
+      ],
+      "state": "size-specific verification required",
+      "finding": "Pump supports several sizes; no final syringe diameter, flange fit, working rating or required duration selected."
+    },
+    {
+      "id": "I02",
+      "ends": [
+        "P-SYRKIT-SM PVC",
+        "10831 external barb"
+      ],
+      "state": "nominal match only",
+      "finding": "3.175 mm tube ID versus 3.2 mm intended flexible tube ID; tolerances, retention, material and assembled pressure rating unresolved."
+    },
+    {
+      "id": "I03",
+      "ends": [
+        "10831 male Luer",
+        "I Luer female ports"
+      ],
+      "state": "manufacturer-supported connection family; assembled rating not established",
+      "finding": "10831 lists 500 mbar. This does not rate the slide, syringe, other tubing or complete assembly. Stall sensing is not a calibrated pressure cutoff."
+    },
+    {
+      "id": "I04",
+      "ends": [
+        "commercial slide",
+        "existing CAD"
+      ],
+      "state": "not interchangeable",
+      "finding": "Published slide footprint 75.5 x 25.5 mm; old coupon nominal 75 x 25 mm and Rev C payload 127.76 x 85.48 mm. Requires separate adapter definition; no fit claim."
+    },
+    {
+      "id": "I05",
+      "ends": [
+        "pump serial",
+        "Mac host"
+      ],
+      "state": "not demonstrated",
+      "finding": "Published serial protocol avoids dependence on Windows GUI, but bundled USB converter Apple Silicon driver/support and real communication remain unverified."
+    }
+  ],
+  "alternatives": [
+    {
+      "name": "NE-500",
+      "decision": "not preferred: $55 saving removes stall detection; hardware stop still required for both"
+    },
+    {
+      "name": "NE-1000",
+      "decision": "fallback when standalone keypad is worth additional package cost; no evidence it is required"
+    },
+    {
+      "name": "custom printed syringe drive",
+      "decision": "retain existing geometry; do not expand before complete cost and real performance evidence justify it"
+    },
+    {
+      "name": "Fluigent Flow EZ",
+      "decision": "not selected; full pressure/flow sensing, gas source/reservoir and host package not costed. Current public SDK23 table lists macOS x64 and Linux ARM64, not macOS ARM64; emulation not verified."
+    },
+    {
+      "name": "BT100S-1",
+      "decision": "not selected; Golander exact drive-only listing $575, YZ15T configuration $820. Do not apply another manufacturer BT100S specification. Actual pulsation/delivery and path compatibility unresolved."
+    }
+  ],
+  "ordered_gates": [
+    {
+      "id": "G01",
+      "name": "Research vessel/readout basis",
+      "workstream": "R01",
+      "evidence": [
+        "Qualified laboratory evidence of the needed vessel class, optical/electrical access, materials and environment; do not infer suitability from a generic flow chamber."
+      ],
+      "state": "open"
+    },
+    {
+      "id": "G02",
+      "name": "Complete fluid-path compatibility",
+      "workstream": "R02",
+      "evidence": [
+        "Exact syringe, each tubing/connector/SKU and vessel ratings; lowest assembled working limit and protection design; inlet/outlet routing and retained-volume budget."
+      ],
+      "state": "open"
+    },
+    {
+      "id": "G05",
+      "name": "Adapter and instrument release",
+      "workstream": "R03",
+      "evidence": [
+        "Vendor drawing and measured part against carrier datums; bottom optical clearance, tube bend/strain relief, thermal/readout access, drawings and exact fasteners; preserve existing A0 until explicit revision."
+      ],
+      "state": "open"
+    },
+    {
+      "id": "G06",
+      "name": "Complete purchase and assembly package",
+      "workstream": "R05",
+      "evidence": [
+        "Every support item identified and priced; delivered quote, consumable packs, fabrication, calibration and labor included; obtain spending approval only for concrete package."
+      ],
+      "state": "open"
+    },
+    {
+      "id": "G03",
+      "name": "Host control and independent stop",
+      "workstream": "R04",
+      "evidence": [
+        "Observed macOS serial enumeration and real pump identity/readback; configured communications-timeout stop; independent physical stop; no automatic motion after reconnect/power return."
+      ],
+      "state": "requires_actual_hardware"
+    },
+    {
+      "id": "G04",
+      "name": "Independent delivery measurement",
+      "workstream": "R04",
+      "evidence": [
+        "Actual balance framing, drift and repeatability; vial/nest plus liquid within capacity; no tubing load; chosen delivery uncertainty and duration supported by measurements."
+      ],
+      "state": "requires_actual_hardware"
+    },
+    {
+      "id": "G07",
+      "name": "Physical commissioning and intended-use evidence",
+      "workstream": "R06",
+      "evidence": [
+        "Actual water-only delivery, leak/stop/restart and environmental observations under approved engineering limits; qualified laboratory acceptance for intended use remains separate."
+      ],
+      "state": "requires_actual_hardware"
+    }
+  ],
+  "sources": {
+    "P1": "https://syringepump.com/oem.php",
+    "P2": "https://syringepump.com/accessories.php",
+    "P3": "https://www.syringepump.com/NE-1000.php",
+    "P4": "https://www.syringepump.com/detailedfeatures.php",
+    "V1": "https://ibidi.com/channel-slides/50-5399--slide-i-luer.html",
+    "V2": "https://ibidi.com/flow-accessories/75-tube-adapter-set.html",
+    "V3": "https://ibidi.com/img/cms/downloads/pl/ibidi_Price_List_USA_150dpi.pdf",
+    "F1": "https://www.syringepump.com/syringes%20and%20plumbing%20supplies.php",
+    "M1": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html",
+    "A1": "https://github.com/Fluigent/fgt-SDK/blob/master/README.md",
+    "A2": "https://www.golanderlab.com/product/bt100s-1-variable-speed-peristaltic-pump/"
+  },
+  "hardware_run_started": false,
+  "research_suitability_established": false,
+  "new_cad_admitted": false,
+  "gate_dependencies": {
+    "G05": "provisional drawing package after G01/G02; final dimensional acceptance after actual parts arrive",
+    "G06": "quote all parts before authorization and acquisition",
+    "G03": "requires acquired hardware after G06",
+    "G04": "requires acquired hardware after G06",
+    "G07": "after actual G03/G04 evidence and final G05 dimensional acceptance"
+  }
+}

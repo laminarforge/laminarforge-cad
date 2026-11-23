@@ -1,4 +1,4 @@
-# Connected water-bench modules — interface revision W5
+# Connected water-bench modules — interface revision W6
 
 Ticket T-21BC0885. Scope: one water/dye engineering lane. No cell, pathogen,
 vector, culture, assay or incubation procedure is specified here.
@@ -33,6 +33,11 @@ combination and its complete support-equipment costs, grounded in the intended
 measurement/environment requirements. A 75×25 mm water coupon, the Rev C
 127.76×85.48 mm payload contract, and a heated microplate surrogate are different
 interfaces; their evidence must not be substituted for one another.
+
+F1 now recommends a commercial NE-501 integration candidate with an independent
+mass-observation path; see [cost and compatibility gates](water-bench-low-cost.md#f1--path-toward-the-actual-instrument-2026-11-22)
+and `models/research_fluid_service_selection.json`. This is not an adopted
+research vessel, rated complete fluid assembly or purchase release.
 
 A new CAD task must close an identified instrument interface or verification gap.
 More provisional fixtures alone do not retire component selection, manufacturing,

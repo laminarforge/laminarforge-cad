@@ -1,6 +1,8 @@
-# Lowest practical cost water bench — W2
+# Lowest practical cost water bench — W3
 
-Alex chose lowest practical cost. Hardware remains unpurchased and unselected.
+Alex chose lowest practical cost. Hardware remains unpurchased. The F1 section
+below makes a preferred commercial integration recommendation, subject to its
+compatibility gates; no complete hardware configuration is released.
 This supersedes the W1 lab-instrument reference as the cost priority. Keep W1's
 interface findings; do not treat its $825 pump as a required purchase.
 Sources checked 2026-11-22 UTC. Scope remains water-only engineering.
@@ -97,6 +99,116 @@ The first manual stage needs no separate controller board or custom PCB.
 - Observe actual mass readings and serial framing if the adapter is acquired.
 - Decide whether required flow performance warrants a custom syringe drive,
   purchased pump or other method based on independent measurements.
+
+
+## F1 — path toward the actual instrument (2026-11-22)
+
+Prefer a commercial serial-controlled syringe pump with replaceable wetted parts,
+a commercial vessel interface and independent mass observation. Manual initial
+loading is allowed by A-12A0063A; finite operation does not establish continuous
+supply. This is the integration direction. Research vessel suitability remains
+an unresolved scientific interface, rather than a decision inferred from a water
+coupon. The machine-readable selection and ordered gates are in
+`models/research_fluid_service_selection.json`.
+
+### Preferred pump and complete-package comparison
+
+Carry NE-501 as the preferred integration candidate: $575, plus OEM-USB-START
+$42.50 and bottom cover $40 = **$657.50** [P1,P2]. It retains stall detection for
+$55 more than NE-500. The bottom cover closes the open base; it is not a full
+motion or spill enclosure. NE-1000 plus its $27.50 USB cable kit is $852.50
+[P2,P3], a $195 listed-package difference. Its local keypad may justify the
+premium, but no recovered requirement demands it. These are engineering choices,
+not an instruction to purchase. Requote regional power and included accessories.
+
+Stall sensing is not pressure measurement or the normal stop method. The family
+supports serial timeout/alarm behavior [P4]; actual firmware, configuration and
+loss-of-link stop must be observed. Do not depend on the Windows vendor GUI.
+The serial protocol is usable independently, but the bundled converter's actual
+Apple Silicon support is unverified. Do not count host communication as complete.
+
+### Vessel and connector compatibility
+
+Keep the ibidi I Luer family as the commercial interface reference. Published
+footprint is 75.5×25.5 mm with female Luer ports [V1]. It does not fit by assuming
+the existing 75×25 coupon or Rev C payload is equivalent. Preserve A0; derive a
+separate adapter only after exact vessel/readout requirements are established.
+No particular channel height, surface or biological application is selected.
+SKU 80171 below is an exact cost example, not a scientific recommendation.
+
+The 10831 adapter set connects that port family to external flexible tubing;
+its external barb is specified for 3.2 mm ID tube and it lists 500 mbar [V2].
+The existing New Era kit has 3.175 mm ID PVC [F1]. That is only a nominal match:
+tolerances, retention, material compatibility and each component's rated working
+limit remain unresolved. **500 mbar is the adapter rating, not an assembled-system
+operating limit.** Do not energize the candidate path from these catalog facts.
+
+### Known cost and missing cost
+
+| Reference item | Purchase quantity | Listed USD |
+| --- | --- | ---: |
+| NE-501 + USB/power starter + bottom cover | one package assembled from three SKUs | 657.50 |
+| ibidi 80171 costing example | one box, 15 slides | 360.00 |
+| ibidi 10831 adapter set | one box, 12 pieces / six pairs | 215.00 |
+| P-SYRKIT-SM water-characterization assortment | one kit | 20.38 |
+| USS-DBS46-1 balance candidate | one | 96.49 |
+| Known reference subtotal | | **1,349.37** |
+
+Sources P1/P2/V3/F1/M1. The slide price comes from the US manufacturer price list;
+web variants may select different SKUs, bulk quantities and currencies. Adapter
+packaging is a convenient documented reference, not proof of cheapest procurement.
+Pack-level outlay cannot be replaced by amortized per-slide prices.
+
+**The complete total is unknown.** Missing costs include pressure observation and
+protection, independent stop/wiring/enclosure, balance-specific cable and adapter,
+possible host USB hub, collection/containment, mounts/fasteners/fabrication,
+calibration and labor, environment and scientific readout, tax and shipping.
+Retain the balance accuracy/stock discrepancies recorded above. Do not describe
+$1,349.37 as a complete box, purchase-ready BOM or guaranteed budget.
+
+### Alternative disposition
+
+Existing custom motorized geometry remains an alternative, with no further
+fixture families admitted before cost/performance justify them. Fluigent remains
+unselected: its public SDK23 table lists macOS x64, not native macOS ARM64; no
+emulation success or complete pressure/flow/gas-source package is established
+[A1]. Golander BT100S-1 lists $575 without a head and $820 with YZ15T [A2]. Do
+not treat the drive price as a usable pump or import a different manufacturer's
+BT100S specifications. Rotor-speed accuracy is not delivered-flow accuracy.
+
+### Ordered completion gates
+
+1. G01: reconcile qualified vessel, measurement access, materials and environment
+   requirements. Engineering owns the synthesis; Alex need not invent limits.
+2. G02: close every exact wetted connection, working rating and protection choice.
+3. G05: prepare adapter/drawings from the chosen vessel's documented interfaces;
+   final dimensional acceptance waits for actual parts.
+4. G06: finish every support-item price and delivered procurement/assembly package
+   before spending authorization and acquisition.
+5. G03: on acquired hardware, demonstrate host identity/readback, timeout stop,
+   independent stop and deliberate restart behavior.
+6. G04: on acquired hardware, establish independent mass observations and uncertainty.
+7. G07: finish actual dimensional acceptance, commission the assembled hardware
+   and obtain qualified intended-use evidence.
+
+G01/G02 can advance together. G03/G04 follow acquisition; their commissioning
+results may require revisions to the provisional drawings. These are
+completion gates, not seven additional printed parts. None is marked passed by
+this catalog review. No purchase, supplier outreach, print or hardware run occurred.
+
+### F1 primary references
+
+- [P1](https://syringepump.com/oem.php)
+- [P2](https://syringepump.com/accessories.php)
+- [P3](https://www.syringepump.com/NE-1000.php)
+- [P4](https://www.syringepump.com/detailedfeatures.php)
+- [V1](https://ibidi.com/channel-slides/50-5399--slide-i-luer.html)
+- [V2](https://ibidi.com/flow-accessories/75-tube-adapter-set.html)
+- [V3](https://ibidi.com/img/cms/downloads/pl/ibidi_Price_List_USA_150dpi.pdf)
+- [F1](https://www.syringepump.com/syringes%20and%20plumbing%20supplies.php)
+- [M1](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html)
+- [A1](https://github.com/Fluigent/fgt-SDK/blob/master/README.md)
+- [A2](https://www.golanderlab.com/product/bt100s-1-variable-speed-peristaltic-pump/)
 
 ## Primary sources
 
