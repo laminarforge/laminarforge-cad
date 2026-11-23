@@ -7,9 +7,10 @@ roles, including the parts missing from the earlier pump recommendation.
 **Step 1 remains open.** Fourteen of 21 cost rows now have US reference
 prices, including one cable bundled in the starter kit. The priced items
 total **$1,588.03**. Seven rows still need prices or a design decision.
-Using Thailand listings for the balance and computer accessories gives
-**฿6,743.24 plus US$1,387.95** for the priced items. Freight, import charges
-and the seven open rows still affect the delivered budget.
+The delivery destination is Montgomery, Texas, in the Houston area. Adding
+the balance seller's lowest returned freight of $141.34 brings the priced
+items to **$1,729.37** before tax, other freight, services and the open rows.
+This is a pricing exercise using public listings and automated estimates.
 Alex confirmed on November 23 that he has purchased no project hardware.
 Budget and specification work can proceed now. Physical checks follow receipt.
 The estimate assumes an existing supported Mac will be available beside the
@@ -39,11 +40,11 @@ is needed for design.
 [driver table](https://ftdichip.com/drivers/vcp-drivers/).
 
 Price two Apple MW5L3AM/A USB-C-to-USB data adapters at $19 each for the US
-reference basket. Apple Thailand lists the local SKU MW5L3ZA/A at ฿690 each.
+reference basket. Apple publishes free standard US delivery.
 Two direct connections avoid adding a hub to the initial list. Available ports
 and reusable adapters still need physical inventory.
 [US adapter price](https://www.apple.com/shop/product/mw5l3am/a/usb-c-to-usb-adapter),
-[Thai SKU](https://www.apple.com/th/shop/product/mw5l3za/a/usb-c-to-usb-adapter).
+[Apple US shipping](https://www.apple.com/shop/help/shipping_delivery).
 
 The observed Mac mini is an Apple M4, model Mac16,10, running macOS 26.5.1.
 The live inventory exposed only Bluetooth-Incoming-Port and debug-console
@@ -65,8 +66,8 @@ working limit. The [F1 selection](../models/research_fluid_service_selection.jso
 retains exact reference prices and component sources.
 
 U.S. Solid's public store feed shows the exact JFDBS00046-100G variant
-(46324225769727) available at $96.49 on November 23. Delivery to Thailand and
-the previously recorded accuracy discrepancy remain unresolved.
+(46324225769727) available at $96.49 on November 23. Its Montgomery shipping
+estimate appears below. The previously recorded accuracy discrepancy remains open.
 [Seller inventory for this product](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html.js).
 Its cable must follow its own instrument pinout;
 the pump cable cannot be reused by assumption. Selection still needs a gross
@@ -106,7 +107,7 @@ device must be configured and observed before use. No start command may be
 automatically replayed after connection loss.
 [NE-500/501 manual](https://syringepump.com/download/NE-500%20OEM%20Syringe%20Pump%20User%20Manual%20V3.9.pdf).
 
-Two commercial products narrow the independent-stop decision. Klinger & Born
+Two overseas products serve as functional comparisons for a future US review. Klinger & Born
 documents emergency stop and protection against restart after power returns
 on its K3000 starter, item 0098.3006. Tough Leads lists an enclosed UK
 plug-and-socket unit at £39.99 and documents that it stays off after power
@@ -130,47 +131,52 @@ regular price keeps the budget independent of that discount. The jar is
 cataloged at 20 g, 36 mm diameter and 47 mm height. The listing does not
 specify the lid state for that weight. Actual tare, clearance and collection
 capacity remain to be checked. The tray's 27.9 × 15.5 × 8.3 cm external
-dimensions leave its usable spill volume and coverage unresolved. EMS lists
-Becthai Bangkok as a local distributor. Its delivered price remains open.
+dimensions leave its usable spill volume and coverage unresolved. The delivered price to Texas remains open.
 [Jar and pack price](https://www.thermofisher.com/order/catalog/product/2118-0001PK),
 [tray price](https://www.emsdiasum.com/instrument-tray-2),
 [EMS distributor directory](https://www.emsdiasum.com/world-distribution).
 
-### Thailand balance and electronics prices
+### Houston-area pricing
 
-| Seller and listed part | Quantity | THB each | THB for quantity |
-| --- | ---: | ---: | ---: |
-| U.S. Solid, JFDBS00046-100G | 1 | 3,166.00 | 3,166.00 |
-| DigiKey Thailand, FTDI US232R-100-BULK | 2 | 893.78 | 1,787.56 |
-| DigiKey Thailand, StarTech SCNM9FF | 1 | 409.68 | 409.68 |
-| Apple Thailand, MW5L3ZA/A | 2 | 690.00 | 1,380.00 |
-| **Listed balance and electronics** | | | **6,743.24** |
+| Item under consideration | Purpose | Published or estimated US price |
+| --- | --- | ---: |
+| U.S. Solid USS-DBS46-1 | Weigh collected water during bench evaluation | $96.49 |
+| UPS Worldwide Saver for one balance | Lowest rate returned for Montgomery, TX | $141.34 |
+| **Balance plus its freight** | Before tax or any other charges | **$237.83** |
+| StarTech SCNM9FF, FTDI US232R-100-BULK and Apple USB-C adapter | One of each to read the scale from an existing Mac | $11.99 + $26.80 + $19.00 = **$57.79** |
 
-These five cost rows replace US$200.08 in the US estimate. U.S. Solid displayed
-฿3,166 for variant 46324225769727 with Thailand selected. Its shipping policy
-prices freight primarily by weight and assigns applicable import charges to
-the customer. The balance freight charge remains open.
-[Thailand balance offer](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html?variant=46324225769727&country=TH&currency=THB),
-[U.S. Solid shipping](https://ussolid.com/policies/shipping-policy).
+Two automated estimates for the same SKU and destination returned the same
+nine rates on November 23. The second estimate also verified the US storefront,
+USD currency and quantity of one. The seller advertised 3.75 lb gross weight
+and recorded 5 lb for the exact shipping variant. The origin, duties, tax and
+final invoice remain open. An open-box listing for the exact model showed $250
+before tax. Its displayed shipping estimate used a different ZIP. A cheaper
+new listing with free shipping identified a different part, JFDBS00003-100G.
+[Manufacturer listing](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html),
+[manufacturer variant](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html.json),
+[exact-model open-box listing](https://www.ebay.com/itm/175814390323),
+[other model listing](https://www.ebay.com/itm/111988441562).
 
-Apple Thailand offers free standard shipping. A second seller, iStudio, lists
-the identical adapter at ฿790 including tax. Two from iStudio cost ฿1,580 and
-qualify for its free standard delivery, ฿200 above the Apple listed pair.
-The table counts the Apple pair once.
-[Apple standard delivery](https://www.apple.com/th-en/shop/help/shipping_delivery),
-[iStudio price and tax](https://www.istudio.store/products/apple-usb-c-to-usb-adapter-y24),
-[iStudio delivery terms](https://www.istudio.store/en/pages/online-shopping-policy).
+The Texas state sales tax is 6.25% and the combined rate can reach 8.25%.
+Taxable merchandise generally includes its associated seller delivery charges
+in the taxable amount. The exact local jurisdiction depends on the street
+address. As a budgeting example, applying the statewide maximum to $237.83
+gives $19.62 tax and $257.45 total for this balance shipment.
+[Texas local sales tax](https://comptroller.texas.gov/taxes/sales/faq/local.php),
+[Texas shipping and tax](https://comptroller.texas.gov/taxes/sales/faq/collection.php).
 
-DigiKey's two FTDI cables total ฿1,787.56 at its indexed unit price. This
-clears its ฿1,600 standard freight threshold if DigiKey supplies both
-together. Its standard charge below the threshold is ฿600. Marketplace goods
-ship separately under seller terms. Stock, fulfillment and applicable import
-charges still need a current quote.
-[FTDI listing](https://www.digikey.co.th/th/products/detail/ftdi-future-technology-devices-international-ltd/US232R-100-BULK/2441363),
-[StarTech listing](https://www.digikey.co.th/th/products/detail/startech-com/SCNM9FF/25697500),
-[Apple Thailand](https://www.apple.com/th/shop/product/mw5l3za/a/usb-c-to-usb-adapter),
-[DigiKey shipping terms](https://www.digikey.co.th/en/help-support/delivery-information/delivery-time-and-cost),
-[Marketplace freight](https://www.digikey.co.th/en/help-support/dk-marketplace/marketplace-shipping-options).
+MNM Scales in Cypress publishes $95 for a shop calibration with its in-house
+certificate and $395 for its NIST-traceable certificate in the up-to-2.2 kg
+capacity tier. An on-site visit adds $295 per visit plus $2 per round-trip
+mile. Drop-off is by appointment. Exact service scope and expenses depend on
+the eventual selection. As one independent weight comparison, ScalesGalore
+lists Mettler Toledo 158657, a 50 g F1 weight with certificate, at $253.30.
+No service or weight has been selected. The $1,588.03 parts subtotal excludes
+both. [Cypress service options](https://mnmscales.com/services/balance-calibration-houston/),
+[50 g weight listing](https://www.scalesgalore.com/product/Mettler-Toledo-158657-OIML-Class-F1-Calibration-Weight-With-Certification-50-g-px59723.cfm).
+
+The earlier Thailand parts and service comparisons remain in the component
+register and the prior saved checklist. The active budget uses US prices.
 
 ### Costs still open
 
@@ -188,16 +194,6 @@ CP-07 already covers its cost. The listing supplies no calibrated mass value
 or uncertainty for that individual weight. CP-20 stays open for an independent
 reference matched to the approved weighing range and allowable error.
 [Balance package contents](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html).
-
-Thailand's Department of Science Service lists calibration at this balance's
-0.001 g resolution in its 2024 fee schedule. It lists ฿2,500 per instrument
-for laboratory service CA-C1-UKA-B03 and the same fee for on-site service
-CA-C1-UKA-B16. These are two alternatives. Current fees, travel, coverage of
-the required loads and certificate uncertainty still need confirmation. TPA
-also lists a ten-point service starting at ฿1,600. The hardware subtotal
-excludes these services. [DSS laboratory fee](https://www.dss.go.th/images/service/rate2024.pdf#page=41),
-[DSS on-site fee](https://www.dss.go.th/images/service/rate2024.pdf#page=42),
-[TPA service table](https://tpacal.or.th/services/?4296_paged=2&4719_paged=4).
 
 Keep the low-cost DBS46 balance limited to water-bench engineering evaluation.
 Its manual excludes specified regulated, medical and pharmaceutical analyses;
@@ -227,8 +223,8 @@ Purchasing and real operation follow the completed configuration and cost review
   - [ ] 1.4. Specify the independent mass reference and required measurement uncertainty.
   - [ ] 1.5. Resolve the remaining parts and their compatibility.
   - [ ] 1.6. Obtain a complete delivered budget for the selected parts and services.
-    - [x] 1.6.1. Price the balance and computer accessories for Thailand and check published freight terms.
-    - [ ] 1.6.2. Close remaining freight, import charges, local services and labor.
+    - [x] 1.6.1. Price the balance and computer accessories for the confirmed delivery region.
+    - [ ] 1.6.2. Close remaining US freight, taxes, local services and labor.
 - [ ] 2. Lock research-use requirements
   - [x] 2.1. Document which requirements need qualified review.
   - [ ] 2.2. Record qualified requirements and acceptance limits.
@@ -247,8 +243,8 @@ Purchasing and real operation follow the completed configuration and cost review
 ## Resume checkpoint
 
 The November 22 conversation and ticket T-21BC0885 hold the original work list.
-As of November 23, the next budget item is 1.6.2. The remaining delivery and
-service estimates can be researched before purchase. The first physical
+As of November 23, the next budget item is 1.6.2. One balance shipment and local calibration options now have prices.
+The other US freight, exact tax and outstanding labor estimates are open. The first physical
 balance reading belongs under 4.2.3 after the equipment arrives.
 
 **Current step 1.4 depends on 2.2.** The measurement reviewer needs to record

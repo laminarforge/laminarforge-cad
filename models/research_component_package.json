@@ -1,5 +1,5 @@
 {
-  "revision": "CP5",
+  "revision": "CP6",
   "checked_date_utc": "2026-11-23",
   "ticket_id": "T-21BC0885",
   "status": "component candidate and gap register; step 1 remains incomplete",
@@ -61,7 +61,7 @@
       "candidate": "USS-DBS46-1 / JFDBS00046-100G",
       "quantity": 1,
       "listed_usd": 96.49,
-      "price_basis": "US seller lists USD 96.49 for variant 46324225769727. Public product feed reports available on 2026-11-23. Thailand fulfillment unconfirmed.",
+      "price_basis": "US price USD 96.49 for variant 46324225769727. Montgomery-area shipping is recorded separately under CP-22.",
       "selection_status": "Water-only engineering candidate. Accuracy discrepancies and actual performance remain unresolved. The manual excludes specified regulated, medical and pharmaceutical analyses.",
       "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html",
       "regional_reference_prices": [
@@ -175,7 +175,7 @@
       "quantity": 2,
       "listed_usd": 38.0,
       "price_basis": "two units at manufacturer USD19 each; reference full outlay",
-      "selection_status": "Two direct USB-C\u2192USB-A data connections, one per instrument. Confirm available physical ports; reuse existing equivalent data adapters only after inventory. Thai SKU MW5L3ZA/A quoted separately; no mixed-currency sum.",
+      "selection_status": "Two USB-C to USB-A connections budgeted at the US price. Available ports and reusable adapters can be confirmed after receipt.",
       "source": "https://www.apple.com/shop/product/mw5l3am/a/usb-c-to-usb-adapter",
       "regional_reference_prices": [
         {
@@ -241,7 +241,7 @@
       "quantity": 1,
       "listed_usd": null,
       "price_basis": "not quoted",
-      "selection_status": "Klinger & Born K3000 0098.3006 documents emergency stop and protection against power-return restart. Suitability for the actual power supply and a finished local assembly still need electrical review. Tough Leads documents power-return behavior for its UK version; separate stop-latch behavior needs confirmation.",
+      "selection_status": "Foreign examples remain function references only. Exact US-compatible equipment, local electrical review and installed pricing remain open.",
       "source": "https://www.klibo.com/product-display/starter-k3000-1ph-230v-00983006",
       "regional_reference_prices": [
         {
@@ -293,10 +293,43 @@
       "candidate": "Balance service for a 0.001 g indication. Independent check masses still depend on the required uncertainty.",
       "quantity": null,
       "listed_usd": null,
-      "price_basis": "Bundled 50 g adjustment weight covered by CP-07. Thai balance service references are alternatives. A delivered calibration and independent reference quote is open.",
+      "price_basis": "Houston-area comparison pricing. MNM Scales publishes USD 95 in-house or USD 395 with its NIST-traceable certificate for a balance up to 2.2 kg capacity. A separate reference mass is conditional. Prior Thai fees are historical.",
       "selection_status": "The balance listing includes one 50 g adjustment weight. Its calibrated value and uncertainty are undocumented. Select independent references after the weighing range and allowable error are approved.",
       "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html",
       "regional_reference_prices": [
+        {
+          "market": "US",
+          "currency": "USD",
+          "seller": "MNM Scales",
+          "sku": "Balance up to 2.2 kg, in-house certificate",
+          "unit_price": 95,
+          "quantity": 1,
+          "amount": 95,
+          "source": "https://mnmscales.com/services/balance-calibration-houston/",
+          "basis": "Shop service by appointment in Cypress. The published band is based on weighing capacity. Excludes transport and tax."
+        },
+        {
+          "market": "US",
+          "currency": "USD",
+          "seller": "MNM Scales",
+          "sku": "Balance up to 2.2 kg, NIST-traceable certificate",
+          "unit_price": 395,
+          "quantity": 1,
+          "amount": 395,
+          "source": "https://mnmscales.com/services/balance-calibration-houston/",
+          "basis": "Alternative to the USD 95 tier. Scope and applicable uncertainty require confirmation before selection."
+        },
+        {
+          "market": "US",
+          "currency": "USD",
+          "seller": "ScalesGalore",
+          "sku": "Mettler Toledo 158657",
+          "unit_price": 253.3,
+          "quantity": 1,
+          "amount": 253.3,
+          "source": "https://www.scalesgalore.com/product/Mettler-Toledo-158657-OIML-Class-F1-Calibration-Weight-With-Certification-50-g-px59723.cfm",
+          "basis": "Optional single 50 g F1 weight listed with an NVLAP certificate. This illustrates price. Required loads and certificate uncertainty are still open."
+        },
         {
           "market": "TH",
           "currency": "THB",
@@ -348,9 +381,9 @@
       "candidate": null,
       "quantity": null,
       "listed_usd": null,
-      "price_basis": "Apple standard domestic delivery is free. DigiKey direct standard freight is THB 600 below THB 1,600 and free from that threshold. Marketplace freight, import charges and balance freight remain open.",
-      "selection_status": "Delivered Thailand quote, replacement consumables, fabrication and labor remain unpriced.",
-      "source": "https://www.digikey.co.th/en/help-support/delivery-information/delivery-time-and-cost"
+      "price_basis": "Two automated US store estimates for one balance returned the same lowest USD 141.34 UPS Worldwide Saver shipping rate to Montgomery, TX. Apple offers free US standard shipping. Other freight, duties if applicable, tax and labor are open.",
+      "selection_status": "US destination confirmed. Partial shipping estimate for budgeting only. No order or vendor contact.",
+      "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html"
     }
   ],
   "cost": {
@@ -367,7 +400,7 @@
       "CP-21",
       "CP-22"
     ],
-    "basis": "Full listed quantities for priced US items. Includes the selected balance cable and the regular jar-pack price. Regional offers replace the corresponding US line. Delivered prices are open.",
+    "basis": "US parts prices for the Houston-area delivery budget. Add each verified freight charge once. Prior Thai figures are archived regional comparisons.",
     "previous_reference_subtotal_usd": 1452.59,
     "newly_priced_usd": 135.44,
     "thailand_electronics_alternative": {
@@ -381,7 +414,8 @@
       "replaces_usd": 103.59,
       "remaining_priced_items_usd": 1484.44,
       "shipping_basis": "Two FTDI adapters at the indexed unit price total THB 1,787.56. Direct-stock freight meets the THB 1,600 threshold if ordered together. Marketplace goods ship under separate terms. Inventory and import charges need confirmation.",
-      "shipping_source": "https://www.digikey.co.th/en/help-support/delivery-information/delivery-time-and-cost"
+      "shipping_source": "https://www.digikey.co.th/en/help-support/delivery-information/delivery-time-and-cost",
+      "status": "historical comparison; excluded from active US budget"
     },
     "thailand_balance_and_electronics": {
       "seller_by_item": {
@@ -396,7 +430,29 @@
       "remaining_priced_items_usd": 1387.95,
       "delivered_total_thb": null,
       "basis": "Includes the electronics alternative above and one balance. Select one seller per row. Excludes outstanding freight, import charges, services and unpriced rows.",
-      "balance_shipping_source": "https://ussolid.com/policies/shipping-policy"
+      "balance_shipping_source": "https://ussolid.com/policies/shipping-policy",
+      "status": "historical comparison; excluded from active US budget"
+    },
+    "texas_budget": {
+      "market": "US",
+      "destination": "Montgomery, Texas (Houston area)",
+      "currency": "USD",
+      "priced_parts_usd": 1588.03,
+      "balance_shipping_usd": 141.34,
+      "lowest_observed_service": "UPS Worldwide Saver",
+      "balance_plus_shipping_before_tax_usd": 237.83,
+      "priced_parts_plus_balance_shipping_usd": 1729.37,
+      "complete_delivered_total_usd": null,
+      "apple_standard_shipping_usd": 0,
+      "apple_shipping_source": "https://www.apple.com/shop/help/shipping_delivery",
+      "texas_state_sales_tax_percent": 6.25,
+      "max_combined_sales_tax_percent": 8.25,
+      "tax_source": "https://comptroller.texas.gov/taxes/sales/faq/local.php",
+      "taxable_shipping_source": "https://comptroller.texas.gov/taxes/sales/faq/collection.php",
+      "tax_basis": "Exact tax and potential import charges were not returned by the freight estimator. Seller origin was not confirmed. A full street address can change the local tax jurisdiction.",
+      "calibration_onsite_additional_usd_per_visit": 295,
+      "calibration_onsite_usd_per_round_trip_mile": 2,
+      "calibration_source": "https://mnmscales.com/services/balance-calibration-houston/"
     }
   },
   "host": {
@@ -501,15 +557,15 @@
           "substeps": [
             {
               "step": "1.6.1",
-              "title": "Price the balance and computer accessories for Thailand and check published freight terms.",
+              "title": "Price the balance and computer accessories for the confirmed delivery region.",
               "complete": true,
-              "basis": "Matched five regional cost rows. The balance offer matches the selected SKU and variant. Apple and iStudio are alternatives for the same adapter."
+              "basis": "US item prices checked. Two matching US seller estimates for the Montgomery destination. Thailand pricing is retained as a historical comparison."
             },
             {
               "step": "1.6.2",
-              "title": "Close remaining freight, import charges, local services and labor.",
+              "title": "Close remaining US freight, taxes, local services and labor.",
               "complete": false,
-              "basis": "The seven unpriced rows and destination-specific charges remain open."
+              "basis": "Direct balance shipping priced. Cypress calibration service tiers and one optional reference weight priced separately. Other shipment charges, tax, service scope and labor remain open."
             }
           ]
         }
@@ -602,8 +658,8 @@
   ],
   "current_step": 1,
   "next_actions": [
-    "Before purchase, continue item 1.6.2. Check public calibration and service pricing, packed freight and remaining delivery costs. No equipment connection is needed for this work.",
-    "2.2 and 1.4: record approved gross load range including tare, smallest meaningful mass change and its allowable error, with units. Use those values to specify check masses, certificate uncertainty and a current calibration quote.",
+    "1.6.2: compare remaining US freight using public listings, and refine tax and local labor estimates. Retain the Montgomery balance shipping receipt. No supplier outreach or purchases.",
+    "2.2 and 1.4: record approved gross load range including tare, smallest meaningful mass change and its allowable error, with units. Use those values to specify check masses, certificate uncertainty and the appropriate posted calibration service.",
     "1.5: resolve remaining parts and the reviewed independent stop assembly. Use final quantities for the delivered budget in 1.6.",
     "After purchase and receipt, complete 4.2.3 with the identified physical balance. Compare the timestamped output to its displayed value and units."
   ],
@@ -681,12 +737,14 @@
         "CP-22"
       ],
       "owner": "engineering and procurement preparation",
-      "next": "Verify actual jar tare/fit and tray coverage. Resolve the fabrication quantities and measurement-reference scope, then quote freight, tax, replacements and labor."
+      "next": "Compare remaining US freight and labor from public prices. Resolve independent reference scope, fabrication quantities and future physical fit checks."
     }
   ],
   "purchase_state": {
     "as_of": "2026-11-23",
     "equipment_purchased": false,
-    "basis": "Alex confirmed that no project hardware has been purchased. Physical checks follow a future purchase and receipt."
+    "basis": "Alex confirmed that no project hardware has been purchased. Physical checks follow a future purchase and receipt.",
+    "vendor_outreach_authorized": false,
+    "mode": "Public prices and automated shipping estimates only."
   }
 }
