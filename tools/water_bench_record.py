@@ -197,6 +197,18 @@ def verify(args):
     return receipt
 
 
+def checklist_lines(steps, indent=''):
+    for step in steps:
+        if not (isinstance(step, dict) and isinstance(step.get('complete'), bool) and 'title' in step):
+            yield indent + json.dumps(step, ensure_ascii=False)
+            continue
+        mark = 'x' if step['complete'] else ' '
+        yield '{}[{}] {}. {}'.format(indent, mark, step.get('step', ''), step['title'])
+        children = step.get('substeps', [])
+        if isinstance(children, list):
+            yield from checklist_lines(children, indent + '  ')
+
+
 def resume_text(metadata, config, events):
     lines = [metadata['label'], '', 'Engineering plan ' + metadata['plan_id'],
              'Recorded through ' + events[-1]['recorded_at_utc'],
@@ -206,12 +218,7 @@ def resume_text(metadata, config, events):
         checklist = config.get('checklist')
         if isinstance(checklist, list) and checklist:
             lines.extend(['', 'Checklist in the saved configuration'])
-            for step in checklist:
-                if isinstance(step, dict) and isinstance(step.get('complete'), bool) and 'title' in step:
-                    mark = 'x' if step['complete'] else ' '
-                    lines.append('[{}] {}. {}'.format(mark, step.get('step', ''), step['title']))
-                else:
-                    lines.append(json.dumps(step, ensure_ascii=False))
+            lines.extend(checklist_lines(checklist))
         actions = config.get('next_actions')
         if isinstance(actions, list) and actions:
             lines.extend(['', 'Next actions in the saved configuration'])

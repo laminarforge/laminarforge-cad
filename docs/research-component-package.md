@@ -74,18 +74,22 @@ required delivery. [Balance basis](water-bench-low-cost.md#balance-tradeoff-and-
 | Link | Candidate connection | Remaining decision or observation |
 | --- | --- | --- |
 | Pump data | Mac → adapter A → CBL-PC-PUMP-7 → NE-501 | Physical connector mating, actual identity and state readback |
-| Balance data | Mac → adapter B → balance-specific cable → DBS46 | Connector gender/continuity, raw framing, units and actual sample timing |
+| Balance data | Mac → adapter B → StarTech SCNM9FF → DBS46 | Check delivered connectors, continuity, raw framing, units and sample timing |
 | Liquid | Syringe → tubing → 10831 → selected slide → outlet tube → collection vial | Exact wetted SKUs, retained volume, materials, assembled pressure limit and protection |
 | Measurement | Vial/nest on balance; outlet anchored off scale | Gross mass, free outlet gap and no tube/support load on pan |
 | Power | Regional OEM supply → reviewed independent stop → pump | Circuit, ratings, connectors, enclosure and deliberate reset |
 
 The balance manual's printed page 7 specifies balance pin 2 to host pin 3,
 balance pin 3 to host pin 2, and ground 5 to 5. It documents 9600 baud, eight
-data bits, no parity and one stop bit. SCNM9FF is a crossed DB9 female/female
-cable candidate. CDW lists it at $11.99 in the US. StarTech's UK price of
-£11.99 including VAT is a separate regional offer. Confirm the
-balance connector gender and continuity before ordering. The diagram does not
-specify gender, so no gender changer or additional crossover is selected.
+data bits, no parity and one stop bit. The connector close-up for the exact
+balance listing shows nine male pins. FTDI specifies a male host-adapter end.
+StarTech's drawing for SCNM9FF shows two female ends and the required three
+connections. Select one SCNM9FF. Confirm fit, continuity and real data when
+the hardware arrives. CDW lists the cable at $11.99 in the US. The UK listing
+of £11.99 including VAT is a separate offer.
+[Balance connector photo](https://cdn.shopify.com/s/files/1/0723/8113/7151/files/4__77808.1569302765.1280.1280.jpg?v=1731291328),
+[FTDI datasheet](https://ftdichip.com/wp-content/uploads/2023/07/DS_US232R-10_R-100-500.pdf),
+[SCNM9FF drawing](https://sgcdn.startech.com/005329/media/sets/SCNM9FF/Diagram/SCNM9FF_Diagram.PDF),
 [US cable price](https://www.cdw.com/product/startech-10ft-rs232-serial-null-modem-cable-10ft-null-modem-cable/488601),
 [UK cable price](https://www.startech.com/en-gb/cables/scnm9ff),
 [balance manual](https://file.ussolid.com/content/JFDBS/Manual-USS-DBS46%20Precision%20Balance.pdf).
@@ -112,7 +116,7 @@ installed assembly has no quote yet. [K3000](https://www.klibo.com/product-displ
 
 | Newly priced US item | Purchasing unit | USD |
 | --- | --- | ---: |
-| StarTech SCNM9FF, conditional on connector check | One cable | 11.99 |
+| StarTech SCNM9FF | One cable | 11.99 |
 | Nalgene 2118-0001PK | One pack of 12 jars at regular price | 52.70 |
 | EMS 63312-02 | One tray with cover | 70.75 |
 | **Added to the previous $1,452.59** | | **135.44** |
@@ -133,7 +137,7 @@ Becthai Bangkok as a local distributor. Its delivered price remains open.
 | Seller and listed part | Quantity | THB each | THB for quantity |
 | --- | ---: | ---: | ---: |
 | DigiKey Thailand, FTDI US232R-100-BULK | 2 | 893.78 | 1,787.56 |
-| DigiKey Thailand, StarTech SCNM9FF (conditional) | 1 | 409.68 | 409.68 |
+| DigiKey Thailand, StarTech SCNM9FF | 1 | 409.68 | 409.68 |
 | Apple Thailand, MW5L3ZA/A | 2 | 690.00 | 1,380.00 |
 | **Listed electronics** | | | **3,577.24** |
 
@@ -158,10 +162,21 @@ standard-shipping threshold. Duty and taxes may still be payable on delivery.
 | CP-21 | Qualified research-use requirements for the readout and environment. |
 | CP-22 | Destination charges, replacement quantities and labor. Count fabrication only once under CP-19. |
 
-TPA Calibration lists ten-point electronic balance calibration from ฿1,600.
-That gives CP-20 a service-price reference. The fee for this balance, applicable
-uncertainty, site charges and cost of check masses remain open. The parts
-subtotals above exclude this service. [TPA service table](https://tpacal.or.th/services/?4296_paged=2&4719_paged=4).
+The exact balance listing includes one 50 g weight for external adjustment.
+CP-07 already covers its cost. The listing supplies no calibrated mass value
+or uncertainty for that individual weight. CP-20 stays open for an independent
+reference matched to the approved weighing range and allowable error.
+[Balance package contents](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html).
+
+Thailand's Department of Science Service lists calibration at this balance's
+0.001 g resolution in its 2024 fee schedule. It lists ฿2,500 per instrument
+for laboratory service CA-C1-UKA-B03 and the same fee for on-site service
+CA-C1-UKA-B16. These are two alternatives. Current fees, travel, coverage of
+the required loads and certificate uncertainty still need confirmation. TPA
+also lists a ten-point service starting at ฿1,600. The hardware subtotal
+excludes these services. [DSS laboratory fee](https://www.dss.go.th/images/service/rate2024.pdf#page=41),
+[DSS on-site fee](https://www.dss.go.th/images/service/rate2024.pdf#page=42),
+[TPA service table](https://tpacal.or.th/services/?4296_paged=2&4719_paged=4).
 
 Keep the low-cost DBS46 balance limited to water-bench engineering evaluation.
 Its manual excludes specified regulated, medical and pharmaceutical analyses;
@@ -183,16 +198,25 @@ Purchasing and real operation follow the completed configuration and cost review
 
 ## Completion checklist
 
-- [x] Audit existing work and identify reusable CAD and unresolved interfaces.
-- [ ] 1. Finish the component-selection package: exact candidates, tubing,
-  fittings, measurement equipment, compatibility gaps and full cost ledger.
-- [ ] 2. Lock research-use requirements with qualified input.
-- [ ] 3. Finish integrated mechanical design around selected components.
-- [ ] 4. Finish controls, recording, independent stop and restart behavior.
-- [ ] 5. Produce one fabrication/purchase package and assembly instructions.
-- [ ] 6. Assemble and commission actual hardware.
-- [ ] 7. Establish intended research-use readiness from qualified review and
-  actual measurement evidence.
+- [x] Audit existing work
+- [ ] 1. Finish component-selection package
+  - [x] 1.1. Name and price the initial bench parts.
+  - [x] 1.2. Match the balance data cable to both catalog connectors and the published pinout.
+  - [x] 1.3. Identify the bundled balance weight and a resolution-matched calibration service.
+  - [ ] 1.4. Specify the independent mass reference and required measurement uncertainty.
+  - [ ] 1.5. Resolve the remaining parts and their compatibility.
+  - [ ] 1.6. Obtain a complete delivered budget for the selected parts and services.
+- [ ] 2. Lock research-use requirements
+  - [x] 2.1. Document which requirements need qualified review.
+  - [ ] 2.2. Record qualified requirements and acceptance limits.
+- [ ] 3. Finish integrated mechanical design
+- [ ] 4. Finish controls and recording
+  - [x] 4.1. Recover saved records and check them against their receipts.
+  - [ ] 4.2. Capture an actual instrument reading with its identity, units and timing.
+  - [ ] 4.3. Verify independent stop and deliberate restart on the assembled hardware.
+- [ ] 5. Produce fabrication and purchase package
+- [ ] 6. Assemble and commission
+- [ ] 7. Establish intended research-use readiness
 
 ## Resume checkpoint
 
@@ -202,10 +226,11 @@ interrupted during component consolidation. This pass adds the consolidated
 register, explicit connection schedule, adapter support distinction and all
 missing cost roles. It does not establish completed component selection.
 
-**Current step 1.** CP3 prices every previously named US part in the basket.
-For step 4, the [recorder handoff](water-bench-records.md#recover-a-checklist-and-its-evidence)
-packages the saved checklist and evidence for recovery independently of chat history.
-The remaining seven rows are listed above with their dependencies. The next
-inputs are the qualified measurement requirements, a reviewed local power-stop
-assembly, and fabrication and destination quotes. Hardware will be needed to
-verify actual fit and communication.
+**Current step 1.4 depends on 2.2.** The measurement reviewer needs to record
+the expected gross load including tare, the smallest mass change that matters,
+and the allowable error for that change, with units and the source of approval.
+Those values determine which independent reference and certificate uncertainty
+are adequate. The balance's display resolution alone cannot establish them.
+Electrical review and fabrication quotes can proceed as their interfaces are
+settled. The recorder includes the substeps in each new
+[handoff](water-bench-records.md#recover-a-checklist-and-its-evidence).

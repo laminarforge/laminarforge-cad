@@ -20,7 +20,8 @@ python3 tools/water_bench_record.py verify --run-dir <returned-directory>
 
 Run `handoff` on the saved plan directory. It returns the path to a ZIP.
 Open `RESUME.txt` inside it for the checklist and next actions from the saved
-configuration, followed by dated notes and the location of each recorded file.
+configuration, including indented substeps where present, followed by dated notes
+and the location of each recorded file.
 Older plans without a checklist retain their notes and files.
 
 ```text
