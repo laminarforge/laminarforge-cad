@@ -16,6 +16,31 @@ python3 tools/water_bench_record.py note --run-dir <returned-directory> --text <
 python3 tools/water_bench_record.py verify --run-dir <returned-directory>
 ```
 
+## Recover a checklist and its evidence
+
+Run `handoff` on the saved plan directory. It returns the path to a ZIP.
+Open `RESUME.txt` inside it for the checklist and next actions from the saved
+configuration, followed by dated notes and the location of each recorded file.
+Older plans without a checklist retain their notes and files.
+
+```text
+python3 tools/water_bench_record.py handoff --run-dir <plan-directory>
+```
+
+The ZIP includes the original plan, configuration, ledger and attachments.
+The recorder holds the plan lock and reopens the archive to check those bytes
+and the resume sheet before publishing it. Repeating the command for the same
+recorded state verifies and reuses that ZIP. Adding a note or attachment gives
+the next export its own filename, preserving the earlier one.
+
+To restore, unpack the ZIP into a **new directory** beneath the ORICO output
+root. Use the last event hash from the separately saved ticket or verification
+receipt to check that the restored plan matches the intended checkpoint.
+
+```text
+python3 tools/water_bench_record.py verify --run-dir <restored-directory> --expected-head <last-event-sha256-from-saved-receipt>
+```
+
 Creation snapshots the real JSON configuration, source identity and UTC creation
 time. It explicitly records `hardware_run_started: false` and
 `measurement_samples_recorded: false`. An actual run will need a deliberate

@@ -203,6 +203,8 @@ register, explicit connection schedule, adapter support distinction and all
 missing cost roles. It does not establish completed component selection.
 
 **Current step 1.** CP3 prices every previously named US part in the basket.
+For step 4, the [recorder handoff](water-bench-records.md#recover-a-checklist-and-its-evidence)
+packages the saved checklist and evidence for recovery independently of chat history.
 The remaining seven rows are listed above with their dependencies. The next
 inputs are the qualified measurement requirements, a reviewed local power-stop
 assembly, and fabrication and destination quotes. Hardware will be needed to

@@ -180,7 +180,7 @@
       "hardware_driver_implemented": false,
       "next": "implement_selected_device_commands_readings_and_stop_observations",
       "engineering_plan_recorder": "tools/water_bench_record.py",
-      "engineering_plan_recorder_state": "actual_plan_creation_artifact_attachment_and_readback_observed",
+      "engineering_plan_recorder_state": "verified_plan_capture_handoff_and_restore",
       "document": "docs/water-bench-records.md",
       "engineering_plan_id": "612ab001-59b9-4b29-9e26-57dd8d169e7a"
     }
