@@ -3,9 +3,9 @@
 `tools/water_bench_record.py` uses Python standard-library facilities to store
 an engineering plan and its actual design evidence under
 `/Volumes/ORICO/MacMiniBuilds/projects-output/`. No internal-disk fallback is
-permitted. This tool does not connect to devices, command a pump, start an
-experiment, or record fabricated mass samples. M08 hardware control and timed
-instrument capture remain unimplemented.
+permitted. Plan files contain design evidence. A separate receive-only utility
+records raw serial output from a bench balance. Physical readout verification
+is pending.
 
 Commands:
 
@@ -68,3 +68,28 @@ physical stop/reconnect observations only after the real hardware interfaces
 exist. Do not mark unavailable balance flags as stable or infer a flow trace
 from a commanded setting. Images of CAD are design references, not photographs
 of installed hardware.
+
+## Bench balance readout
+
+`python3 tools/bench_balance_capture.py ports` lists macOS
+`/dev/cu.usbserial*` character devices without opening them. Each path
+identifies a possible adapter. Trace it to the balance before selecting it.
+The Mac showed zero candidates on November 23.
+
+```text
+python3 tools/bench_balance_capture.py capture --root <absolute-ORICO-output-subdirectory> --port <listed-balance-port> --instrument "<model and serial or asset ID>" --seconds 10
+```
+
+The command opens the selected port read-only, configures the documented 9600
+baud, 8 data bits, no parity and one stop bit, and listens for up to the chosen
+duration (1–120 seconds). It sends no instrument commands. Each read is saved
+as hex bytes with a byte offset and two host timestamps, UTC and monotonic.
+A single read can contain part of a frame or several frames. The timestamps
+describe when the host read the bytes. For physical verification, retain the
+displayed value and unit alongside the matching output and instrument identity.
+
+Each invocation that selects an identified port creates a new JSONL recording.
+The final event records the outcome, the byte count and a SHA-256 covering the
+concatenated raw bytes. An interruption or disconnect can leave a partial
+record. A missing final event means the file is unfinished. An empty port
+inventory exits with `no_usb_serial_candidate` before creating a recording.

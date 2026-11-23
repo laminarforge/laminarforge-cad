@@ -499,7 +499,27 @@
           "step": "4.2",
           "title": "Capture an actual instrument reading with its identity, units and timing.",
           "complete": false,
-          "basis": "Requires the received balance, cable and host."
+          "basis": "No physical balance reading has been observed.",
+          "substeps": [
+            {
+              "step": "4.2.1",
+              "title": "Check the Mac for a USB-serial balance adapter.",
+              "complete": true,
+              "basis": "The November 23 Mac inventory contained zero cu.usbserial candidates."
+            },
+            {
+              "step": "4.2.2",
+              "title": "Implement receive-only capture and verify how it handles a missing adapter.",
+              "complete": true,
+              "basis": "The capture command returned no_usb_serial_candidate on the actual host and created no raw record."
+            },
+            {
+              "step": "4.2.3",
+              "title": "Record balance output and match its value and units to the instrument display.",
+              "complete": false,
+              "basis": "Requires an identified, connected balance. Save its model and serial or asset ID, the displayed reading and units, and the matching timestamped raw bytes."
+            }
+          ]
         },
         {
           "step": "4.3",
@@ -529,7 +549,7 @@
   "next_actions": [
     "2.2 and 1.4: record approved gross load range including tare, smallest meaningful mass change and its allowable error, with units. Use those values to specify check masses, certificate uncertainty and a current calibration quote.",
     "1.5: resolve remaining parts and the reviewed independent stop assembly. Use final quantities for the delivered budget in 1.6.",
-    "4.2: check cable fit, continuity and actual instrument output when hardware is available."
+    "4.2.3: when the physical balance is available, identify its adapter, confirm the cable and compare timestamped raw output with the displayed value and units."
   ],
   "hardware_observed": false,
   "purchase_authorized": false,

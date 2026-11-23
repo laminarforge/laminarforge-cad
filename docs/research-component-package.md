@@ -213,6 +213,9 @@ Purchasing and real operation follow the completed configuration and cost review
 - [ ] 4. Finish controls and recording
   - [x] 4.1. Recover saved records and check them against their receipts.
   - [ ] 4.2. Capture an actual instrument reading with its identity, units and timing.
+    - [x] 4.2.1. Check the Mac for a USB-serial balance adapter.
+    - [x] 4.2.2. Implement receive-only capture and verify how it handles a missing adapter.
+    - [ ] 4.2.3. Record balance output and match its value and units to the instrument display.
   - [ ] 4.3. Verify independent stop and deliberate restart on the assembled hardware.
 - [ ] 5. Produce fabrication and purchase package
 - [ ] 6. Assemble and commission
