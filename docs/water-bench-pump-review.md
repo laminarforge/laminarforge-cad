@@ -219,3 +219,21 @@ A flexible coupler does not supply the missing thrust load path. Do not energize
 this assembly. The bracket is exported in its upright engineering orientation;
 large horizontal pilot clearance may need supports or a fabrication redesign.
 Run actual mesh and slicer review before any physical manufacture.
+
+
+### Clearance-roof option and flat gauge
+
+Actual exported-bracket preflight observed possible overhangs around the circular
+pilot opening. `models/water_bench_motor_roof.toml` instead uses a diamond opening
+with 45-degree sides and a 22.4 mm inscribed circle. It admits the same circular
+pilot envelope but removes more material above, below and beside it. Extra edge
+and bolt lands are validated for that profile; this is not a locating bore or a
+strength qualification. `boss_roof_mode` is required: 0 circular, 1 diamond.
+The circular 6 mm and 8 mm configurations remain separate comparison candidates.
+
+Every motor configuration also exports a flat circular mounting-pattern gauge,
+50×64×face-thickness mm, with the same 31 mm M3 pattern and Ø22.4 mm pilot
+clearance. This independent plate is for a later measured dry fit, not an extra
+structural mounting part or a substitute for a working motor bracket. It is
+rotated flat for review and keeps a circular opening regardless of bracket mode.
+Actual hardware, thread engagement, dimensional accuracy and fit remain pending.

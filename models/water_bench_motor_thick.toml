@@ -4,6 +4,7 @@ body_square_mm = 42.3
 body_length_mm = 34.5
 mounting_pitch_mm = 31.0
 boss_diameter_mm = 22.0
+boss_roof_mode = 0
 shaft_diameter_mm = 5.0
 shaft_length_mm = 24.0
 shaft_length_tolerance_mm = 1.0

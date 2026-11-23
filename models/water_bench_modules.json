@@ -48,10 +48,13 @@
       "motor_bracket_config": "models/water_bench_motor.toml",
       "motor_bracket_thick_config": "models/water_bench_motor_thick.toml",
       "motor_bracket_selector": "motor",
-      "motor_bracket_state": "implemented_generation_pending",
+      "motor_bracket_state": "two_candidates_exported_verified_roof_and_gauge_revision_pending",
       "motor_reference": "Adafruit 324 engineering envelope, unpurchased",
       "coupler_reference": "Adafruit 1176 outer envelope, unpurchased",
-      "screw_thrust_support_state": "not_designed"
+      "screw_thrust_support_state": "not_designed",
+      "motor_bracket_evidence_source_sha": "b82cf3a7b54ede19544226b6a9794f52b06bd67f",
+      "motor_bracket_evidence_job_id": "3c2b6ba5-eb45-45a8-a69b-2ebbf91388b2",
+      "motor_bracket_roof_config": "models/water_bench_motor_roof.toml"
     },
     {
       "id": "M02",
