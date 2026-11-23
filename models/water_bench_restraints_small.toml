@@ -1,0 +1,80 @@
+# Provisional water-only dry fixtures. No actual syringe selected or measured.
+[restraint]
+axis_height_mm = 80.0
+barrel_diameter_mm = 10.0
+flange_width_mm = 28.0
+flange_height_mm = 26.0
+flange_thickness_mm = 2.5
+stem_diameter_mm = 8.0
+thumb_width_mm = 24.0
+thumb_height_mm = 22.0
+thumb_thickness_mm = 3.5
+diametral_clearance_mm = 0.6
+axial_clearance_mm = 0.6
+adapter_thickness_mm = 6.0
+keeper_thickness_mm = 4.0
+keeper_width_mm = 60.0
+keeper_bolt_pitch_mm = 46.0
+keeper_hole_mm = 3.4
+spacer_outer_diameter_mm = 8.0
+yoke_center_x_mm = 230.0
+yoke_base_length_mm = 48.0
+yoke_base_width_mm = 90.0
+yoke_base_thickness_mm = 6.0
+yoke_plate_thickness_mm = 6.0
+yoke_edge_land_mm = 8.0
+anchor_pitch_x_mm = 34.0
+anchor_pitch_y_mm = 72.0
+anchor_hole_mm = 4.5
+strap_width_mm = 3.4
+strap_height_mm = 1.6
+strap_bottom_mm = 2.4
+minimum_wall_mm = 3.0
+
+[guide.frame]
+clear_span_mm = 160.0
+support_length_mm = 20.0
+support_width_mm = 90.0
+cap_height_mm = 10.0
+base_thickness_mm = 6.0
+base_end_margin_mm = 10.0
+base_side_margin_mm = 12.0
+carriage_floor_gap_mm = 4.0
+rod_diametral_clearance_mm = 0.2
+cap_bolt_offset_from_rod_mm = 9.0
+cap_hole_diameter_mm = 3.4
+lead_clearance_diameter_mm = 12.0
+bench_hole_diameter_mm = 4.5
+bench_edge_offset_mm = 8.0
+carriage_start_x_mm = 14.0
+travel_mm = 100.0
+minimum_end_gap_mm = 5.0
+minimum_wall_mm = 3.0
+
+[guide.carriage]
+body_length_mm = 40.0
+body_width_mm = 76.0
+body_height_mm = 36.0
+rod_diameter_mm = 8.0
+rod_diametral_clearance_mm = 0.6
+rod_center_pitch_mm = 48.0
+bearing_outer_diameter_mm = 15.0
+bearing_length_mm = 24.0
+bearing_diametral_clearance_mm = 0.2
+bearing_axial_clearance_mm = 0.5
+lead_screw_diameter_mm = 8.0
+lead_screw_diametral_clearance_mm = 0.8
+nut_width_mm = 11.7
+nut_height_mm = 11.7
+nut_length_mm = 16.0
+nut_square_length_mm = 8.0
+nut_round_shoulder_diameter_mm = 12.0
+nut_minimum_end_land_mm = 1.2
+nut_side_clearance_mm = 0.6
+nut_axial_clearance_mm = 0.4
+cap_thickness_mm = 3.0
+cap_hole_diameter_mm = 3.4
+cap_bolt_pitch_y_mm = 30.0
+cap_bolt_pitch_z_mm = 26.0
+minimum_wall_mm = 3.0
+

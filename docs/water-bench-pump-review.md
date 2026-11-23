@@ -334,3 +334,38 @@ endplay, collar slip, alignment, bolt/tool access, board and stand strength rema
 unqualified. Reference meshes omit threads/balls/cage/pinch-bolt shape. No physical
 fit, thrust rating, syringe force or flow performance is claimed. Do not energize.
 No purchases or prints were performed.
+
+
+## Provisional syringe flange and plunger fixtures
+
+The `restraints` module takes two explicit example configurations (20 mm and
+10 mm barrel envelopes). These are design variables, not manufacturer dimensions
+or a syringe selection. Measure actual barrel, flange, thumb, stem and usable
+stroke before adapting them to hardware.
+
+The moving adapter reuses the nested carriage's four rear-cap bolt paths, two rod
+clearances and central screw clearance. Its 6 mm plate sits behind the original
+3 mm cap. Carriage start is moved from 8 to 14 mm, leaving 5 mm behind the adapter
+at the guide support; configured travel remains 100 mm with a 6 mm forward body
+gap. This is static geometry, not observed motion or selected syringe stroke.
+Longer bolts, bearing/nut retention, spacer stack and tool access remain unselected.
+
+A removable front keeper captures the generic thumb against the upper adapter.
+Two separate hard spacers set the pocket length to thumb thickness +0.6 mm and
+prevent the intended bolt path from simply crushing the thumb. The spacers and
+keeper need real fit and stiffness checks. The open-top stem slot leaves nominal
+lower and side thumb overlap; it does not establish an axial force rating.
+
+The fixed flange yoke is independently anchored outside the guide base, centered
+at X230 mm. Two open-top plates provide a flange gap of configured thickness
++0.6 mm; their stem and barrel slots differ. A transverse base passage permits a
+separately selected strap for lift retention. No strap is supplied or verified;
+the open-top yoke alone cannot prevent lift. Board stiffness, anchor bolts, strap
+route/access, barrel support and actual axial seating remain unqualified.
+
+Both examples use an 80 mm nominal source axis. Existing low source saddles do
+not reach it; suitable raised barrel supports remain to be designed. Start/end
+views intentionally omit a complete syringe because no syringe length or usable
+stroke has been selected. These fixtures must not be treated as an operating
+pump, and the yoke must not carry an unsupported barrel by itself. No force,
+pressure, flow, physical fit or powered-operation qualification is claimed.

@@ -236,6 +236,20 @@ impl Frame {
                 .dry_assembly()
                 .translate(x, 0., self.carriage_z())
     }
+    pub(super) fn restraint_interface(&self) -> [f64; 9] {
+        self.carriage.restraint_interface()
+    }
+    pub(super) fn restraint_positions(&self) -> [f64; 4] {
+        [
+            self.frame.carriage_start_x_mm,
+            self.frame.travel_mm,
+            self.carriage_z(),
+            self.frame.minimum_end_gap_mm,
+        ]
+    }
+    pub(super) fn end_assembly(&self) -> Part {
+        self.assembly(self.frame.carriage_start_x_mm + self.frame.travel_mm)
+    }
     pub(super) fn rear_support_x(&self) -> f64 {
         -self.frame.support_length_mm
     }

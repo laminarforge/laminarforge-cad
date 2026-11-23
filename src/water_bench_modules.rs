@@ -18,6 +18,8 @@ mod layout;
 mod motor;
 #[path = "water_bench_outlet.rs"]
 mod outlet;
+#[path = "water_bench_restraints.rs"]
+mod restraints;
 #[path = "water_bench_screw_support.rs"]
 mod screw_support;
 #[path = "water_bench_source.rs"]
@@ -932,6 +934,7 @@ pub fn run(args: &Args, module: &str) -> Result<(), Box<dyn std::error::Error>> 
         "frame" => frame::run(args, &raw),
         "motor" => motor::run(args, &raw),
         "screw_support" => screw_support::run(args, &raw),
+        "restraints" => restraints::run(args, &raw),
         "coupon" => {
             let p: Coupon = toml::from_str(&raw)?;
             p.validate()?;

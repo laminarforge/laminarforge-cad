@@ -299,6 +299,19 @@ impl Carriage {
             self.axis_z(),
         )
     }
+    pub(super) fn restraint_interface(&self) -> [f64; 9] {
+        [
+            self.body_width_mm,
+            self.body_height_mm,
+            self.cap_thickness_mm,
+            self.cap_bolt_pitch_y_mm,
+            self.cap_bolt_pitch_z_mm,
+            self.cap_hole_diameter_mm,
+            self.rod_center_pitch_mm,
+            2. * self.rod_radius(),
+            2. * self.lead_radius(),
+        ]
+    }
     pub(super) fn guide_interface(&self) -> [f64; 4] {
         [
             self.rod_center_pitch_mm,
