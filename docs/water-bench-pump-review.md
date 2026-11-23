@@ -250,3 +250,45 @@ peaks at Z50.4 mm, leaving 5.6 mm nominal top land. This keeps the required
 circular pilot envelope while changing its ceiling angle. Additional top/bolt
 lands are validated. Actual exported geometry and preflight comparison must
 establish the observed outcome; angle alone does not qualify printing.
+
+
+## Separate radial screw-support stand
+
+`water_transfer_dock --module screw_support` reads
+`models/water_bench_screw_support.toml`. An 8 mm face-plate comparison is
+`models/water_bench_screw_support_thick.toml`. The nested drive configuration
+moves the motor face from guide X−80 to X−110, making space for a separate
+stand; the existing guide/carriage dimensions remain unchanged.
+
+The engineering reference is [ServoCity 1606-0043-0008](https://www.servocity.com/1606-series-2-side-1-post-pillow-block-8mm-bore/).
+Its supplier STEP SHA-256 is
+`09ce300690c1dffa9941930164640848ce70ddf382bd920cad6260914783dcb8`.
+Open CASCADE imported four valid solids. Analytic faces give a 43×20×7 mm
+outer envelope, an X-directed bore after posing, and two Ø4.05 mm face holes
+at Y±16 mm on the Z28 mm axis. These are supplier CAD observations, not a
+controlled tolerance drawing or measured hardware.
+
+The supplier pose uses cyclic axis mapping (determinant +1), not reflection:
+new X = supplier Y −15.069381747852276 −46;
+new Y = supplier Z −34.065137609673805;
+new Z = supplier X −20.828310710186315 +28.
+The rear housing face is X−46, front X−39; bounds are Y±21.5 and Z18..38.
+Actual supplier CAD must be compared to the exported stand before claiming
+mating clearance. The runtime REF mesh is only a conservative bounding envelope
+with bore and face holes; it does not reproduce the purchased assembly.
+
+The separate stand base is 32×96×6 mm, centered at X−48. Its 64 mm wide upright
+face ends at Z44; two Ø4.5 mm mounting paths match the 32 mm pattern. The central
+Ø18.4 mm opening is bearing clearance, not a thrust shoulder. Four Ø4.5 mm bench
+anchors and two outside webs are provided as review geometry. The motor-base,
+stand-base and guide-base nominal gaps are 2 mm each; the three parts have no
+structural connection or established alignment datum. The flat 38×64×plate-
+thickness gauge is independent and is not a structural stand component.
+
+Actual fasteners, housing seating surfaces, bolt/washer/nut access, anchoring,
+alignment, tolerances, material and load capacity are unresolved. No collars,
+thrust bearings, axial shoulders or bidirectional thrust restraint are modeled.
+The space behind the housing is not proof that a thrust stack fits or carries
+load. A radial bearing and flexible coupler do not establish axial retention.
+No syringe restraints, limits, hard stops, guard, driver or electrical stop is
+included. Do not energize this engineering candidate.

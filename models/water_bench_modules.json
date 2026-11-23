@@ -1,5 +1,5 @@
 {
-  "revision": "W8",
+  "revision": "W9",
   "scope": "single-lane water/dye engineering only",
   "physical_system_verified": false,
   "modules": [
@@ -48,15 +48,20 @@
       "motor_bracket_config": "models/water_bench_motor.toml",
       "motor_bracket_thick_config": "models/water_bench_motor_thick.toml",
       "motor_bracket_selector": "motor",
-      "motor_bracket_state": "three_candidates_exported_verified_steep_roof_comparison_pending",
+      "motor_bracket_state": "four_candidates_exported_verified",
       "motor_reference": "Adafruit 324 engineering envelope, unpurchased",
       "coupler_reference": "Adafruit 1176 outer envelope, unpurchased",
       "screw_thrust_support_state": "not_designed",
-      "motor_bracket_evidence_source_sha": "7beb93af5c70a963630c0165a905ecbc93d517e2",
-      "motor_bracket_evidence_job_id": "e4eb874a-7e6c-4391-838c-c39f8da25fbe",
+      "motor_bracket_evidence_source_sha": "2d34e4a7b40887ea920355fb7c02c73e7be0c5be",
+      "motor_bracket_evidence_job_id": "21b73ac9-c87f-442d-a639-3c038e7fef64",
       "motor_bracket_roof_config": "models/water_bench_motor_roof.toml",
       "motor_bracket_steep_config": "models/water_bench_motor_steep.toml",
-      "motor_45_degree_roof_preflight": "high_risk_not_promoted"
+      "motor_45_degree_roof_preflight": "high_risk_not_promoted",
+      "radial_support_config": "models/water_bench_screw_support.toml",
+      "radial_support_thick_config": "models/water_bench_screw_support_thick.toml",
+      "radial_support_selector": "screw_support",
+      "radial_support_state": "implemented_generation_pending",
+      "radial_support_supplier_step_sha256": "09ce300690c1dffa9941930164640848ce70ddf382bd920cad6260914783dcb8"
     },
     {
       "id": "M02",

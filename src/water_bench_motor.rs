@@ -3,7 +3,7 @@ use super::frame::Frame;
 use super::*;
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Motor {
+pub(super) struct Motor {
     motor: Parameters,
     guide: Frame,
 }
@@ -46,7 +46,7 @@ struct Parameters {
     minimum_wall_mm: f64,
 }
 impl Motor {
-    fn validate(&self) -> Result<(), String> {
+    pub(super) fn validate(&self) -> Result<(), String> {
         finite(&self.motor)?;
         self.guide.validate()?;
         let p = &self.motor;
@@ -322,6 +322,52 @@ impl Motor {
             p.reference_screw_length_mm,
             0.,
             p.axis_height_mm,
+        )
+    }
+    pub(super) fn axis_height(&self) -> f64 {
+        self.motor.axis_height_mm
+    }
+    pub(super) fn screw_diameter(&self) -> f64 {
+        self.motor.reference_screw_diameter_mm
+    }
+    pub(super) fn base_gap_edges(&self) -> [f64; 2] {
+        [
+            self.motor.motor_face_in_guide_x_mm + self.motor.base_front_mm,
+            self.guide.base_bounds().0[0],
+        ]
+    }
+    pub(super) fn coupler_end_x(&self) -> f64 {
+        self.motor.motor_face_in_guide_x_mm
+            + self.motor.coupler_start_x_mm
+            + self.motor.coupler_length_mm
+    }
+    pub(super) fn layout(&self) -> Part {
+        let p = &self.motor;
+        self.guide.start_assembly()
+            + (self.bracket()
+                + self.motor_reference()
+                + self.coupler_reference()
+                + self.screw_reference())
+            .translate(p.motor_face_in_guide_x_mm, 0., 0.)
+    }
+    pub(super) fn layout_bounds(&self) -> Bounds {
+        let p = &self.motor;
+        let g = self.guide.assembly_bounds();
+        (
+            [
+                g.0[0].min(p.motor_face_in_guide_x_mm - p.base_back_mm),
+                g.0[1].min(-p.base_width_mm / 2.),
+                0.,
+            ],
+            [
+                g.1[0].max(
+                    p.motor_face_in_guide_x_mm
+                        + p.reference_screw_start_x_mm
+                        + p.reference_screw_length_mm,
+                ),
+                g.1[1].max(p.base_width_mm / 2.),
+                g.1[2].max(p.plate_top_mm),
+            ],
         )
     }
     fn exports(&self) -> Vec<Export> {
