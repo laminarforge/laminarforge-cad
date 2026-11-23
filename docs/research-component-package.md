@@ -6,10 +6,10 @@ component register now covers the complete set of purchasing and integration
 roles, including the parts missing from the earlier pump recommendation.
 **Step 1 remains open.** Fourteen of 21 cost rows now have US reference
 prices, including one cable bundled in the starter kit. The priced items
-total **$1,588.03**. Seven rows still need prices or a design decision.
-The delivery destination is Montgomery, Texas, in the Houston area. Adding
-the balance seller's lowest returned freight of $141.34 brings the priced
-items to **$1,729.37** before tax, other freight, services and the open rows.
+total **$1,584.97**. Seven rows still need prices or a design decision.
+Shipping to Montgomery, TX 77356 adds $141.34 for the scale and $3.99 for
+its StarTech cable, bringing the subtotal to **$1,730.30** before tax,
+remaining freight, services and the seven open rows.
 This is a pricing exercise using public listings and automated estimates.
 Alex confirmed on November 23 that he has purchased no project hardware.
 Budget and specification work can proceed now. Physical checks follow receipt.
@@ -90,12 +90,12 @@ data bits, no parity and one stop bit. The connector close-up for the exact
 balance listing shows nine male pins. FTDI specifies a male host-adapter end.
 StarTech's drawing for SCNM9FF shows two female ends and the required three
 connections. Select one SCNM9FF. Confirm fit, continuity and real data when
-the hardware arrives. CDW lists the cable at $11.99 in the US. The UK listing
+the hardware arrives. The US B&H cart priced this cable at $8.93. The UK listing
 of £11.99 including VAT is a separate offer.
 [Balance connector photo](https://cdn.shopify.com/s/files/1/0723/8113/7151/files/4__77808.1569302765.1280.1280.jpg?v=1731291328),
 [FTDI datasheet](https://ftdichip.com/wp-content/uploads/2023/07/DS_US232R-10_R-100-500.pdf),
 [SCNM9FF drawing](https://sgcdn.startech.com/005329/media/sets/SCNM9FF/Diagram/SCNM9FF_Diagram.PDF),
-[US cable price](https://www.cdw.com/product/startech-10ft-rs232-serial-null-modem-cable-10ft-null-modem-cable/488601),
+[US cable listing](https://www.bhphotovideo.com/c/product/1001035-REG/startech_scnm9ff_female_to_female_db9.html),
 [UK cable price](https://www.startech.com/en-gb/cables/scnm9ff),
 [balance manual](https://file.ussolid.com/content/JFDBS/Manual-USS-DBS46%20Precision%20Balance.pdf).
 
@@ -121,10 +121,10 @@ installed assembly has no quote yet. [K3000](https://www.klibo.com/product-displ
 
 | Newly priced US item | Purchasing unit | USD |
 | --- | --- | ---: |
-| StarTech SCNM9FF | One cable | 11.99 |
+| StarTech SCNM9FF | One cable | 8.93 |
 | Nalgene 2118-0001PK | One pack of 12 jars at regular price | 52.70 |
 | EMS 63312-02 | One tray with cover | 70.75 |
-| **Added to the previous $1,452.59** | | **135.44** |
+| **Added to the previous $1,452.59** | | **132.38** |
 
 Thermo Fisher also displays a $44.81 online offer for the same pack. The
 regular price keeps the budget independent of that discount. The jar is
@@ -143,7 +143,7 @@ dimensions leave its usable spill volume and coverage unresolved. The delivered 
 | U.S. Solid USS-DBS46-1 | Weigh collected water during bench evaluation | $96.49 |
 | UPS Worldwide Saver for one balance | Lowest rate returned for Montgomery, TX | $141.34 |
 | **Balance plus its freight** | Before tax or any other charges | **$237.83** |
-| StarTech SCNM9FF, FTDI US232R-100-BULK and Apple USB-C adapter | One of each to read the scale from an existing Mac | $11.99 + $26.80 + $19.00 = **$57.79** |
+| StarTech SCNM9FF, FTDI US232R-100-BULK and Apple USB-C adapter | One of each to read the scale from an existing Mac | $8.93 + $26.80 + $19.00 = **$54.73** in parts |
 
 Two automated estimates for the same SKU and destination returned the same
 nine rates on November 23. The second estimate also verified the US storefront,
@@ -171,9 +171,41 @@ capacity tier. An on-site visit adds $295 per visit plus $2 per round-trip
 mile. Drop-off is by appointment. Exact service scope and expenses depend on
 the eventual selection. As one independent weight comparison, ScalesGalore
 lists Mettler Toledo 158657, a 50 g F1 weight with certificate, at $253.30.
-No service or weight has been selected. The $1,588.03 parts subtotal excludes
+No service or weight has been selected. The $1,584.97 parts subtotal excludes
 both. [Cypress service options](https://mnmscales.com/services/balance-calibration-houston/),
 [50 g weight listing](https://www.scalesgalore.com/product/Mettler-Toledo-158657-OIML-Class-F1-Calibration-Weight-With-Certification-50-g-px59723.cfm).
+
+#### Connecting the scale to a Mac
+
+B&H's guest cart estimated the following amounts for ZIP 77356 on November 23.
+The main budget uses the StarTech-only shipment and keeps the existing FTDI and Apple adapters.
+
+| What B&H would ship | Parts | Shipping | Estimated tax | Estimated total |
+| --- | ---: | ---: | ---: | ---: |
+| One StarTech SCNM9FF | $8.93 | $3.99 | $1.07 | **$13.99** |
+| One StarTech SCNM9FF plus one Tera Grand USBC-RS232SCW-03 | $23.92 | $3.99 | $2.30 | **$30.21** |
+
+The second option saves $30.81 in merchandise on the scale connection. The $14.99
+Tera Grand connects directly to USB-C and would replace one FTDI cable and one Apple
+adapter. B&H listed it as a 2–4 week special order. The manufacturer lists Mac
+support. Fit and operation with this Mac and scale still need a physical check.
+[B&H StarTech listing](https://www.bhphotovideo.com/c/product/1001035-REG/startech_scnm9ff_female_to_female_db9.html),
+[B&H Tera Grand listing](https://www.bhphotovideo.com/c/product/1751568-REG/tera_grand_usbc_rs232scw_03_premium_usb_c_to_rs232.html),
+[Tera Grand specifications](https://www.teragrand.com/products/premium-usb-c-to-rs232-serial-db9-adapter-cable-supports-windows-11-10-8-7-vista-xp-2000-98-linux-and-mac-os-built-with-ftdi-chipset-and-thumbscrews-3-ft).
+
+For the original FTDI US232R-100-BULK, DigiKey displayed $26.80 with zero in stock.
+RS displayed 13 available at $26.99 each. Two from RS would cost $53.98 before
+tax and freight. That exceeds the $50 threshold for its $6 small guest-order fee.
+RS's checkout guide asks for the delivery address before displaying shipping
+methods. The RS freight charge remains open.
+[DigiKey listing](https://www.digikey.com/en/products/detail/ftdi-future-technology-devices-international-ltd/US232R-100-BULK/2441363),
+[RS listing](https://us.rs-online.com/product/ftdi/us232r-100-bulk/70069415/),
+[RS terms](https://us.rs-online.com/view/legalterms/),
+[RS checkout guide](https://assets.rs-online.com/image/upload/v1680799667/MKT/LP/solutions/online-registration/HTG_FAQ_2023_v1.pdf).
+
+A+ Computers & Repair in Cypress publishes **$60 per hour** for shop bench labor
+with a one-hour minimum. It lists a separate $120 Apple computer diagnostic fee.
+The project budget has no assigned shop hours or diagnostic charge. [A+ rates](https://www.apluscomputersandrepair.com/rates/).
 
 The earlier Thailand parts and service comparisons remain in the component
 register and the prior saved checklist. The active budget uses US prices.
@@ -225,6 +257,9 @@ Purchasing and real operation follow the completed configuration and cost review
   - [ ] 1.6. Obtain a complete delivered budget for the selected parts and services.
     - [x] 1.6.1. Price the balance and computer accessories for the confirmed delivery region.
     - [ ] 1.6.2. Close remaining US freight, taxes, local services and labor.
+      - [x] 1.6.2.1. Price the scale-to-Mac cable options and local computer shop labor.
+      - [ ] 1.6.2.2. Price freight for the original FTDI adapters and remaining shipments.
+      - [ ] 1.6.2.3. Reconcile remaining tax, services and labor once quantities and scope are known.
 - [ ] 2. Lock research-use requirements
   - [x] 2.1. Document which requirements need qualified review.
   - [ ] 2.2. Record qualified requirements and acceptance limits.
@@ -243,8 +278,10 @@ Purchasing and real operation follow the completed configuration and cost review
 ## Resume checkpoint
 
 The November 22 conversation and ticket T-21BC0885 hold the original work list.
-As of November 23, the next budget item is 1.6.2. One balance shipment and local calibration options now have prices.
-The other US freight, exact tax and outstanding labor estimates are open. The first physical
+As of November 23, the next budget item is 1.6.2.2. Look for an in-stock
+seller of the original FTDI adapter with public shipping rates, then price the
+other unquoted shipments. The scale and StarTech freight estimates, alternate
+USB-C connection, and Cypress shop and calibration rates are saved. The first physical
 balance reading belongs under 4.2.3 after the equipment arrives.
 
 **Current step 1.4 depends on 2.2.** The measurement reviewer needs to record

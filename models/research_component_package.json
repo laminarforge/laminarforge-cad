@@ -1,5 +1,5 @@
 {
-  "revision": "CP6",
+  "revision": "CP7",
   "checked_date_utc": "2026-11-23",
   "ticket_id": "T-21BC0885",
   "status": "component candidate and gap register; step 1 remains incomplete",
@@ -139,10 +139,10 @@
       "role": "balance_serial_cable",
       "candidate": "StarTech SCNM9FF",
       "quantity": 1,
-      "listed_usd": 11.99,
-      "price_basis": "CDW US item 488601, one cable.",
+      "listed_usd": 8.93,
+      "price_basis": "One StarTech SCNM9FF at the B&H US cart price on November 23. Standalone shipping and estimated tax are recorded separately in the Texas budget.",
       "selection_status": "Selected from the catalog. The balance listing shows male pins and the FTDI cable has a male DB9. The exact SCNM9FF drawing specifies female ends and crosses data pins 2 and 3 with ground 5 straight through. Fit, continuity and real frames await the delivered units.",
-      "source": "https://www.cdw.com/product/startech-10ft-rs232-serial-null-modem-cable-10ft-null-modem-cable/488601",
+      "source": "https://www.bhphotovideo.com/c/product/1001035-REG/startech_scnm9ff_female_to_female_db9.html",
       "regional_reference_prices": [
         {
           "market": "GB",
@@ -381,14 +381,14 @@
       "candidate": null,
       "quantity": null,
       "listed_usd": null,
-      "price_basis": "Two automated US store estimates for one balance returned the same lowest USD 141.34 UPS Worldwide Saver shipping rate to Montgomery, TX. Apple offers free US standard shipping. Other freight, duties if applicable, tax and labor are open.",
-      "selection_status": "US destination confirmed. Partial shipping estimate for budgeting only. No order or vendor contact.",
+      "price_basis": "Montgomery freight estimates cover one balance at $141.34 and one StarTech cable at $3.99. Apple publishes free standard US delivery. The B&H standalone cable cart estimated $1.07 tax. Other freight, tax, applicable duties and project labor remain open.",
+      "selection_status": "Partial US budget. General computer shop labor is a published hourly comparison. Project hours are unknown.",
       "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html"
     }
   ],
   "cost": {
     "currency": "USD",
-    "known_reference_subtotal_usd": 1588.03,
+    "known_reference_subtotal_usd": 1584.97,
     "complete_system_total_usd": null,
     "host_cost_assumption": "The priced basket assumes an existing supported computer. Availability at the eventual bench is unconfirmed. A separately acquired host would add cost.",
     "unknown_price_rows": [
@@ -402,7 +402,7 @@
     ],
     "basis": "US parts prices for the Houston-area delivery budget. Add each verified freight charge once. Prior Thai figures are archived regional comparisons.",
     "previous_reference_subtotal_usd": 1452.59,
-    "newly_priced_usd": 135.44,
+    "newly_priced_usd": 132.38,
     "thailand_electronics_alternative": {
       "item_ids": [
         "CP-08",
@@ -437,11 +437,11 @@
       "market": "US",
       "destination": "Montgomery, Texas (Houston area)",
       "currency": "USD",
-      "priced_parts_usd": 1588.03,
+      "priced_parts_usd": 1584.97,
       "balance_shipping_usd": 141.34,
       "lowest_observed_service": "UPS Worldwide Saver",
       "balance_plus_shipping_before_tax_usd": 237.83,
-      "priced_parts_plus_balance_shipping_usd": 1729.37,
+      "priced_parts_plus_balance_shipping_usd": 1726.31,
       "complete_delivered_total_usd": null,
       "apple_standard_shipping_usd": 0,
       "apple_shipping_source": "https://www.apple.com/shop/help/shipping_delivery",
@@ -449,10 +449,95 @@
       "max_combined_sales_tax_percent": 8.25,
       "tax_source": "https://comptroller.texas.gov/taxes/sales/faq/local.php",
       "taxable_shipping_source": "https://comptroller.texas.gov/taxes/sales/faq/collection.php",
-      "tax_basis": "Exact tax and potential import charges were not returned by the freight estimator. Seller origin was not confirmed. A full street address can change the local tax jurisdiction.",
+      "tax_basis": "B&H estimated cable tax for ZIP 77356. The balance estimator returned freight only. Remaining taxes and any import charges are open.",
       "calibration_onsite_additional_usd_per_visit": 295,
       "calibration_onsite_usd_per_round_trip_mile": 2,
-      "calibration_source": "https://mnmscales.com/services/balance-calibration-houston/"
+      "calibration_source": "https://mnmscales.com/services/balance-calibration-houston/",
+      "balance_data_cable_shipping_usd": 3.99,
+      "priced_parts_plus_verified_shipping_usd": 1730.3,
+      "balance_accessory_cart_estimates": {
+        "observed_date": "2026-11-23",
+        "destination_postal_code": "77356",
+        "currency": "USD",
+        "source": "https://www.bhphotovideo.com/find/cart.jsp",
+        "observation_method": "Transcribed from two live B&H cart estimates. One of each listed item. No order placed.",
+        "quotes": [
+          {
+            "use": "Original StarTech cable only",
+            "items": [
+              {
+                "manufacturer_part": "SCNM9FF",
+                "quantity": 1,
+                "unit_price_usd": 8.93,
+                "stock_status": "In stock",
+                "source": "https://www.bhphotovideo.com/c/product/1001035-REG/startech_scnm9ff_female_to_female_db9.html"
+              }
+            ],
+            "merchandise_usd": 8.93,
+            "shipping_usd": 3.99,
+            "estimated_tax_usd": 1.07,
+            "estimated_total_usd": 13.99
+          },
+          {
+            "use": "Alternative for the balance connection only. The Tera Grand replaces one FTDI and one Apple adapter. Mac and balance compatibility still needs physical verification.",
+            "items": [
+              {
+                "manufacturer_part": "SCNM9FF",
+                "quantity": 1,
+                "unit_price_usd": 8.93,
+                "stock_status": "In stock",
+                "source": "https://www.bhphotovideo.com/c/product/1001035-REG/startech_scnm9ff_female_to_female_db9.html"
+              },
+              {
+                "manufacturer_part": "USBC-RS232SCW-03",
+                "quantity": 1,
+                "unit_price_usd": 14.99,
+                "stock_status": "Special order, estimated 2\u20134 weeks",
+                "source": "https://www.bhphotovideo.com/c/product/1751568-REG/tera_grand_usbc_rs232scw_03_premium_usb_c_to_rs232.html",
+                "manufacturer_source": "https://www.teragrand.com/products/premium-usb-c-to-rs232-serial-db9-adapter-cable-supports-windows-11-10-8-7-vista-xp-2000-98-linux-and-mac-os-built-with-ftdi-chipset-and-thumbscrews-3-ft"
+              }
+            ],
+            "merchandise_usd": 23.92,
+            "shipping_usd": 3.99,
+            "estimated_tax_usd": 2.3,
+            "estimated_total_usd": 30.21
+          }
+        ]
+      },
+      "original_ftdi_seller_comparison": {
+        "observed_date": "2026-11-23",
+        "manufacturer_part": "US232R-100-BULK",
+        "sellers": [
+          {
+            "seller": "DigiKey US",
+            "unit_price_usd": 26.8,
+            "available_units": 0,
+            "source": "https://www.digikey.com/en/products/detail/ftdi-future-technology-devices-international-ltd/US232R-100-BULK/2441363",
+            "note": "The listing indicates a possible US tariff."
+          },
+          {
+            "seller": "RS Americas",
+            "unit_price_usd": 26.99,
+            "available_units": 13,
+            "source": "https://us.rs-online.com/product/ftdi/us232r-100-bulk/70069415/",
+            "note": "Guest orders below $50 in merchandise incur a $6 handling fee. Two at the posted price total $53.98 before shipping and tax.",
+            "terms_source": "https://us.rs-online.com/view/legalterms/"
+          }
+        ],
+        "destination_shipping_usd": null,
+        "shipping_basis": "The RS guest checkout guide asks for a delivery address before shipping-method selection. No destination-specific RS freight was obtained.",
+        "shipping_source": "https://assets.rs-online.com/image/upload/v1680799667/MKT/LP/solutions/online-registration/HTG_FAQ_2023_v1.pdf"
+      },
+      "computer_shop_labor": {
+        "seller": "A+ Computers & Repair",
+        "city": "Cypress, TX",
+        "source": "https://www.apluscomputersandrepair.com/rates/",
+        "usd_per_hour": 60,
+        "minimum_hours": 1,
+        "apple_diagnostic_fee_usd": 120,
+        "project_hours": null,
+        "scope": "Published general computer-shop rate. A separately listed diagnostic is service-specific. Project labor has no quoted scope or hours."
+      }
     }
   },
   "host": {
@@ -565,7 +650,24 @@
               "step": "1.6.2",
               "title": "Close remaining US freight, taxes, local services and labor.",
               "complete": false,
-              "basis": "Direct balance shipping priced. Cypress calibration service tiers and one optional reference weight priced separately. Other shipment charges, tax, service scope and labor remain open."
+              "basis": "Montgomery estimates cover the balance and its StarTech cable. The two-cable alternative and the Cypress computer shop rate are documented. Other freight, tax and project-specific services and hours remain open.",
+              "substeps": [
+                {
+                  "step": "1.6.2.1",
+                  "title": "Price the scale-to-Mac cable options and local computer shop labor.",
+                  "complete": true
+                },
+                {
+                  "step": "1.6.2.2",
+                  "title": "Price freight for the original FTDI adapters and remaining shipments.",
+                  "complete": false
+                },
+                {
+                  "step": "1.6.2.3",
+                  "title": "Reconcile remaining tax, services and labor once quantities and scope are known.",
+                  "complete": false
+                }
+              ]
             }
           ]
         }
@@ -658,7 +760,7 @@
   ],
   "current_step": 1,
   "next_actions": [
-    "1.6.2: compare remaining US freight using public listings, and refine tax and local labor estimates. Retain the Montgomery balance shipping receipt. No supplier outreach or purchases.",
+    "1.6.2.2. Compare public shipping rates for two original FTDI adapters from an in-stock seller, then price the other unquoted shipments. RS describes an address-first checkout. Use public prices and automated estimates only.",
     "2.2 and 1.4: record approved gross load range including tare, smallest meaningful mass change and its allowable error, with units. Use those values to specify check masses, certificate uncertainty and the appropriate posted calibration service.",
     "1.5: resolve remaining parts and the reviewed independent stop assembly. Use final quantities for the delivered budget in 1.6.",
     "After purchase and receipt, complete 4.2.3 with the identified physical balance. Compare the timestamped output to its displayed value and units."
