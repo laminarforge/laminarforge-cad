@@ -1,5 +1,5 @@
 {
-  "revision": "CP1",
+  "revision": "CP2",
   "checked_date_utc": "2026-11-23",
   "ticket_id": "T-21BC0885",
   "status": "component candidate and gap register; step 1 remains incomplete",
@@ -56,44 +56,34 @@
       "source": "https://ibidi.com/img/cms/downloads/pl/ibidi_Price_List_USA_150dpi.pdf"
     },
     {
-      "id": "CP-06",
-      "role": "water_characterization_syringe_tubing_kit",
-      "candidate": "P-SYRKIT-SM",
-      "quantity": 1,
-      "listed_usd": 20.38,
-      "price_basis": "prior F1 source check; requote before purchase",
-      "selection_status": "several syringe sizes; final syringe size and material compatibility unresolved",
-      "source": "https://www.syringepump.com/syringes%20and%20plumbing%20supplies.php"
-    },
-    {
       "id": "CP-07",
       "role": "mass_observation_candidate",
       "candidate": "USS-DBS46-1 / JFDBS00046-100G",
       "quantity": 1,
       "listed_usd": 96.49,
       "price_basis": "prior F1 source check; requote before purchase",
-      "selection_status": "candidate only; stock/accuracy discrepancies remain",
+      "selection_status": "Water-only engineering candidate; stock/accuracy discrepancies remain. Manual excludes listed regulated/medical/pharmaceutical analyses; do not promote into research-use measurement without qualified selection.",
       "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html"
     },
     {
       "id": "CP-08",
       "role": "pump_serial_adapter",
-      "candidate": "StarTech ICUSB2321F",
+      "candidate": "FTDI US232R-100-BULK",
       "quantity": 1,
-      "listed_usd": null,
-      "price_basis": "not quoted",
-      "selection_status": "Named FTDI RS-232 candidate; product-specific macOS 26 support and acquired-device operation unresolved. Replaces use of the bundled converter, not the required OEM pump cable.",
-      "source": "https://www.startech.com/en-us/cards-adapters/icusb2321f"
+      "listed_usd": 26.8,
+      "price_basis": "manufacturer catalog USD per cable, checked 2026-11-23; shipping/tax excluded",
+      "selection_status": "Selected host-interface candidate: manufacturer-owned FT232R RS-232 cable, USB-A to male DB9, 1 m. Published macOS 26 ARM VCP support; actual enumeration/readback pending.",
+      "source": "https://ftdichip.com/product-category/products/cables/usb-rs232-cable-series/"
     },
     {
       "id": "CP-09",
       "role": "balance_serial_adapter",
-      "candidate": "StarTech ICUSB2321F",
+      "candidate": "FTDI US232R-100-BULK",
       "quantity": 1,
-      "listed_usd": null,
-      "price_basis": "not quoted",
-      "selection_status": "Separate channel candidate; crossed balance cable must be verified independently.",
-      "source": "https://www.startech.com/en-us/cards-adapters/icusb2321f"
+      "listed_usd": 26.8,
+      "price_basis": "manufacturer catalog USD per cable, checked 2026-11-23; shipping/tax excluded",
+      "selection_status": "Selected host-interface candidate: manufacturer-owned FT232R RS-232 cable, USB-A to male DB9, 1 m. Published macOS 26 ARM VCP support; actual enumeration/readback pending.",
+      "source": "https://ftdichip.com/product-category/products/cables/usb-rs232-cable-series/"
     },
     {
       "id": "CP-10",
@@ -108,32 +98,39 @@
     {
       "id": "CP-11",
       "role": "balance_serial_cable",
-      "candidate": null,
+      "candidate": "StarTech SCNM9FF (conditional connector candidate)",
       "quantity": 1,
       "listed_usd": null,
       "price_basis": "not quoted",
-      "selection_status": "Exact DBS46 connector gender and pinout remain to confirm. Cross 2/3 only as specified by the delivered instrument manual; do not stack an unreviewed null modem onto a crossed cable.",
-      "source": "https://file.ussolid.com/content/JFDBS/Manual-USS-DBS46%20Precision%20Balance.pdf"
+      "selection_status": "Crossed DB9 female/female cable candidate. Balance manual specifies 2\u21943 and 5\u21945; exact end gender and cable continuity still require confirmation. Do not buy a gender changer or double-crossover by assumption.",
+      "source": "https://www.startech.com/en-gb/cables/scnm9ff",
+      "regional_reference_price": {
+        "amount": 11.99,
+        "currency": "GBP",
+        "quantity": 1,
+        "includes_vat_percent": 20,
+        "basis": "UK manufacturer page; not a Thailand quote or USD conversion"
+      }
     },
     {
       "id": "CP-12",
       "role": "host_usb_connection",
-      "candidate": null,
-      "quantity": 1,
-      "listed_usd": null,
-      "price_basis": "not quoted",
-      "selection_status": "Confirm available host ports before buying a hub; require two independent instrument ports. No need to replace the Mac.",
-      "source": null
+      "candidate": "Apple USB-C to USB Adapter MW5L3AM/A (US costing SKU)",
+      "quantity": 2,
+      "listed_usd": 38.0,
+      "price_basis": "two units at manufacturer USD19 each; reference full outlay",
+      "selection_status": "Two direct USB-C\u2192USB-A data connections, one per instrument. Confirm available physical ports; reuse existing equivalent data adapters only after inventory. Thai SKU MW5L3ZA/A quoted separately; no mixed-currency sum.",
+      "source": "https://www.apple.com/shop/product/mw5l3am/a/usb-c-to-usb-adapter"
     },
     {
       "id": "CP-13",
       "role": "selected_syringe",
-      "candidate": null,
+      "candidate": "New Era SYR-GL3LL standard glass syringe, 3 mL",
       "quantity": 1,
-      "listed_usd": null,
-      "price_basis": "not quoted",
-      "selection_status": "P-SYRKIT-SM is an assortment, not final selection. Exact barrel ID, capacity, flange/plunger fit and working pressure depend on required duration and delivered-volume evidence.",
-      "source": null
+      "listed_usd": 32.0,
+      "price_basis": "manufacturer individual-unit list USD32, checked 2026-11-23",
+      "selection_status": "Exact water-characterization reference; borosilicate, fixed metal Luer Lock. Vendor lists 43.5 psi component rating and nominal 9.06 mm ID in NE-500/501 table. Final duration, fit and full fluid-path rating remain unresolved; no research-use material adoption.",
+      "source": "https://www.syringepump.com/syringes%20and%20plumbing%20supplies.php"
     },
     {
       "id": "CP-14",
@@ -168,22 +165,22 @@
     {
       "id": "CP-17",
       "role": "collection_vial",
-      "candidate": null,
+      "candidate": "Thermo Scientific Nalgene 2118-0001PK, pack of 12",
       "quantity": 1,
       "listed_usd": null,
       "price_basis": "not quoted",
-      "selection_status": "Choose gross capacity/mass and measured envelope against balance and maximum collection; include nest mass.",
-      "source": null
+      "selection_status": "30 mL wide-mouth PPCO collection candidate, 43 mm closure. Not a transport container or sealed reservoir. Confirm empty mass, pan/nest dimensions and required collection capacity; full pack price still needed.",
+      "source": "https://www.thermofisher.com/order/catalog/product/2118-0001PK"
     },
     {
       "id": "CP-18",
       "role": "spill_tray",
-      "candidate": null,
+      "candidate": "EMS 63312-02 polypropylene instrument tray",
       "quantity": 1,
       "listed_usd": null,
       "price_basis": "not quoted",
-      "selection_status": "Choose capacity against source inventory and credible spill; segregate electrical zone.",
-      "source": null
+      "selection_status": "Provisional water-bench drip tray, nominal outer 27.9\u00d715.5\u00d78.3 cm; usable internal spill capacity, dry-equipment separation, route coverage and purchased dimensions still need review. Do not infer usable capacity from bounding volume.",
+      "source": "https://www.emsdiasum.com/instrument-trays-with-cover"
     },
     {
       "id": "CP-19",
@@ -228,14 +225,10 @@
   ],
   "cost": {
     "currency": "USD",
-    "known_reference_subtotal_usd": 1349.37,
+    "known_reference_subtotal_usd": 1452.59,
     "complete_system_total_usd": null,
     "unknown_price_rows": [
-      "CP-08",
-      "CP-09",
       "CP-11",
-      "CP-12",
-      "CP-13",
       "CP-14",
       "CP-15",
       "CP-16",
@@ -246,27 +239,57 @@
       "CP-21",
       "CP-22"
     ],
-    "basis": "Catalog reference outlay, not delivered quotation; includes full reference packs. No price inferred for null rows."
+    "basis": "Manufacturer list reference outlay. CP2 removes the P-SYRKIT-SM assortment and includes one exact glass syringe instead; historical kit price remains only in F1 reference basket. Full quantities retained; null rows are unquoted.",
+    "non_usd_reference_prices": [
+      {
+        "item": "CP-11",
+        "amount": 11.99,
+        "currency": "GBP",
+        "quantity": 1,
+        "includes_vat_percent": 20,
+        "basis": "UK manufacturer page; not a Thailand quote or USD conversion"
+      }
+    ],
+    "previous_reference_subtotal_usd": 1349.37,
+    "newly_priced_usd": 123.6,
+    "removed_assortment_usd": 20.38
   },
   "host": {
-    "adapter": "ICUSB2321F",
-    "chipset": "FTDI",
-    "vendor_os_support": "Guide dated 2025-03-21 lists macOS through 15",
-    "chip_vendor_os_support": "FTDI VCP table lists macOS 26 and ARM, driver 1.6.0",
-    "qualification": "not observed; chip driver support does not qualify the third-party adapter",
+    "adapter": "FTDI US232R-100-BULK",
+    "chipset": "FT232R",
+    "adapter_interface": "USB-A male \u2192 RS-232 male DE-9; 1 m",
+    "host_connection": "Two Apple MW5L3AM/A USB-C\u2192USB-A data adapters; retain two separate instrument endpoints",
+    "vendor_os_support": "FTDI VCP table lists macOS 26 ARM/x64 driver 1.6.0",
+    "qualification": "Manufacturer-owned cable avoids CP1 third-party support mismatch; published compatibility only, no actual instrument communication observed",
     "driver_source": "https://ftdichip.com/drivers/vcp-drivers/",
-    "guide_source": "https://sgcdn.startech.com/005329/media/sets/ICUSB232xF_Manual/ICUSB232xF_QSG.pdf"
+    "datasheet_source": "https://ftdichip.com/wp-content/uploads/2023/07/DS_US232R-10_R-100-500.pdf",
+    "observed_inventory": {
+      "recorded_at_utc": "2026-11-23T05:51:39.490211+00:00",
+      "record_kind": "host_inventory",
+      "model": "Mac16,10",
+      "machine": "Mac mini",
+      "chip": "Apple M4",
+      "macos": "26.5.1",
+      "serial_device_paths": [
+        "/dev/cu.Bluetooth-Incoming-Port",
+        "/dev/cu.debug-console"
+      ],
+      "observation": "No pump/balance-specific serial device is exposed in this snapshot; device paths alone cannot establish physical ownership, connection, firmware or successful communication.",
+      "ports_opened": false,
+      "commands_sent": false
+    },
+    "host_role": "Observed Mac mini is a reference host; the acquired rig can use a suitably supported local Mac. No instrument needs connecting during design."
   },
   "connections": [
     {
       "id": "C01",
-      "path": "Mac \u2192 adapter A \u2192 CBL-PC-PUMP-7 \u2192 NE-501 RS-232",
-      "state": "candidate; no hardware"
+      "path": "Mac USB-C \u2192 Apple data adapter \u2192 FTDI adapter A \u2192 CBL-PC-PUMP-7 \u2192 NE-501 RS-232",
+      "state": "named candidates; pump-cable mating and real communication pending"
     },
     {
       "id": "C02",
-      "path": "Mac \u2192 adapter B \u2192 verified balance cable \u2192 DBS46 RS-232",
-      "state": "pinout/actual framing unresolved"
+      "path": "Mac USB-C \u2192 Apple data adapter \u2192 FTDI adapter B \u2192 one reviewed crossed balance cable \u2192 DBS46",
+      "state": "manual signal mapping established; connector gender, continuity and actual framing pending"
     },
     {
       "id": "C03",
@@ -328,10 +351,83 @@
   ],
   "current_step": 1,
   "next_actions": [
-    "Resolve vendor-supported host adapter and actual balance cable; acquire quotes only after exact SKU and regional supply selection.",
-    "Recover qualified vessel/readout requirement and component working limits; keep technical decisions with engineering.",
-    "Finish stop/pressure design and price every null ledger row; no total or spending request until concrete."
+    "Close qualified vessel/readout requirements before choosing channel/surface and final wetted components.",
+    "Confirm balance cable gender/continuity and pump-cable mating from controlled evidence or delivered parts; do not require acquisition merely to fix known signal mapping.",
+    "Complete independent stop and pressure-protection design, measured-capacity support choices and remaining prices before procurement release."
   ],
   "hardware_observed": false,
-  "purchase_authorized": false
+  "purchase_authorized": false,
+  "balance_serial": {
+    "manual_page": "printed 7, PDF page 5",
+    "wiring": {
+      "balance_2": "host_3",
+      "balance_3": "host_2",
+      "balance_5": "host_5"
+    },
+    "documented_settings": {
+      "baud": 9600,
+      "data_bits": 8,
+      "parity": "none",
+      "stop_bits": 1
+    },
+    "connector_gender": "not established by manual diagram",
+    "output": "manual documents continuous and key output with a 14-position layout; actual bytes/termination/stability indication remain unobserved",
+    "source": "https://file.ussolid.com/content/JFDBS/Manual-USS-DBS46%20Precision%20Balance.pdf"
+  },
+  "component_decision_progress": [
+    {
+      "decision": "Named adapter manufacturer and OS/architecture support",
+      "state": "catalog_selection_complete; hardware qualification pending"
+    },
+    {
+      "decision": "USB-C host conversion and price",
+      "state": "catalog_selection_complete; available physical ports pending"
+    },
+    {
+      "decision": "Balance signal wiring/settings",
+      "state": "manual_basis_complete; cable gender and real frames pending"
+    },
+    {
+      "decision": "Exact rated water-characterization syringe instead of assorted kit",
+      "state": "catalog_candidate_selected; fit, duration and research materials remain pending"
+    }
+  ],
+  "remaining_decision_owners": [
+    {
+      "ids": [
+        "CP-04",
+        "CP-13",
+        "CP-14",
+        "CP-15",
+        "CP-21"
+      ],
+      "owner": "engineering synthesis and qualified lab requirements",
+      "next": "Select intended observable and compatible vessel/readout/environment, then match final wetted path and protection."
+    },
+    {
+      "ids": [
+        "CP-11"
+      ],
+      "owner": "engineering and instrument supplier",
+      "next": "Confirm actual connector gender and exact cable continuity; retain documented 2\u21943 and 5\u21945 mapping."
+    },
+    {
+      "ids": [
+        "CP-16"
+      ],
+      "owner": "electrical design",
+      "next": "Define rated independent power-removal circuit, pressure/siphon behavior and reset semantics before choosing parts."
+    },
+    {
+      "ids": [
+        "CP-17",
+        "CP-18",
+        "CP-19",
+        "CP-20",
+        "CP-22"
+      ],
+      "owner": "engineering and procurement preparation",
+      "next": "Obtain exact dimensions/masses, quantities, calibration reference and delivered quotes; no purchases or vendor message performed."
+    }
+  ]
 }

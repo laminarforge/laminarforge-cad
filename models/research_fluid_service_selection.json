@@ -1,5 +1,5 @@
 {
-  "revision": "F2",
+  "revision": "F3",
   "checked_date_utc": "2026-11-22",
   "baseline_sha": "1402c88bb2f59c4d1dde8396c88744533cf7fff6",
   "decision_status": "engineering integration recommendation; not procurement or research-use release",
@@ -11,7 +11,7 @@
   "reference_vessel_status": "ibidi I Luer family retained for interface engineering; 80171 used only as an exact costing example. Scientific vessel selection remains open.",
   "cost": {
     "currency": "USD",
-    "basis": "manufacturer listed prices; regional and SKU differences must be requoted",
+    "basis": "Historical F1 fluid/pump reference basket only; CP2 consolidated ledger replaces the syringe assortment, adds host connections and preserves remaining unquoted roles",
     "items": [
       {
         "role": "pump",
@@ -93,7 +93,7 @@
         "syringe"
       ],
       "state": "size-specific verification required",
-      "finding": "Pump supports several sizes; no final syringe diameter, flange fit, working rating or required duration selected."
+      "finding": "CP2 uses SYR-GL3LL 3 mL glass as an exact water-characterization reference, vendor nominal ID 9.06 mm and component rating 43.5 psi. Final operation/duration and physical retention still need review."
     },
     {
       "id": "I02",
@@ -129,7 +129,7 @@
         "Mac host"
       ],
       "state": "not demonstrated",
-      "finding": "Use a named RS-232 adapter candidate, StarTech ICUSB2321F (FTDI), rather than assume the bundled converter works. Vendor guide lists macOS through 15; FTDI lists ARM macOS 26 VCP support separately. This is not end-product qualification. Real enumeration and pump readback remain pending."
+      "finding": "CP2 selects FTDI US232R-100-BULK manufacturer-owned RS-232 cables plus direct USB-C data adapters. Published macOS 26 ARM support replaces the third-party adapter question. Real pump identity/state and balance byte capture remain pending."
     }
   ],
   "alternatives": [
