@@ -39,6 +39,10 @@ struct Parameters {
     strap_width_mm: f64,
     strap_height_mm: f64,
     strap_bottom_mm: f64,
+    web_length_mm: f64,
+    web_width_mm: f64,
+    web_height_mm: f64,
+    web_center_y_mm: f64,
     minimum_wall_mm: f64,
 }
 impl Restraints {
@@ -124,7 +128,7 @@ impl Restraints {
         require(
             (40. ..=65.).contains(&p.yoke_base_length_mm)
                 && (80. ..=110.).contains(&p.yoke_base_width_mm)
-                && (4. ..=8.).contains(&p.yoke_base_thickness_mm)
+                && (8. ..=10.).contains(&p.yoke_base_thickness_mm)
                 && (4. ..=8.).contains(&p.yoke_plate_thickness_mm)
                 && p.yoke_edge_land_mm >= w
                 && p.yoke_center_x_mm - p.yoke_base_length_mm / 2. >= b.1[0] + 10.
@@ -149,10 +153,24 @@ impl Restraints {
             "yoke anchor land or top bolt access conflicts",
         )?;
         require(
+            (6. ..=10.).contains(&p.web_length_mm)
+                && (3. ..=5.).contains(&p.web_width_mm)
+                && (20. ..=40.).contains(&p.web_height_mm)
+                && p.web_center_y_mm - p.web_width_mm / 2. >= p.flange_width_mm / 2. + w
+                && p.anchor_pitch_y_mm / 2. - 4. - p.web_center_y_mm - p.web_width_mm / 2. >= w
+                && p.yoke_base_length_mm / 2.
+                    - self.yoke_gap() / 2.
+                    - p.yoke_plate_thickness_mm
+                    - p.web_length_mm
+                    >= w,
+            "side braces conflict with flange, anchors or base edge",
+        )?;
+        require(
             (3. ..=4.).contains(&p.strap_width_mm)
                 && (1.4..=2.).contains(&p.strap_height_mm)
                 && p.strap_bottom_mm >= 2.
-                && p.strap_bottom_mm + p.strap_height_mm <= p.yoke_base_thickness_mm - 1.6
+                && p.strap_bottom_mm + p.strap_height_mm + p.strap_width_mm / 2. * 3_f64.sqrt()
+                    <= p.yoke_base_thickness_mm - 1.6
                 && p.strap_width_mm >= self.yoke_gap() - 0.5,
             "invalid transverse strap passage",
         )
@@ -333,14 +351,53 @@ impl Restraints {
                 .translate(x, y, 0.);
             }
         }
-        a - block(
+        for sign in [-1., 1.] {
+            for y in [-p.web_center_y_mm, p.web_center_y_mm] {
+                a = a + block(
+                    "outside_flange_side_brace",
+                    p.web_length_mm + E,
+                    p.web_width_mm,
+                    p.web_height_mm + E,
+                    p.yoke_base_thickness_mm - E,
+                )
+                .translate(
+                    sign * (self.yoke_gap() / 2.
+                        + p.yoke_plate_thickness_mm
+                        + (p.web_length_mm - E) / 2.),
+                    y,
+                    0.,
+                );
+            }
+        }
+        let z = p.strap_bottom_mm + p.strap_height_mm;
+        let edge = p.strap_width_mm / 2_f64.sqrt();
+        let roof_h = p.strap_width_mm / 2. * 3_f64.sqrt();
+        let roof = block(
+            "strap_roof_diamond",
+            edge,
+            p.yoke_base_width_mm + 2. * E,
+            edge,
+            -edge / 2.,
+        )
+        .rotate(0., 45., 0.)
+        .scale(1., 1., 3_f64.sqrt())
+        .translate(0., 0., z)
+            & block(
+                "upper_half_only",
+                p.strap_width_mm + 2. * E,
+                p.yoke_base_width_mm + 4. * E,
+                roof_h + E,
+                z,
+            );
+        a - (block(
             "transverse_lift_restraint_strap_route",
             p.strap_width_mm,
             p.yoke_base_width_mm + 2. * E,
-            p.strap_height_mm,
+            p.strap_height_mm + E,
             p.strap_bottom_mm,
-        )
+        ) + roof)
     }
+
     fn flange(&self) -> Part {
         let p = self.p();
         block(
@@ -571,7 +628,7 @@ pub(super) fn run(args: &Args, raw: &str) -> Result<(), Box<dyn std::error::Erro
     let p = r.p();
     let c = r.c();
     let pos = r.guide.restraint_positions();
-    let design = json!({"scope":"unpowered water-only provisional syringe interfaces","measured_hardware_selected":false,"axis_height_mm":p.axis_height_mm,"existing_carriage_contract":c,"carriage_positions_mm":pos,"adapter_rear_at_start_x_mm":pos[0]+r.rear_x(),"thumb_pocket_length_mm":r.pocket(),"flange_gap_mm":r.yoke_gap(),"nominal_axial_play_mm":p.axial_clearance_mm,"spacer_quantity":2,"moving_adapter_to_assembly_rotation_xyz_deg":[0.,-90.,0.],"moving_adapter_to_assembly_translation_mm":[pos[0]-c[2],0.,pos[2]],"keeper_to_assembly_rotation_xyz_deg":[0.,-90.,0.],"keeper_to_assembly_translation_mm":[pos[0]+r.keeper_x()+p.keeper_thickness_mm,0.,r.keeper_bottom()+pos[2]],"fixed_yoke_to_assembly_translation_mm":[p.yoke_center_x_mm,0.,0.],"thumb_to_flange_face_gap_start_mm":p.yoke_center_x_mm-p.flange_thickness_mm/2.-(pos[0]-c[2]+p.axial_clearance_mm/2.+p.thumb_thickness_mm),"rules":["All syringe dimensions are provisional examples, not measured or supplier-selected hardware.","Adapter shares nested carriage cap bolt and rod/screw passages; longer cap bolts and actual fastener stack/access are unselected.","Start position accounts for adapter thickness. Static endpoints do not qualify travel, bearing alignment or syringe stroke.","Keeper uses two identical hard spacers to limit clamping of the generic thumb; actual fit/endplay/strength remain unqualified.","Fixed yoke captures flange axially with open-top stem/barrel slots. A separately selected and verified strap is required to prevent lift; passage alone is not restraint.","Yoke has four independent M4 board anchor paths. Board material, underside access, flatness, stiffness and actual bolts are unqualified.","Existing low source saddles do not reach this axis. Barrel supports/risers at this height remain to be designed; the yoke must not carry an unsupported barrel alone.","No complete syringe, source-length fit, stem articulation, water tubing, motor, lead screw, thrust stack, guard, limits or control is included in these views.","No physical fit, force, pressure or flow qualification. Do not energize or fabricate an operating pump from these review meshes."]});
+    let design = json!({"scope":"unpowered water-only provisional syringe interfaces","measured_hardware_selected":false,"axis_height_mm":p.axis_height_mm,"existing_carriage_contract":c,"carriage_positions_mm":pos,"adapter_rear_at_start_x_mm":pos[0]+r.rear_x(),"thumb_pocket_length_mm":r.pocket(),"flange_gap_mm":r.yoke_gap(),"nominal_axial_play_mm":p.axial_clearance_mm,"strap_roof_slope_deg":60.,"strap_roof_peak_z_mm":p.strap_bottom_mm+p.strap_height_mm+p.strap_width_mm/2.*3_f64.sqrt(),"strap_roof_minimum_top_land_mm":p.yoke_base_thickness_mm-p.strap_bottom_mm-p.strap_height_mm-p.strap_width_mm/2.*3_f64.sqrt(),"spacer_quantity":2,"moving_adapter_to_assembly_rotation_xyz_deg":[0.,-90.,0.],"moving_adapter_to_assembly_translation_mm":[pos[0]-c[2],0.,pos[2]],"keeper_to_assembly_rotation_xyz_deg":[0.,-90.,0.],"keeper_to_assembly_translation_mm":[pos[0]+r.keeper_x()+p.keeper_thickness_mm,0.,r.keeper_bottom()+pos[2]],"fixed_yoke_to_assembly_translation_mm":[p.yoke_center_x_mm,0.,0.],"thumb_to_flange_face_gap_start_mm":p.yoke_center_x_mm-p.flange_thickness_mm/2.-(pos[0]-c[2]+p.axial_clearance_mm/2.+p.thumb_thickness_mm),"rules":["All syringe dimensions are provisional examples, not measured or supplier-selected hardware.","Adapter shares nested carriage cap bolt and rod/screw passages; longer cap bolts and actual fastener stack/access are unselected.","Start position accounts for adapter thickness. Static endpoints do not qualify travel, bearing alignment or syringe stroke.","Keeper uses two identical hard spacers to limit clamping of the generic thumb; actual fit/endplay/strength remain unqualified.","Fixed yoke captures flange axially with open-top stem/barrel slots. A separately selected and verified strap is required to prevent lift; passage alone is not restraint.","Yoke has four independent M4 board anchor paths. Board material, underside access, flatness, stiffness and actual bolts are unqualified.","Existing low source saddles do not reach this axis. Barrel supports/risers at this height remain to be designed; the yoke must not carry an unsupported barrel alone.","No complete syringe, source-length fit, stem articulation, water tubing, motor, lead screw, thrust stack, guard, limits or control is included in these views.","No physical fit, force, pressure or flow qualification. Do not energize or fabricate an operating pump from these review meshes."]});
     publish(
         args,
         "water_bench_restraints",

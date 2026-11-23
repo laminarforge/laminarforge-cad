@@ -369,3 +369,12 @@ views intentionally omit a complete syringe because no syringe length or usable
 stroke has been selected. These fixtures must not be treated as an operating
 pump, and the yoke must not carry an unsupported barrel by itself. No force,
 pressure, flow, physical fit or powered-operation qualification is claimed.
+
+
+The first flat strap-passage roof flagged 306 mm² of downward overhang in actual
+preflight for both yokes. Revised candidates use a 60-degree upper roof, keeping
+the 3.4×1.6 mm rectangular strap clearance, and a 9 mm base leaving 2.056 mm above
+the nominal roof peak. Four 8×4×30 mm side braces join the tall flange plates to
+the base outside the reference flange and anchor tool envelopes. They do not
+establish a load rating. Repeat actual export/preflight; a shape change alone is
+not proof of printability or strength.

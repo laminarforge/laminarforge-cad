@@ -20,7 +20,7 @@ spacer_outer_diameter_mm = 8.0
 yoke_center_x_mm = 230.0
 yoke_base_length_mm = 48.0
 yoke_base_width_mm = 90.0
-yoke_base_thickness_mm = 6.0
+yoke_base_thickness_mm = 9.0
 yoke_plate_thickness_mm = 6.0
 yoke_edge_land_mm = 8.0
 anchor_pitch_x_mm = 34.0
@@ -29,6 +29,10 @@ anchor_hole_mm = 4.5
 strap_width_mm = 3.4
 strap_height_mm = 1.6
 strap_bottom_mm = 2.4
+web_length_mm = 8.0
+web_width_mm = 4.0
+web_height_mm = 30.0
+web_center_y_mm = 27.0
 minimum_wall_mm = 3.0
 
 [guide.frame]
