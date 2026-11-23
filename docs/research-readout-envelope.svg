@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="730" viewBox="0 0 1120 730">
+<rect width="1120" height="730" fill="#f8fafc"/>
+<g font-family="Arial, sans-serif" fill="#0f172a"><text x="40" y="48" font-size="27" font-weight="700">Readout interface: envelope is not a seat</text><text x="40" y="78" font-size="16" fill="#475569">RI1 • nominal concentric comparison • no adapter, objective or manufacturing release</text>
+<rect x="40" y="105" width="610" height="410" fill="white" stroke="#cbd5e1"/>
+<path d="M 65 310 H 625 M 345 125 V 495" stroke="#e2e8f0"/>
+<rect x="89.48" y="139.04" width="511.04" height="341.92" rx="0" fill="none" stroke="#334155" stroke-width="3" stroke-dasharray=""/><rect x="137.48" y="187.04" width="415.04" height="245.92" rx="0" fill="none" stroke="#0891b2" stroke-width="3" stroke-dasharray="8 5"/><rect x="194.00" y="259.00" width="302.00" height="102.00" rx="0" fill="none" stroke="#d97706" stroke-width="3" stroke-dasharray=""/>
+<text x="90" y="128" font-size="15" fill="#334155">A0 payload envelope 127.76 × 85.48 mm</text>
+<text x="151" y="199" font-size="15" fill="#0891b2">Optical opening 103.76 × 61.48 mm</text>
+<text x="208" y="315" font-size="15" fill="#b45309">Slide outline 75.5 × 25.5 mm</text>
+<text x="90" y="500" font-size="14" fill="#64748b">Same XY center assumed for comparison; orientation/height not selected.</text>
+<g font-size="17"><text x="690" y="143" font-weight="700">What the overlay establishes</text>
+<text x="690" y="179">Nominal margins inside optical opening:</text><text x="690" y="207">X 14.13 mm / side • Y 17.99 mm / side</text>
+<text x="690" y="249" font-weight="700">What it leaves unresolved</text>
+<text x="690" y="282">• Slide support and clamp load</text><text x="690" y="312">• Port / tube / cable clearances</text><text x="690" y="342">• Objective approach and focus</text><text x="690" y="372">• Vessel and scientific readout</text>
+<text x="690" y="417" fill="#9a3412">The opening alone provides no seat.</text><text x="690" y="445" fill="#475569">A separate seat/insert needs definition.</text></g>
+<rect x="40" y="540" width="1040" height="150" rx="8" fill="#e2e8f0"/>
+<text x="60" y="571" font-size="17" font-weight="700">Keep three different interfaces separate</text>
+<text x="60" y="602" font-size="16">Optical: objective + bottom/material stack + stage access.  Electrical: array + holder + reader.</text>
+<text x="60" y="631" font-size="16">Environment: control reading + independent sample reference + ambient observation.</text>
+<text x="60" y="663" font-size="14" fill="#475569">Source: A0 Rust constants and ibidi I Luer product footprint. Outer dimensions only; no connector geometry implied.</text>
+</g></svg>

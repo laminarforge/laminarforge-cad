@@ -1,0 +1,182 @@
+{
+  "revision": "RI1",
+  "baseline_sha": "97c3bd9b5e7a9067bf00da05511e51ae1b0f018d",
+  "checked_date_utc": "2026-11-23",
+  "purpose": "Separate physical readout interfaces from process monitoring so the intended instrument can be specified without equating water delivery or a clear window with scientific measurement.",
+  "status": "interface design basis; no research-use, geometry or manufacturing release",
+  "engineering_decisions": [
+    "Keep reusable dry support, commercial replaceable wetted path and readout-specific replaceable insert as distinct assemblies. Do not clamp an unsupported coverslip or use printed material as an electrode/seal.",
+    "Preserve the active A0 geometry. Any changed support/window/readout route requires explicit integration review and the normal geometry-release flow.",
+    "Keep process observations separate from scientific readout; no automatic clinical or cure inference from either.",
+    "Do not add a microscope, impedance analyzer, electrode PCB or environmental controller to the purchase list until its complete vessel/interface requirements are matched."
+  ],
+  "envelope_comparison": {
+    "basis": "nominal published envelope placed concentrically for comparison only; not an actual supported pose",
+    "a0_payload_mm": [
+      127.76,
+      85.48
+    ],
+    "a0_optical_keepout_mm": [
+      103.76,
+      61.48
+    ],
+    "commercial_reference_slide_mm": [
+      75.5,
+      25.5
+    ],
+    "envelope_margin_inside_keepout_each_side_mm": [
+      14.13,
+      17.99
+    ],
+    "finding": "The entire nominal slide outline falls inside the A0 optical opening in this assumed pose. The opening is not a slide support. Geometry containment establishes neither seating nor a usable objective approach.",
+    "not_evaluated": [
+      "port centers and height",
+      "bottom datum and supported rim",
+      "connector engagement/removal/bend sweeps",
+      "objective barrel/nosepiece sweep and working distance",
+      "tolerances and clamp loads",
+      "selected scientific vessel suitability"
+    ]
+  },
+  "a0_window_reference": {
+    "base_panel_thickness_mm": 3.0,
+    "base_panel_assembly_z_mm": [
+      54.35,
+      57.35
+    ],
+    "source": "docs/sixteen_slot_cassette_a0_interface_spec.md coordinate/stackup table",
+    "finding": "This placeholder is above the lid in the recorded assembly, not a coverslip underneath a replacement slide. Whether a chosen optical path intersects it must be established from the actual stack. No claim that the existing panel blocks every inverted path."
+  },
+  "interface_register": [
+    {
+      "id": "RI-01",
+      "role": "Scientific endpoint and vessel",
+      "state": "unselected",
+      "owner": "qualified laboratory requirements; engineering integration",
+      "needed": [
+        "Documented intended observable and output units/analysis",
+        "Exact commercial vessel SKU and material/bottom/port drawing",
+        "Required measurement timing and allowed movement/interruption",
+        "Required environment and independent evidence criteria"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "RI-02",
+      "role": "Optical measurement path",
+      "state": "reserved_not_qualified",
+      "needed": [
+        "Exact microscope, objective and stage/carrier drawings",
+        "Objective free working distance, correction range and immersion specification",
+        "Complete material/thickness stack, sample plane and focus travel",
+        "XY access, objective/nosepiece sweep, cable/tube movement and registration",
+        "Actual supported vessel imaging of a suitable nonbiological reference before intended-use qualification"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "RI-03",
+      "role": "Electrical impedance / TEER if required",
+      "state": "reserved_not_selected",
+      "needed": [
+        "Qualified measurement modality and interpretation; impedance and TEER are not interchangeable labels",
+        "Exact compatible electrode vessel/array, holder, reader and connector",
+        "Pinout, isolation, acquisition/export interface, electrode/path interactions",
+        "Vendor-supported reference measurement and actual installed connection evidence"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "RI-04",
+      "role": "Environment control and observation",
+      "state": "thermal_surrogate_only",
+      "needed": [
+        "Vessel-specific environmental requirements from qualified input",
+        "Separate IDs/locations for control sensor, independent sample reference and ambient logger",
+        "Independent protection, power-return behavior and accessible service connections",
+        "Actual installed environmental mapping with uncertainty and time history"
+      ],
+      "forbidden_substitutions": [
+        "Aluminum PID reading is not sample temperature",
+        "Ambient RH observation is not active humidity control",
+        "A heated microplate surrogate is not qualification of a different perfused vessel"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "RI-05",
+      "role": "Delivered liquid and path condition",
+      "state": "engineering_plan_only",
+      "needed": [
+        "F1 exact rated fluid path and independent delivered-mass observation",
+        "Pressure protection, stop/restart evidence and retained-volume/collection accounting",
+        "Source/route/destination identity and actual timestamped observations"
+      ],
+      "forbidden_substitutions": [
+        "Programmed displacement is not measured flow",
+        "Delivered mass is not the scientific response"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "RI-06",
+      "role": "Data identity and traceability",
+      "state": "engineering_ledger_available_measurement_capture_pending",
+      "needed": [
+        "Record kind and source/assembly revision",
+        "Run/module/vessel/location and device serial identity",
+        "Raw native data path, units, timestamps, clock synchronization/uncertainty",
+        "Calibration reference, firmware/settings, processing version and derived-data lineage",
+        "Operator interventions, gaps, failed observations and storage checksums"
+      ],
+      "existing_tool": "tools/water_bench_record.py stores engineering attachments; it does not acquire samples or certify scientific data.",
+      "release_evidence": []
+    }
+  ],
+  "qualified_review_packet": {
+    "prepared_information": [
+      "A0 geometry and source references",
+      "F1 commercial pump/path candidate and cost gaps",
+      "RI1 measurement/environment interface register",
+      "Nominal envelope overlay without a physical-fit claim"
+    ],
+    "answers_required_from_qualified_reviewer": [
+      "What observable establishes the intended research result, and what instrument/vessel supports it?",
+      "What materials, environmental conditions and timing constraints must engineering preserve?",
+      "What calibration/reference observations and uncertainty support acceptance?"
+    ],
+    "not_delegated_to_alex": "Inventing flow/pressure, microscope or biological operating limits.",
+    "review_sent": false,
+    "review_completed": false
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "url": "https://ibidi.com/channel-slides/50-5399--slide-i-luer.html",
+      "supports": "Commercial I Luer exterior footprint and connection family; no assembled interface qualification."
+    },
+    {
+      "id": "S2",
+      "url": "https://ibidi.com/content/393-comparison-of-material-specifications",
+      "supports": "Polymer coverslip 180um (+10/-5), glass #1.5H 170um (+/-5); distinguish specific product bottom."
+    },
+    {
+      "id": "S3",
+      "url": "https://www.zeiss.com/microscopy/en/resources/insights-hub/foundational-knowledge/correcting-cover-glass-thickness-for-better-images.html",
+      "supports": "Objective optical correction depends on intervening materials and specified correction range."
+    },
+    {
+      "id": "S4",
+      "url": "https://www.leica-microsystems.com/products/microscope-accessories/microscope-objective-lens/labeling-of-objectives/",
+      "supports": "Free working distance is separate from specified coverslip thickness."
+    },
+    {
+      "id": "S5",
+      "url": "https://www.biophysics.com/cultureware.php",
+      "supports": "ECIS uses dedicated disposable gold-film electrode arrays and holder; flow arrays are a separate commercial class."
+    }
+  ],
+  "hardware_run_started": false,
+  "scientific_measurements_recorded": false,
+  "new_cad_admitted": false
+}

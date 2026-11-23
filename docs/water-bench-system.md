@@ -1,4 +1,4 @@
-# Connected water-bench modules — interface revision W6
+# Connected water-bench modules — interface revision W7
 
 Ticket T-21BC0885. Scope: one water/dye engineering lane. No cell, pathogen,
 vector, culture, assay or incubation procedure is specified here.
@@ -44,6 +44,67 @@ More provisional fixtures alone do not retire component selection, manufacturing
 physical commissioning or intended-use requirements. The earlier seven-block
 bench estimate is not an estimate of all remaining work for the research box.
 No reliable total remaining-part count is established yet.
+
+## Readout and environment interface basis — RI1
+
+The research measurement is still unselected. A0 reserves imaging and
+TEER/impedance connections; those reservations do not select a reader or prove
+vessel compatibility. `models/research_readout_interfaces.json` now separates six
+interfaces: scientific vessel, optical path, optional electrical readout,
+environment, fluid-delivery observation and data identity.
+
+Engineering direction: retain dry reusable support and replaceable commercial
+wetted parts, with a readout-specific replaceable insert. Do not add a custom
+camera/electrode assembly or alter A0 merely to fill a reserved opening. A
+qualified laboratory requirement must identify the useful observable, vessel,
+measurement timing and environment; engineering supplies the compatible parts,
+access, control and evidence package.
+
+![Nominal envelope comparison; no physical support or optical fit claim](research-readout-envelope.svg)
+
+The overlay uses actual A0 constants and the commercial reference slide's
+published footprint. At an assumed common center, the 75.5×25.5 slide outline
+falls wholly within the 103.76×61.48 optical opening: nominal margins are 14.13
+and 17.99 mm per side. This is an **unsupported envelope**, not a drop-in seat.
+No port heights, connectors, clamps, objective or actual pose are evaluated.
+A separate insert must transfer loads to dry support while retaining the chosen
+optical access; a smaller slide cannot simply replace the Rev C payload.
+
+For microscopy, specify the exact objective, free working distance, permitted
+bottom/material stack, focus travel, stage and nosepiece sweep. Coverslip
+thickness and free working distance are different quantities. ibidi lists its
+polymer bottom at 180 µm (+10/−5), and #1.5H glass at 170 µm (±5); the specific
+SKU matters [RI-S1,RI-S2]. Correction capability is limited to the objective's
+specified range [RI-S3]. A0's 3 mm placeholder panel is above the lid in its
+recorded stack (base panel assembly Z 54.35–57.35); it is not the slide's bottom.
+Assess whether the actual light path crosses it. This review does not claim
+that the existing panel obstructs every inverted microscope path.
+
+Electrical impedance requires a compatible electrode vessel, holder and reader;
+a plain flow slide does not supply these. Applied BioPhysics documents dedicated
+gold-film arrays, including a separate flow-array family [RI-S4]. No array or
+impedance instrument is selected, and a signal from one modality must not be
+renamed as another measurement.
+
+Keep sample temperature, metal-control temperature and ambient temperature/RH
+separate in wiring and records. The heated-water article retains only its own
+engineering acceptance basis. Do not copy its thermal settings into an unselected
+research vessel, equate RH logging with control, or treat delivered mass as the
+scientific response. Every record needs assembly/vessel/location/device identity,
+raw data with units and clock information, calibration references, processing
+lineage and interventions. The existing engineering ledger stores attachments;
+it does not acquire or validate scientific measurements.
+
+The prepared review packet comprises A0, F1 and RI1. Qualified input is needed
+on the observable and compatible vessel/readout, materials/environment/timing,
+and acceptance evidence. It has not been sent and no review is claimed. Alex
+is not being asked to invent operating limits. New CAD remains held until these
+interfaces establish a useful, manufacturable configuration.
+
+- [RI-S1: ibidi material specifications](https://ibidi.com/content/393-comparison-of-material-specifications)
+- [RI-S2: Leica objective labeling and working distance](https://www.leica-microsystems.com/products/microscope-accessories/microscope-objective-lens/labeling-of-objectives/)
+- [RI-S3: ZEISS cover-glass correction limits](https://www.zeiss.com/microscopy/en/resources/insights-hub/foundational-knowledge/correcting-cover-glass-thickness-for-better-images.html)
+- [RI-S4: Applied BioPhysics cultureware and flow arrays](https://www.biophysics.com/cultureware.php)
 
 ## Connected system
 
