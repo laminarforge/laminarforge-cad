@@ -307,6 +307,9 @@ impl Carriage {
             self.body_width_mm,
         ]
     }
+    pub(super) fn screw_diameter(&self) -> f64 {
+        self.lead_screw_diameter_mm
+    }
     pub(super) fn body_length(&self) -> f64 {
         self.body_length_mm
     }

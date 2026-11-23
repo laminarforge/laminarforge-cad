@@ -14,6 +14,8 @@ mod carriage;
 mod frame;
 #[path = "water_bench_layout.rs"]
 mod layout;
+#[path = "water_bench_motor.rs"]
+mod motor;
 #[path = "water_bench_outlet.rs"]
 mod outlet;
 #[path = "water_bench_source.rs"]
@@ -926,6 +928,7 @@ pub fn run(args: &Args, module: &str) -> Result<(), Box<dyn std::error::Error>> 
         "bench" => layout::run(args, &raw),
         "carriage" => carriage::run(args, &raw),
         "frame" => frame::run(args, &raw),
+        "motor" => motor::run(args, &raw),
         "coupon" => {
             let p: Coupon = toml::from_str(&raw)?;
             p.validate()?;

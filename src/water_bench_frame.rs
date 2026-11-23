@@ -4,7 +4,7 @@ use super::*;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Frame {
+pub(super) struct Frame {
     frame: Parameters,
     carriage: Carriage,
 }
@@ -43,7 +43,7 @@ impl Frame {
     fn radius(&self) -> f64 {
         (self.interface()[1] + self.frame.rod_diametral_clearance_mm) / 2.
     }
-    fn base_bounds(&self) -> Bounds {
+    pub(super) fn base_bounds(&self) -> Bounds {
         let p = &self.frame;
         (
             [
@@ -63,7 +63,7 @@ impl Frame {
         let d = self.frame.cap_bolt_offset_from_rod_mm;
         [-r - d, -r + d, r - d, r + d]
     }
-    fn validate(&self) -> Result<(), String> {
+    pub(super) fn validate(&self) -> Result<(), String> {
         finite(&self.frame)?;
         self.carriage.validate()?;
         let p = &self.frame;
@@ -235,6 +235,30 @@ impl Frame {
                 .carriage
                 .dry_assembly()
                 .translate(x, 0., self.carriage_z())
+    }
+    pub(super) fn axis_height(&self) -> f64 {
+        self.axis_z()
+    }
+    pub(super) fn screw_diameter(&self) -> f64 {
+        self.carriage.screw_diameter()
+    }
+    pub(super) fn required_nut_end_x(&self) -> f64 {
+        self.frame.carriage_start_x_mm + self.frame.travel_mm + self.carriage.body_length()
+    }
+    pub(super) fn start_assembly(&self) -> Part {
+        self.assembly(self.frame.carriage_start_x_mm)
+    }
+    pub(super) fn assembly_bounds(&self) -> Bounds {
+        let (a, b) = self.base_bounds();
+        (
+            a,
+            [
+                b[0],
+                b[1],
+                (self.axis_z() + self.frame.cap_height_mm)
+                    .max(self.carriage_z() + 2. * self.interface()[2]),
+            ],
+        )
     }
     fn exports(&self) -> Vec<Export> {
         let p = &self.frame;

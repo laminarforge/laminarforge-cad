@@ -165,3 +165,57 @@ start to carriage X0.2, with the axis at Z18. Nominal CAD clearances are 0.2 mm
 at both axial ends and 0.3 mm on each side of the square envelope. This checks
 CAD containment only; tolerances, printed dimensions and physical fit remain
 unverified. The original source and all inspection records are on ORICO.
+
+
+## Motor mounting and separated-base drive layout
+
+`water_transfer_dock --module motor` with `models/water_bench_motor.toml`
+adds a dry motor bracket and posed motor/guide-frame layout. The 8 mm face-plate
+variant is `models/water_bench_motor_thick.toml`. These are optional custom-drive
+engineering references; the lower-cost manual bring-up remains the first lane.
+No motor, coupler or complete custom pump has been bought or qualified.
+
+[Adafruit 324](https://www.adafruit.com/product/324) lists a 31 mm square M3
+pattern and a Ø5×24 mm shaft. Its linked drawing was retrieved from
+https://www.adafruit.com/images/product-files/324/C140-A%20datasheet.jpg and
+visually inspected. The drawing gives 42.3 mm maximum face width, 34±0.5 mm body
+length, 24±1 mm shaft projection, Ø22 mm pilot and M3 holes 4.5 mm minimum deep.
+The pilot's projection is not dimensioned; its height is not invented in CAD.
+The block reference uses the 42.3 mm face and 34.5 mm maximum body envelope,
+with a round nominal shaft; the flat, boss projection, wires and mounting
+threads are omitted. Motor-specific corner chamfers are not represented.
+
+The product page and drawing disagree on some electrical/torque values
+(35 versus 34 ohms, and page holding torque versus the drawing's 1.6 kg-cm).
+No drive circuit, current setting, torque margin, pump force or achievable flow
+is inferred here. The drawing's axial-force figure does not qualify the motor
+as the pump's thrust support.
+
+[Adafruit 1176](https://www.adafruit.com/product/1176) is a 5-to-8 mm coupler
+with a published Ø18×25 mm outer envelope. The reference shows that outer
+cylinder only. Internal transition, insertion depths and set-screw positions
+are not published dimensions adopted by this model. Motor and screw overlap
+with the outer envelope is only a layout observation; it does not prove grip,
+shaft engagement or compatibility with an externally threaded screw.
+
+The bracket is 96×76×56 mm, with an upright 64 mm wide face plate, four Ø3.4 mm
+motor clearances on the 31 mm pattern, a full Ø22.4 mm pilot clearance and four
+Ø4.5 mm bench anchor paths. Its axis at Z28 matches the actual nested guide
+configuration. At maximum reference motor width, the body is 0.85 mm above the
+base. Face-plate thickness is 6 mm or 8 mm. Screw lengths, washers, engagement,
+thread-bottoming, anchoring, alignment and bracket strength remain unresolved.
+
+In the combined view the motor face is at guide X−80. The independent bracket
+and guide bases have a 6 mm gap on a shared bench plane; there is no hidden
+structural connection. The coupler starts 15 mm from the motor face. Nominal
+motor-shaft overlap with its outer cylinder is 9 mm; worst reference shaft-end
+gap to the smooth screw is 5 mm. The reference screw starts 30 mm from the face
+and is a generic Ø8×250 mm smooth envelope, not selected threaded hardware.
+The long exposed tail and access envelope require later guarding review.
+
+No radial or bidirectional axial screw support, syringe flange/plunger restraint,
+hard stops, switches, guard, driver, supply or electrical stop is included.
+A flexible coupler does not supply the missing thrust load path. Do not energize
+this assembly. The bracket is exported in its upright engineering orientation;
+large horizontal pilot clearance may need supports or a fabrication redesign.
+Run actual mesh and slicer review before any physical manufacture.
