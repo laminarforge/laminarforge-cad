@@ -7,7 +7,11 @@ roles, including the parts missing from the earlier pump recommendation.
 **Step 1 remains open.** Fourteen of 21 cost rows now have US reference
 prices, including one cable bundled in the starter kit. The priced items
 total **$1,588.03**. Seven rows still need prices or a design decision.
-The delivered cost in Thailand remains open.
+Using Thailand listings for the balance and computer accessories gives
+**฿6,743.24 plus US$1,387.95** for the priced items. Freight, import charges
+and the seven open rows still affect the delivered budget.
+Alex confirmed on November 23 that he has purchased no project hardware.
+Budget and specification work can proceed now. Physical checks follow receipt.
 The estimate assumes an existing supported Mac will be available beside the
 finished bench. If the bench needs a dedicated computer, its cost is additional.
 
@@ -132,24 +136,41 @@ Becthai Bangkok as a local distributor. Its delivered price remains open.
 [tray price](https://www.emsdiasum.com/instrument-tray-2),
 [EMS distributor directory](https://www.emsdiasum.com/world-distribution).
 
-### Thailand electronics prices
+### Thailand balance and electronics prices
 
 | Seller and listed part | Quantity | THB each | THB for quantity |
 | --- | ---: | ---: | ---: |
+| U.S. Solid, JFDBS00046-100G | 1 | 3,166.00 | 3,166.00 |
 | DigiKey Thailand, FTDI US232R-100-BULK | 2 | 893.78 | 1,787.56 |
 | DigiKey Thailand, StarTech SCNM9FF | 1 | 409.68 | 409.68 |
 | Apple Thailand, MW5L3ZA/A | 2 | 690.00 | 1,380.00 |
-| **Listed electronics** | | | **3,577.24** |
+| **Listed balance and electronics** | | | **6,743.24** |
 
-Using the Thai listings replaces $103.59 of the US estimate. The resulting
-estimate is **$1,484.44 plus ฿3,577.24** before outstanding costs. DigiKey
-amounts come from indexed regional listings and need a fresh quote before
-purchase. The two FTDI cables alone exceed DigiKey's published ฿1,600
-standard-shipping threshold. Duty and taxes may still be payable on delivery.
+These five cost rows replace US$200.08 in the US estimate. U.S. Solid displayed
+฿3,166 for variant 46324225769727 with Thailand selected. Its shipping policy
+prices freight primarily by weight and assigns applicable import charges to
+the customer. The balance freight charge remains open.
+[Thailand balance offer](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html?variant=46324225769727&country=TH&currency=THB),
+[U.S. Solid shipping](https://ussolid.com/policies/shipping-policy).
+
+Apple Thailand offers free standard shipping. A second seller, iStudio, lists
+the identical adapter at ฿790 including tax. Two from iStudio cost ฿1,580 and
+qualify for its free standard delivery, ฿200 above the Apple listed pair.
+The table counts the Apple pair once.
+[Apple standard delivery](https://www.apple.com/th-en/shop/help/shipping_delivery),
+[iStudio price and tax](https://www.istudio.store/products/apple-usb-c-to-usb-adapter-y24),
+[iStudio delivery terms](https://www.istudio.store/en/pages/online-shopping-policy).
+
+DigiKey's two FTDI cables total ฿1,787.56 at its indexed unit price. This
+clears its ฿1,600 standard freight threshold if DigiKey supplies both
+together. Its standard charge below the threshold is ฿600. Marketplace goods
+ship separately under seller terms. Stock, fulfillment and applicable import
+charges still need a current quote.
 [FTDI listing](https://www.digikey.co.th/th/products/detail/ftdi-future-technology-devices-international-ltd/US232R-100-BULK/2441363),
 [StarTech listing](https://www.digikey.co.th/th/products/detail/startech-com/SCNM9FF/25697500),
 [Apple Thailand](https://www.apple.com/th/shop/product/mw5l3za/a/usb-c-to-usb-adapter),
-[DigiKey shipping terms](https://www.digikey.co.th/en/help-support/payment-and-pricing).
+[DigiKey shipping terms](https://www.digikey.co.th/en/help-support/delivery-information/delivery-time-and-cost),
+[Marketplace freight](https://www.digikey.co.th/en/help-support/dk-marketplace/marketplace-shipping-options).
 
 ### Costs still open
 
@@ -206,6 +227,8 @@ Purchasing and real operation follow the completed configuration and cost review
   - [ ] 1.4. Specify the independent mass reference and required measurement uncertainty.
   - [ ] 1.5. Resolve the remaining parts and their compatibility.
   - [ ] 1.6. Obtain a complete delivered budget for the selected parts and services.
+    - [x] 1.6.1. Price the balance and computer accessories for Thailand and check published freight terms.
+    - [ ] 1.6.2. Close remaining freight, import charges, local services and labor.
 - [ ] 2. Lock research-use requirements
   - [x] 2.1. Document which requirements need qualified review.
   - [ ] 2.2. Record qualified requirements and acceptance limits.
@@ -223,11 +246,10 @@ Purchasing and real operation follow the completed configuration and cost review
 
 ## Resume checkpoint
 
-Recovered from the November 22 Codex conversation beginning “where did we leave
-off on design for hsv2 research box thing,” task T-21BC0885. Its latest turn was
-interrupted during component consolidation. This pass adds the consolidated
-register, explicit connection schedule, adapter support distinction and all
-missing cost roles. It does not establish completed component selection.
+The November 22 conversation and ticket T-21BC0885 hold the original work list.
+As of November 23, the next budget item is 1.6.2. The remaining delivery and
+service estimates can be researched before purchase. The first physical
+balance reading belongs under 4.2.3 after the equipment arrives.
 
 **Current step 1.4 depends on 2.2.** The measurement reviewer needs to record
 the expected gross load including tare, the smallest mass change that matters,

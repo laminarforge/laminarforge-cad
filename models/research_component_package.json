@@ -1,5 +1,5 @@
 {
-  "revision": "CP4",
+  "revision": "CP5",
   "checked_date_utc": "2026-11-23",
   "ticket_id": "T-21BC0885",
   "status": "component candidate and gap register; step 1 remains incomplete",
@@ -63,7 +63,20 @@
       "listed_usd": 96.49,
       "price_basis": "US seller lists USD 96.49 for variant 46324225769727. Public product feed reports available on 2026-11-23. Thailand fulfillment unconfirmed.",
       "selection_status": "Water-only engineering candidate. Accuracy discrepancies and actual performance remain unresolved. The manual excludes specified regulated, medical and pharmaceutical analyses.",
-      "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html"
+      "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html",
+      "regional_reference_prices": [
+        {
+          "market": "TH",
+          "currency": "THB",
+          "seller": "U.S. Solid",
+          "sku": "JFDBS00046-100G",
+          "unit_price": 3166,
+          "quantity": 1,
+          "amount": 3166,
+          "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html?variant=46324225769727&country=TH&currency=THB",
+          "basis": "Thailand storefront, selected variant 46324225769727, November 23. Item price only. Packed-weight freight and any import charges are open."
+        }
+      ]
     },
     {
       "id": "CP-08",
@@ -174,7 +187,20 @@
           "quantity": 2,
           "amount": 1380.0,
           "source": "https://www.apple.com/th/shop/product/mw5l3za/a/usb-c-to-usb-adapter",
-          "basis": "Thai retail price for the local SKU."
+          "basis": "Apple Thailand public price. Standard online delivery is free.",
+          "shipping_source": "https://www.apple.com/th-en/shop/help/shipping_delivery"
+        },
+        {
+          "market": "TH",
+          "currency": "THB",
+          "seller": "iStudio",
+          "sku": "MW5L3ZA/A",
+          "unit_price": 790,
+          "quantity": 2,
+          "amount": 1580,
+          "source": "https://www.istudio.store/products/apple-usb-c-to-usb-adapter-y24",
+          "basis": "Alternative to Apple for the same two units. Tax included. At THB 1,580 the pair qualifies for free standard domestic delivery.",
+          "shipping_source": "https://www.istudio.store/en/pages/online-shopping-policy"
         }
       ]
     },
@@ -322,9 +348,9 @@
       "candidate": null,
       "quantity": null,
       "listed_usd": null,
-      "price_basis": "Delivered quote outstanding. DigiKey publishes a THB 1,600 standard-shipping threshold. Destination-specific charges, taxes and charges from other sellers remain open.",
+      "price_basis": "Apple standard domestic delivery is free. DigiKey direct standard freight is THB 600 below THB 1,600 and free from that threshold. Marketplace freight, import charges and balance freight remain open.",
       "selection_status": "Delivered Thailand quote, replacement consumables, fabrication and labor remain unpriced.",
-      "source": "https://www.digikey.co.th/en/help-support/payment-and-pricing"
+      "source": "https://www.digikey.co.th/en/help-support/delivery-information/delivery-time-and-cost"
     }
   ],
   "cost": {
@@ -354,8 +380,23 @@
       "parts_subtotal_thb": 3577.24,
       "replaces_usd": 103.59,
       "remaining_priced_items_usd": 1484.44,
-      "shipping_basis": "Two FTDI cables alone exceed DigiKey\u2019s published THB 1,600 standard-shipping threshold. Listed terms leave applicable import and tax charges due at delivery. Final seller and destination charges unquoted.",
-      "shipping_source": "https://www.digikey.co.th/en/help-support/payment-and-pricing"
+      "shipping_basis": "Two FTDI adapters at the indexed unit price total THB 1,787.56. Direct-stock freight meets the THB 1,600 threshold if ordered together. Marketplace goods ship under separate terms. Inventory and import charges need confirmation.",
+      "shipping_source": "https://www.digikey.co.th/en/help-support/delivery-information/delivery-time-and-cost"
+    },
+    "thailand_balance_and_electronics": {
+      "seller_by_item": {
+        "CP-07": "U.S. Solid",
+        "CP-08": "DigiKey",
+        "CP-09": "DigiKey",
+        "CP-11": "DigiKey",
+        "CP-12": "Apple"
+      },
+      "parts_subtotal_thb": 6743.24,
+      "replaces_usd": 200.08,
+      "remaining_priced_items_usd": 1387.95,
+      "delivered_total_thb": null,
+      "basis": "Includes the electronics alternative above and one balance. Select one seller per row. Excludes outstanding freight, import charges, services and unpriced rows.",
+      "balance_shipping_source": "https://ussolid.com/policies/shipping-policy"
     }
   },
   "host": {
@@ -456,7 +497,21 @@
           "step": "1.6",
           "title": "Obtain a complete delivered budget for the selected parts and services.",
           "complete": false,
-          "basis": "CP-22 plus open rows. Requires final quantities, fabrication and service quotes, freight and labor."
+          "basis": "CP-22 plus open rows. Requires final quantities, fabrication and service quotes, freight and labor.",
+          "substeps": [
+            {
+              "step": "1.6.1",
+              "title": "Price the balance and computer accessories for Thailand and check published freight terms.",
+              "complete": true,
+              "basis": "Matched five regional cost rows. The balance offer matches the selected SKU and variant. Apple and iStudio are alternatives for the same adapter."
+            },
+            {
+              "step": "1.6.2",
+              "title": "Close remaining freight, import charges, local services and labor.",
+              "complete": false,
+              "basis": "The seven unpriced rows and destination-specific charges remain open."
+            }
+          ]
         }
       ]
     },
@@ -547,9 +602,10 @@
   ],
   "current_step": 1,
   "next_actions": [
+    "Before purchase, continue item 1.6.2. Check public calibration and service pricing, packed freight and remaining delivery costs. No equipment connection is needed for this work.",
     "2.2 and 1.4: record approved gross load range including tare, smallest meaningful mass change and its allowable error, with units. Use those values to specify check masses, certificate uncertainty and a current calibration quote.",
     "1.5: resolve remaining parts and the reviewed independent stop assembly. Use final quantities for the delivered budget in 1.6.",
-    "4.2.3: when the physical balance is available, identify its adapter, confirm the cable and compare timestamped raw output with the displayed value and units."
+    "After purchase and receipt, complete 4.2.3 with the identified physical balance. Compare the timestamped output to its displayed value and units."
   ],
   "hardware_observed": false,
   "purchase_authorized": false,
@@ -627,5 +683,10 @@
       "owner": "engineering and procurement preparation",
       "next": "Verify actual jar tare/fit and tray coverage. Resolve the fabrication quantities and measurement-reference scope, then quote freight, tax, replacements and labor."
     }
-  ]
+  ],
+  "purchase_state": {
+    "as_of": "2026-11-23",
+    "equipment_purchased": false,
+    "basis": "Alex confirmed that no project hardware has been purchased. Physical checks follow a future purchase and receipt."
+  }
 }
