@@ -225,10 +225,11 @@ impl Frame {
     }
     fn assembly(&self, x: f64) -> Part {
         let p = &self.frame;
-        let end = self.support(false) + self.support(true);
+        let first_end = self.support(false) + self.support(true);
+        let second_end = self.support(false) + self.support(true);
         self.base()
-            + end.clone().translate(-p.support_length_mm / 2., 0., 0.)
-            + end.translate(p.clear_span_mm + p.support_length_mm / 2., 0., 0.)
+            + first_end.translate(-p.support_length_mm / 2., 0., 0.)
+            + second_end.translate(p.clear_span_mm + p.support_length_mm / 2., 0., 0.)
             + self.rods()
             + self
                 .carriage
