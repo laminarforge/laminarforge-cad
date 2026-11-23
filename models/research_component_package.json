@@ -1,5 +1,5 @@
 {
-  "revision": "CP2",
+  "revision": "CP3",
   "checked_date_utc": "2026-11-23",
   "ticket_id": "T-21BC0885",
   "status": "component candidate and gap register; step 1 remains incomplete",
@@ -61,8 +61,8 @@
       "candidate": "USS-DBS46-1 / JFDBS00046-100G",
       "quantity": 1,
       "listed_usd": 96.49,
-      "price_basis": "prior F1 source check; requote before purchase",
-      "selection_status": "Water-only engineering candidate; stock/accuracy discrepancies remain. Manual excludes listed regulated/medical/pharmaceutical analyses; do not promote into research-use measurement without qualified selection.",
+      "price_basis": "US seller lists USD 96.49 for variant 46324225769727. Public product feed reports available on 2026-11-23. Thailand fulfillment unconfirmed.",
+      "selection_status": "Water-only engineering candidate. Accuracy discrepancies and actual performance remain unresolved. The manual excludes specified regulated, medical and pharmaceutical analyses.",
       "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html"
     },
     {
@@ -73,7 +73,20 @@
       "listed_usd": 26.8,
       "price_basis": "manufacturer catalog USD per cable, checked 2026-11-23; shipping/tax excluded",
       "selection_status": "Selected host-interface candidate: manufacturer-owned FT232R RS-232 cable, USB-A to male DB9, 1 m. Published macOS 26 ARM VCP support; actual enumeration/readback pending.",
-      "source": "https://ftdichip.com/product-category/products/cables/usb-rs232-cable-series/"
+      "source": "https://ftdichip.com/product-category/products/cables/usb-rs232-cable-series/",
+      "regional_reference_prices": [
+        {
+          "market": "TH",
+          "currency": "THB",
+          "seller": "DigiKey",
+          "sku": "US232R-100-BULK",
+          "unit_price": 893.78,
+          "quantity": 1,
+          "amount": 893.78,
+          "source": "https://www.digikey.co.th/th/products/detail/ftdi-future-technology-devices-international-ltd/US232R-100-BULK/2441363",
+          "basis": "Indexed Thai listing, quantity-one tier. Recheck at order time."
+        }
+      ]
     },
     {
       "id": "CP-09",
@@ -83,7 +96,20 @@
       "listed_usd": 26.8,
       "price_basis": "manufacturer catalog USD per cable, checked 2026-11-23; shipping/tax excluded",
       "selection_status": "Selected host-interface candidate: manufacturer-owned FT232R RS-232 cable, USB-A to male DB9, 1 m. Published macOS 26 ARM VCP support; actual enumeration/readback pending.",
-      "source": "https://ftdichip.com/product-category/products/cables/usb-rs232-cable-series/"
+      "source": "https://ftdichip.com/product-category/products/cables/usb-rs232-cable-series/",
+      "regional_reference_prices": [
+        {
+          "market": "TH",
+          "currency": "THB",
+          "seller": "DigiKey",
+          "sku": "US232R-100-BULK",
+          "unit_price": 893.78,
+          "quantity": 1,
+          "amount": 893.78,
+          "source": "https://www.digikey.co.th/th/products/detail/ftdi-future-technology-devices-international-ltd/US232R-100-BULK/2441363",
+          "basis": "Indexed Thai listing, quantity-one tier. Recheck at order time."
+        }
+      ]
     },
     {
       "id": "CP-10",
@@ -100,17 +126,34 @@
       "role": "balance_serial_cable",
       "candidate": "StarTech SCNM9FF (conditional connector candidate)",
       "quantity": 1,
-      "listed_usd": null,
-      "price_basis": "not quoted",
+      "listed_usd": 11.99,
+      "price_basis": "CDW US item 488601, one cable. Price conditional on confirming the mating connector.",
       "selection_status": "Crossed DB9 female/female cable candidate. Balance manual specifies 2\u21943 and 5\u21945; exact end gender and cable continuity still require confirmation. Do not buy a gender changer or double-crossover by assumption.",
-      "source": "https://www.startech.com/en-gb/cables/scnm9ff",
-      "regional_reference_price": {
-        "amount": 11.99,
-        "currency": "GBP",
-        "quantity": 1,
-        "includes_vat_percent": 20,
-        "basis": "UK manufacturer page; not a Thailand quote or USD conversion"
-      }
+      "source": "https://www.cdw.com/product/startech-10ft-rs232-serial-null-modem-cable-10ft-null-modem-cable/488601",
+      "regional_reference_prices": [
+        {
+          "market": "GB",
+          "currency": "GBP",
+          "seller": "StarTech",
+          "sku": "SCNM9FF",
+          "unit_price": 11.99,
+          "quantity": 1,
+          "amount": 11.99,
+          "source": "https://www.startech.com/en-gb/cables/scnm9ff",
+          "basis": "UK retail price including 20% VAT."
+        },
+        {
+          "market": "TH",
+          "currency": "THB",
+          "seller": "DigiKey",
+          "sku": "SCNM9FF",
+          "unit_price": 409.68,
+          "quantity": 1,
+          "amount": 409.68,
+          "source": "https://www.digikey.co.th/th/products/detail/startech-com/SCNM9FF/25697500",
+          "basis": "Indexed Thai listing, quantity-one tier. Subject to the same connector check."
+        }
+      ]
     },
     {
       "id": "CP-12",
@@ -120,7 +163,20 @@
       "listed_usd": 38.0,
       "price_basis": "two units at manufacturer USD19 each; reference full outlay",
       "selection_status": "Two direct USB-C\u2192USB-A data connections, one per instrument. Confirm available physical ports; reuse existing equivalent data adapters only after inventory. Thai SKU MW5L3ZA/A quoted separately; no mixed-currency sum.",
-      "source": "https://www.apple.com/shop/product/mw5l3am/a/usb-c-to-usb-adapter"
+      "source": "https://www.apple.com/shop/product/mw5l3am/a/usb-c-to-usb-adapter",
+      "regional_reference_prices": [
+        {
+          "market": "TH",
+          "currency": "THB",
+          "seller": "Apple",
+          "sku": "MW5L3ZA/A",
+          "unit_price": 690,
+          "quantity": 2,
+          "amount": 1380.0,
+          "source": "https://www.apple.com/th/shop/product/mw5l3za/a/usb-c-to-usb-adapter",
+          "basis": "Thai retail price for the local SKU."
+        }
+      ]
     },
     {
       "id": "CP-13",
@@ -155,21 +211,34 @@
     {
       "id": "CP-16",
       "role": "independent_power_stop",
-      "candidate": null,
+      "candidate": "Enclosed, locally compatible power interrupter with manual re-enable. Exact assembly open.",
       "quantity": 1,
       "listed_usd": null,
       "price_basis": "not quoted",
-      "selection_status": "Specify an accessible latching power-removal path with deliberate reset and no automatic motion after power return. Circuit, ratings, connectors and enclosure await electrical design. A TTL foot switch is not this path.",
-      "source": null
+      "selection_status": "Klinger & Born K3000 0098.3006 documents emergency stop and protection against power-return restart. Suitability for the actual power supply and a finished local assembly still need electrical review. Tough Leads documents power-return behavior for its UK version; separate stop-latch behavior needs confirmation.",
+      "source": "https://www.klibo.com/product-display/starter-k3000-1ph-230v-00983006",
+      "regional_reference_prices": [
+        {
+          "market": "GB",
+          "currency": "GBP",
+          "seller": "Tough Leads",
+          "sku": "No volt release safety switch, UK plug/socket",
+          "unit_price": 39.99,
+          "quantity": 1,
+          "amount": 39.99,
+          "source": "https://toughleads.co.uk/products/no-volt-release-safety-switch-with-start-stop-and-emergency-stop-button",
+          "basis": "Comparison only. Published UK variant price excludes any custom connectors or review. Excluded from parts subtotals."
+        }
+      ]
     },
     {
       "id": "CP-17",
       "role": "collection_vial",
       "candidate": "Thermo Scientific Nalgene 2118-0001PK, pack of 12",
       "quantity": 1,
-      "listed_usd": null,
-      "price_basis": "not quoted",
-      "selection_status": "30 mL wide-mouth PPCO collection candidate, 43 mm closure. Not a transport container or sealed reservoir. Confirm empty mass, pan/nest dimensions and required collection capacity; full pack price still needed.",
+      "listed_usd": 52.7,
+      "price_basis": "Thermo Fisher US, regular price for one pack of 12. Online offer USD 44.81 for the same pack.",
+      "selection_status": "Published product weight 20 g, diameter 36 mm and height 47 mm. Lid state for the listed mass is unspecified. Weigh and check clearance on receipt. The manufacturer describes the jar as non-leakproof.",
       "source": "https://www.thermofisher.com/order/catalog/product/2118-0001PK"
     },
     {
@@ -177,10 +246,10 @@
       "role": "spill_tray",
       "candidate": "EMS 63312-02 polypropylene instrument tray",
       "quantity": 1,
-      "listed_usd": null,
-      "price_basis": "not quoted",
+      "listed_usd": 70.75,
+      "price_basis": "EMS US, one tray with cover at the product-detail price checked 2026-11-23.",
       "selection_status": "Provisional water-bench drip tray, nominal outer 27.9\u00d715.5\u00d78.3 cm; usable internal spill capacity, dry-equipment separation, route coverage and purchased dimensions still need review. Do not infer usable capacity from bounding volume.",
-      "source": "https://www.emsdiasum.com/instrument-trays-with-cover"
+      "source": "https://www.emsdiasum.com/instrument-tray-2"
     },
     {
       "id": "CP-19",
@@ -200,7 +269,20 @@
       "listed_usd": null,
       "price_basis": "not quoted",
       "selection_status": "Need appropriate mass reference and delivered-mass uncertainty budget; included calibration weight is not traceability.",
-      "source": null
+      "source": null,
+      "regional_reference_prices": [
+        {
+          "market": "TH",
+          "currency": "THB",
+          "seller": "TPA Calibration",
+          "sku": "Electronic Balance, 10-point service",
+          "unit_price": 1600,
+          "quantity": 1,
+          "amount": 1600.0,
+          "source": "https://tpacal.or.th/services/?4296_paged=2&4719_paged=4",
+          "basis": "Published starting fee for an outside calibration. Excluded from parts subtotals. Exact service scope, uncertainty, site charges and the separate check-mass requirement remain open."
+        }
+      ]
     },
     {
       "id": "CP-21",
@@ -218,41 +300,41 @@
       "candidate": null,
       "quantity": null,
       "listed_usd": null,
-      "price_basis": "not quoted",
+      "price_basis": "Delivered quote outstanding. DigiKey publishes a THB 1,600 standard-shipping threshold. Destination-specific charges, taxes and charges from other sellers remain open.",
       "selection_status": "Delivered Thailand quote, replacement consumables, fabrication and labor remain unpriced.",
-      "source": null
+      "source": "https://www.digikey.co.th/en/help-support/payment-and-pricing"
     }
   ],
   "cost": {
     "currency": "USD",
-    "known_reference_subtotal_usd": 1452.59,
+    "known_reference_subtotal_usd": 1588.03,
     "complete_system_total_usd": null,
+    "host_cost_assumption": "The priced basket assumes an existing supported computer. Availability at the eventual bench is unconfirmed. A separately acquired host would add cost.",
     "unknown_price_rows": [
-      "CP-11",
       "CP-14",
       "CP-15",
       "CP-16",
-      "CP-17",
-      "CP-18",
       "CP-19",
       "CP-20",
       "CP-21",
       "CP-22"
     ],
-    "basis": "Manufacturer list reference outlay. CP2 removes the P-SYRKIT-SM assortment and includes one exact glass syringe instead; historical kit price remains only in F1 reference basket. Full quantities retained; null rows are unquoted.",
-    "non_usd_reference_prices": [
-      {
-        "item": "CP-11",
-        "amount": 11.99,
-        "currency": "GBP",
-        "quantity": 1,
-        "includes_vat_percent": 20,
-        "basis": "UK manufacturer page; not a Thailand quote or USD conversion"
-      }
-    ],
-    "previous_reference_subtotal_usd": 1349.37,
-    "newly_priced_usd": 123.6,
-    "removed_assortment_usd": 20.38
+    "basis": "Full listed quantities for priced US items. Includes the conditional balance cable and the regular jar-pack price. Regional offers replace the corresponding US line. Delivered prices are open.",
+    "previous_reference_subtotal_usd": 1452.59,
+    "newly_priced_usd": 135.44,
+    "thailand_electronics_alternative": {
+      "item_ids": [
+        "CP-08",
+        "CP-09",
+        "CP-11",
+        "CP-12"
+      ],
+      "parts_subtotal_thb": 3577.24,
+      "replaces_usd": 103.59,
+      "remaining_priced_items_usd": 1484.44,
+      "shipping_basis": "Two FTDI cables alone exceed DigiKey\u2019s published THB 1,600 standard-shipping threshold. Listed terms leave applicable import and tax charges due at delivery. Final seller and destination charges unquoted.",
+      "shipping_source": "https://www.digikey.co.th/en/help-support/payment-and-pricing"
+    }
   },
   "host": {
     "adapter": "FTDI US232R-100-BULK",
@@ -427,7 +509,7 @@
         "CP-22"
       ],
       "owner": "engineering and procurement preparation",
-      "next": "Obtain exact dimensions/masses, quantities, calibration reference and delivered quotes; no purchases or vendor message performed."
+      "next": "Verify actual jar tare/fit and tray coverage. Resolve the fabrication quantities and measurement-reference scope, then quote freight, tax, replacements and labor."
     }
   ]
 }

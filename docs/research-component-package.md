@@ -4,11 +4,12 @@ The first instrument uses a commercial syringe pump, replaceable wetted path,
 commercial vessel interface and independent delivered-mass observation. The
 component register now covers the complete set of purchasing and integration
 roles, including the parts missing from the earlier pump recommendation.
-**Step 1 remains incomplete:** several components depend on the vessel/readout
-requirements, assembled pressure limits and electrical design. The known
-reference outlay is $1,452.59 USD, plus a separate £11.99 conditional cable
-reference; the complete delivered cost is unknown. Ten USD rows remain
-unquoted, down from fourteen in CP1.
+**Step 1 remains open.** Fourteen of 21 cost rows now have US reference
+prices, including one cable bundled in the starter kit. The priced items
+total **$1,588.03**. Seven rows still need prices or a design decision.
+The delivered cost in Thailand remains open.
+The estimate assumes an existing supported Mac will be available beside the
+finished bench. If the bench needs a dedicated computer, its cost is additional.
 
 Use [the itemized cost ledger](research-component-costs.csv) and
 [the component register](../models/research_component_package.json) together.
@@ -34,7 +35,7 @@ is needed for design.
 [driver table](https://ftdichip.com/drivers/vcp-drivers/).
 
 Price two Apple MW5L3AM/A USB-C-to-USB data adapters at $19 each for the US
-reference basket. The Thai SKU is MW5L3ZA/A; obtain its local price separately.
+reference basket. Apple Thailand lists the local SKU MW5L3ZA/A at ฿690 each.
 Two direct connections avoid adding a hub to the initial list. Available ports
 and reusable adapters still need physical inventory.
 [US adapter price](https://www.apple.com/shop/product/mw5l3am/a/usb-c-to-usb-adapter),
@@ -59,8 +60,11 @@ The adapter's 500 mbar specification does not establish the assembled path's
 working limit. The [F1 selection](../models/research_fluid_service_selection.json)
 retains exact reference prices and component sources.
 
-Retain USS-DBS46-1 as a balance candidate with the previously recorded stock
-and accuracy discrepancies. Its cable must follow its own instrument pinout;
+U.S. Solid's public store feed shows the exact JFDBS00046-100G variant
+(46324225769727) available at $96.49 on November 23. Delivery to Thailand and
+the previously recorded accuracy discrepancy remain unresolved.
+[Seller inventory for this product](https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html.js).
+Its cable must follow its own instrument pinout;
 the pump cable cannot be reused by assumption. Selection still needs a gross
 vial/nest/liquid mass budget and measurement uncertainty appropriate to the
 required delivery. [Balance basis](water-bench-low-cost.md#balance-tradeoff-and-integration).
@@ -78,10 +82,12 @@ required delivery. [Balance basis](water-bench-low-cost.md#balance-tradeoff-and-
 The balance manual's printed page 7 specifies balance pin 2 to host pin 3,
 balance pin 3 to host pin 2, and ground 5 to 5. It documents 9600 baud, eight
 data bits, no parity and one stop bit. SCNM9FF is a crossed DB9 female/female
-cable candidate; the UK manufacturer lists £11.99 including VAT. Confirm the
+cable candidate. CDW lists it at $11.99 in the US. StarTech's UK price of
+£11.99 including VAT is a separate regional offer. Confirm the
 balance connector gender and continuity before ordering. The diagram does not
 specify gender, so no gender changer or additional crossover is selected.
-[Cable](https://www.startech.com/en-gb/cables/scnm9ff),
+[US cable price](https://www.cdw.com/product/startech-10ft-rs232-serial-null-modem-cable-10ft-null-modem-cable/488601),
+[UK cable price](https://www.startech.com/en-gb/cables/scnm9ff),
 [balance manual](https://file.ussolid.com/content/JFDBS/Manual-USS-DBS46%20Precision%20Balance.pdf).
 
 The power row is a design boundary, not a wiring instruction. A TTL foot switch
@@ -92,22 +98,70 @@ device must be configured and observed before use. No start command may be
 automatically replayed after connection loss.
 [NE-500/501 manual](https://syringepump.com/download/NE-500%20OEM%20Syringe%20Pump%20User%20Manual%20V3.9.pdf).
 
-## Remaining component and price decisions
+Two commercial products narrow the independent-stop decision. Klinger & Born
+documents emergency stop and protection against restart after power returns
+on its K3000 starter, item 0098.3006. Tough Leads lists an enclosed UK
+plug-and-socket unit at £39.99 and documents that it stays off after power
+returns. Its listing leaves the separate stop-latch behavior unspecified.
+Electrical review still needs to identify the actual local plug and supply
+load and confirm that releasing the stop alone cannot restart motion. The
+installed assembly has no quote yet. [K3000](https://www.klibo.com/product-display/starter-k3000-1ph-230v-00983006),
+[Tough Leads unit](https://toughleads.co.uk/products/no-volt-release-safety-switch-with-start-stop-and-emergency-stop-button).
 
-The added host connections contribute $91.60: two FTDI cables ($53.60) and
-two USB-C adapters ($38). The £11.99 cable reference stays in GBP; no currency
-conversion or shipping/tax estimate is hidden in the USD subtotal. Replacing
-the $20.38 assortment with the $32 syringe adds $11.62; together this round
-adds $103.22 to the earlier $1,349.37 reference basket.
+## What the priced items cover
 
-Use Nalgene 2118-0001PK as the collection-container candidate: a pack of twelve
-30 mL wide-mouth PPCO jars. Its empty mass, nest fit and collection capacity
-must match the eventual run; it is not a sealed transport vessel. The pack
-price is unquoted. EMS 63312-02 is the polypropylene drip-tray candidate, with
-nominal external dimensions 27.9×15.5×8.3 cm. Its usable containment volume and
-route coverage need review; multiplying outer dimensions would overstate it.
-[Jar](https://www.thermofisher.com/order/catalog/product/2118-0001PK),
-[tray](https://www.emsdiasum.com/instrument-trays-with-cover).
+| Newly priced US item | Purchasing unit | USD |
+| --- | --- | ---: |
+| StarTech SCNM9FF, conditional on connector check | One cable | 11.99 |
+| Nalgene 2118-0001PK | One pack of 12 jars at regular price | 52.70 |
+| EMS 63312-02 | One tray with cover | 70.75 |
+| **Added to the previous $1,452.59** | | **135.44** |
+
+Thermo Fisher also displays a $44.81 online offer for the same pack. The
+regular price keeps the budget independent of that discount. The jar is
+cataloged at 20 g, 36 mm diameter and 47 mm height. The listing does not
+specify the lid state for that weight. Actual tare, clearance and collection
+capacity remain to be checked. The tray's 27.9 × 15.5 × 8.3 cm external
+dimensions leave its usable spill volume and coverage unresolved. EMS lists
+Becthai Bangkok as a local distributor. Its delivered price remains open.
+[Jar and pack price](https://www.thermofisher.com/order/catalog/product/2118-0001PK),
+[tray price](https://www.emsdiasum.com/instrument-tray-2),
+[EMS distributor directory](https://www.emsdiasum.com/world-distribution).
+
+### Thailand electronics prices
+
+| Seller and listed part | Quantity | THB each | THB for quantity |
+| --- | ---: | ---: | ---: |
+| DigiKey Thailand, FTDI US232R-100-BULK | 2 | 893.78 | 1,787.56 |
+| DigiKey Thailand, StarTech SCNM9FF (conditional) | 1 | 409.68 | 409.68 |
+| Apple Thailand, MW5L3ZA/A | 2 | 690.00 | 1,380.00 |
+| **Listed electronics** | | | **3,577.24** |
+
+Using the Thai listings replaces $103.59 of the US estimate. The resulting
+estimate is **$1,484.44 plus ฿3,577.24** before outstanding costs. DigiKey
+amounts come from indexed regional listings and need a fresh quote before
+purchase. The two FTDI cables alone exceed DigiKey's published ฿1,600
+standard-shipping threshold. Duty and taxes may still be payable on delivery.
+[FTDI listing](https://www.digikey.co.th/th/products/detail/ftdi-future-technology-devices-international-ltd/US232R-100-BULK/2441363),
+[StarTech listing](https://www.digikey.co.th/th/products/detail/startech-com/SCNM9FF/25697500),
+[Apple Thailand](https://www.apple.com/th/shop/product/mw5l3za/a/usb-c-to-usb-adapter),
+[DigiKey shipping terms](https://www.digikey.co.th/en/help-support/payment-and-pricing).
+
+### Costs still open
+
+| Rows | What sets the price |
+| --- | --- |
+| CP-14, CP-15 | Final tubing and pressure protection depend on the accepted configuration. |
+| CP-16 | Local electrical review and a quote for the complete independent stop. |
+| CP-19 | Support dimensions, material quantities and a fabrication quote. |
+| CP-20 | Required measurement uncertainty, check masses and calibration scope. |
+| CP-21 | Qualified research-use requirements for the readout and environment. |
+| CP-22 | Destination charges, replacement quantities and labor. Count fabrication only once under CP-19. |
+
+TPA Calibration lists ten-point electronic balance calibration from ฿1,600.
+That gives CP-20 a service-price reference. The fee for this balance, applicable
+uncertainty, site charges and cost of check masses remain open. The parts
+subtotals above exclude this service. [TPA service table](https://tpacal.or.th/services/?4296_paged=2&4719_paged=4).
 
 Keep the low-cost DBS46 balance limited to water-bench engineering evaluation.
 Its manual excludes specified regulated, medical and pharmaceutical analyses;
@@ -148,9 +202,8 @@ interrupted during component consolidation. This pass adds the consolidated
 register, explicit connection schedule, adapter support distinction and all
 missing cost roles. It does not establish completed component selection.
 
-Current step: **1**. CP2 closes the named adapter support basis and prices the
-USB host connections. It establishes the balance signal map and identifies
-collection/tray candidates. Next, resolve the vessel/readout requirements and
-assembled working limits, finish the independent stop design, and obtain the
-remaining prices. Hardware acquisition is needed for actual communication,
-fit and commissioning; it is not a prerequisite for continuing design.
+**Current step 1.** CP3 prices every previously named US part in the basket.
+The remaining seven rows are listed above with their dependencies. The next
+inputs are the qualified measurement requirements, a reviewed local power-stop
+assembly, and fabrication and destination quotes. Hardware will be needed to
+verify actual fit and communication.
