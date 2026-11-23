@@ -18,6 +18,9 @@ pub(super) struct Carriage {
     nut_width_mm: f64,
     nut_height_mm: f64,
     nut_length_mm: f64,
+    nut_square_length_mm: f64,
+    nut_round_shoulder_diameter_mm: f64,
+    nut_minimum_end_land_mm: f64,
     nut_side_clearance_mm: f64,
     nut_axial_clearance_mm: f64,
     cap_thickness_mm: f64,
@@ -88,20 +91,33 @@ impl Carriage {
         require(
             (6. ..=10.).contains(&self.lead_screw_diameter_mm)
                 && (0.4..=1.).contains(&self.lead_screw_diametral_clearance_mm)
-                && (14. ..=26.).contains(&self.nut_width_mm)
-                && (14. ..=26.).contains(&self.nut_height_mm)
+                && (10. ..=26.).contains(&self.nut_width_mm)
+                && (10. ..=26.).contains(&self.nut_height_mm)
                 && (10. ..=22.).contains(&self.nut_length_mm)
                 && (0.3..=0.8).contains(&self.nut_side_clearance_mm)
                 && (0.3..=0.8).contains(&self.nut_axial_clearance_mm),
             "invalid provisional rectangular nut/lead clearance",
         )?;
         require(
+            self.nut_square_length_mm >= 6.
+                && self.nut_square_length_mm <= self.nut_length_mm
+                && (1.2..=4.).contains(&self.nut_minimum_end_land_mm)
+                && ((self.nut_square_length_mm == self.nut_length_mm
+                    && self.nut_round_shoulder_diameter_mm == 0.)
+                    || (self.nut_square_length_mm < self.nut_length_mm
+                        && self.nut_round_shoulder_diameter_mm
+                            >= self.lead_screw_diameter_mm + 2.
+                        && self.nut_round_shoulder_diameter_mm
+                            <= 2. * self.nut_half_y().min(self.nut_half_z()))),
+            "invalid nut square length, shoulder or review end land",
+        )?;
+        require(
             self.rod_center_pitch_mm / 2. - self.pocket_radius() - self.nut_half_y()
                 >= self.minimum_wall_mm
                 && self.axis_z() - self.nut_half_z() >= self.minimum_wall_mm
                 && self.body_length_mm - self.nut_depth() >= self.minimum_wall_mm
-                && self.nut_half_y().min(self.nut_half_z()) - self.lead_radius()
-                    >= self.minimum_wall_mm,
+                && self.nut_width_mm.min(self.nut_height_mm) / 2. - self.lead_radius()
+                    >= self.nut_minimum_end_land_mm,
             "nut pocket conflicts with bearing or has insufficient shoulder",
         )?;
         require(
@@ -254,22 +270,31 @@ impl Carriage {
         bearing(-self.rod_center_pitch_mm / 2.) + bearing(self.rod_center_pitch_mm / 2.)
     }
     fn nut(&self) -> Part {
-        block(
-            "REF_unselected_rectangular_nut_envelope",
-            self.nut_length_mm,
+        let start = self.nut_axial_clearance_mm / 2.;
+        let mut part = block(
+            "REF_unthreaded_square_nut_base_envelope",
+            self.nut_square_length_mm,
             self.nut_width_mm,
             self.nut_height_mm,
             self.axis_z() - self.nut_height_mm / 2.,
         )
-        .translate(
-            self.nut_length_mm / 2. + self.nut_axial_clearance_mm / 2.,
-            0.,
-            0.,
-        ) - self.x_cylinder(
+        .translate(start + self.nut_square_length_mm / 2., 0., 0.);
+        if self.nut_square_length_mm < self.nut_length_mm {
+            part = part
+                + self.x_cylinder(
+                    "REF_round_shoulder_thread_major_envelope_not_thread",
+                    self.nut_round_shoulder_diameter_mm / 2.,
+                    self.nut_length_mm - self.nut_square_length_mm + E,
+                    start + self.nut_square_length_mm - E,
+                    0.,
+                    self.axis_z(),
+                );
+        }
+        part - self.x_cylinder(
             "REF_unthreaded_lead_path",
             self.lead_screw_diameter_mm / 2.,
             self.nut_length_mm + 2. * E,
-            self.nut_axial_clearance_mm / 2. - E,
+            start - E,
             0.,
             self.axis_z(),
         )
@@ -347,16 +372,16 @@ impl Carriage {
                 bounds: (
                     [
                         self.nut_axial_clearance_mm / 2.,
-                        -self.nut_width_mm / 2.,
-                        self.axis_z() - self.nut_height_mm / 2.,
+                        -self.nut_width_mm.max(self.nut_round_shoulder_diameter_mm) / 2.,
+                        self.axis_z() - self.nut_height_mm.max(self.nut_round_shoulder_diameter_mm) / 2.,
                     ],
                     [
                         self.nut_length_mm + self.nut_axial_clearance_mm / 2.,
-                        self.nut_width_mm / 2.,
-                        self.axis_z() + self.nut_height_mm / 2.,
+                        self.nut_width_mm.max(self.nut_round_shoulder_diameter_mm) / 2.,
+                        self.axis_z() + self.nut_height_mm.max(self.nut_round_shoulder_diameter_mm) / 2.,
                     ],
                 ),
-                role: "provisional_rectangular_envelope_not_a_selected_commercial_nut_or_thread",
+                role: "square_base_and_optional_round_shoulder_envelope_no_thread_or_physical_fit_claim",
             },
             Export {
                 name: "carriage_assembly_DRY_with_REF_parts.stl",
@@ -406,13 +431,21 @@ impl Carriage {
             Probe {
                 index: 0,
                 name: "rectangular_nut_entry",
-                point: body_point(1., self.nut_half_y() - 2., self.axis_z()),
+                point: body_point(
+                    1.,
+                    (self.nut_half_y() + self.lead_radius()) / 2.,
+                    self.axis_z(),
+                ),
                 solid: false,
             },
             Probe {
                 index: 0,
                 name: "nut_forward_shoulder",
-                point: body_point(self.nut_depth() + 1., self.nut_half_y() - 2., self.axis_z()),
+                point: body_point(
+                    self.nut_depth() + 1.,
+                    (self.nut_half_y() + self.lead_radius()) / 2.,
+                    self.axis_z(),
+                ),
                 solid: true,
             },
             Probe {
@@ -438,7 +471,7 @@ impl Carriage {
                 name: "cap_retains_nut_outer_land",
                 point: cap_point(
                     -self.cap_thickness_mm / 2.,
-                    self.nut_half_y() - 2.,
+                    (self.nut_half_y() + self.lead_radius()) / 2.,
                     self.axis_z(),
                 ),
                 solid: true,
@@ -449,7 +482,7 @@ impl Carriage {
 pub(super) fn run(args: &Args, raw: &str) -> Result<(), Box<dyn std::error::Error>> {
     let p: Carriage = toml::from_str(raw)?;
     p.validate()?;
-    let design = json!({"motion_and_bore_axis":"X","bearing_loading_face_x_mm":0.,"bearing_pocket_depth_mm":p.pocket_length(),"full_rod_passage_diameter_mm":2.*p.rod_radius(),"rectangular_nut_pocket_mm":[p.nut_depth(),2.*p.nut_half_y(),2.*p.nut_half_z()],"body_print_rotation_degrees_xyz":[0.,90.,0.],"body_print_translation_mm":[0.,0.,p.body_length_mm],"cap_print_rotation_degrees_xyz":[0.,90.,0.],"assembly_axes":"unrotated engineering frame; cap at X -thickness to 0, body X 0 to length","cap_bolt_pitch_yz_mm":[p.cap_bolt_pitch_y_mm,p.cap_bolt_pitch_z_mm],"rules":["Historical frozen pump model is unchanged. This separate review is not a working pump.","Full-length rod bores run along X; rear-open bearing pockets allow insertion before the separate cap is fitted.","Front shoulders and removable cap provide nominal axial end lands. Actual endplay, fit, shimming and fastener stack need review.","Rectangular nut pocket gives nominal flat restraint; its dimensions are provisional and do not match an adopted commercial nut.","Reference nut has an unthreaded visual hole, not a manufactured thread or a printable lead nut.","No rods, lead screw, motor, coupler, guide frame, plunger/flange restraint, stops or electrical controls are included.","No force, bearing alignment, torque, anti-backlash, travel, motion, water delivery or pressure qualification is established.","Dry-fit meshes need slicer/material and hardware review before fabrication; do not energize based on this geometry."]});
+    let design = json!({"motion_and_bore_axis":"X","bearing_loading_face_x_mm":0.,"bearing_pocket_depth_mm":p.pocket_length(),"full_rod_passage_diameter_mm":2.*p.rod_radius(),"rectangular_nut_pocket_mm":[p.nut_depth(),2.*p.nut_half_y(),2.*p.nut_half_z()],"reference_nut_square_length_mm":p.nut_square_length_mm,"reference_shoulder_diameter_mm":p.nut_round_shoulder_diameter_mm,"nominal_rear_nut_end_land_mm":p.nut_width_mm.min(p.nut_height_mm)/2.-p.lead_radius(),"required_review_end_land_mm":p.nut_minimum_end_land_mm,"body_print_rotation_degrees_xyz":[0.,90.,0.],"body_print_translation_mm":[0.,0.,p.body_length_mm],"cap_print_rotation_degrees_xyz":[0.,90.,0.],"assembly_axes":"unrotated engineering frame; cap at X -thickness to 0, body X 0 to length","cap_bolt_pitch_yz_mm":[p.cap_bolt_pitch_y_mm,p.cap_bolt_pitch_z_mm],"rules":["Historical frozen pump model is unchanged. This separate review is not a working pump.","Full-length rod bores run along X; rear-open bearing pockets allow insertion before the separate cap is fitted.","Front shoulders and removable cap provide nominal axial end lands. Actual endplay, fit, shimming and fastener stack need review.","Rectangular rear-entry nut pocket receives the configured square-base/optional-shoulder envelope; actual backlash, fit, axial shimming and load retention are unverified.","Reference nut has an unthreaded visual hole and optional conservative round shoulder; it is not a manufactured thread, exact supplier CAD or a printable lead nut.","No rods, lead screw, motor, coupler, guide frame, plunger/flange restraint, stops or electrical controls are included.","No force, bearing alignment, torque, anti-backlash, travel, motion, water delivery or pressure qualification is established.","Dry-fit meshes need slicer/material and hardware review before fabrication; do not energize based on this geometry."]});
     publish(
         args,
         "water_bench_carriage",

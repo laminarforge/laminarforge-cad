@@ -39,7 +39,7 @@ Route tubing without loading the scale or obstructing full travel. Check the
 actual assembled travel envelope, then observe manual motion, stop behavior and
 water delivery before treating a command acknowledgment as a physical result.
 
-All hardware dimensions remain unselected. Do not infer them from historical
+Purchased hardware remains unselected and unmeasured. Do not infer them from historical
 constants or claim print, motion or delivery verification from this review.
 
 ## Separate runtime carriage review
@@ -111,6 +111,45 @@ endpoint views and envelope checks do not establish motion or water delivery.
 The supplier STEP archive for ServoCity 3506-0804-0016 was retrieved from
 https://www.servocity.com/content/step_files/3506-0804-0016.zip . Inspection of
 its product images confirms an external threaded shoulder unlike the current
-rectangular reference block. The supplier geometry has not been dimensionally
-qualified or adopted; the old pocket stays explicitly provisional. No hardware
+rectangular reference block. The original generic pocket remains provisional. A separate supplier-referenced
+engineering candidate is described below; no physical fit is claimed. No hardware
 was purchased. Supplier source and reference files are retained on ORICO.
+
+
+## Supplier-referenced nut candidate
+
+`models/water_bench_carriage_servocity.toml` and
+`models/water_bench_frame_servocity.toml` add an engineering reference for
+[ServoCity 3506-0804-0016](https://www.servocity.com/3506-series-lead-screw-square-nut-8mm-lead-4-start-16mm-length/),
+listed at $7.99 when checked. This is not a purchase or a selected complete pump.
+The product specifies an 8 mm lead, four-start screw interface and an external
+M12 attachment. Screw/motor performance and required load are still unresolved.
+
+The retrieved supplier STEP has SHA-256
+`184a31dd9036a85bae2cc1c604921d0fab78edbb214b72ec170c28f16b150599`.
+Open CASCADE via `cadquery-ocp-novtk 7.8.1.1.post1` successfully transferred it
+as one valid solid. Its analytic bounds are 11.7×16×11.7 mm in the supplier's
+X/Y/Z placement. Planar faces show an 11.7 mm square base from supplier Y32
+through Y40; the remaining shoulder extends through Y48. These are CAD facts,
+not a controlled dimensional tolerance specification or measured hardware.
+
+The review reference uses an 11.7×11.7×8 mm square base and a conservative
+Ø12×8 mm shoulder envelope. Neither the external nor internal thread is modeled;
+the displayed Ø8 mm hole is visualization only. The rectangular rear-entry
+pocket is 12.3×12.3×16.4 mm, allowing the shoulder to enter without a printed
+M12 thread. The pocket's flats surround the square base; actual rotational play,
+backlash, endplay, shimming and retention remain unqualified.
+
+The cap's Ø8.8 mm screw passage leaves only 1.45 mm nominal radial overlap with
+the square base. This candidate explicitly uses a 1.2 mm *review* end-land
+minimum, separate from the unchanged 3 mm structural body-web minimum. That
+reduced land is an unresolved load-retention issue, not a strength approval.
+The generic nut configurations retain their original 3 mm review minimum.
+The compact frame retains 100 mm geometric travel and a 220×114 mm base.
+
+The runtime contract now requires `nut_square_length_mm`,
+`nut_round_shoulder_diameter_mm` and `nut_minimum_end_land_mm` in every carriage
+configuration, including nested frame configurations. A zero shoulder is valid
+only for a full-length square reference. Existing exported packages retain their
+original exact configurations and receipts; do not mix those old configurations
+with this newer executable without migrating the required fields.
