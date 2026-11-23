@@ -236,6 +236,9 @@ impl Frame {
                 .dry_assembly()
                 .translate(x, 0., self.carriage_z())
     }
+    pub(super) fn rear_support_x(&self) -> f64 {
+        -self.frame.support_length_mm
+    }
     pub(super) fn axis_height(&self) -> f64 {
         self.axis_z()
     }

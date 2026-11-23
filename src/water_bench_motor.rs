@@ -336,6 +336,9 @@ impl Motor {
             self.guide.base_bounds().0[0],
         ]
     }
+    pub(super) fn guide_rear_support_x(&self) -> f64 {
+        self.guide.rear_support_x()
+    }
     pub(super) fn coupler_end_x(&self) -> f64 {
         self.motor.motor_face_in_guide_x_mm
             + self.motor.coupler_start_x_mm

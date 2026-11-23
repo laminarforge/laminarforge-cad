@@ -292,3 +292,40 @@ The space behind the housing is not proof that a thrust stack fits or carries
 load. A radial bearing and flexible coupler do not establish axial retention.
 No syringe restraints, limits, hard stops, guard, driver or electrical stop is
 included. Do not energize this engineering candidate.
+
+
+## Optional axial-retention topology candidate
+
+The `water_bench_axial_retention*.toml` configurations use the `screw_support`
+module and add two smooth thrust-bearing envelopes and two smooth collar
+envelopes. The earlier radial-only configurations are unchanged. The new stand
+and independent gauge have a Ø21.4 mm opening to clear a 21 mm collar, leaving
+0.2 mm nominal radial clearance and 3.05 mm minimum land to an M4 mounting hole.
+This opening provides clearance; it does not provide a thrust reaction shoulder.
+
+Primary arrangement reference: ServoCity/goBILDA actuator 3212-0001-0001 manual,
+page 4, https://www.servocity.com/content/user_manuals/3212-0001-0001_assembly-instructions.min.pdf .
+That kit places thrust bearings on both sides of pillow block 1606-0043-0008,
+retained by collar 3504-0804-2109 and a lead-screw hyper hub. This new candidate
+substitutes a second matching threaded collar for the hyper hub; that substitution
+and our mounting structure are not qualified by the supplier's kit manual.
+
+Supplier collar: https://www.servocity.com/3504-series-lead-screw-clamping-collar-8mm-lead-4-start-21mm-od-9mm-length/ .
+STEP SHA-256: 6386db6a0e8a3aac04fe84d971123a5421f81a6c783245b4d0bd93f1492cfbd9.
+Supplier thrust bearing: https://www.gobilda.com/8mm-id-thrust-ball-bearing-15-5mm-od-5mm-thickness/ .
+STEP SHA-256: 70faa90eef9e3fd4d406feb96d88938d5df16a6388f5d7435ec2b3b9669ef38a.
+The product title says Ø15.5×5 mm, while its supplied CAD measures Ø15.72×4.96 mm.
+These configurations preserve the CAD dimensions explicitly; neither establishes
+physical dimensions or tolerance limits. Reference envelopes omit threads,
+collar split/pinch bolt, balls, cage, and washer/race details. They are not parts
+to manufacture. Retain actual supplier STEP separately for collision review.
+
+Nominal stack along X: rear collar −59.96..−50.96; rear thrust assembly
+−50.96..−46; pillow block −46..−39; front thrust assembly −39..−34.04;
+front collar −34.04..−25.04 mm. Nominal axial gaps are 10.04 mm to coupler end
+and 5.04 mm to the guide support. Hardware is shown at nominal touching faces
+with no invented preload/endplay allowance. Inner/outer radial-bearing race
+isolation, stationary washer contact, actual bolt and tool access, collar slip,
+preload, alignment, board stiffness and printed-stand strength remain unresolved.
+No thrust rating, syringe force, delivered flow, physical fit or powered-pump
+readiness follows from a zero-collision CAD result. Do not energize.
