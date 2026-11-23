@@ -79,3 +79,38 @@ reviewing the motor/frame, guide alignment, full stroke, syringe flange/plunger
 restraint, hard stops/limits, electrical stop and independent delivered mass.
 Do not fabricate or energize a working pump from the old source or this
 standalone carriage review.
+
+
+## Unpowered guide-frame review
+
+`water_transfer_dock --module frame` reads `models/water_bench_frame.toml`.
+The nested carriage parameters generate the actual carriage in two static poses;
+rod pitch, diameter and height derive from that same carriage definition. The
+frame adds a review base, two lower supports and two separate caps with aligned
+vertical M3 clearance paths. The central Ø12 mm opening is clearance only;
+it does not support a rotating screw or react thrust.
+
+The default clear span is 200 mm; the review base is 260×114×6 mm. Nominal Ø8 mm
+rods are 240 mm long, at Y±24 mm and Z28 mm. The carriage bottom is 4 mm above
+the base. Body start positions X8 and X148 produce 140 mm configured geometric
+travel, with a 5 mm minimum rear gap and 12 mm front gap. The short configuration
+uses a 160 mm clear span, 220 mm base, 200 mm rods and 100 mm geometric travel.
+Neither travel value is an adopted syringe stroke.
+
+Individual lower supports and caps are shown at Z0 for review. Their assembled
+split plane lies on the rod axis. The 8.2 mm nominal saddle and fixed seam do
+not establish clamping preload or rod retention. Fasteners, nut access,
+under-base clearance, shims, material, plate stiffness and alignment remain
+unresolved. The default base may exceed the selected printer bed; no printer
+or fabrication method has been selected. Do not infer print qualification.
+
+These files add no motor, coupler, screw thrust support, actual nut, syringe
+flange/plunger restraint, hard stop, limit switch or electrical controls. Static
+endpoint views and envelope checks do not establish motion or water delivery.
+
+The supplier STEP archive for ServoCity 3506-0804-0016 was retrieved from
+https://www.servocity.com/content/step_files/3506-0804-0016.zip . Inspection of
+its product images confirms an external threaded shoulder unlike the current
+rectangular reference block. The supplier geometry has not been dimensionally
+qualified or adopted; the old pocket stays explicitly provisional. No hardware
+was purchased. Supplier source and reference files are retained on ORICO.

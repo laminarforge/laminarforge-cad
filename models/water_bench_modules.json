@@ -1,5 +1,5 @@
 {
-  "revision": "W5",
+  "revision": "W6",
   "scope": "single-lane water/dye engineering only",
   "physical_system_verified": false,
   "modules": [
@@ -26,8 +26,15 @@
       "manual_source_evidence_job_id": "18941b6b-d3e8-4f05-847a-0986dda914f4",
       "dry_carriage_config": "models/water_bench_carriage.toml",
       "dry_carriage_selector": "carriage",
-      "dry_carriage_state": "implemented_generation_pending",
-      "functional_pump_verified": false
+      "dry_carriage_state": "two_candidates_exported_verified",
+      "functional_pump_verified": false,
+      "dry_carriage_evidence_source_sha": "41122cc7f66b5104c1029410d3ba73e1b85db101",
+      "dry_carriage_evidence_job_id": "892441ea-ebb8-46a3-96b0-bc756f86722f",
+      "dry_frame_config": "models/water_bench_frame.toml",
+      "dry_frame_short_config": "models/water_bench_frame_short.toml",
+      "dry_frame_selector": "frame",
+      "dry_frame_state": "implemented_generation_pending",
+      "nut_geometry_state": "commercial_step_retrieved_not_adopted"
     },
     {
       "id": "M02",

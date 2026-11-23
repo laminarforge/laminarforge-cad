@@ -10,6 +10,8 @@ use vcad::{centered_cube, centered_cylinder, Part};
 
 #[path = "water_bench_carriage.rs"]
 mod carriage;
+#[path = "water_bench_frame.rs"]
+mod frame;
 #[path = "water_bench_layout.rs"]
 mod layout;
 #[path = "water_bench_outlet.rs"]
@@ -923,6 +925,7 @@ pub fn run(args: &Args, module: &str) -> Result<(), Box<dyn std::error::Error>> 
         "source" => source::run(args, &raw),
         "bench" => layout::run(args, &raw),
         "carriage" => carriage::run(args, &raw),
+        "frame" => frame::run(args, &raw),
         "coupon" => {
             let p: Coupon = toml::from_str(&raw)?;
             p.validate()?;

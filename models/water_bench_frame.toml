@@ -1,0 +1,45 @@
+# Unpowered guide frame. All dimensions are engineering candidates, not bought hardware.
+[frame]
+clear_span_mm = 200.0
+support_length_mm = 20.0
+support_width_mm = 90.0
+cap_height_mm = 10.0
+base_thickness_mm = 6.0
+base_end_margin_mm = 10.0
+base_side_margin_mm = 12.0
+carriage_floor_gap_mm = 4.0
+rod_diametral_clearance_mm = 0.2
+cap_bolt_offset_from_rod_mm = 9.0
+cap_hole_diameter_mm = 3.4
+lead_clearance_diameter_mm = 12.0
+bench_hole_diameter_mm = 4.5
+bench_edge_offset_mm = 8.0
+carriage_start_x_mm = 8.0
+travel_mm = 140.0
+minimum_end_gap_mm = 5.0
+minimum_wall_mm = 3.0
+
+[carriage]
+# Dry mechanical review only. Generic envelopes, no selected bearings/nut/drive.
+body_length_mm = 40.0
+body_width_mm = 76.0
+body_height_mm = 36.0
+rod_diameter_mm = 8.0
+rod_diametral_clearance_mm = 0.6
+rod_center_pitch_mm = 48.0
+bearing_outer_diameter_mm = 15.0
+bearing_length_mm = 24.0
+bearing_diametral_clearance_mm = 0.2
+bearing_axial_clearance_mm = 0.5
+lead_screw_diameter_mm = 8.0
+lead_screw_diametral_clearance_mm = 0.8
+nut_width_mm = 20.0
+nut_height_mm = 20.0
+nut_length_mm = 16.0
+nut_side_clearance_mm = 0.4
+nut_axial_clearance_mm = 0.4
+cap_thickness_mm = 3.0
+cap_hole_diameter_mm = 3.4
+cap_bolt_pitch_y_mm = 30.0
+cap_bolt_pitch_z_mm = 26.0
+minimum_wall_mm = 3.0

@@ -2,7 +2,7 @@
 use super::*;
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Carriage {
+pub(super) struct Carriage {
     body_length_mm: f64,
     body_width_mm: f64,
     body_height_mm: f64,
@@ -51,7 +51,7 @@ impl Carriage {
     fn nut_half_z(&self) -> f64 {
         (self.nut_height_mm + self.nut_side_clearance_mm) / 2.
     }
-    fn validate(&self) -> Result<(), String> {
+    pub(super) fn validate(&self) -> Result<(), String> {
         finite(self)?;
         require(
             (32. ..=55.).contains(&self.body_length_mm)
@@ -273,6 +273,23 @@ impl Carriage {
             0.,
             self.axis_z(),
         )
+    }
+    pub(super) fn guide_interface(&self) -> [f64; 4] {
+        [
+            self.rod_center_pitch_mm,
+            self.rod_diameter_mm,
+            self.axis_z(),
+            self.body_width_mm,
+        ]
+    }
+    pub(super) fn body_length(&self) -> f64 {
+        self.body_length_mm
+    }
+    pub(super) fn cap_thickness(&self) -> f64 {
+        self.cap_thickness_mm
+    }
+    pub(super) fn dry_assembly(&self) -> Part {
+        self.body() + self.cap() + self.bearings() + self.nut()
     }
     fn exports(&self) -> Vec<Export> {
         let by = self.rod_center_pitch_mm / 2. + self.bearing_outer_diameter_mm / 2.;
