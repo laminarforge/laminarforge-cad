@@ -103,6 +103,10 @@ The first manual stage needs no separate controller board or custom PCB.
 
 ## F1 — path toward the actual instrument (2026-11-22)
 
+The [consolidated component package](research-component-package.md) carries the
+current complete role ledger and seven-step progress checklist. F1's subtotal
+below remains a reference basket, with additional component costs unresolved.
+
 Prefer a commercial serial-controlled syringe pump with replaceable wetted parts,
 a commercial vessel interface and independent mass observation. Manual initial
 loading is allowed by A-12A0063A; finite operation does not establish continuous

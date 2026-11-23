@@ -106,6 +106,9 @@ interfaces establish a useful, manufacturable configuration.
 - [RI-S3: ZEISS cover-glass correction limits](https://www.zeiss.com/microscopy/en/resources/insights-hub/foundational-knowledge/correcting-cover-glass-thickness-for-better-images.html)
 - [RI-S4: Applied BioPhysics cultureware and flow arrays](https://www.biophysics.com/cultureware.php)
 
+The current [component package and completion checklist](research-component-package.md)
+consolidates candidates, connections, cost gaps and the exact restart point.
+
 ## Connected system
 
 Liquid: source syringe → pump → replaceable tubing/fittings → transparent

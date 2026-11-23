@@ -1,0 +1,337 @@
+{
+  "revision": "CP1",
+  "checked_date_utc": "2026-11-23",
+  "ticket_id": "T-21BC0885",
+  "status": "component candidate and gap register; step 1 remains incomplete",
+  "source_thread": "01a202d1-e459-7f01-865d-22eb0b465e39",
+  "items": [
+    {
+      "id": "CP-01",
+      "role": "pump",
+      "candidate": "NE-501",
+      "quantity": 1,
+      "listed_usd": 575,
+      "price_basis": "prior F1 source check; requote before purchase",
+      "selection_status": "preferred integration candidate; no purchase/release",
+      "source": "https://syringepump.com/oem.php"
+    },
+    {
+      "id": "CP-02",
+      "role": "pump_power_and_host_cables",
+      "candidate": "OEM-USB-START",
+      "quantity": 1,
+      "listed_usd": 42.5,
+      "price_basis": "prior F1 source check; requote before purchase",
+      "selection_status": "includes supply, primary serial cable and USB converter; host compatibility unverified",
+      "source": "https://syringepump.com/accessories.php"
+    },
+    {
+      "id": "CP-03",
+      "role": "pump_bottom_cover",
+      "candidate": "OEM-BOTCOVER-ASSBLY",
+      "quantity": 1,
+      "listed_usd": 40,
+      "price_basis": "prior F1 source check; requote before purchase",
+      "selection_status": "bottom cover only; not a complete spill/motion enclosure",
+      "source": "https://syringepump.com/oem.php"
+    },
+    {
+      "id": "CP-04",
+      "role": "reference_vessel_pack",
+      "candidate": "ibidi 80171, 15 per box",
+      "quantity": 1,
+      "listed_usd": 360,
+      "price_basis": "prior F1 source check; requote before purchase",
+      "selection_status": "commercial interface reference only; no scientific selection of surface/channel",
+      "source": "https://ibidi.com/img/cms/downloads/pl/ibidi_Price_List_USA_150dpi.pdf"
+    },
+    {
+      "id": "CP-05",
+      "role": "reference_adapter_pack",
+      "candidate": "ibidi 10831, 12 pieces / 6 pairs",
+      "quantity": 1,
+      "listed_usd": 215,
+      "price_basis": "prior F1 source check; requote before purchase",
+      "selection_status": "reference packaging cost, not minimum connector cost",
+      "source": "https://ibidi.com/img/cms/downloads/pl/ibidi_Price_List_USA_150dpi.pdf"
+    },
+    {
+      "id": "CP-06",
+      "role": "water_characterization_syringe_tubing_kit",
+      "candidate": "P-SYRKIT-SM",
+      "quantity": 1,
+      "listed_usd": 20.38,
+      "price_basis": "prior F1 source check; requote before purchase",
+      "selection_status": "several syringe sizes; final syringe size and material compatibility unresolved",
+      "source": "https://www.syringepump.com/syringes%20and%20plumbing%20supplies.php"
+    },
+    {
+      "id": "CP-07",
+      "role": "mass_observation_candidate",
+      "candidate": "USS-DBS46-1 / JFDBS00046-100G",
+      "quantity": 1,
+      "listed_usd": 96.49,
+      "price_basis": "prior F1 source check; requote before purchase",
+      "selection_status": "candidate only; stock/accuracy discrepancies remain",
+      "source": "https://ussolid.com/products/u-s-solid-100-x-0-001g-analytical-balance-1-mg-digital-lab-precision-scale-html"
+    },
+    {
+      "id": "CP-08",
+      "role": "pump_serial_adapter",
+      "candidate": "StarTech ICUSB2321F",
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Named FTDI RS-232 candidate; product-specific macOS 26 support and acquired-device operation unresolved. Replaces use of the bundled converter, not the required OEM pump cable.",
+      "source": "https://www.startech.com/en-us/cards-adapters/icusb2321f"
+    },
+    {
+      "id": "CP-09",
+      "role": "balance_serial_adapter",
+      "candidate": "StarTech ICUSB2321F",
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Separate channel candidate; crossed balance cable must be verified independently.",
+      "source": "https://www.startech.com/en-us/cards-adapters/icusb2321f"
+    },
+    {
+      "id": "CP-10",
+      "role": "pump_serial_cable",
+      "candidate": "CBL-PC-PUMP-7",
+      "quantity": 1,
+      "listed_usd": 0,
+      "price_basis": "included in CP-02; not a free standalone part",
+      "selection_status": "Included in OEM-USB-START row; no added cost here. Do not substitute a generic modular telephone cable.",
+      "source": "https://syringepump.com/oem.php"
+    },
+    {
+      "id": "CP-11",
+      "role": "balance_serial_cable",
+      "candidate": null,
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Exact DBS46 connector gender and pinout remain to confirm. Cross 2/3 only as specified by the delivered instrument manual; do not stack an unreviewed null modem onto a crossed cable.",
+      "source": "https://file.ussolid.com/content/JFDBS/Manual-USS-DBS46%20Precision%20Balance.pdf"
+    },
+    {
+      "id": "CP-12",
+      "role": "host_usb_connection",
+      "candidate": null,
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Confirm available host ports before buying a hub; require two independent instrument ports. No need to replace the Mac.",
+      "source": null
+    },
+    {
+      "id": "CP-13",
+      "role": "selected_syringe",
+      "candidate": null,
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "P-SYRKIT-SM is an assortment, not final selection. Exact barrel ID, capacity, flange/plunger fit and working pressure depend on required duration and delivered-volume evidence.",
+      "source": null
+    },
+    {
+      "id": "CP-14",
+      "role": "final_tubing",
+      "candidate": null,
+      "quantity": null,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Choose material, ID/OD, lengths, retention and full working rating after vessel and pressure requirements. Kit PVC nominal barb match is insufficient.",
+      "source": null
+    },
+    {
+      "id": "CP-15",
+      "role": "pressure_observation_and_protection",
+      "candidate": null,
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "No purchased sensor or cutoff chosen. Select liquid-compatible sensor, connections, acquisition and independent protection against the lowest assembled rating; stall detection does not supply that rating.",
+      "source": null
+    },
+    {
+      "id": "CP-16",
+      "role": "independent_power_stop",
+      "candidate": null,
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Specify an accessible latching power-removal path with deliberate reset and no automatic motion after power return. Circuit, ratings, connectors and enclosure await electrical design. A TTL foot switch is not this path.",
+      "source": null
+    },
+    {
+      "id": "CP-17",
+      "role": "collection_vial",
+      "candidate": null,
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Choose gross capacity/mass and measured envelope against balance and maximum collection; include nest mass.",
+      "source": null
+    },
+    {
+      "id": "CP-18",
+      "role": "spill_tray",
+      "candidate": null,
+      "quantity": 1,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Choose capacity against source inventory and credible spill; segregate electrical zone.",
+      "source": null
+    },
+    {
+      "id": "CP-19",
+      "role": "mounts_fasteners_and_fabrication",
+      "candidate": null,
+      "quantity": null,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Selected vessel requires separate supported insert. Stock/printed supports and fasteners need exact dimensions, material and quotes after interface lock.",
+      "source": null
+    },
+    {
+      "id": "CP-20",
+      "role": "calibration_and_measurement_references",
+      "candidate": null,
+      "quantity": null,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Need appropriate mass reference and delivered-mass uncertainty budget; included calibration weight is not traceability.",
+      "source": null
+    },
+    {
+      "id": "CP-21",
+      "role": "research_readout_and_environment",
+      "candidate": null,
+      "quantity": null,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Select from qualified intended measurement and vessel requirements in RI1; do not add arbitrary microscope or thermal equipment.",
+      "source": null
+    },
+    {
+      "id": "CP-22",
+      "role": "shipping_tax_replacement_and_labor",
+      "candidate": null,
+      "quantity": null,
+      "listed_usd": null,
+      "price_basis": "not quoted",
+      "selection_status": "Delivered Thailand quote, replacement consumables, fabrication and labor remain unpriced.",
+      "source": null
+    }
+  ],
+  "cost": {
+    "currency": "USD",
+    "known_reference_subtotal_usd": 1349.37,
+    "complete_system_total_usd": null,
+    "unknown_price_rows": [
+      "CP-08",
+      "CP-09",
+      "CP-11",
+      "CP-12",
+      "CP-13",
+      "CP-14",
+      "CP-15",
+      "CP-16",
+      "CP-17",
+      "CP-18",
+      "CP-19",
+      "CP-20",
+      "CP-21",
+      "CP-22"
+    ],
+    "basis": "Catalog reference outlay, not delivered quotation; includes full reference packs. No price inferred for null rows."
+  },
+  "host": {
+    "adapter": "ICUSB2321F",
+    "chipset": "FTDI",
+    "vendor_os_support": "Guide dated 2025-03-21 lists macOS through 15",
+    "chip_vendor_os_support": "FTDI VCP table lists macOS 26 and ARM, driver 1.6.0",
+    "qualification": "not observed; chip driver support does not qualify the third-party adapter",
+    "driver_source": "https://ftdichip.com/drivers/vcp-drivers/",
+    "guide_source": "https://sgcdn.startech.com/005329/media/sets/ICUSB232xF_Manual/ICUSB232xF_QSG.pdf"
+  },
+  "connections": [
+    {
+      "id": "C01",
+      "path": "Mac \u2192 adapter A \u2192 CBL-PC-PUMP-7 \u2192 NE-501 RS-232",
+      "state": "candidate; no hardware"
+    },
+    {
+      "id": "C02",
+      "path": "Mac \u2192 adapter B \u2192 verified balance cable \u2192 DBS46 RS-232",
+      "state": "pinout/actual framing unresolved"
+    },
+    {
+      "id": "C03",
+      "path": "Syringe \u2192 selected tubing \u2192 10831 \u2192 selected I Luer slide \u2192 outlet connector/tube \u2192 free collection outlet",
+      "state": "nominal connector family only; assembled limits unresolved"
+    },
+    {
+      "id": "C04",
+      "path": "Collection vial/nest \u2192 balance pan; outlet supported off scale",
+      "state": "actual gross mass and mechanical clearance unresolved"
+    },
+    {
+      "id": "C05",
+      "path": "Regional OEM supply \u2192 reviewed independent power stop \u2192 pump",
+      "state": "concept only; not a wiring instruction"
+    }
+  ],
+  "checklist": [
+    {
+      "step": 0,
+      "title": "Audit existing work",
+      "complete": true
+    },
+    {
+      "step": 1,
+      "title": "Finish component-selection package",
+      "complete": false
+    },
+    {
+      "step": 2,
+      "title": "Lock research-use requirements",
+      "complete": false
+    },
+    {
+      "step": 3,
+      "title": "Finish integrated mechanical design",
+      "complete": false
+    },
+    {
+      "step": 4,
+      "title": "Finish controls and recording",
+      "complete": false
+    },
+    {
+      "step": 5,
+      "title": "Produce fabrication and purchase package",
+      "complete": false
+    },
+    {
+      "step": 6,
+      "title": "Assemble and commission",
+      "complete": false
+    },
+    {
+      "step": 7,
+      "title": "Establish intended research-use readiness",
+      "complete": false
+    }
+  ],
+  "current_step": 1,
+  "next_actions": [
+    "Resolve vendor-supported host adapter and actual balance cable; acquire quotes only after exact SKU and regional supply selection.",
+    "Recover qualified vessel/readout requirement and component working limits; keep technical decisions with engineering.",
+    "Finish stop/pressure design and price every null ledger row; no total or spending request until concrete."
+  ],
+  "hardware_observed": false,
+  "purchase_authorized": false
+}

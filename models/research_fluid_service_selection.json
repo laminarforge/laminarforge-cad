@@ -1,5 +1,5 @@
 {
-  "revision": "F1",
+  "revision": "F2",
   "checked_date_utc": "2026-11-22",
   "baseline_sha": "1402c88bb2f59c4d1dde8396c88744533cf7fff6",
   "decision_status": "engineering integration recommendation; not procurement or research-use release",
@@ -129,7 +129,7 @@
         "Mac host"
       ],
       "state": "not demonstrated",
-      "finding": "Published serial protocol avoids dependence on Windows GUI, but bundled USB converter Apple Silicon driver/support and real communication remain unverified."
+      "finding": "Use a named RS-232 adapter candidate, StarTech ICUSB2321F (FTDI), rather than assume the bundled converter works. Vendor guide lists macOS through 15; FTDI lists ARM macOS 26 VCP support separately. This is not end-product qualification. Real enumeration and pump readback remain pending."
     }
   ],
   "alternatives": [
@@ -241,5 +241,6 @@
     "G03": "requires acquired hardware after G06",
     "G04": "requires acquired hardware after G06",
     "G07": "after actual G03/G04 evidence and final G05 dimensional acceptance"
-  }
+  },
+  "component_package": "models/research_component_package.json"
 }
