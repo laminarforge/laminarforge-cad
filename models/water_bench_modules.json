@@ -39,8 +39,12 @@
       "dry_frame_evidence_job_id": "950594c7-29e5-43a3-8b4f-176f120075a5",
       "supplier_nut_carriage_config": "models/water_bench_carriage_servocity.toml",
       "supplier_nut_frame_config": "models/water_bench_frame_servocity.toml",
-      "supplier_nut_state": "supplier_cad_inspected_runtime_generation_pending",
-      "supplier_nut_step_sha256": "184a31dd9036a85bae2cc1c604921d0fab78edbb214b72ec170c28f16b150599"
+      "supplier_nut_state": "two_candidates_exported_verified_cap_orientation_revision_pending",
+      "supplier_nut_step_sha256": "184a31dd9036a85bae2cc1c604921d0fab78edbb214b72ec170c28f16b150599",
+      "supplier_nut_evidence_source_sha": "ae22543bacf19b0093e4067c876ca851773fde49",
+      "supplier_nut_evidence_job_id": "21b67b34-57bb-41d9-94ed-3edb4551011f",
+      "supplier_nut_cad_volume_outside_pocket_mm3": 0.0,
+      "supplier_nut_physical_fit_verified": false
     },
     {
       "id": "M02",

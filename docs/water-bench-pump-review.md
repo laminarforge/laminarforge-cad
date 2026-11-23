@@ -97,7 +97,10 @@ travel, with a 5 mm minimum rear gap and 12 mm front gap. The short configuratio
 uses a 160 mm clear span, 220 mm base, 200 mm rods and 100 mm geometric travel.
 Neither travel value is an adopted syringe stroke.
 
-Individual lower supports and caps are shown at Z0 for review. Their assembled
+Individual lower supports are shown at Z0. Separate caps rotate 180 degrees
+about X and translate to Z0, leaving the flat face down and saddles upward.
+Actual STL preflight identified downward saddle overhangs in the prior export;
+this orientation is a review improvement, not print qualification. Their assembled
 split plane lies on the rod axis. The 8.2 mm nominal saddle and fixed seam do
 not establish clamping preload or rod retention. Fasteners, nut access,
 under-base clearance, shims, material, plate stiffness and alignment remain
@@ -153,3 +156,12 @@ configuration, including nested frame configurations. A zero shoulder is valid
 only for a full-length square reference. Existing exported packages retain their
 original exact configurations and receipts; do not mix those old configurations
 with this newer executable without migrating the required fields.
+
+
+Actual supplier-CAD comparison against the first exported nut candidate found
+zero supplier BRep volume outside the configured pocket. The rigid transform
+rotates supplier geometry -90 degrees about Z and translates its original Y32
+start to carriage X0.2, with the axis at Z18. Nominal CAD clearances are 0.2 mm
+at both axial ends and 0.3 mm on each side of the square envelope. This checks
+CAD containment only; tolerances, printed dimensions and physical fit remain
+unverified. The original source and all inspection records are on ORICO.

@@ -270,7 +270,11 @@ impl Frame {
             },
             Export {
                 name: "frame_split_cap_DRY_FIT_REVIEW_make_two.stl",
-                part: self.support(true).translate(0., 0., -z),
+                part: self.support(true).rotate(180., 0., 0.).translate(
+                    0.,
+                    0.,
+                    z + p.cap_height_mm,
+                ),
                 bounds: (
                     [-p.support_length_mm / 2., -p.support_width_mm / 2., 0.],
                     [
@@ -279,7 +283,7 @@ impl Frame {
                         p.cap_height_mm,
                     ],
                 ),
-                role: "two_caps_required_fixed_seam_not_proven_clamping_preload",
+                role: "two_caps_required_flat_face_down_saddles_up_clamping_unverified",
             },
             Export {
                 name: "frame_REF_rod_pair_NOT_FOR_MANUFACTURE.stl",
@@ -348,13 +352,13 @@ impl Frame {
             Probe {
                 index: 2,
                 name: "upper_rod_saddle_open",
-                point: [0., y, self.radius() / 2.],
+                point: [0., y, p.cap_height_mm - self.radius() / 2.],
                 solid: false,
             },
             Probe {
                 index: 2,
                 name: "upper_cap_retention_land",
-                point: [0., y, self.radius() + 1.],
+                point: [0., y, p.cap_height_mm - self.radius() - 1.],
                 solid: true,
             },
             Probe {
@@ -377,7 +381,7 @@ pub(super) fn run(args: &Args, raw: &str) -> Result<(), Box<dyn std::error::Erro
     p.validate()?;
     let f = &p.frame;
     let (a, b) = p.base_bounds();
-    let design = json!({"axis":"X","rod_axis_yz_mm":[[-p.interface()[0]/2.,p.axis_z()],[p.interface()[0]/2.,p.axis_z()]],"rod_nominal_diameter_mm":p.interface()[1],"rod_reference_length_mm":f.clear_span_mm+2.*f.support_length_mm,"support_saddle_diameter_mm":2.*p.radius(),"carriage_floor_gap_mm":f.carriage_floor_gap_mm,"carriage_body_start_positions_x_mm":[f.carriage_start_x_mm,f.carriage_start_x_mm+f.travel_mm],"configured_geometric_travel_mm":f.travel_mm,"closest_end_gaps_mm":[f.carriage_start_x_mm-p.carriage.cap_thickness(),f.clear_span_mm-f.carriage_start_x_mm-f.travel_mm-p.carriage.body_length()],"base_envelope_mm":[b[0]-a[0],b[1]-a[1],b[2]],"support_center_x_mm":[-f.support_length_mm/2.,f.clear_span_mm+f.support_length_mm/2.],"cap_bolt_y_mm":p.bolt_ys(),"parts_required":{"base":1,"lower_support":2,"split_cap":2,"reference_rod":2,"carriage_body":1,"carriage_cap":1},"rules":["Dry unpowered review only; do not manufacture or energize a working pump from these meshes.","Carriage geometry comes from the nested carriage configuration, not a separately guessed rod pattern.","Two endpoint views are static poses; they do not show observed motion or demonstrate alignment.","Split caps have a fixed seam and diametral clearance; preload, shims, rod retention and tolerance stack remain unresolved.","Vertical bolt paths run through cap, lower support and base. No fasteners, nuts, counterbores or under-base clearance are included.","Base is a review plate; material, flatness, stiffness and manufacturing method are not specified. Its footprint may exceed a printer bed.","Central support opening is clearance only, not a radial bearing, thrust bearing or lead-screw support.","No screw, actual nut, motor, coupler, syringe flange or plunger restraint, hard stops or limit switches are included.","Configured travel is an unloaded geometric envelope, not a syringe stroke or a delivery claim."]});
+    let design = json!({"axis":"X","rod_axis_yz_mm":[[-p.interface()[0]/2.,p.axis_z()],[p.interface()[0]/2.,p.axis_z()]],"rod_nominal_diameter_mm":p.interface()[1],"rod_reference_length_mm":f.clear_span_mm+2.*f.support_length_mm,"support_saddle_diameter_mm":2.*p.radius(),"carriage_floor_gap_mm":f.carriage_floor_gap_mm,"carriage_body_start_positions_x_mm":[f.carriage_start_x_mm,f.carriage_start_x_mm+f.travel_mm],"configured_geometric_travel_mm":f.travel_mm,"closest_end_gaps_mm":[f.carriage_start_x_mm-p.carriage.cap_thickness(),f.clear_span_mm-f.carriage_start_x_mm-f.travel_mm-p.carriage.body_length()],"base_envelope_mm":[b[0]-a[0],b[1]-a[1],b[2]],"support_center_x_mm":[-f.support_length_mm/2.,f.clear_span_mm+f.support_length_mm/2.],"cap_bolt_y_mm":p.bolt_ys(),"cap_export_rotation_degrees_xyz":[180.,0.,0.],"cap_export_translation_mm":[0.,0.,p.axis_z()+f.cap_height_mm],"parts_required":{"base":1,"lower_support":2,"split_cap":2,"reference_rod":2,"carriage_body":1,"carriage_cap":1},"rules":["Dry unpowered review only; do not manufacture or energize a working pump from these meshes.","Carriage geometry comes from the nested carriage configuration, not a separately guessed rod pattern.","Two endpoint views are static poses; they do not show observed motion or demonstrate alignment.","Split caps have a fixed seam and diametral clearance; preload, shims, rod retention and tolerance stack remain unresolved.","Vertical bolt paths run through cap, lower support and base. No fasteners, nuts, counterbores or under-base clearance are included.","Base is a review plate; material, flatness, stiffness and manufacturing method are not specified. Its footprint may exceed a printer bed.","Central support opening is clearance only, not a radial bearing, thrust bearing or lead-screw support.","No screw, actual nut, motor, coupler, syringe flange or plunger restraint, hard stops or limit switches are included.","Configured travel is an unloaded geometric envelope, not a syringe stroke or a delivery claim."]});
     publish(
         args,
         "water_bench_frame",
