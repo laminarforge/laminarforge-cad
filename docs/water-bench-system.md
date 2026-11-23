@@ -1,4 +1,4 @@
-# Connected water-bench modules — interface revision W4
+# Connected water-bench modules — interface revision W5
 
 Ticket T-21BC0885. Scope: one water/dye engineering lane. No cell, pathogen,
 vector, culture, assay or incubation procedure is specified here.
@@ -8,6 +8,37 @@ can be a purchased assembly, a dry printed fixture or software; it need not be
 a separate box or controller. Dimensions of unselected purchased parts remain
 provisional. CAD completion, physical assembly and measured performance are
 separate states.
+
+
+## Relationship to the intended research instrument
+
+Alex's objective is usable research equipment. The fixtures in this document are
+engineering and measurement assets serving that objective; they are not the
+completed research box. The engineering recommendation is delegated. Alex need
+not choose among old architectures or invent pump limits and other technical
+specifications. Supplier evidence and qualified laboratory input, where needed,
+must establish the real interfaces and acceptance requirements.
+
+The reconciliation index is `models/research_instrument_completion.json`.
+It distinguishes the existing 16-slot cassette contract, heated-water prototype,
+and single-lane fluid bench. The A0 cassette contract is preserved; recent bench
+work neither supersedes A0 nor establishes an adopted final pump/BOM. The
+November 3 liquid-service requirements record (A-12A0063A, T-9F64B1F6) supports
+a finite useful liquid-handling operation with an appropriate carrier/vessel
+interface, manual initial loading and honest delivery evidence. It leaves the
+complete hardware architecture unselected.
+
+The next engineering priority is an actual compatible vessel/connector/actuator
+combination and its complete support-equipment costs, grounded in the intended
+measurement/environment requirements. A 75×25 mm water coupon, the Rev C
+127.76×85.48 mm payload contract, and a heated microplate surrogate are different
+interfaces; their evidence must not be substituted for one another.
+
+A new CAD task must close an identified instrument interface or verification gap.
+More provisional fixtures alone do not retire component selection, manufacturing,
+physical commissioning or intended-use requirements. The earlier seven-block
+bench estimate is not an estimate of all remaining work for the research box.
+No reliable total remaining-part count is established yet.
 
 ## Connected system
 

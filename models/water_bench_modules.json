@@ -1,5 +1,5 @@
 {
-  "revision": "W9",
+  "revision": "W10",
   "scope": "single-lane water/dye engineering only",
   "physical_system_verified": false,
   "modules": [
@@ -17,7 +17,7 @@
         "stop",
         "liquid_connector"
       ],
-      "next": "compare_manual_bringup_with_full_cost_of_required_motorization",
+      "next": "resolve_actual_instrument_vessel_connector_actuator_compatibility_before_more_custom_motorization",
       "reference_candidate": "New Era NE-1000",
       "manual_source_support_config": "models/water_bench_source_saddle.toml",
       "manual_source_support_selector": "source",
@@ -51,7 +51,7 @@
       "motor_bracket_state": "four_candidates_exported_verified",
       "motor_reference": "Adafruit 324 engineering envelope, unpurchased",
       "coupler_reference": "Adafruit 1176 outer envelope, unpurchased",
-      "screw_thrust_support_state": "not_designed",
+      "screw_thrust_support_state": "dry_axial_topology_candidate_load_unqualified",
       "motor_bracket_evidence_source_sha": "2d34e4a7b40887ea920355fb7c02c73e7be0c5be",
       "motor_bracket_evidence_job_id": "21b73ac9-c87f-442d-a639-3c038e7fef64",
       "motor_bracket_roof_config": "models/water_bench_motor_roof.toml",
@@ -60,8 +60,20 @@
       "radial_support_config": "models/water_bench_screw_support.toml",
       "radial_support_thick_config": "models/water_bench_screw_support_thick.toml",
       "radial_support_selector": "screw_support",
-      "radial_support_state": "implemented_generation_pending",
-      "radial_support_supplier_step_sha256": "09ce300690c1dffa9941930164640848ce70ddf382bd920cad6260914783dcb8"
+      "radial_support_state": "exported_and_verified_cad_only",
+      "radial_support_supplier_step_sha256": "09ce300690c1dffa9941930164640848ce70ddf382bd920cad6260914783dcb8",
+      "radial_support_evidence_source_sha": "29ced3fa420d1ab0705f8b5f1ce395975c02b79a",
+      "radial_support_evidence_job_id": "9131c371-5305-4d77-9437-59a3d08903e3",
+      "axial_support_config": "models/water_bench_axial_retention.toml",
+      "axial_support_evidence_source_sha": "a3bdda4272e41c899555b2ec540dad09decb296b",
+      "axial_support_evidence_job_id": "5c747bb9-cc8f-4eb7-ad3a-59eb63dc07cd",
+      "restraints_config": "models/water_bench_restraints.toml",
+      "restraints_evidence_source_sha": "18450ab489e5e6f5b7f30a3b38e347021c558774",
+      "restraints_evidence_job_id": "9c7f51c6-af0e-407f-8b27-2c912671e19b",
+      "raised_source_config": "models/water_bench_raised_source.toml",
+      "raised_source_evidence_source_sha": "c265539fd1ac088df86f1c75d1fe3810764e3a2e",
+      "raised_source_evidence_job_id": "05c5f596-8f25-4f7b-acc3-e9708c8bb370",
+      "final_pump_adopted": false
     },
     {
       "id": "M02",
@@ -231,5 +243,9 @@
   "cost_basis_document": "docs/water-bench-low-cost.md",
   "combined_layout_config": "models/water_bench_layout.toml",
   "combined_layout_selector": "bench",
-  "combined_layout_state": "exported_verified_under_25bbdf2272710a7db9324e07165b254568692a3b"
+  "combined_layout_state": "exported_verified_under_25bbdf2272710a7db9324e07165b254568692a3b",
+  "instrument_completion_index": "models/research_instrument_completion.json",
+  "role_in_project": "engineering_verification_subsystem_for_intended_research_instrument",
+  "final_instrument_architecture_or_bom_adopted": false,
+  "work_admission_rule": "New CAD must close an identified instrument interface or evidence gap. Do not add stand-alone provisional fixture families as a substitute for component selection, integration or physical evidence."
 }

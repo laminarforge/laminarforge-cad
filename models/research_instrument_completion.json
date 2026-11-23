@@ -1,0 +1,105 @@
+{
+  "revision": "R1",
+  "purpose": "Finish equipment that serves the intended research workflow; water-only benches are verification equipment, not the completed research instrument.",
+  "decision_owner": "Engineering choices delegated to the agent; do not require Alex to choose legacy architecture or invent device operating limits.",
+  "source_review_baseline": "c265539fd1ac088df86f1c75d1fe3810764e3a2e",
+  "controlling_evidence": [
+    {
+      "reference": "A-12A0063A",
+      "date": "2026-11-03",
+      "observed": "Metadata, first content chunk and completed ticket T-9F64B1F6 reviewed. Working liquid-service direction; technical recommendation delegated; initial loading/manual exceptions allowed; architecture and BOM unselected. Full artifact content not reviewed in this reconciliation."
+    },
+    {
+      "reference": "T-9F64B1F6",
+      "observed": "Completed-ticket record says assembled vessel/connector load envelope needs supplier evidence or qualified fluidics review, not operating limits invented by Alex."
+    },
+    {
+      "reference": "docs/sixteen_slot_cassette_a0_interface_spec.md",
+      "observed": "Existing 16-slot mechanical contract remains controlling for its cassette first article. This reconciliation does not revise or adopt additional A0 geometry."
+    },
+    {
+      "reference": "docs/sixteen_slot_cassette_a8_first_article_build_package.md",
+      "observed": "Mechanical drawing and bought-component selection incomplete; no-cell fixture is a layout mockup, not qualified hardware."
+    },
+    {
+      "reference": "docs/heated-cassette-v0/README.md",
+      "observed": "Heated water-filled microplate article; selected thermal surrogate is not a perfused tissue-on-chip plate or demonstrated research-use system."
+    },
+    {
+      "reference": "docs/water-bench-system.md",
+      "observed": "Recent fixtures are single-lane water/dye engineering candidates; no hardware delivery, environment or biological suitability established."
+    }
+  ],
+  "reuse_decisions": [
+    {
+      "asset": "16-slot cassette A0/A1-A8",
+      "decision": "Retain existing contract and design evidence. Determine real vessel and instrument interfaces before further fabrication or any explicit A0 revision. Do not ask Alex to pick a slot count."
+    },
+    {
+      "asset": "Heated Rev D cassette",
+      "decision": "Retain as thermal engineering article only. Do not treat its plate surrogate as a selected perfusion vessel or its water results as research-environment qualification."
+    },
+    {
+      "asset": "Water bench and motorized fixtures",
+      "decision": "Retain as provisional engineering/measurement assets. Integrate only when a requirement or verification task needs them; custom motorization is not yet an adopted final pump."
+    },
+    {
+      "asset": "Compact and older 20-position concepts",
+      "decision": "Retain references without opening another competing build lane."
+    }
+  ],
+  "completion_definition": {
+    "engineering_release": "A specified, manufacturable and serviceable instrument configuration with selected compatible parts, defined ratings/interfaces, wiring/software and evidence-based acceptance requirements.",
+    "physical_commissioning": "Actual assembly and independent observations establish fit, stop behavior, delivery/measurement performance and required environment. No simulated passing results.",
+    "research_use": "Scientific measurement and material/environment requirements must be grounded in qualified laboratory input and real evidence; engineering water checks alone do not establish research suitability.",
+    "current_state": "Not released, physically commissioned or verified for intended research use.",
+    "remaining_part_count": "Not established. Previous seven-block bench estimate is not a total instrument-completion count."
+  },
+  "completion_workstreams": [
+    {
+      "id": "R01",
+      "name": "Intended workflow and measurement requirements",
+      "owner": "engineering synthesis plus qualified laboratory requirements",
+      "state": "Existing intent recorded; exact vessel/readout/environment acceptance basis not reconciled.",
+      "next": "Recover existing research requirements; document unresolved scientific interfaces for qualified input without inventing operating parameters."
+    },
+    {
+      "id": "R02",
+      "name": "Actual replaceable vessel and fluid-service interface",
+      "owner": "engineering",
+      "state": "No adopted complete vessel/connector/pump combination demonstrated.",
+      "next": "Select a compatible candidate combination from supplier-rated components and complete support-equipment costs; preserve alternatives only where unresolved evidence matters."
+    },
+    {
+      "id": "R03",
+      "name": "Mechanical and manufacturing definition",
+      "owner": "engineering",
+      "state": "Reusable CAD exists; multiple incompatible payload envelopes and unreleased interfaces remain.",
+      "next": "Tie chosen vessel interfaces to existing carrier/seals/fixtures, then finish drawings and BOM for that configuration."
+    },
+    {
+      "id": "R04",
+      "name": "Environment, measurement and electrical/control integration",
+      "owner": "engineering with qualified domain review where required",
+      "state": "Thermal article, generic measurement fixtures and recorder exist; integrated hardware behavior unverified.",
+      "next": "Match actual environment and readout requirements to equipment; select interfaces, control/stop behavior and observable data records."
+    },
+    {
+      "id": "R05",
+      "name": "Procurement, fabrication and assembly",
+      "owner": "engineering preparation; spending only within explicit authorization",
+      "state": "No complete accepted hardware inventory or assembled instrument evidenced.",
+      "next": "Prepare one reviewed purchase/fabrication package after compatibility and requirements are established."
+    },
+    {
+      "id": "R06",
+      "name": "Commissioning and intended-use evidence",
+      "owner": "engineering and qualified laboratory verification",
+      "state": "No hardware run or measurement samples in current local engineering ledger.",
+      "next": "Exercise actual assembled hardware against documented requirements; retain failures and measured limitations."
+    }
+  ],
+  "work_admission_rule": "New CAD must close an identified instrument interface or evidence gap. Do not add stand-alone provisional fixture families as a substitute for component selection, integration or physical evidence.",
+  "next_engineering_priority": "R02: actual vessel/connector/actuator compatibility and complete implementation costs, using existing R01 requirements and recording any qualified-lab interface gaps.",
+  "scope": "Requirements and engineering reconciliation only; no biological procedure, hardware purchase, vendor message, fabrication or readiness release."
+}
